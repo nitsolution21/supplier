@@ -1,0 +1,79 @@
+spring: 
+  application: 
+     name: vendor
+  datasource:     url:     username:
+    password:
+  jpa:
+    properties:
+      hibernate: 
+       jdbc: 
+         lob: 
+           non_contextual_creation: true
+ 
+server: 
+  port: 8089
+  servlet: 
+    contextPath: /default
+name: default-yml
+environment: default
+enabled: true
+contextpath: /default
+servers: 
+   - www.default.com
+   - www.default1.com
+   
+---
+spring: 
+  profiles: dev
+  application: 
+     name: vendor
+  datasource: 
+    url: 
+    username:
+    password:
+  jpa:
+    properties:
+      hibernate: 
+       jdbc: 
+         lob: 
+           non_contextual_creation: true
+ 
+server: 
+  port: 8088
+  servlet: 
+    contextPath: /dev
+name: dev-yml
+environment: dev
+enabled: true
+contextpath: /dev
+servers: 
+   - www.dev.com
+   - www.dev1.com
+   
+---
+spring: 
+  profiles: prod
+  application: 
+     name: vendor
+  datasource: 
+    url: 
+    username:
+    password:
+  jpa:
+    properties:
+      hibernate: 
+       jdbc: 
+         lob: 
+           non_contextual_creation: true
+ 
+server: 
+  port: 8087
+  servlet: 
+    contextPath: /prod
+name: prod-yml
+environment: prod
+enabled: true
+contextpath: /prod
+servers: 
+   - www.prod.com
+   - www.prod1.com
