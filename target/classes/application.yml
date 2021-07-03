@@ -1,14 +1,12 @@
 spring: 
   application: 
      name: vendor
-  datasource:     url:     username:
-    password:
+  datasource:     url: jdbc:mysql://localhost:3306/supplierDB
+    username: admin
+    password: admin
   jpa:
-    properties:
-      hibernate: 
-       jdbc: 
-         lob: 
-           non_contextual_creation: true
+    hibernate: 
+      ddl-auto: none
  
 server: 
   port: 8089
@@ -38,16 +36,14 @@ spring:
   application: 
      name: vendor
   datasource: 
-    url: 
-    username:
-    password:
+    url: jdbc:mysql://localhost:3306/supplierDB
+    username: admin
+    password: admin
+    driverClassName: com.mysql.jdbc.Driver
   jpa:
-    properties:
-      hibernate: 
-       jdbc: 
-         lob: 
-           non_contextual_creation: true
- 
+    hibernate: 
+      ddl-auto: none
+      use-new-id-generator-mappings: false
 server: 
   port: 8088
   servlet: 
@@ -76,16 +72,13 @@ spring:
   application: 
      name: vendor
   datasource: 
-    url: 
-    username:
-    password:
+    url: jdbc:mysql://localhost:3306/supplierDB
+    username: admin
+    password: admin
   jpa:
-    properties:
-      hibernate: 
-       jdbc: 
-         lob: 
-           non_contextual_creation: true
- 
+    hibernate: 
+      ddl-auto: none
+      use-new-id-generator-mappings: false
 server: 
   port: 8087
   servlet: 
@@ -107,3 +100,5 @@ logging:
         org.springframework.web: ERROR
         org.fintexel.supplier.*: INFO
         org.hibernate: ERROR
+        
+        

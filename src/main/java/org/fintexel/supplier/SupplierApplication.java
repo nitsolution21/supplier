@@ -18,20 +18,13 @@ public class SupplierApplication implements CommandLineRunner {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SupplierApplication.class, args);
-		System.out.println("In Main Method");
+		LOGGER.info("In Main Method");
 		
 	
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-		System.out.println("-------------------------------------");
-		System.out.println("name : "+myConfig.getName());
-		System.out.println("environment : "+myConfig.getEnvironment());
-		System.out.println("contextpath : "+myConfig.getContextpath());
-		System.out.println("servers: "+myConfig.getServers());
-		System.out.println("-------------------------------------");
-		
 		LOGGER.info("-------------------------------------");
 		LOGGER.info("name : "+myConfig.getName());
 		LOGGER.info("environment : "+myConfig.getEnvironment());
