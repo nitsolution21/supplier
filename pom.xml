@@ -8,15 +8,22 @@
 		<version>2.5.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+	
 	<groupId>org.fintexel</groupId>
 	<artifactId>supplier</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
 	<name>supplier</name>
 	<description>Demo project for Spring Boot</description>
+	
+	<packaging>war</packaging>
+	
+	
 	<properties>
 		<java.version>1.8</java.version>
 	</properties> 
+	
+	
+	
 	<dependencies>
 		<!-- <dependency>
 			<groupId>org.springframework.boot</groupId>
