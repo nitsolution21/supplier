@@ -1,6 +1,7 @@
 package org.fintexel.supplier.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.fintexel.supplier.SupplierApplication;
 import org.fintexel.supplier.entity.User;
@@ -27,18 +28,19 @@ public class VendorController {
 	@Autowired
 	private VendorRepo vendorRepo;
 	@PostMapping("/registerVendor")
-	public String registerVendor() {
+	public Vendor registerVendor(@RequestBody Vendor vendorReg) {
 		LOGGER.info("Inside - VendorController.registerVendor()");
-		return "Hello";
+		return this.vendorRepo.save(vendorReg);
 	}
 	@GetMapping("/getRegisterVendor")
-	@ResponseBody
 	public Iterable<Vendor> getRegisterVendor() {
+		LOGGER.info("Inside - VendorController.getRegisterVendor()");
 		return this.vendorRepo.findAll();
 	}
-	@PutMapping("/putRegisterVendor")
-	@ResponseBody
+	@PutMapping("/updateExistingVendorDetails")
 	public Vendor putRegisterVendor(@RequestBody Vendor vendorReg) {
+		LOGGER.info("Inside - VendorController.putRegisterVendor()");
+		Optional<Vendor> findById = this.vendorRepo.findById(vendorReg.getId());
 		return this.vendorRepo.save(vendorReg);
 	}
 	@GetMapping("/users")

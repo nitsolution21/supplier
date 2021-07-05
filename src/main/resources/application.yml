@@ -2,8 +2,8 @@ spring:
   application: 
      name: vendor
   datasource:     url: jdbc:mysql://localhost:3306/supplierDB
-    username: root
-    password: 
+    username: admin
+    password: admin
   jpa:
     hibernate: 
       ddl-auto: none
@@ -37,8 +37,8 @@ spring:
      name: vendor
   datasource: 
     url: jdbc:mysql://localhost:3306/supplierDB
-    username: root
-    password: 
+    username: admin
+    password: admin
     driverClassName: com.mysql.jdbc.Driver
   jpa:
     hibernate: 
