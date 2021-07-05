@@ -36,9 +36,9 @@ spring:
   application: 
      name: vendor
   datasource: 
-    url: jdbc:mysql://localhost:3306/supplierDB
-    username: admin
-    password: admin
+    url: jdbc:mysql://decisionbox.cqmq67eyfk9g.ap-south-1.rds.amazonaws.com:3306
+    username: datadox
+    password: ruucP2kyzpSfVLc48ati
     driverClassName: com.mysql.jdbc.Driver
   jpa:
     hibernate: 
@@ -88,8 +88,8 @@ environment: prod
 enabled: true
 contextpath: /prod
 servers: 
-   - www.prod.com
-   - www.prod1.com
+   - prod
+   - prod.com
 logging: 
       file: 
         name: logs/prod_logs.log
@@ -100,5 +100,3 @@ logging:
         org.springframework.web: ERROR
         org.fintexel.supplier.*: INFO
         org.hibernate: ERROR
-        
-        

@@ -25,8 +25,10 @@ public class VendorController {
 	
 	@Autowired
 	private UserRepo userRepo;
+	
 	@Autowired
 	private VendorRepo vendorRepo;
+	
 	@PostMapping("/registerVendor")
 	public Vendor registerVendor(@RequestBody Vendor vendorReg) {
 		LOGGER.info("Inside - VendorController.registerVendor()");
