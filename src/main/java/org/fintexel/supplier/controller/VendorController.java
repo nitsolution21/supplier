@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.fintexel.supplier.SupplierApplication;
 import org.fintexel.supplier.entity.SupAddress;
+import org.fintexel.supplier.entity.SupStagingTable;
 import org.fintexel.supplier.entity.User;
 import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.exceptions.VendorErrorResponse;

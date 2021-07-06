@@ -58,8 +58,7 @@ public class SupDetails {
 				+ supplierCompName + ", supplierContact1=" + supplierContact1 + ", supplierContact2=" + supplierContact2
 				+ ", registrationType=" + registrationType + ", regristrationNo=" + regristrationNo + ", status="
 				+ status + ", remarks=" + remarks + ", lastlogin=" + lastlogin + ", createdBy=" + createdBy
-				+ ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn
-				+ ", SUPPLIER_CODE=" + SUPPLIER_CODE + "]";
+				+ ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + "]";
 	}
 
 	public SupDetails() {
@@ -85,7 +84,6 @@ public class SupDetails {
 		this.createdOn = createdOn;
 		this.updatedBy = updatedBy;
 		this.updatedOn = updatedOn;
-		SUPPLIER_CODE = sUPPLIER_CODE;
 	}
 
 	public String getSupplierCode() {
@@ -200,14 +198,6 @@ public class SupDetails {
 		this.updatedOn = updatedOn;
 	}
 
-	public String getSUPPLIER_CODE() {
-		return SUPPLIER_CODE;
-	}
-
-	public void setSUPPLIER_CODE(String sUPPLIER_CODE) {
-		SUPPLIER_CODE = sUPPLIER_CODE;
-	}
-
-	private String SUPPLIER_CODE;
+	
 	
 }
