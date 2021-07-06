@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.fintexel.supplier.SupplierApplication;
+import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.User;
 import org.fintexel.supplier.entity.Vendor;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
+import org.fintexel.supplier.repository.SupAddRepo;
 import org.fintexel.supplier.repository.UserRepo;
 import org.fintexel.supplier.repository.VendorRepo;
 import org.slf4j.Logger;
@@ -29,6 +31,9 @@ public class VendorController {
 	
 	@Autowired
 	private VendorRepo vendorRepo;
+	
+	@Autowired
+	private SupAddRepo supAddRepo;
 	
 	@PostMapping("/registerVendor")
 	public Vendor registerVendor(@RequestBody Vendor vendorReg) {
@@ -77,5 +82,11 @@ public class VendorController {
 	    return userRepo.save(newUser);
 	  }
 	
+	@GetMapping("/supplierAddress")
+	public List<SupAddress> allAdd() {
+		LOGGER.info("Inside - VendorController.allAdd()");
+		List<SupAddress> findAll = supAddRepo.findAll();
+		return findAll;
+	}
 	
 }
