@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.fintexel.supplier.SupplierApplication;
 import org.fintexel.supplier.entity.User;
 import org.fintexel.supplier.entity.Vendor;
+import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.repository.UserRepo;
 import org.fintexel.supplier.repository.VendorRepo;
 import org.slf4j.Logger;
@@ -34,17 +35,31 @@ public class VendorController {
 		LOGGER.info("Inside - VendorController.registerVendor()");
 		return this.vendorRepo.save(vendorReg);
 	}
+	
 	@GetMapping("/getRegisterVendor")
 	public Iterable<Vendor> getRegisterVendor() {
 		LOGGER.info("Inside - VendorController.getRegisterVendor()");
-		return this.vendorRepo.findAll();
+		try{
+			List<Vendor> vendorList = this.vendorRepo.findAll();
+			if(vendorList.isEmpty())
+			{
+				throw new VendorNotFoundException("Vendor Not available");
+			}
+			return vendorList;
+		}catch(Exception e){
+			throw new VendorNotFoundException(e);
+		}
+		
 	}
 	@PutMapping("/updateExistingVendorDetails")
 	public Vendor putRegisterVendor(@RequestBody Vendor vendorReg) {
 		LOGGER.info("Inside - VendorController.putRegisterVendor()");
-		Optional<Vendor> findById = this.vendorRepo.findById(vendorReg.getId());
+		Optional<Vendor> findById = this.vendorRepo.findById((long) vendorReg.getId());
 		return this.vendorRepo.save(vendorReg);
 	}
+	
+	
+	
 	@GetMapping("/users")
 	public String getUser() {
 		LOGGER.info("Inside - VendorController.getUser()");

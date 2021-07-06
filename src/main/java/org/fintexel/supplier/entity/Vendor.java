@@ -26,6 +26,7 @@ public class Vendor {
 	private String gender;
 	private String email;
 	private String password;
+	
 	public int getId() {
 		return id;
 	}
