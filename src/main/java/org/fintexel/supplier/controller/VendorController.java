@@ -6,11 +6,12 @@ import java.util.Optional;
 import org.fintexel.supplier.SupplierApplication;
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.User;
-import org.fintexel.supplier.entity.Vendor;
+import org.fintexel.supplier.entity.VendorRegister;
+import org.fintexel.supplier.exceptions.VendorErrorResponse;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.repository.SupAddRepo;
 import org.fintexel.supplier.repository.UserRepo;
-import org.fintexel.supplier.repository.VendorRepo;
+import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,25 +31,29 @@ public class VendorController {
 	private UserRepo userRepo;
 	
 	@Autowired
-	private VendorRepo vendorRepo;
+	private VendorRegisterRepo vendorRepo;
 	
 	@Autowired
 	private SupAddRepo supAddRepo;
 	
 	@PostMapping("/registerVendor")
-	public Vendor registerVendor(@RequestBody Vendor vendorReg) {
+	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.registerVendor()");
-		return this.vendorRepo.save(vendorReg);
+		try{
+			return this.vendorRepo.save(vendorReg);
+		}catch(Exception e){
+			throw new VendorErrorResponse("Can't Save Vendor");
+		}
 	}
 	
-	@GetMapping("/getRegisterVendor")
-	public Iterable<Vendor> getRegisterVendor() {
+	@GetMapping("/registerVendors")
+	public List<VendorRegister> getRegisterVendors() { 
 		LOGGER.info("Inside - VendorController.getRegisterVendor()");
 		try{
-			List<Vendor> vendorList = this.vendorRepo.findAll();
+			List<VendorRegister> vendorList = this.vendorRepo.findAll();
 			if(vendorList.isEmpty())
 			{
-				throw new VendorNotFoundException("Vendor Not available");
+				throw new VendorNotFoundException("Vendor Not Available");
 			}
 			return vendorList;
 		}catch(Exception e){
@@ -56,11 +61,30 @@ public class VendorController {
 		}
 		
 	}
-	@PutMapping("/updateExistingVendorDetails")
-	public Vendor putRegisterVendor(@RequestBody Vendor vendorReg) {
+	@GetMapping("/registerVendor")
+	public Optional<VendorRegister> getRegisterVendor(@RequestBody VendorRegister vendorReg) {
+		LOGGER.info("Inside - VendorController.getRegisterVendor()");
+		try{
+			Optional<VendorRegister> findById = this.vendorRepo.findById(vendorReg.getRegisterId());
+			if(findById.isEmpty())
+			{
+				throw new VendorNotFoundException("Vendor Not Available");
+			}
+			return findById;
+		}catch(Exception e){
+			throw new VendorNotFoundException(e);
+		}
+		
+	}
+	@PutMapping("/VendorDetails")
+	public VendorRegister putRegisterVendor(@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.putRegisterVendor()");
-		Optional<Vendor> findById = this.vendorRepo.findById((long) vendorReg.getId());
-		return this.vendorRepo.save(vendorReg);
+		try {
+			Optional<VendorRegister> findById = this.vendorRepo.findById((int) vendorReg.getRegisterId());
+			return this.vendorRepo.save(vendorReg);
+		}catch(Exception e) {
+			throw new VendorErrorResponse("Can't Update Vendor"); 
+		}
 	}
 	
 	
