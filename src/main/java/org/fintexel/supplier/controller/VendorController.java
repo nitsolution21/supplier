@@ -90,7 +90,11 @@ public class VendorController {
 		LOGGER.info("Inside - VendorController.putRegisterVendor()");
 		try {
 			Optional<VendorRegister> findById = this.vendorRepo.findById((int) vendorReg.getRegisterId());
-			return this.vendorRepo.save(vendorReg);
+			if(!findById.isEmpty()) {
+				return this.vendorRepo.save(vendorReg);
+			}else {
+				throw new VendorNotFoundException();
+			}
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e); 
 		}
@@ -105,7 +109,7 @@ public class VendorController {
 				throw new VendorNotFoundException();
 			}else {
 				VendorRegister fromOptional=findById.get();
-				fromOptional.setStatus("1");
+				fromOptional.setStatus("0");
 				return this.vendorRepo.save(fromOptional);
 			}
 		}catch(Exception e) {
