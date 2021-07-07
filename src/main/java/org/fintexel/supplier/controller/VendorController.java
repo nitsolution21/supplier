@@ -16,6 +16,8 @@ import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -41,9 +43,10 @@ public class VendorController {
 	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.registerVendor()");
 		try{
-			return this.vendorRepo.save(vendorReg);
+			VendorRegister save = this.vendorRepo.save(vendorReg);
+			return save;
 		}catch(Exception e){
-			throw new VendorErrorResponse("Can't Save Vendor");
+			throw new VendorErrorResponse(e);
 		}
 	}
 	
@@ -62,11 +65,13 @@ public class VendorController {
 		}
 		
 	}
+	
+	
 	@GetMapping("/registerVendor")
-	public Optional<VendorRegister> getRegisterVendor(@RequestBody VendorRegister vendorReg) {
+	public Optional<VendorRegister> getRegisterVendor(@RequestBody int vendorId) {
 		LOGGER.info("Inside - VendorController.getRegisterVendor()");
 		try{
-			Optional<VendorRegister> findById = this.vendorRepo.findById(vendorReg.getRegisterId());
+			Optional<VendorRegister> findById = this.vendorRepo.findById(vendorId);
 			if(findById.isEmpty())
 			{
 				throw new VendorNotFoundException("Vendor Not Available");
@@ -77,7 +82,9 @@ public class VendorController {
 		}
 		
 	}
-	@PutMapping("/VendorDetails")
+	
+	
+	@PutMapping("/vendorDetails")
 	public VendorRegister putRegisterVendor(@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.putRegisterVendor()");
 		try {
@@ -88,6 +95,22 @@ public class VendorController {
 		}
 	}
 	
+	@DeleteMapping("/vendor")
+	public VendorRegister deleteRegisterVendor(@RequestBody int vendorId) {
+		LOGGER.info("Inside - VendorController.deleteRegisterVendor()");
+		try {
+			Optional<VendorRegister> findById = this.vendorRepo.findById(vendorId);
+			if(findById.isEmpty()) {
+				throw new VendorNotFoundException("Vendor Not Available");
+			}else {
+				VendorRegister fromOptional=findById.get();
+				fromOptional.setStatus("1");
+				return this.vendorRepo.save(fromOptional);
+			}
+		}catch(Exception e) {
+			throw new VendorErrorResponse(e);
+		}
+	}
 	
 	
 	@GetMapping("/users")
