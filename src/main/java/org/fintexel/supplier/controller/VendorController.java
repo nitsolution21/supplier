@@ -3,12 +3,9 @@ package org.fintexel.supplier.controller;
 import java.util.List;
 import java.util.Optional;
 
-import org.fintexel.supplier.SupplierApplication;
 import org.fintexel.supplier.entity.SupAddress;
-import org.fintexel.supplier.entity.SupStagingTable;
 import org.fintexel.supplier.entity.User;
 import org.fintexel.supplier.entity.VendorRegister;
-import org.fintexel.supplier.exceptions.VendorErrorResponse;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.repository.SupAddRepo;
 import org.fintexel.supplier.repository.UserRepo;
@@ -16,14 +13,12 @@ import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -120,7 +115,7 @@ public class VendorController {
 	}
 	
 	
-	@GetMapping("/users")
+	@GetMapping("/")
 	public String getUser() {
 		LOGGER.info("Inside - VendorController.getUser()");
 		return "Hello";
