@@ -40,18 +40,18 @@ public class VendorController {
 	@Autowired
 	private SupAddRepo supAddRepo;
 	
-	@PostMapping("/registerVendor")
+	@PostMapping("/vendor")
 	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.registerVendor()");
 		try{
 			VendorRegister save = this.vendorRepo.save(vendorReg);
 			return save;
 		}catch(Exception e){
-			throw new VendorNotFoundException(e);
+			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
 	
-	@GetMapping("/registerVendors")
+	@GetMapping("/vendor")
 	public List<VendorRegister> getRegisterVendors() { 
 		LOGGER.info("Inside - VendorController.getRegisterVendor()");
 		try{
@@ -62,58 +62,60 @@ public class VendorController {
 			}
 			return vendorList;
 		}catch(Exception e){
-			throw new VendorNotFoundException(e);
+			throw new VendorNotFoundException(e.getMessage());
 		}
 		
 	}
 	
-	
-	@GetMapping("/registerVendor/{vendorId}")
+	@GetMapping("/vendor/{vendorId}")
 	public Optional<VendorRegister> getRegisterVendor(@PathVariable() int vendorId) {
 		LOGGER.info("Inside - VendorController.getRegisterVendor()");
 		try{
 			Optional<VendorRegister> findById = this.vendorRepo.findById(vendorId);
-			if(findById.isEmpty())
+			LOGGER.info("Inside - VendorController.getRegisterVendor() - " +findById);
+			if(!(findById.isPresent()))
 			{
-				throw new VendorNotFoundException();
+				throw new VendorNotFoundException("Vendor Not Found");
 			}
 			return findById;
 		}catch(Exception e){
-			throw new VendorNotFoundException(e);
-		}
-		
+			throw new VendorNotFoundException(e.getMessage());
+		}		
 	}
 	
 	
-	@PutMapping("/vendorDetails")
-	public VendorRegister putRegisterVendor(@RequestBody VendorRegister vendorReg) {
+	@PutMapping("/vendor/{vendorId}")
+	public VendorRegister putRegisterVendor(@PathVariable("vendorId") int vendorId,@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.putRegisterVendor()");
 		try {
-			Optional<VendorRegister> findById = this.vendorRepo.findById((int) vendorReg.getRegisterId());
-			if(!findById.isEmpty()) {
-				return this.vendorRepo.save(vendorReg);
+			Optional<VendorRegister> findById = this.vendorRepo.findById(vendorId);
+			if(!findById.isPresent()) {
+				throw new VendorNotFoundException("Vendor Not Available");
 			}else {
-				throw new VendorNotFoundException();
+				VendorRegister vr = findById.get();
+				vr.setEmail(vendorReg.getEmail());
+				vr.setSupplierCompName(vendorReg.getSupplierCompName());
+				vr.setStatus(vendorReg.getStatus());
+				return this.vendorRepo.save(vr);
 			}
 		}catch(Exception e) {
-			throw new VendorNotFoundException(e); 
+			throw new VendorNotFoundException(e.getMessage()); 
 		}
 	}
 	
 	@DeleteMapping("/vendor/{vendorId}")
-	public VendorRegister deleteRegisterVendor(@PathVariable() int vendorId) {
+	public Object deleteRegisterVendor(@PathVariable() int vendorId) {
 		LOGGER.info("Inside - VendorController.deleteRegisterVendor()");
 		try {
 			Optional<VendorRegister> findById = this.vendorRepo.findById(vendorId);
-			if(findById.isEmpty()) {
-				throw new VendorNotFoundException();
+			if(!(findById.isPresent())) {
+				throw new VendorNotFoundException("Vendor Does not exist");
 			}else {
-				VendorRegister fromOptional=findById.get();
-				fromOptional.setStatus("0");
-				return this.vendorRepo.save(fromOptional);
+				this.vendorRepo.deleteById(vendorId);
+				return "vendor deleted - "+vendorId;
 			}
 		}catch(Exception e) {
-			throw new VendorNotFoundException(e);
+			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
 	
