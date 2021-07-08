@@ -1,7 +1,11 @@
 package org.fintexel.supplier.controller;
 
 import java.util.List;
+
+import org.springframework.validation.*;
 import java.util.Optional;
+
+import javax.validation.Valid;
 
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.User;
@@ -10,6 +14,7 @@ import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.repository.SupAddRepo;
 import org.fintexel.supplier.repository.UserRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
+import org.fintexel.supplier.validation.FieldValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +25,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import net.bytebuddy.implementation.bind.annotation.BindingPriority;
 
 @RestController
 public class VendorController {
@@ -35,12 +42,19 @@ public class VendorController {
 	@Autowired
 	private SupAddRepo supAddRepo;
 	
+	@Autowired
+	private FieldValidation fieldValidation;
+	
 	@PostMapping("/vendor")
 	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.registerVendor()");
 		try{
-			VendorRegister save = this.vendorRepo.save(vendorReg);
-			return save;
+			if(fieldValidation.isEmail(vendorReg.getEmail()) ) {
+				VendorRegister save = this.vendorRepo.save(vendorReg);
+				return save;
+			}else {
+				throw new VendorNotFoundException("Validation error");
+			}
 		}catch(Exception e){
 			throw new VendorNotFoundException(e.getMessage());
 		}
@@ -87,11 +101,16 @@ public class VendorController {
 			if(!findById.isPresent()) {
 				throw new VendorNotFoundException("Vendor Not Available");
 			}else {
-				VendorRegister vr = findById.get();
-				vr.setEmail(vendorReg.getEmail());
-				vr.setSupplierCompName(vendorReg.getSupplierCompName());
-				vr.setStatus(vendorReg.getStatus());
-				return this.vendorRepo.save(vr);
+				if(fieldValidation.isEmail(vendorReg.getEmail()) ) {
+					VendorRegister vr = findById.get();
+					vr.setEmail(vendorReg.getEmail());
+					vr.setSupplierCompName(vendorReg.getSupplierCompName());
+					vr.setStatus(vendorReg.getStatus());
+					return this.vendorRepo.save(vr);
+				}else {
+					throw new VendorNotFoundException("Validation error"); 
+				}
+				
 			}
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage()); 
