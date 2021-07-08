@@ -63,7 +63,7 @@ public class VendorController {
 	}
 	
 	@GetMapping("/vendor/{vendorId}")
-	public Optional<VendorRegister> getRegisterVendor(@PathVariable() int vendorId) {
+	public Optional<VendorRegister> getRegisterVendor(@PathVariable() long vendorId) {
 		LOGGER.info("Inside - VendorController.getRegisterVendor()");
 		try{
 			Optional<VendorRegister> findById = this.vendorRepo.findById(vendorId);
@@ -80,7 +80,7 @@ public class VendorController {
 	
 	
 	@PutMapping("/vendor/{vendorId}")
-	public VendorRegister putRegisterVendor(@PathVariable("vendorId") int vendorId,@RequestBody VendorRegister vendorReg) {
+	public VendorRegister putRegisterVendor(@PathVariable("vendorId") long vendorId,@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.putRegisterVendor()");
 		try {
 			Optional<VendorRegister> findById = this.vendorRepo.findById(vendorId);
@@ -99,7 +99,7 @@ public class VendorController {
 	}
 	
 	@DeleteMapping("/vendor/{vendorId}")
-	public Object deleteRegisterVendor(@PathVariable() int vendorId) {
+	public Object deleteRegisterVendor(@PathVariable() long vendorId) {
 		LOGGER.info("Inside - VendorController.deleteRegisterVendor()");
 		try {
 			Optional<VendorRegister> findById = this.vendorRepo.findById(vendorId);
