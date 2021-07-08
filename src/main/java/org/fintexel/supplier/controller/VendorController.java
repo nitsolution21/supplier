@@ -10,7 +10,7 @@ import org.fintexel.supplier.entity.User;
 import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.exceptions.VendorErrorResponse;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
-import org.fintexel.supplier.repository.SupAddRepo;
+import org.fintexel.supplier.repository.SupAddressRepo;
 import org.fintexel.supplier.repository.UserRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ public class VendorController {
 	private VendorRegisterRepo vendorRepo;
 	
 	@Autowired
-	private SupAddRepo supAddRepo;
+	private SupAddressRepo supAddRepo;
 	
 	@PostMapping("/registerVendor")
 	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
