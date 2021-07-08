@@ -7,12 +7,18 @@ import org.springframework.util.StringUtils;
 public class FieldValidation {
 
 	public boolean isEmpty(String string) {
-		if(string.isEmpty()) {
+		if(string == null) {
+
 			return false;
 		}else {
-			return true;
+			if(string.isEmpty() | string.isBlank() ) {
+				return false;
+			}else {
+				return true;
+			}
 		}
 	}
+ 
 	public boolean isEmail(String email)
     {
 		if(isEmpty(email)) {

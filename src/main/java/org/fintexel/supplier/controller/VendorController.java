@@ -18,6 +18,7 @@ import org.fintexel.supplier.validation.FieldValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.bytebuddy.implementation.bind.annotation.BindingPriority;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class VendorController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(VendorController.class);
@@ -49,7 +51,7 @@ public class VendorController {
 	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.registerVendor()");
 		try{
-			if(fieldValidation.isEmail(vendorReg.getEmail()) ) {
+			if((fieldValidation.isEmail(vendorReg.getEmail()) &  (fieldValidation.isEmpty(vendorReg.getSupplierCompName())) )) {
 				VendorRegister save = this.vendorRepo.save(vendorReg);
 				return save;
 			}else {
@@ -101,7 +103,7 @@ public class VendorController {
 			if(!findById.isPresent()) {
 				throw new VendorNotFoundException("Vendor Not Available");
 			}else {
-				if(fieldValidation.isEmail(vendorReg.getEmail()) ) {
+				if((fieldValidation.isEmail(vendorReg.getEmail())) &  (fieldValidation.isEmpty(vendorReg.getSupplierCompName())) & (vendorReg.getRegisterId()==vendorId)) {
 					VendorRegister vr = findById.get();
 					vr.setEmail(vendorReg.getEmail());
 					vr.setSupplierCompName(vendorReg.getSupplierCompName());
