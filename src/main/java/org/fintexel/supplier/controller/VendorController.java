@@ -11,7 +11,7 @@ import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.User;
 import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
-import org.fintexel.supplier.repository.SupAddRepo;
+import org.fintexel.supplier.repository.SupAddressRepo;
 import org.fintexel.supplier.repository.UserRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.fintexel.supplier.validation.FieldValidation;
@@ -40,7 +40,7 @@ public class VendorController {
 	private VendorRegisterRepo vendorRepo;
 	
 	@Autowired
-	private SupAddRepo supAddRepo;
+	private SupAddressRepo supAddRepo;
 	
 	@Autowired
 	private FieldValidation fieldValidation;
