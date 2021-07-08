@@ -8,12 +8,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "SUP_REGISTER")
 public class VendorRegister {
 	@Id
-//	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "REGISTER_ID")
 	private int registerId;
 	
@@ -35,13 +39,17 @@ public class VendorRegister {
 	@Column(name = "CREATED_BY")
 	private int createdBy;
 	
-	@Column(name = "CREATED_ON")
+	@Column(name = "CREATED_ON",columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date createdOn;
 	
-	@Column(name = "UPDATED_BY")
+	@Column(name = "UPDATED_BY") 
 	private int updatedBy;
 	
-	@Column(name = "UPDATED_ON")
+	@Column(name = "UPDATED_ON",columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updatedOn;
 	
 	public int getRegisterId() {

@@ -1,6 +1,6 @@
 package org.fintexel.supplier.exceptions;
 
-public class VendorErrorResponse extends RuntimeException{
+public class VendorErrorResponse{
 
 	private int statuss;
 	private String messagee;
@@ -16,22 +16,7 @@ public class VendorErrorResponse extends RuntimeException{
 		this.messagee = messagee;
 		this.timeStampp = timeStampp;
 	}
-	public VendorErrorResponse(String message) {
-		super(message);
-	}
 
-	public VendorErrorResponse(Throwable cause) {
-		super(cause);
-	}
-
-	public VendorErrorResponse(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public VendorErrorResponse(String message, Throwable cause, boolean enableSuppression,
-			boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
 	public int getStatuss() {
 		return statuss;
 	}
@@ -55,7 +40,6 @@ public class VendorErrorResponse extends RuntimeException{
 	public void setTimeStampp(long timeStampp) {
 		this.timeStampp = timeStampp;
 	}
-
 	
 }
 
