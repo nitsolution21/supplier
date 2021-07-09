@@ -1,0 +1,83 @@
+package org.fintexel.supplier.validation;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.springframework.util.StringUtils;
+public class FieldValidation {
+
+	public boolean isEmpty(String string) {
+		if(string == null) {
+
+			return false;
+		}else {
+			if(string.isEmpty() | string.isBlank() ) {
+				return false;
+			}else {
+				return true;
+			}
+		}
+	}
+ 
+	public boolean isEmail(String email)
+    {
+		if(isEmpty(email)) {
+			String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+                    "[a-zA-Z0-9_+&*-]+)*@" +
+                    "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+                    "A-Z]{2,7}$";
+                      
+			Pattern pat = Pattern.compile(emailRegex);
+			if (email == null)
+				return false;
+			return pat.matcher(email).matches();
+		}else {
+			return false;
+		}
+        
+    }
+	
+	
+	public boolean isNumber(String number) {
+		if(isEmpty(number)) {
+			try {
+				Double num = Double.parseDouble(number);
+				return true;
+			}catch(Exception e) {
+				return false;
+			}
+		}else {
+			return false;
+		}
+		
+	}
+	
+	
+	public boolean isMobile(String number) {
+		if(isEmpty(number)) {
+			if(isNumber(number)) {
+				String regexStr = "^[0-9]{10}$";
+				if (number.matches(regexStr))
+					return true;
+				else
+					return false;
+			}else {
+				return false;
+			}
+		}else {
+			return false;
+		}
+		
+	}
+	public boolean isPin(String number) {
+		if(isNumber(number)) {
+			String regexStr = "^[0-9]{6}$";
+			if (number.matches(regexStr))
+				return true;
+			else
+				return false;
+		}else {
+			return false;
+		}
+	}
+}
