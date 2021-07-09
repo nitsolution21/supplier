@@ -52,7 +52,11 @@ public class VendorController {
 		LOGGER.info("Inside - VendorController.registerVendor()");
 		try{
 			if((fieldValidation.isEmail(vendorReg.getEmail()) &  (fieldValidation.isEmpty(vendorReg.getSupplierCompName())) )) {
-				VendorRegister save = this.vendorRepo.save(vendorReg);
+				VendorRegister filterVendorReg=new VendorRegister();
+				filterVendorReg.setEmail(vendorReg.getEmail());
+				filterVendorReg.setSupplierCompName(vendorReg.getSupplierCompName());
+				filterVendorReg.setStatus(vendorReg.getStatus());
+				VendorRegister save = this.vendorRepo.save(filterVendorReg);
 				return save;
 			}else {
 				throw new VendorNotFoundException("Validation error");
