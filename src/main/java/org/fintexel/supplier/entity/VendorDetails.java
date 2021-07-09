@@ -16,7 +16,7 @@ public class VendorDetails implements UserDetails {
 	private String supplierCompName;
 	private String username;
 	private String password;
-	private List<GrantedAuthority> status;
+	private String status;
 	private int createdBy;
 	private Date createdOn;
 	private int updatedBy;
@@ -34,15 +34,13 @@ public class VendorDetails implements UserDetails {
 		this.createdOn = vendor.getCreatedOn();
 		this.updatedBy = vendor.getUpdatedBy();
 		this.updatedOn = vendor.getUpdatedOn();
-		this.status = Arrays.stream(vendor.getStatus().split(","))
-				.map(SimpleGrantedAuthority::new)
-				.collect(Collectors.toList());
+		this.status = vendor.getStatus();
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Auto-generated method stub
-		return status;
+		return null;
 	}
 
 	@Override

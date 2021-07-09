@@ -21,7 +21,7 @@ public class VendorRegister {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "REGISTER_ID")
-	private int registerId;
+	private long registerId;
 	
 	@NotEmpty(message = "Please enter the email")
 	@Email(message = "Please enter valid email")
@@ -56,11 +56,11 @@ public class VendorRegister {
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updatedOn;
 	
-	public int getRegisterId() {
+	public long getRegisterId() {
 		return registerId;
 	}
 
-	public void setRegisterId(int registerId) {
+	public void setRegisterId(long registerId) {
 		this.registerId = registerId;
 	}
 
