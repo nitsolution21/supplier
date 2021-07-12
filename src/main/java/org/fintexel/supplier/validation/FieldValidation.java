@@ -11,7 +11,7 @@ public class FieldValidation {
 
 			return false;
 		}else {
-			if(string.isEmpty() | string.isBlank() ) {
+			if(string.isEmpty() | string.equals(null) ) {
 				return false;
 			}else {
 				return true;
