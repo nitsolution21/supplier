@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.fintexel.supplier.exceptions.VendorErrorResponse;
+import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.exceptions.VendorRestExceptionHandler;
 import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.services.VendorDetailsService;
@@ -45,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				username = this.jwtUtil.extractUsername(jwtToken);
 			} catch (Exception e) {
 				// TODO: handle exception
-				System.out.println(e.getMessage());
+				throw new VendorNotFoundException("token is not validated");
 			}
 			
 			UserDetails userDetails = vendorDetailsService.loadUserByUsername(username);
@@ -57,10 +58,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 			}
 			else {
-				System.out.println("token is not validated.....");
+				throw new VendorNotFoundException("token is not validated");
 			}
 			
 		}
+		
 		
 		filterChain.doFilter(request, response);
 		

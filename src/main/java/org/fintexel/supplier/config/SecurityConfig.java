@@ -4,6 +4,7 @@ import org.fintexel.supplier.services.VendorDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,7 +40,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.cors()
 				.disable()
 				.authorizeRequests()
-				.antMatchers("/vendorLogin").permitAll()
+				.antMatchers(HttpMethod.POST,"/vendorLogin").permitAll()
+				.antMatchers(HttpMethod.POST,"/vendor").permitAll()
+				.antMatchers(HttpMethod.GET,"/vendorLogin").permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
