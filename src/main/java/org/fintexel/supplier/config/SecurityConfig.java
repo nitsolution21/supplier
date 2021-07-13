@@ -37,8 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.
 				csrf()
 				.disable()
-				.cors()
-				.disable()
+				.cors().and()
 				.authorizeRequests()
 				.antMatchers(HttpMethod.POST,"/vendorLogin").permitAll()
 				.antMatchers(HttpMethod.POST,"/vendor").permitAll()
@@ -52,6 +51,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 	}
+	
+//	@Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http.cors().and()...
+//    }
 	
 	@Bean
 	public AuthenticationManager getAuthenticationManager() throws Exception {
