@@ -11,11 +11,13 @@ import java.util.Random;
 import javax.validation.Valid;
 
 import org.fintexel.supplier.entity.SupAddress;
+import org.fintexel.supplier.entity.SupBank;
 import org.fintexel.supplier.entity.User;
 import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.repository.SupAddressRepo;
+import org.fintexel.supplier.repository.SupBankRepo;
 import org.fintexel.supplier.repository.UserRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.fintexel.supplier.validation.FieldValidation;
@@ -147,11 +149,10 @@ public class VendorController {
 			
 			try{
 				String userName = jwtUtil.extractUsername(jwtToken);
-//				List<VendorRegister> vendorList = this.vendorRepo.findAll();
 				Optional<VendorRegister> findByUsername = vendorRepo.findByUsername(userName);
 				if(findByUsername.isEmpty())
 				{
-					throw new VendorNotFoundException();
+					throw new VendorNotFoundException("Vendor not found");
 				}
 				return findByUsername.get();
 			}catch(Exception e){
@@ -245,5 +246,8 @@ public class VendorController {
 		List<SupAddress> findAll = supAddRepo.findAll();
 		return findAll;
 	}
+	
+	
+	
 	
 }
