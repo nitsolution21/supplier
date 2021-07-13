@@ -23,8 +23,12 @@ public class VendorRegister {
 	@Column(name = "REGISTER_ID")
 	private long registerId;
 	
-	@NotEmpty(message = "Please enter the email")
-	@Email(message = "Please enter valid email")
+	public VendorRegister(String username, String password) {
+		super();
+		this.username = username;
+		this.password = password;
+	}
+
 	@Column(name = "EMAIL")
 	private String email;
 	
