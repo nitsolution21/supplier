@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class VendorDetails implements UserDetails {
 	
+	private long registerId;
 	private String supplierCompName;
 	private String username;
 	private String password;
@@ -27,6 +28,7 @@ public class VendorDetails implements UserDetails {
 	}
 	
 	public VendorDetails(VendorRegister vendor) {
+		this.registerId = vendor.getRegisterId();
 		this.supplierCompName = vendor.getSupplierCompName();
 		this.username = vendor.getUsername();
 		this.password = vendor.getPassword();
@@ -35,6 +37,14 @@ public class VendorDetails implements UserDetails {
 		this.updatedBy = vendor.getUpdatedBy();
 		this.updatedOn = vendor.getUpdatedOn();
 		this.status = vendor.getStatus();
+	}
+	
+	public long getRegisterId() {
+		return registerId;
+	}
+
+	public void setRegisterId(long registerId) {
+		this.registerId = registerId;
 	}
 
 	@Override
@@ -78,6 +88,8 @@ public class VendorDetails implements UserDetails {
 		// TODO Auto-generated method stub
 		return true;
 	}
+	
+	
 
 
 }

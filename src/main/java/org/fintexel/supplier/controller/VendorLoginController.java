@@ -27,10 +27,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = {"http://localhost:80"}, methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.PATCH}, allowedHeaders = {"Origin","Content-Type", "X-Auth-Token"})
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class VendorLoginController {
 	
 	@Autowired
@@ -67,7 +69,10 @@ public class VendorLoginController {
 		
 		String token = jwtUtil.generateToken(vendor);
 		
-		return ResponseEntity.ok(new LoginResponce(vendor.getUsername(), token));
+		Optional<VendorRegister> findByUsername = vendorRegisterRepo.findByUsername(vendor.getUsername());
+		
+		
+		return ResponseEntity.ok(new LoginResponce(vendor.getUsername(), token, findByUsername.get().getRegisterId()));
 	}
 	
 	@GetMapping("/vendorLogin")
@@ -111,9 +116,7 @@ public class VendorLoginController {
 			loginDetails = new VendorLogin();
 			VendorRegister vendorRegister = findById.get();
 			if (findById.isPresent()) {
-				System.out.println("in frist if");
 				if (fieldValidation.isEmpty(vendorLogin.getUsername()) && fieldValidation.isEmpty(vendorLogin.getPassword())) {
-					System.out.println("in second if");
 					String encode = bCryptPasswordEncoder.encode(vendorLogin.getPassword());
 					vendorRegister.setUsername(vendorLogin.getUsername());
 					vendorRegister.setPassword(encode);
@@ -125,12 +128,10 @@ public class VendorLoginController {
 					return loginDetails;
 				}
 				else {
-					System.out.println("in second else");
 					throw new VendorNotFoundException("User id password can't be null");
 				}
 			} 
 			else {
-				System.out.println();
 				throw new VendorNotFoundException("Vendor not avalable");
 			}
 		} catch (Exception e) {
