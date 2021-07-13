@@ -2,10 +2,20 @@ package org.fintexel.supplier.entity;
 
 import java.util.Date;
 
+import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "SUP_DETAILS")
@@ -13,79 +23,63 @@ public class SupDetails {
 	@Id
 	@Column(name = "SUPPLIER_CODE")
 	private String supplierCode;
-	@Column(name = "REGISTER_ID")
-	private int registerId;
+	
+	@Column(name = "REGISTER_ID" )
+	private Long registerId;
 	
 	@Column(name = "SUPPLIER_COMP_NAME")
 	private String supplierCompName;
-	
-	@Column(name = "SUPPLIER_CONTACT1")
-	private String supplierContact1;
-	
-	@Column(name = "SUPPLIER_CONTACT2")
-	private String supplierContact2;
 	
 	@Column(name = "REGISTRATION_TYPE")
 	private String registrationType;
 	
 	@Column(name = "REGRISTRATION_NO")
-	private String regristrationNo;
+	private String regristrationNo; 
 	
 	@Column(name = "STATUS")
 	private String status;
 	
+	@Column(name="COST_CENTER")
+	private String costCenter;
+	
 	@Column(name = "REMARKS")
 	private String remarks;
 	
-	@Column(name = "LASTLOGIN")
+	@Column(name = "LAST_LOGIN",columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date lastlogin;
 	
 	@Column(name = "CREATED_BY")
 	private int createdBy;
 	
-	@Column(name = "CREATED_ON")
+	@Column(name = "CREATED_ON",columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date createdOn;
 	
 	@Column(name = "UPDATED_BY")
 	private int updatedBy;
 	
-	@Column(name = "UPDATED_ON")
+	@Column(name = "UPDATED_ON",columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updatedOn;
 	
-	@Override
-	public String toString() {
-		return "SupDetails [supplierCode=" + supplierCode + ", registerId=" + registerId + ", supplierCompName="
-				+ supplierCompName + ", supplierContact1=" + supplierContact1 + ", supplierContact2=" + supplierContact2
-				+ ", registrationType=" + registrationType + ", regristrationNo=" + regristrationNo + ", status="
-				+ status + ", remarks=" + remarks + ", lastlogin=" + lastlogin + ", createdBy=" + createdBy
-				+ ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + "]";
+//	@ManyToOne(fetch = FetchType.LAZY, targetEntity = VendorRegister.class)
+//	@JoinColumn(name = "REGISTER_ID", insertable = false, updatable = false)
+//	private VendorRegister user;
+
+
+	public Long getRegisterId() {
+		return registerId;
 	}
 
-	public SupDetails() {
-		super();
-		// TODO Auto-generated constructor stub
+	public void setRegisterId(Long supId) {
+		this.registerId = supId;
 	}
 
-	public SupDetails(String supplierCode, int registerId, String supplierCompName, String supplierContact1,
-			String supplierContact2, String registrationType, String regristrationNo, String status, String remarks,
-			Date lastlogin, int createdBy, Date createdOn, int updatedBy, Date updatedOn, String sUPPLIER_CODE) {
-		super();
-		this.supplierCode = supplierCode;
-		this.registerId = registerId;
-		this.supplierCompName = supplierCompName;
-		this.supplierContact1 = supplierContact1;
-		this.supplierContact2 = supplierContact2;
-		this.registrationType = registrationType;
-		this.regristrationNo = regristrationNo;
-		this.status = status;
-		this.remarks = remarks;
-		this.lastlogin = lastlogin;
-		this.createdBy = createdBy;
-		this.createdOn = createdOn;
-		this.updatedBy = updatedBy;
-		this.updatedOn = updatedOn;
-	}
-
+	
 	public String getSupplierCode() {
 		return supplierCode;
 	}
@@ -94,36 +88,12 @@ public class SupDetails {
 		this.supplierCode = supplierCode;
 	}
 
-	public int getRegisterId() {
-		return registerId;
-	}
-
-	public void setRegisterId(int registerId) {
-		this.registerId = registerId;
-	}
-
 	public String getSupplierCompName() {
 		return supplierCompName;
 	}
 
 	public void setSupplierCompName(String supplierCompName) {
 		this.supplierCompName = supplierCompName;
-	}
-
-	public String getSupplierContact1() {
-		return supplierContact1;
-	}
-
-	public void setSupplierContact1(String supplierContact1) {
-		this.supplierContact1 = supplierContact1;
-	}
-
-	public String getSupplierContact2() {
-		return supplierContact2;
-	}
-
-	public void setSupplierContact2(String supplierContact2) {
-		this.supplierContact2 = supplierContact2;
 	}
 
 	public String getRegistrationType() {
@@ -148,6 +118,14 @@ public class SupDetails {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getCostCenter() {
+		return costCenter;
+	}
+
+	public void setCostCenter(String costCenter) {
+		this.costCenter = costCenter;
 	}
 
 	public String getRemarks() {
@@ -198,6 +176,53 @@ public class SupDetails {
 		this.updatedOn = updatedOn;
 	}
 
+//	public VendorRegister getUser() {
+//		return user;
+//	}
+//
+//	public void setUser(VendorRegister user) {
+//		this.user = user;
+//	}
+
+	public SupDetails(String supplierCode, Long registerId, String supplierCompName, String registrationType,
+			String regristrationNo, String status, String costCenter, String remarks, Date lastlogin, int createdBy,
+			Date createdOn, int updatedBy, Date updatedOn) {
+		super();
+		this.supplierCode = supplierCode;
+		this.registerId = registerId;
+		this.supplierCompName = supplierCompName;
+		this.registrationType = registrationType;
+		this.regristrationNo = regristrationNo;
+		this.status = status;
+		this.costCenter = costCenter;
+		this.remarks = remarks;
+		this.lastlogin = lastlogin;
+		this.createdBy = createdBy;
+		this.createdOn = createdOn;
+		this.updatedBy = updatedBy;
+		this.updatedOn = updatedOn;
+	}
+
+	public SupDetails() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public String toString() {
+		return "SupDetails [supplierCode=" + supplierCode + ", registerId=" + registerId + ", supplierCompName="
+				+ supplierCompName + ", registrationType=" + registrationType + ", regristrationNo=" + regristrationNo
+				+ ", status=" + status + ", costCenter=" + costCenter + ", remarks=" + remarks + ", lastlogin="
+				+ lastlogin + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy
+				+ ", updatedOn=" + updatedOn ;
+	}
+	
+	
+
+
+	
+	
+	
 	
 	
 }

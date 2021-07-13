@@ -1,5 +1,6 @@
 package org.fintexel.supplier.validation;
 
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +19,29 @@ public class FieldValidation {
 			}
 		}
 	}
+	public boolean isEmpty(Date string) {
+		if(string == null | string.equals("")) {
+			return false;
+		}else {
+			return true;
+		}
+	}
+	
+	public boolean isEmpty(int val) {
+		if(val <= 0) {
+			return false;
+		}else {
+			return true;
+		}
+	}
+	public boolean isEmpty(Long val) {
+		if(val <= 0) {
+			return false;
+		}else {
+			return true;
+		}
+	}
+
  
 	public boolean isEmail(String email)
     {
