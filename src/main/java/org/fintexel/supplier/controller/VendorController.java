@@ -1,9 +1,12 @@
 package org.fintexel.supplier.controller;
 
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.validation.*;
 import java.util.Optional;
+import java.util.Random;
 
 import javax.validation.Valid;
 
@@ -18,6 +21,7 @@ import org.fintexel.supplier.validation.FieldValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import net.bytebuddy.implementation.bind.annotation.BindingPriority;
 
@@ -47,12 +52,41 @@ public class VendorController {
 	@Autowired
 	private FieldValidation fieldValidation;
 	
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	
 	@PostMapping("/vendor")
 	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.registerVendor()");
 		try{
 			if((fieldValidation.isEmail(vendorReg.getEmail()) &  (fieldValidation.isEmpty(vendorReg.getSupplierCompName())) )) {
-				VendorRegister save = this.vendorRepo.save(vendorReg);
+				VendorRegister filterVendorReg=new VendorRegister();
+				filterVendorReg.setEmail(vendorReg.getEmail());
+				filterVendorReg.setSupplierCompName(vendorReg.getSupplierCompName());
+				filterVendorReg.setStatus(vendorReg.getStatus());
+				List<VendorRegister> findAll = vendorRepo.findAll();
+				for (VendorRegister find : findAll) {
+					if(find.getEmail().equals(vendorReg.getEmail())) {
+						throw new VendorNotFoundException("Vendor Email already exist");
+					}
+				}
+//				try {
+//					RestTemplate restTemplate=new RestTemplate();
+//						List getObject=restTemplate.getForObject("url", ArrayList.class, filterVendorReg);
+//						if(getObject.status==1){
+//							filterVendorReg.setUsername(getObject.get(0).username);
+//							filterVendorReg.setPassword(getObject.get(0).password);
+//						}
+//				}catch(Exception e) {
+//					
+//				}
+				 System.out.println(java.util.UUID.randomUUID().toString());
+				filterVendorReg.setUsername(vendorReg.getEmail());
+				filterVendorReg.setPassword(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
+				VendorRegister save = this.vendorRepo.save(filterVendorReg);
 				return save;
 			}else {
 				throw new VendorNotFoundException("Validation error");

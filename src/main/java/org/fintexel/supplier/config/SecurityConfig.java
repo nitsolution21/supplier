@@ -4,6 +4,7 @@ import org.fintexel.supplier.services.VendorDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,13 +13,17 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
-	private VendorDetailsService vendorDetailsService;  
+	private VendorDetailsService vendorDetailsService;
+	
+	@Autowired
+	private JwtAuthenticationFilter jwtAuthenticationFilter;
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -35,14 +40,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.cors()
 				.disable()
 				.authorizeRequests()
-				.antMatchers("/vendorLogin").permitAll()
+				.antMatchers(HttpMethod.POST,"/vendorLogin").permitAll()
+				.antMatchers(HttpMethod.POST,"/vendor").permitAll()
+				.antMatchers(HttpMethod.GET,"/vendorLogin").permitAll()
+				.antMatchers(HttpMethod.GET,"/vendorLogin/{id}").permitAll()
+				.antMatchers(HttpMethod.PUT,"/vendorLogin/{id}").permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		
+		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 	}
-	
-	@Bean
-	public PasswordEncoder getPasswordEncoder() { return NoOpPasswordEncoder.getInstance(); }
 	
 	@Bean
 	public AuthenticationManager getAuthenticationManager() throws Exception {
