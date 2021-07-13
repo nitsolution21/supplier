@@ -15,12 +15,14 @@ import java.util.Random;
 import javax.validation.Valid;
 
 import org.fintexel.supplier.entity.SupAddress;
+import org.fintexel.supplier.entity.SupBank;
 import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.entity.User;
 import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.repository.SupAddressRepo;
+import org.fintexel.supplier.repository.SupBankRepo;
 import org.fintexel.supplier.repository.SupDetailsRepo;
 import org.fintexel.supplier.repository.UserRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
@@ -69,44 +71,11 @@ public class VendorController {
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	@Autowired
 	private JwtUtil jwtUtil;
+	
+	@Autowired
+	private SupBankRepo supBankRepo;
 	
 	private String jwtToken;
 	
@@ -375,5 +344,111 @@ public class VendorController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
+	
+	//**********     Write By Soumen        **********//
+		//End
+	
+	@PostMapping("/supplierBank")
+	public SupBank postBank(@RequestBody SupBank supBank) {
+		
+		if(fieldValidation.isEmpty(supBank.getAccountHolder()) && fieldValidation.isEmpty(supBank.getBankAccountNo()) && 
+			fieldValidation.isEmpty(supBank.getBankBic()) && fieldValidation.isEmpty(supBank.getBankBranch()) && fieldValidation.isEmpty(supBank.getBankEvidence()) && fieldValidation.isEmpty(supBank.getBankName())
+			 && fieldValidation.isEmpty(supBank.getChequeNo()) && fieldValidation.isEmpty(supBank.getCountry()) && fieldValidation.isEmpty(supBank.getCurrency()) && fieldValidation.isEmpty(supBank.getEvidencePath()) 
+			 && fieldValidation.isEmpty(supBank.getIfscCode()) && fieldValidation.isEmpty(supBank.getSupplierCode()) && fieldValidation.isEmpty(supBank.getSwiftCode()) && fieldValidation.isEmpty(supBank.getTransilRoutingNo())	
+			) {
+			SupBank postData = this.supBankRepo.save(supBank);
+			return postData;
+		}
+		else {
+			throw new VendorNotFoundException("Some field are messing");
+		}
+	}
+	
+	@GetMapping("/supplierBank")
+	public SupBank getBank(@RequestHeader (name="Authorization") String token){
+		
+		
+		if (token != null && token.startsWith("Bearer ")) {
+			jwtToken = token.substring(7);
+			
+			try{
+				String userName = jwtUtil.extractUsername(jwtToken);
+				Optional<VendorRegister> findByUsername = vendorRepo.findByUsername(userName);
+				
+				
+				if(findByUsername.isEmpty())
+				{
+					throw new VendorNotFoundException("Vendor not found");
+				}
+				else {
+					List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(findByUsername.get().getRegisterId());
+					if (findByRegisterId.size() > 1) {
+						SupDetails supDetails = findByRegisterId.get(0);
+						if (!supDetails.equals(null)) {
+							Optional<SupBank> supBankDetails = supBankRepo.findBySupplierCode(supDetails.getSupplierCode());
+							if (supBankDetails.isEmpty()) {
+								throw new VendorNotFoundException("Bank details not found");
+							} 
+							else {
+								return supBankDetails.get();
+							}
+						}
+						else {
+							throw new VendorNotFoundException("Vendor Detail not found");
+						}
+					} 
+					else {
+						throw new VendorNotFoundException("Vendor Detail not found");
+					}
+				}
+				
+			}
+			catch(Exception e){
+				throw new VendorNotFoundException(e.getMessage());
+			}
+		} 
+		
+		else {
+			throw new VendorNotFoundException("Token is not valid");
+		}
+		
+	}
+	
+	
+	@PutMapping("/supplierBank/{bankId}")
+	public SupBank putBank(@PathVariable("bankId") long bankId, @RequestBody SupBank supBank) {
+		
+		Optional<SupBank> findById = this.supBankRepo.findById(bankId);
+		try {
+			if(!findById.isPresent()) {
+				throw new VendorNotFoundException("This Bank id not found");
+			}else {
+				SupBank sb = this.supBankRepo.save(supBank);
+				return sb;
+			}
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	@DeleteMapping("/supplierBank/{bankId}")
+	public Object deleteBank(@PathVariable("bankId") long bankId) {
+			
+			Optional<SupBank> findById = this.supBankRepo.findById(bankId);
+			try {
+				if(!findById.isPresent()) {
+					throw new VendorNotFoundException("This Bank id not found");
+				}else {
+					 this.supBankRepo.deleteById(bankId);
+					return "Bank deleted "+bankId;
+				}
+			}
+			catch (Exception e) {
+				// TODO: handle exception
+				throw new VendorNotFoundException(e.getMessage());
+			}
+		}
 	
 }
