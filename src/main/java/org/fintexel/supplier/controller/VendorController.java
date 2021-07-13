@@ -127,7 +127,7 @@ public class VendorController {
 			try{
 				String userName = jwtUtil.extractUsername(jwtToken);
 				Optional<VendorRegister> findByUsername = vendorRepo.findByUsername(userName);
-				if(findByUsername.isEmpty())
+				if(!findByUsername.isPresent())
 				{
 					throw new VendorNotFoundException("Vendor not found");
 				}
@@ -376,7 +376,7 @@ public class VendorController {
 				Optional<VendorRegister> findByUsername = vendorRepo.findByUsername(userName);
 				
 				
-				if(findByUsername.isEmpty())
+				if(!findByUsername.isPresent())
 				{
 					throw new VendorNotFoundException("Vendor not found");
 				}
@@ -386,7 +386,7 @@ public class VendorController {
 						SupDetails supDetails = findByRegisterId.get(0);
 						if (!supDetails.equals(null)) {
 							Optional<SupBank> supBankDetails = supBankRepo.findBySupplierCode(supDetails.getSupplierCode());
-							if (supBankDetails.isEmpty()) {
+							if (!supBankDetails.isPresent()) {
 								throw new VendorNotFoundException("Bank details not found");
 							} 
 							else {
