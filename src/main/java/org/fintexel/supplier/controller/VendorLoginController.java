@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-//@CrossOrigin(origins = {"http://localhost:80"}, methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.PATCH}, allowedHeaders = {"Origin","Content-Type", "X-Auth-Token"})
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class VendorLoginController {
 	
