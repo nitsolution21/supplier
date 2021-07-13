@@ -14,6 +14,7 @@ import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.User;
 import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
+import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.repository.SupAddressRepo;
 import org.fintexel.supplier.repository.UserRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -57,6 +59,47 @@ public class VendorController {
 	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@Autowired
+	private JwtUtil jwtUtil;
+	
+	private String jwtToken;
 	
 	@PostMapping("/vendor")
 	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
@@ -97,19 +140,28 @@ public class VendorController {
 	}
 	
 	@GetMapping("/vendor")
-	public List<VendorRegister> getRegisterVendors() { 
+	public VendorRegister getRegisterVendors(@RequestHeader (name="Authorization") String token) { 
 		LOGGER.info("Inside - VendorController.getRegisterVendor()");
-		try{
-			List<VendorRegister> vendorList = this.vendorRepo.findAll();
-			if(vendorList.isEmpty())
-			{
-				throw new VendorNotFoundException();
+		if (token != null && token.startsWith("Bearer ")) {
+			jwtToken = token.substring(7);
+			
+			try{
+				String userName = jwtUtil.extractUsername(jwtToken);
+//				List<VendorRegister> vendorList = this.vendorRepo.findAll();
+				Optional<VendorRegister> findByUsername = vendorRepo.findByUsername(userName);
+				if(findByUsername.isEmpty())
+				{
+					throw new VendorNotFoundException();
+				}
+				return findByUsername.get();
+			}catch(Exception e){
+				throw new VendorNotFoundException(e.getMessage());
 			}
-			return vendorList;
-		}catch(Exception e){
-			throw new VendorNotFoundException(e.getMessage());
-		}
+		} 
 		
+		else {
+			throw new VendorNotFoundException("Token is not valid");
+		}
 	}
 	
 	@GetMapping("/vendor/{vendorId}")
