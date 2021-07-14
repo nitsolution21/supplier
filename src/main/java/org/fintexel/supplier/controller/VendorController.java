@@ -77,41 +77,7 @@ public class VendorController {
 
 	@Autowired
 	private SupContractRepo supContractRepo;
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	@Autowired
 	private JwtUtil jwtUtil;
 
@@ -119,9 +85,9 @@ public class VendorController {
 	private SupBankRepo supBankRepo;
 
 	private String jwtToken;
-	
+
 	@Autowired
-	SupDepartmentRepo supDepartmentRepo; 
+	SupDepartmentRepo supDepartmentRepo;
 
 	@PostMapping("/vendor")
 	public String postRegisterVendor(@RequestBody VendorRegister vendorReg) {
@@ -269,20 +235,21 @@ public class VendorController {
 		List<SupAddress> findAll = supAddRepo.findAll();
 		return findAll;
 	}
-	
-	//**********     Write By Soumen        **********//
-	//Start
+
+	// ********** Write By Soumen **********//
+	// Start
 	@PostMapping("/vendor/details")
 	public SupDetails postSupplierDetails(@RequestBody SupDetails supDetails) {
 		LOGGER.info("Inside - VendorController.postSupplierDetails()");
 		try {
-			if((fieldValidation.isEmpty(supDetails.getSupplierCompName())) 
-					& (fieldValidation.isEmpty(supDetails.getRegistrationType())) & (fieldValidation.isEmpty(supDetails.getRegristrationNo())) 
-					& (fieldValidation.isEmpty(supDetails.getCostCenter()))			
-					& (fieldValidation.isEmpty(supDetails.getRemarks())) & (fieldValidation.isEmpty(supDetails.getLastlogin()))
-					) {
+			if ((fieldValidation.isEmpty(supDetails.getSupplierCompName()))
+					& (fieldValidation.isEmpty(supDetails.getRegistrationType()))
+					& (fieldValidation.isEmpty(supDetails.getRegristrationNo()))
+					& (fieldValidation.isEmpty(supDetails.getCostCenter()))
+					& (fieldValidation.isEmpty(supDetails.getRemarks()))
+					& (fieldValidation.isEmpty(supDetails.getLastlogin()))) {
 				List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(supDetails.getRegisterId());
-				if(findByRegisterId.size()<1) {
+				if (findByRegisterId.size() < 1) {
 					SupDetails filterSupDetails = new SupDetails();
 					Random rd = new Random();
 					filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
@@ -291,10 +258,10 @@ public class VendorController {
 					filterSupDetails.setCostCenter(supDetails.getCostCenter());
 					filterSupDetails.setRemarks(supDetails.getRemarks());
 					filterSupDetails.setLastlogin(supDetails.getLastlogin());
-					filterSupDetails.setSupplierCode("SU-"+java.time.LocalDate.now()+rd.nextInt(10));
+					filterSupDetails.setSupplierCode("SU-" + java.time.LocalDate.now() + rd.nextInt(10));
 					filterSupDetails.setStatus("1");
 					return supDetailsRepo.save(filterSupDetails);
-				}else {
+				} else {
 					throw new VendorNotFoundException("Vendor Not Exist");
 				}
 
@@ -306,7 +273,7 @@ public class VendorController {
 		}
 
 	}
-	
+
 	@GetMapping("/vendor/details")
 	public List<SupDetails> getSupplierDetails() {
 		List<SupDetails> findAll = supDetailsRepo.findAll();
@@ -329,20 +296,23 @@ public class VendorController {
 		}
 
 	}
-	
-	
+
 	@PutMapping("/vendor/details/{code}")
 	public SupDetails putSupDetails(@RequestBody() SupDetails supDetails, @PathVariable() String code) {
 		LOGGER.info("Inside - VendorController.putSupDetails()");
 		try {
-			if((fieldValidation.isEmpty(supDetails.getSupplierCompName())) 
-					& (fieldValidation.isEmpty(supDetails.getRegistrationType())) & (fieldValidation.isEmpty(supDetails.getRegristrationNo())) 
-					&  (fieldValidation.isEmpty(supDetails.getCostCenter()))			
-					& (fieldValidation.isEmpty(supDetails.getRemarks())) & (fieldValidation.isEmpty(supDetails.getLastlogin()))
-					& (fieldValidation.isEmpty(supDetails.getCreatedBy())) & (fieldValidation.isEmpty(supDetails.getCreatedOn()))
-					& (fieldValidation.isEmpty(supDetails.getUpdatedBy())) & (fieldValidation.isEmpty(supDetails.getUpdatedOn()))) {
-					Optional<SupDetails> findById = supDetailsRepo.findById(code);
-				if(findById.isPresent()) {
+			if ((fieldValidation.isEmpty(supDetails.getSupplierCompName()))
+					& (fieldValidation.isEmpty(supDetails.getRegistrationType()))
+					& (fieldValidation.isEmpty(supDetails.getRegristrationNo()))
+					& (fieldValidation.isEmpty(supDetails.getCostCenter()))
+					& (fieldValidation.isEmpty(supDetails.getRemarks()))
+					& (fieldValidation.isEmpty(supDetails.getLastlogin()))
+					& (fieldValidation.isEmpty(supDetails.getCreatedBy()))
+					& (fieldValidation.isEmpty(supDetails.getCreatedOn()))
+					& (fieldValidation.isEmpty(supDetails.getUpdatedBy()))
+					& (fieldValidation.isEmpty(supDetails.getUpdatedOn()))) {
+				Optional<SupDetails> findById = supDetailsRepo.findById(code);
+				if (findById.isPresent()) {
 					SupDetails filterSupDetails = new SupDetails();
 					filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
 					filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
@@ -353,7 +323,7 @@ public class VendorController {
 					filterSupDetails.setSupplierCode(findById.get().getSupplierCode());
 					filterSupDetails.setStatus("1");
 					return supDetailsRepo.save(filterSupDetails);
-				}else {
+				} else {
 					throw new VendorNotFoundException("Vendor Not Exist");
 				}
 
@@ -364,7 +334,7 @@ public class VendorController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
-	
+
 	@DeleteMapping("/vendor/details/{code}")
 	public String deleteSupDetails(@PathVariable() String code) {
 		LOGGER.info("Inside - VendorController.deleteSupDetails()");
@@ -386,36 +356,100 @@ public class VendorController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-		@PostMapping("/vendor/address")
-		public SupAddress postAddressVendor(@RequestBody SupAddress address) {
-			
-			try {
-				if( 
-					(fieldValidation.isEmpty(address.getSupplierCode())) 
+
+	@PostMapping("/vendor/address")
+	public SupAddress postAddressVendor(@RequestBody SupAddress address) {
+
+		try {
+			if ((fieldValidation.isEmpty(address.getSupplierCode()))
 					& (fieldValidation.isEmpty(address.getAddressType()))
-					& (fieldValidation.isEmpty(address.getAddress2())) 
-					& (fieldValidation.isEmpty(address.getPostalCode())) 
-					& (fieldValidation.isEmpty(address.getCity()))
-					& (fieldValidation.isEmpty(address.getCountry()))
-					& (fieldValidation.isEmpty(address.getRegion()))
+					& (fieldValidation.isEmpty(address.getAddress2()))
+					& (fieldValidation.isEmpty(address.getPostalCode())) & (fieldValidation.isEmpty(address.getCity()))
+					& (fieldValidation.isEmpty(address.getCountry())) & (fieldValidation.isEmpty(address.getRegion()))
 					& (fieldValidation.isEmpty(address.getStatus()))
 					& (fieldValidation.isEmpty(address.getAddressProof()))
-					& (fieldValidation.isEmpty(address.getAddressProofPath()))
-					) {
-					SupAddress filterAddressUp = new SupAddress();
+					& (fieldValidation.isEmpty(address.getAddressProofPath()))) {
+				SupAddress filterAddressUp = new SupAddress();
+				filterAddressUp.setSupplierCode(address.getSupplierCode());
+				filterAddressUp.setAddressType(address.getAddressType());
+				filterAddressUp.setAddress1(address.getAddress1());
+				filterAddressUp.setAddress2(address.getAddress2());
+				filterAddressUp.setPostalCode(address.getPostalCode());
+				filterAddressUp.setCity(address.getCity());
+				filterAddressUp.setCountry(address.getCountry());
+				filterAddressUp.setRegion(address.getRegion());
+				filterAddressUp.setStatus(address.getStatus());
+				filterAddressUp.setAddressProof(address.getAddressProof());
+				filterAddressUp.setAddressProofPath(address.getAddressProofPath());
+				SupAddress save = this.supAddRepo.save(filterAddressUp);
+				return save;
+			} else {
+				throw new VendorNotFoundException("Validation error");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+
+	}
+
+	@GetMapping("/vendor/address/{code}")
+	public List<SupAddress> getVendorAddress(@PathVariable() String code) {
+		LOGGER.info("Inside - VendorController.getVendorAddress()");
+		try {
+			List<SupAddress> vendorAddress = this.supAddRepo.findBySupplierCode(code);
+
+			if (vendorAddress.isEmpty()) {
+				throw new VendorNotFoundException("Vendor Not Exist");
+			} else {
+				return vendorAddress;
+			}
+
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+
+	}
+
+	@GetMapping("/vendor/address/{addressId}")
+	public Optional<SupAddress> getVendorsAddress(@PathVariable() long addressId) {
+
+		LOGGER.info("Inside - VendorController.getVendorsAddress()");
+
+		try {
+			Optional<SupAddress> findById = this.supAddRepo.findById(addressId);
+			LOGGER.info("Inside - VendorController.getVendorsAddress() - " + findById);
+
+			if (!findById.isPresent()) {
+				throw new VendorNotFoundException("Vendor Address Not Found");
+			} else {
+				return findById;
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+
+	}
+
+	@PutMapping("/vendor/address/{addressId}")
+	public SupAddress putVendorAddress(@PathVariable("addressId") long addressId, @RequestBody SupAddress address) {
+		LOGGER.info("Inside - VendorController.putVendorAddress()");
+
+		try {
+			Optional<SupAddress> findById = this.supAddRepo.findById(addressId);
+			if (!findById.isPresent()) {
+				throw new VendorNotFoundException("Vendor Address Not Available");
+			} else {
+				if ((fieldValidation.isEmpty(address.getSupplierCode()))
+						& (fieldValidation.isEmpty(address.getAddressType()))
+						& (fieldValidation.isEmpty(address.getAddress2()))
+						& (fieldValidation.isEmpty(address.getPostalCode()))
+						& (fieldValidation.isEmpty(address.getCity())) & (fieldValidation.isEmpty(address.getCountry()))
+						& (fieldValidation.isEmpty(address.getRegion()))
+						& (fieldValidation.isEmpty(address.getStatus()))
+						& (fieldValidation.isEmpty(address.getAddressProof()))
+						& (fieldValidation.isEmpty(address.getAddressProofPath()))) {
+					SupAddress filterAddressUp = findById.get();
+
 					filterAddressUp.setSupplierCode(address.getSupplierCode());
 					filterAddressUp.setAddressType(address.getAddressType());
 					filterAddressUp.setAddress1(address.getAddress1());
@@ -427,240 +461,129 @@ public class VendorController {
 					filterAddressUp.setStatus(address.getStatus());
 					filterAddressUp.setAddressProof(address.getAddressProof());
 					filterAddressUp.setAddressProofPath(address.getAddressProofPath());
-				SupAddress save = this.supAddRepo.save(filterAddressUp);
-				return save;
-				}else {
-						throw new VendorNotFoundException("Validation error");
-				}
-			}catch(Exception e){
-				throw new VendorNotFoundException(e.getMessage());
-			}
-			
-		}
-			
-		@GetMapping("/vendor/address/{code}")
-		public List<SupAddress> getVendorAddress(@PathVariable() String code){
-			LOGGER.info("Inside - VendorController.getVendorAddress()");
-			try {
-				List<SupAddress> vendorAddress = this.supAddRepo.findBySupplierCode(code);
-				
-				if(vendorAddress.isEmpty()) {
-					throw new VendorNotFoundException("Vendor Not Exist");
-				}else {
-					return vendorAddress;
-				}
-				
-			} catch (Exception e) {
-				throw new VendorNotFoundException(e.getMessage());
-			}
-			
-		}
-		
-		@GetMapping("/vendor/address/{addressId}")
-		public Optional<SupAddress> getVendorsAddress(@PathVariable() long addressId){
-			
-			LOGGER.info("Inside - VendorController.getVendorsAddress()");
-			
-			try {
-				Optional<SupAddress> findById= this.supAddRepo.findById(addressId);
-				LOGGER.info("Inside - VendorController.getVendorsAddress() - " +findById);
-				
-				if(!findById.isPresent()) {
-					throw new VendorNotFoundException("Vendor Address Not Found");	
-				}else {
-					return findById;
-				}
-			} catch (Exception e) {
-				throw new VendorNotFoundException(e.getMessage());
-			}
-			
-		}
-		
-		@PutMapping("/vendor/address/{addressId}")
-		public SupAddress putVendorAddress(@PathVariable("addressId") long addressId,@RequestBody SupAddress address) {
-			LOGGER.info("Inside - VendorController.putVendorAddress()");
-			
-			try {
-				Optional<SupAddress> findById= this.supAddRepo.findById(addressId);
-				if(!findById.isPresent()) {
-					throw new VendorNotFoundException("Vendor Address Not Available");
-				}else {
-					if( 
-							(fieldValidation.isEmpty(address.getSupplierCode())) 
-							& (fieldValidation.isEmpty(address.getAddressType()))
-							& (fieldValidation.isEmpty(address.getAddress2())) 
-							& (fieldValidation.isEmpty(address.getPostalCode())) 
-							& (fieldValidation.isEmpty(address.getCity()))
-							& (fieldValidation.isEmpty(address.getCountry()))
-							& (fieldValidation.isEmpty(address.getRegion()))
-							& (fieldValidation.isEmpty(address.getStatus()))
-							& (fieldValidation.isEmpty(address.getAddressProof()))
-							& (fieldValidation.isEmpty(address.getAddressProofPath()))
-						) {
-						SupAddress filterAddressUp = findById.get();
-						
-						filterAddressUp.setSupplierCode(address.getSupplierCode());
-						filterAddressUp.setAddressType(address.getAddressType());
-						filterAddressUp.setAddress1(address.getAddress1());
-						filterAddressUp.setAddress2(address.getAddress2());
-						filterAddressUp.setPostalCode(address.getPostalCode());
-						filterAddressUp.setCity(address.getCity());
-						filterAddressUp.setCountry(address.getCountry());
-						filterAddressUp.setRegion(address.getRegion());
-						filterAddressUp.setStatus(address.getStatus());
-						filterAddressUp.setAddressProof(address.getAddressProof());
-						filterAddressUp.setAddressProofPath(address.getAddressProofPath());
-						
-						
-						filterAddressUp.setAddressId(addressId);
-					return this.supAddRepo.save(filterAddressUp);
-				}else {
-					throw new VendorNotFoundException("Validation error");
-					}
-				}
-			} catch (Exception e) {
-				throw new VendorNotFoundException(e.getMessage());
-			}
-		}
 
-		@DeleteMapping("/vendor/address/{addressId}")
-		public Object deleteVendorAddress(@PathVariable("addressId") long addressId) {
-			LOGGER.info("Inside - VendorController.deleteVendorAddress()");
-			try {
-				Optional<SupAddress> findById = this.supAddRepo.findById(addressId);
-				if(!findById.isPresent()) {
-					throw new VendorNotFoundException("Vendor Address Does not exist");
-				}else {
-					if(findById.get().getStatus().equals("0")) {
-						throw new VendorNotFoundException("Already Deleted");
-					}else {
-						SupAddress supAddress = findById.get();
-						supAddress.setStatus("0");
-						this.supAddRepo.save(supAddress);
-						return "Successfully Deleted";
-					}
+					filterAddressUp.setAddressId(addressId);
+					return this.supAddRepo.save(filterAddressUp);
+				} else {
+					throw new VendorNotFoundException("Validation error");
 				}
-			} catch (Exception e) {
-				throw new VendorNotFoundException(e.getMessage());
 			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
 		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		@PostMapping("/vendor/contact")
-		public SupContract postVendorContact(@RequestBody() SupContract contact) {
-			LOGGER.info("Inside - VendorController.postVendorContact()");
-			try {
-				if(
-						(fieldValidation.isEmpty(contact.getSupplierCode())) 
-						& (fieldValidation.isEmpty(contact.getBankId()))
-						& (fieldValidation.isEmpty(contact.getContractType()))
-						& (fieldValidation.isEmpty(contact.getContractTerms()))
-						& (fieldValidation.isEmpty(contact.getContractProof()))
-						& (fieldValidation.isEmpty(contact.getContractLocation()))
-						) {
-					SupContract filterSupContract=new SupContract();
+	}
+
+	@DeleteMapping("/vendor/address/{addressId}")
+	public Object deleteVendorAddress(@PathVariable("addressId") long addressId) {
+		LOGGER.info("Inside - VendorController.deleteVendorAddress()");
+		try {
+			Optional<SupAddress> findById = this.supAddRepo.findById(addressId);
+			if (!findById.isPresent()) {
+				throw new VendorNotFoundException("Vendor Address Does not exist");
+			} else {
+				if (findById.get().getStatus().equals("0")) {
+					throw new VendorNotFoundException("Already Deleted");
+				} else {
+					SupAddress supAddress = findById.get();
+					supAddress.setStatus("0");
+					this.supAddRepo.save(supAddress);
+					return "Successfully Deleted";
+				}
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+
+	@PostMapping("/vendor/contact")
+	public SupContract postVendorContact(@RequestBody() SupContract contact) {
+		LOGGER.info("Inside - VendorController.postVendorContact()");
+		try {
+			if ((fieldValidation.isEmpty(contact.getSupplierCode())) & (fieldValidation.isEmpty(contact.getBankId()))
+					& (fieldValidation.isEmpty(contact.getContractType()))
+					& (fieldValidation.isEmpty(contact.getContractTerms()))
+					& (fieldValidation.isEmpty(contact.getContractProof()))
+					& (fieldValidation.isEmpty(contact.getContractLocation()))) {
+				SupContract filterSupContract = new SupContract();
+				filterSupContract.setSupplierCode(contact.getSupplierCode());
+				filterSupContract.setBankId(contact.getBankId());
+				filterSupContract.setContractType(contact.getContractType());
+				filterSupContract.setContractTerms(contact.getContractTerms());
+				filterSupContract.setContractProof(contact.getContractProof());
+				filterSupContract.setContractLocation(contact.getContractLocation());
+				return supContractRepo.save(filterSupContract);
+			} else {
+				throw new VendorNotFoundException("Valitation Error");
+			}
+
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+
+	@GetMapping("/vendor/contact/{code}")
+	public List<SupContract> getSupContracts(@PathVariable() String code) {
+		LOGGER.info("Inside - VendorController.getSupContracts()");
+		try {
+			List<SupContract> findBySupplierCode = supContractRepo.findBySupplierCode(code);
+			if (findBySupplierCode.isEmpty()) {
+				return findBySupplierCode;
+			} else {
+				throw new VendorNotFoundException("Vendor Contact Does not exist");
+			}
+
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+
+	@GetMapping("/vendor/contact/{id}")
+	public SupContract getSupContracts(@PathVariable() Long id) {
+		LOGGER.info("Inside - VendorController.getSupContracts()" + id);
+		try {
+			Optional<SupContract> findById = supContractRepo.findById(id);
+			if (findById.isPresent()) {
+				return findById.get();
+			} else {
+				throw new VendorNotFoundException("Vendor Contact Does not exist");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+
+	@PutMapping("/vendor/contact/{id}")
+	public SupContract putSupContract(@PathVariable() Long id, @RequestBody SupContract contact) {
+		LOGGER.info("Inside - VendorController.putSupContract()" + id);
+		try {
+			if ((fieldValidation.isEmpty(contact.getSupplierCode())) & (fieldValidation.isEmpty(contact.getBankId()))
+					& (fieldValidation.isEmpty(contact.getContractType()))
+					& (fieldValidation.isEmpty(contact.getContractTerms()))
+					& (fieldValidation.isEmpty(contact.getContractProof()))
+					& (fieldValidation.isEmpty(contact.getContractLocation()))) {
+
+				Optional<SupContract> findById = supContractRepo.findById(id);
+				if (findById.isPresent()) {
+					SupContract filterSupContract = new SupContract();
 					filterSupContract.setSupplierCode(contact.getSupplierCode());
 					filterSupContract.setBankId(contact.getBankId());
 					filterSupContract.setContractType(contact.getContractType());
 					filterSupContract.setContractTerms(contact.getContractTerms());
 					filterSupContract.setContractProof(contact.getContractProof());
 					filterSupContract.setContractLocation(contact.getContractLocation());
+					filterSupContract.setContractId(id);
 					return supContractRepo.save(filterSupContract);
-				}else {
-					throw new VendorNotFoundException("Valitation Error");
-				}
-				
-			}catch (Exception e) {
-				throw new VendorNotFoundException(e.getMessage());
-			}
-		}
-		
-		
-		
-		@GetMapping("/vendor/contact/{code}")
-		public List<SupContract> getSupContracts(@PathVariable() String code){
-			LOGGER.info("Inside - VendorController.getSupContracts()");
-			try {
-				List<SupContract> findBySupplierCode = supContractRepo.findBySupplierCode(code);
-				if(findBySupplierCode.isEmpty()) {
-					return findBySupplierCode;
-				}else {
+				} else {
 					throw new VendorNotFoundException("Vendor Contact Does not exist");
 				}
-				
-			}catch (Exception e) {
-				throw new VendorNotFoundException(e.getMessage());
+			} else {
+				throw new VendorNotFoundException("Valitation Error");
 			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
 		}
-		
-		
-		
-		@GetMapping("/vendor/contact/{id}")
-		public SupContract getSupContracts(@PathVariable() Long id) {
-			LOGGER.info("Inside - VendorController.getSupContracts()" + id);
-			try {
-				Optional<SupContract> findById = supContractRepo.findById(id);
-				if(findById.isPresent()) {
-					return findById.get();
-				}else {
-					throw new VendorNotFoundException("Vendor Contact Does not exist");
-				}
-			}catch (Exception e) {
-				throw new VendorNotFoundException(e.getMessage());
-			}
-		}
-		
-		
-		@PutMapping("/vendor/contact/{id}")
-		public SupContract putSupContract(@PathVariable() Long id,@RequestBody SupContract contact) {
-			LOGGER.info("Inside - VendorController.putSupContract()" + id);
-			try {
-				if(
-						(fieldValidation.isEmpty(contact.getSupplierCode())) 
-						& (fieldValidation.isEmpty(contact.getBankId()))
-						& (fieldValidation.isEmpty(contact.getContractType()))
-						& (fieldValidation.isEmpty(contact.getContractTerms()))
-						& (fieldValidation.isEmpty(contact.getContractProof()))
-						& (fieldValidation.isEmpty(contact.getContractLocation()))
-						) {
-					
-					Optional<SupContract> findById = supContractRepo.findById(id);
-					if(findById.isPresent()) {
-						SupContract filterSupContract=new SupContract();
-						filterSupContract.setSupplierCode(contact.getSupplierCode());
-						filterSupContract.setBankId(contact.getBankId());
-						filterSupContract.setContractType(contact.getContractType());
-						filterSupContract.setContractTerms(contact.getContractTerms());
-						filterSupContract.setContractProof(contact.getContractProof());
-						filterSupContract.setContractLocation(contact.getContractLocation());
-						filterSupContract.setContractId(id);
-						return supContractRepo.save(filterSupContract);
-					}else {
-						throw new VendorNotFoundException("Vendor Contact Does not exist");
-					}
-				}else {
-					throw new VendorNotFoundException("Valitation Error");
-				}
-			}catch (Exception e) {
-				throw new VendorNotFoundException(e.getMessage());
-			}
-		}
-		
-		
-		
-		
+	}
+
 //		@DeleteMapping("/contact/{id}")
 //		public SupContract deleteSupContract(@PathVariable() Long id) {
 //			LOGGER.info("Inside - VendorController.deleteSupContract()");
@@ -677,18 +600,21 @@ public class VendorController {
 //			}
 //		}
 
-	//**********     Write By Soumen        **********//
-		//End
-	
+	// ********** Write By Soumen **********//
+	// End
+
 	@PostMapping("/vendor/bank")
 	public SupBank postBank(@RequestBody SupBank supBank) {
 		try {
-			if (fieldValidation.isEmpty(supBank.getAccountHolder()) && fieldValidation.isEmpty(supBank.getBankAccountNo())
+			if (fieldValidation.isEmpty(supBank.getAccountHolder())
+					&& fieldValidation.isEmpty(supBank.getBankAccountNo())
 					&& fieldValidation.isEmpty(supBank.getBankBic()) && fieldValidation.isEmpty(supBank.getBankBranch())
-					&& fieldValidation.isEmpty(supBank.getBankEvidence()) && fieldValidation.isEmpty(supBank.getBankName())
-					&& fieldValidation.isEmpty(supBank.getChequeNo()) && fieldValidation.isEmpty(supBank.getCountry())
-					&& fieldValidation.isEmpty(supBank.getCurrency()) && fieldValidation.isEmpty(supBank.getEvidencePath())
-					&& fieldValidation.isEmpty(supBank.getIfscCode()) && fieldValidation.isEmpty(supBank.getSupplierCode())
+					&& fieldValidation.isEmpty(supBank.getBankEvidence())
+					&& fieldValidation.isEmpty(supBank.getBankName()) && fieldValidation.isEmpty(supBank.getChequeNo())
+					&& fieldValidation.isEmpty(supBank.getCountry()) && fieldValidation.isEmpty(supBank.getCurrency())
+					&& fieldValidation.isEmpty(supBank.getEvidencePath())
+					&& fieldValidation.isEmpty(supBank.getIfscCode())
+					&& fieldValidation.isEmpty(supBank.getSupplierCode())
 					&& fieldValidation.isEmpty(supBank.getSwiftCode())
 					&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())) {
 				SupBank postData = this.supBankRepo.save(supBank);
@@ -699,7 +625,7 @@ public class VendorController {
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
-		
+
 	}
 
 	@GetMapping("/vendor/bank")
@@ -776,238 +702,30 @@ public class VendorController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	@GetMapping("/vendor/department")
 	public List<SupDepartment> getSupDepartment(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - VendorController.getSupDepartment()");
 		if (token != null && token.startsWith("Bearer ")) {
 			jwtToken = token.substring(7);
-	
+
 			try {
 				String userName = jwtUtil.extractUsername(jwtToken);
 				Optional<VendorRegister> findByUsername = vendorRepo.findByUsername(userName);
 				if (!findByUsername.isPresent()) {
 					throw new VendorNotFoundException("Vendor not found");
-				}
-				else {
-					List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(findByUsername.get().getRegisterId());
+				} else {
+					List<SupDetails> findByRegisterId = supDetailsRepo
+							.findByRegisterId(findByUsername.get().getRegisterId());
 					if (findByRegisterId.size() > 1) {
-						List<SupDepartment> supDepartment = supDepartmentRepo.findBySupplierCode(findByRegisterId.get(0).getSupplierCode());
+						List<SupDepartment> supDepartment = supDepartmentRepo
+								.findBySupplierCode(findByRegisterId.get(0).getSupplierCode());
 						if (!supDepartment.isEmpty()) {
 							return supDepartment;
-						} 
-						else {
+						} else {
 							throw new VendorNotFoundException("Vendor department not present");
 						}
-					} 
-					else {
+					} else {
 						throw new VendorNotFoundException("Suplieer details not present");
 					}
 				}
@@ -1015,50 +733,51 @@ public class VendorController {
 				throw new VendorNotFoundException(e.getMessage());
 			}
 		}
-	
+
 		else {
 			throw new VendorNotFoundException("Token is not valid");
 		}
 	}
-	
+
 	@PostMapping("/vendor/department")
 	public SupDepartment addSupDepartment(@RequestBody SupDepartment supDepartment) {
 		try {
-			if (fieldValidation.isEmpty(supDepartment.getSupplierCode()) && fieldValidation.isEmpty(supDepartment.getDepartmentName())
-					&& fieldValidation.isEmpty(supDepartment.getSupplierContact1())  && fieldValidation.isEmpty(supDepartment.getEmail())
+			if (fieldValidation.isEmpty(supDepartment.getSupplierCode())
+					&& fieldValidation.isEmpty(supDepartment.getDepartmentName())
+					&& fieldValidation.isEmpty(supDepartment.getSupplierContact1())
+					&& fieldValidation.isEmpty(supDepartment.getEmail())
 					&& fieldValidation.isEmpty(supDepartment.getPhoneno())) {
-					
-					if (fieldValidation.isEmail(supDepartment.getEmail())) {
-						return supDepartmentRepo.save(supDepartment);
-					} 
-					else {
-						throw new VendorNotFoundException("Email Format Not Match");
-					}
-				} 
-				else {
-					throw new VendorNotFoundException("Validation Error");
+
+				if (fieldValidation.isEmail(supDepartment.getEmail())) {
+					return supDepartmentRepo.save(supDepartment);
+				} else {
+					throw new VendorNotFoundException("Email Format Not Match");
 				}
+			} else {
+				throw new VendorNotFoundException("Validation Error");
+			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
-	
+
 	@PutMapping("/vendor/department/{departmentId}")
-	public SupDepartment updateSupDepartment(@PathVariable long departmentId, @RequestBody SupDepartment supDepartment) {
+	public SupDepartment updateSupDepartment(@PathVariable long departmentId,
+			@RequestBody SupDepartment supDepartment) {
 		Optional<SupDepartment> findById = supDepartmentRepo.findById(departmentId);
 		try {
 			if (!findById.isEmpty()) {
-				if (fieldValidation.isEmpty(supDepartment.getSupplierCode()) && fieldValidation.isEmpty(supDepartment.getDepartmentName())
-						&& fieldValidation.isEmpty(supDepartment.getSupplierContact1())  && fieldValidation.isEmpty(supDepartment.getEmail())
+				if (fieldValidation.isEmpty(supDepartment.getSupplierCode())
+						&& fieldValidation.isEmpty(supDepartment.getDepartmentName())
+						&& fieldValidation.isEmpty(supDepartment.getSupplierContact1())
+						&& fieldValidation.isEmpty(supDepartment.getEmail())
 						&& fieldValidation.isEmpty(supDepartment.getPhoneno())) {
 					if (fieldValidation.isEmail(supDepartment.getEmail())) {
 						return supDepartmentRepo.save(supDepartment);
-					} 
-					else {
+					} else {
 						throw new VendorNotFoundException("Email Format Not Valid");
 					}
-				}
-				else {
+				} else {
 					throw new VendorNotFoundException("Validation Error");
 				}
 			} else {
@@ -1067,9 +786,9 @@ public class VendorController {
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
-		
+
 	}
-	
+
 	@DeleteMapping("/vendor/department/{departmentId}")
 	public Object deleteSupDepartment(@PathVariable long departmentId) {
 		Optional<SupDepartment> findById = supDepartmentRepo.findById(departmentId);
@@ -1077,19 +796,13 @@ public class VendorController {
 			if (!findById.isEmpty()) {
 				supDepartmentRepo.deleteById(departmentId);
 				return "Successfully Deleted";
-			}
-			else {
+			} else {
 				throw new VendorNotFoundException("Department Not Found");
 			}
-			
+
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
-	
-	
-	
-	
-	
 
 }
