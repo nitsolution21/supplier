@@ -429,11 +429,11 @@ public class VendorController {
 				} else {
 					List<SupDetails> registerDetails = supDetailsRepo
 							.findByRegisterId(findByUsername.get().getRegisterId());
-					if (!registerDetails.isEmpty()) {
+					if (registerDetails.size() > 1) {
 						List<SupAddress> vendorAddress = this.supAddRepo
 								.findBySupplierCode(registerDetails.get(0).getSupplierCode());
 
-						if (vendorAddress.isEmpty()) {
+						if (vendorAddress.size() < 1) {
 							throw new VendorNotFoundException("Vendor Not Exist");
 						} else {
 							return vendorAddress;
@@ -579,10 +579,10 @@ public class VendorController {
 				} else {
 					List<SupDetails> registerDetails = supDetailsRepo
 							.findByRegisterId(findByUsername.get().getRegisterId());
-					if (!registerDetails.isEmpty()) {
+					if (registerDetails.size() > 1) {
 						List<SupContract> findBySupplierCode = supContractRepo
 								.findBySupplierCode(registerDetails.get(0).getSupplierCode());
-						if (findBySupplierCode.isEmpty()) {
+						if (findBySupplierCode.size() > 1) {
 							return findBySupplierCode;
 						} else {
 							throw new VendorNotFoundException("Vendor Contact Does not exist");
@@ -785,7 +785,7 @@ public class VendorController {
 					if (findByRegisterId.size() > 1) {
 						List<SupDepartment> supDepartment = supDepartmentRepo
 								.findBySupplierCode(findByRegisterId.get(0).getSupplierCode());
-						if (!supDepartment.isEmpty()) {
+						if (!supDepartment.equals(null)) {
 							return supDepartment;
 						} else {
 							throw new VendorNotFoundException("Vendor department not present");
@@ -831,7 +831,7 @@ public class VendorController {
 			@RequestBody SupDepartment supDepartment) {
 		Optional<SupDepartment> findById = supDepartmentRepo.findById(departmentId);
 		try {
-			if (!findById.isEmpty()) {
+			if (!findById.isPresent()) {
 				if (fieldValidation.isEmpty(supDepartment.getSupplierCode())
 						&& fieldValidation.isEmpty(supDepartment.getDepartmentName())
 						&& fieldValidation.isEmpty(supDepartment.getSupplierContact1())
@@ -858,7 +858,7 @@ public class VendorController {
 	public Object deleteSupDepartment(@PathVariable long departmentId) {
 		Optional<SupDepartment> findById = supDepartmentRepo.findById(departmentId);
 		try {
-			if (!findById.isEmpty()) {
+			if (!findById.isPresent()) {
 				supDepartmentRepo.deleteById(departmentId);
 				return "Successfully Deleted";
 			} else {
