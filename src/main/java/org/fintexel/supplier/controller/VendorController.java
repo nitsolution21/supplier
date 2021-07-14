@@ -275,27 +275,49 @@ public class VendorController {
 	}
 
 	@GetMapping("/vendor/details")
-	public List<SupDetails> getSupplierDetails() {
-		List<SupDetails> findAll = supDetailsRepo.findAll();
-		return findAll;
-	}
-
-	@GetMapping("/vendor/{code}")
-	public SupDetails getSupplierDetails(@PathVariable() String code) {
+	public SupDetails getSupplierDetails(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - VendorController.getSupplierDetails()");
-		try {
-			Optional<SupDetails> findById = supDetailsRepo.findById(code);
-			if (findById.isPresent()) {
-				System.out.println(findById.get());
-				return findById.get();
-			} else {
-				throw new VendorNotFoundException("Vendor Not Exist");
+		if (token != null && token.startsWith("Bearer ")) {
+			jwtToken = token.substring(7);
+			try {
+				String userName = jwtUtil.extractUsername(jwtToken);
+				Optional<VendorRegister> findByUsername = vendorRepo.findByUsername(userName);
+				if (!findByUsername.isPresent()) {
+					throw new VendorNotFoundException("Vendor not found");
+				} else {
+					List<SupDetails> findByRegisterId = supDetailsRepo
+							.findByRegisterId(findByUsername.get().getRegisterId());
+					if (findByRegisterId.size() > 1) {
+						return findByRegisterId.get(0);
+					} else {
+						throw new VendorNotFoundException("Vendor Details Not Found");
+					}
+				}
+				// return findByUsername.get();
+			} catch (Exception e) {
+				throw new VendorNotFoundException(e.getMessage());
 			}
-		} catch (Exception e) {
-			throw new VendorNotFoundException(e.getMessage());
+		} else {
+			throw new VendorNotFoundException("Token is not valid");
 		}
-
 	}
+
+//	@GetMapping("/vendor/{code}")
+//	public SupDetails getSupplierDetails(@PathVariable() String code) {
+//		LOGGER.info("Inside - VendorController.getSupplierDetails()");
+//		try {
+//			Optional<SupDetails> findById = supDetailsRepo.findById(code);
+//			if (findById.isPresent()) {
+//				System.out.println(findById.get());
+//				return findById.get();
+//			} else {
+//				throw new VendorNotFoundException("Vendor Not Exist");
+//			}
+//		} catch (Exception e) {
+//			throw new VendorNotFoundException(e.getMessage());
+//		}
+//
+//	}
 
 	@PutMapping("/vendor/details/{code}")
 	public SupDetails putSupDetails(@RequestBody() SupDetails supDetails, @PathVariable() String code) {
@@ -392,43 +414,64 @@ public class VendorController {
 
 	}
 
-	@GetMapping("/vendor/address/{code}")
-	public List<SupAddress> getVendorAddress(@PathVariable() String code) {
+	@GetMapping("/vendor/address")
+	public List<SupAddress> getVendorAddress(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - VendorController.getVendorAddress()");
-		try {
-			List<SupAddress> vendorAddress = this.supAddRepo.findBySupplierCode(code);
 
-			if (vendorAddress.isEmpty()) {
-				throw new VendorNotFoundException("Vendor Not Exist");
-			} else {
-				return vendorAddress;
+		if (token != null && token.startsWith("Bearer ")) {
+			jwtToken = token.substring(7);
+
+			try {
+				String userName = jwtUtil.extractUsername(jwtToken);
+				Optional<VendorRegister> findByUsername = vendorRepo.findByUsername(userName);
+				if (!findByUsername.isPresent()) {
+					throw new VendorNotFoundException("Vendor not found");
+				} else {
+					List<SupDetails> registerDetails = supDetailsRepo
+							.findByRegisterId(findByUsername.get().getRegisterId());
+					if (!registerDetails.isEmpty()) {
+						List<SupAddress> vendorAddress = this.supAddRepo
+								.findBySupplierCode(registerDetails.get(0).getSupplierCode());
+
+						if (vendorAddress.isEmpty()) {
+							throw new VendorNotFoundException("Vendor Not Exist");
+						} else {
+							return vendorAddress;
+						}
+					} else {
+						throw new VendorNotFoundException("Vendor Details Not Found");
+					}
+				}
+			} catch (Exception e) {
+				throw new VendorNotFoundException(e.getMessage());
 			}
+		}
 
-		} catch (Exception e) {
-			throw new VendorNotFoundException(e.getMessage());
+		else {
+			throw new VendorNotFoundException("Token is not valid");
 		}
 
 	}
 
-	@GetMapping("/vendor/address/{addressId}")
-	public Optional<SupAddress> getVendorsAddress(@PathVariable() long addressId) {
-
-		LOGGER.info("Inside - VendorController.getVendorsAddress()");
-
-		try {
-			Optional<SupAddress> findById = this.supAddRepo.findById(addressId);
-			LOGGER.info("Inside - VendorController.getVendorsAddress() - " + findById);
-
-			if (!findById.isPresent()) {
-				throw new VendorNotFoundException("Vendor Address Not Found");
-			} else {
-				return findById;
-			}
-		} catch (Exception e) {
-			throw new VendorNotFoundException(e.getMessage());
-		}
-
-	}
+//	@GetMapping("/vendor/address/{addressId}")
+//	public Optional<SupAddress> getVendorsAddress(@PathVariable() long addressId) {
+//
+//		LOGGER.info("Inside - VendorController.getVendorsAddress()");
+//
+//		try {
+//			Optional<SupAddress> findById = this.supAddRepo.findById(addressId);
+//			LOGGER.info("Inside - VendorController.getVendorsAddress() - " + findById);
+//
+//			if (!findById.isPresent()) {
+//				throw new VendorNotFoundException("Vendor Address Not Found");
+//			} else {
+//				return findById;
+//			}
+//		} catch (Exception e) {
+//			throw new VendorNotFoundException(e.getMessage());
+//		}
+//
+//	}
 
 	@PutMapping("/vendor/address/{addressId}")
 	public SupAddress putVendorAddress(@PathVariable("addressId") long addressId, @RequestBody SupAddress address) {
@@ -521,36 +564,58 @@ public class VendorController {
 		}
 	}
 
-	@GetMapping("/vendor/contact/{code}")
-	public List<SupContract> getSupContracts(@PathVariable() String code) {
+	@GetMapping("/vendor/contact")
+	public List<SupContract> getSupContracts(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - VendorController.getSupContracts()");
-		try {
-			List<SupContract> findBySupplierCode = supContractRepo.findBySupplierCode(code);
-			if (findBySupplierCode.isEmpty()) {
-				return findBySupplierCode;
-			} else {
-				throw new VendorNotFoundException("Vendor Contact Does not exist");
-			}
 
-		} catch (Exception e) {
-			throw new VendorNotFoundException(e.getMessage());
+		if (token != null && token.startsWith("Bearer ")) {
+			jwtToken = token.substring(7);
+
+			try {
+				String userName = jwtUtil.extractUsername(jwtToken);
+				Optional<VendorRegister> findByUsername = vendorRepo.findByUsername(userName);
+				if (!findByUsername.isPresent()) {
+					throw new VendorNotFoundException("Vendor not found");
+				} else {
+					List<SupDetails> registerDetails = supDetailsRepo
+							.findByRegisterId(findByUsername.get().getRegisterId());
+					if (!registerDetails.isEmpty()) {
+						List<SupContract> findBySupplierCode = supContractRepo
+								.findBySupplierCode(registerDetails.get(0).getSupplierCode());
+						if (findBySupplierCode.isEmpty()) {
+							return findBySupplierCode;
+						} else {
+							throw new VendorNotFoundException("Vendor Contact Does not exist");
+						}
+					} else {
+						throw new VendorNotFoundException("Vendor Details Not Found");
+					}
+				}
+			} catch (Exception e) {
+				throw new VendorNotFoundException(e.getMessage());
+			}
 		}
+
+		else {
+			throw new VendorNotFoundException("Token is not valid");
+		}
+
 	}
 
-	@GetMapping("/vendor/contact/{id}")
-	public SupContract getSupContracts(@PathVariable() Long id) {
-		LOGGER.info("Inside - VendorController.getSupContracts()" + id);
-		try {
-			Optional<SupContract> findById = supContractRepo.findById(id);
-			if (findById.isPresent()) {
-				return findById.get();
-			} else {
-				throw new VendorNotFoundException("Vendor Contact Does not exist");
-			}
-		} catch (Exception e) {
-			throw new VendorNotFoundException(e.getMessage());
-		}
-	}
+//	@GetMapping("/vendor/contact/{id}")
+//	public SupContract getSupContracts(@PathVariable() Long id) {
+//		LOGGER.info("Inside - VendorController.getSupContracts()" + id);
+//		try {
+//			Optional<SupContract> findById = supContractRepo.findById(id);
+//			if (findById.isPresent()) {
+//				return findById.get();
+//			} else {
+//				throw new VendorNotFoundException("Vendor Contact Does not exist");
+//			}
+//		} catch (Exception e) {
+//			throw new VendorNotFoundException(e.getMessage());
+//		}
+//	}
 
 	@PutMapping("/vendor/contact/{id}")
 	public SupContract putSupContract(@PathVariable() Long id, @RequestBody SupContract contact) {
