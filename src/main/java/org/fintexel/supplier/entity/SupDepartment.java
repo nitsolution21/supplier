@@ -13,13 +13,19 @@ public class SupDepartment {
 	
 	@Id
 	@Column(name = "DEPARTMENT_ID")
-	private int departmentId;
+	private long departmentId;
 	
 	@Column(name = "SUPPLIER_CODE")
 	private String supplierCode;
 	
 	@Column(name = "DEPARTMENT_NAME")
 	private String departmentName;
+	
+	@Column(name = "SUPPLIER_CONTACT1")
+	private String supplierContact1;
+	
+	@Column(name = "SUPPLIER_CONTACT2")
+	private String supplierContact2;
 	
 	@Column(name = "EMAIL")
 	private String email;
@@ -42,7 +48,7 @@ public class SupDepartment {
 	@Column(name = "UPDATED_ON")
 	private Date updatedOn;
 	
-	public SupDepartment(int departmentId, String supplierCode, String departmentName, String email, String phoneno,
+	public SupDepartment(long departmentId, String supplierCode, String departmentName, String supplierContact1, String supplierContact2, String email, String phoneno,
 			String alternatePhoneno, int createdBy, Date createdOn, int updatedBy, Date updatedOn) {
 		super();
 		this.departmentId = departmentId;
@@ -55,6 +61,8 @@ public class SupDepartment {
 		this.createdOn = createdOn;
 		this.updatedBy = updatedBy;
 		this.updatedOn = updatedOn;
+		this.supplierContact1 = supplierContact1;
+		this.supplierContact2 = supplierContact2;
 	}
 
 	public SupDepartment() {
@@ -62,11 +70,11 @@ public class SupDepartment {
 		// TODO Auto-generated constructor stub
 	}
 
-	public int getDepartmentId() {
+	public long getDepartmentId() {
 		return departmentId;
 	}
 
-	public void setDepartmentId(int departmentId) {
+	public void setDepartmentId(long departmentId) {
 		this.departmentId = departmentId;
 	}
 
@@ -84,6 +92,22 @@ public class SupDepartment {
 
 	public void setDepartmentName(String departmentName) {
 		this.departmentName = departmentName;
+	}
+	
+	public String getSupplierContact1() {
+		return supplierContact1;
+	}
+
+	public void setSupplierContact1(String supplierContact1) {
+		this.supplierContact1 = supplierContact1;
+	}
+
+	public String getSupplierContact2() {
+		return supplierContact2;
+	}
+
+	public void setSupplierContact2(String supplierContact2) {
+		this.supplierContact2 = supplierContact2;
 	}
 
 	public String getEmail() {
