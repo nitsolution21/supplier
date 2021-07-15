@@ -291,7 +291,7 @@ public class VendorController {
 				} else {
 					List<SupDetails> findByRegisterId = supDetailsRepo
 							.findByRegisterId(findByUsername.get().getRegisterId());
-					if (findByRegisterId.size() > 1) {
+					if (findByRegisterId.size() > 0) {
 						return findByRegisterId.get(0);
 					} else {
 						throw new VendorNotFoundException("Vendor Details Not Found");
@@ -433,7 +433,7 @@ public class VendorController {
 				} else {
 					List<SupDetails> registerDetails = supDetailsRepo
 							.findByRegisterId(findByUsername.get().getRegisterId());
-					if (registerDetails.size() > 1) {
+					if (registerDetails.size() > 0) {
 						List<SupAddress> vendorAddress = this.supAddRepo
 								.findBySupplierCode(registerDetails.get(0).getSupplierCode());
 
@@ -583,10 +583,10 @@ public class VendorController {
 				} else {
 					List<SupDetails> registerDetails = supDetailsRepo
 							.findByRegisterId(findByUsername.get().getRegisterId());
-					if (registerDetails.size() > 1) {
+					if (registerDetails.size() > 0) {
 						List<SupContract> findBySupplierCode = supContractRepo
 								.findBySupplierCode(registerDetails.get(0).getSupplierCode());
-						if (findBySupplierCode.size() > 1) {
+						if (findBySupplierCode.size() > 0) {
 							return findBySupplierCode;
 						} else {
 							throw new VendorNotFoundException("Vendor Contact Does not exist");
@@ -712,7 +712,7 @@ public class VendorController {
 				} else {
 					List<SupDetails> findByRegisterId = supDetailsRepo
 							.findByRegisterId(findByUsername.get().getRegisterId());
-					if (findByRegisterId.size() > 1) {
+					if (findByRegisterId.size() > 0) {
 						SupDetails supDetails = findByRegisterId.get(0);
 						if (!supDetails.equals(null)) {
 							List<SupBank> supBankDetails = supBankRepo.findBySupplierCode(supDetails.getSupplierCode());
@@ -786,7 +786,7 @@ public class VendorController {
 				} else {
 					List<SupDetails> findByRegisterId = supDetailsRepo
 							.findByRegisterId(findByUsername.get().getRegisterId());
-					if (findByRegisterId.size() > 1) {
+					if (findByRegisterId.size() > 0) {
 						List<SupDepartment> supDepartment = supDepartmentRepo
 								.findBySupplierCode(findByRegisterId.get(0).getSupplierCode());
 						if (!supDepartment.equals(null)) {
