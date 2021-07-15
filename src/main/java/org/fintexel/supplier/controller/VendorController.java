@@ -329,20 +329,18 @@ public class VendorController {
 		try {
 			if ((fieldValidation.isEmpty(supDetails.getSupplierCompName()))
 					& (fieldValidation.isEmpty(supDetails.getRegistrationType()))
+					& (fieldValidation.isEmpty(supDetails.getRegisterId()))
 					& (fieldValidation.isEmpty(supDetails.getRegristrationNo()))
 					& (fieldValidation.isEmpty(supDetails.getCostCenter()))
 					& (fieldValidation.isEmpty(supDetails.getRemarks()))
-					& (fieldValidation.isEmpty(supDetails.getLastlogin()))
-					& (fieldValidation.isEmpty(supDetails.getCreatedBy()))
-					& (fieldValidation.isEmpty(supDetails.getCreatedOn()))
-					& (fieldValidation.isEmpty(supDetails.getUpdatedBy()))
-					& (fieldValidation.isEmpty(supDetails.getUpdatedOn()))) {
+					& (fieldValidation.isEmpty(supDetails.getLastlogin()))) {
 				Optional<SupDetails> findById = supDetailsRepo.findById(code);
 				if (findById.isPresent()) {
 					SupDetails filterSupDetails = new SupDetails();
 					filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
 					filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
 					filterSupDetails.setRegristrationNo(supDetails.getRegristrationNo());
+					filterSupDetails.setRegisterId(supDetails.getRegisterId());
 					filterSupDetails.setCostCenter(supDetails.getCostCenter());
 					filterSupDetails.setRemarks(supDetails.getRemarks());
 					filterSupDetails.setLastlogin(supDetails.getLastlogin());
@@ -389,22 +387,29 @@ public class VendorController {
 		try {
 			if ((fieldValidation.isEmpty(address.getSupplierCode()))
 					& (fieldValidation.isEmpty(address.getAddressType()))
-					& (fieldValidation.isEmpty(address.getAddress2()))
-					& (fieldValidation.isEmpty(address.getPostalCode())) & (fieldValidation.isEmpty(address.getCity()))
-					& (fieldValidation.isEmpty(address.getCountry())) & (fieldValidation.isEmpty(address.getRegion()))
-					& (fieldValidation.isEmpty(address.getStatus()))
+					& (fieldValidation.isEmpty(address.getAddress1()))
+					& (fieldValidation.isEmpty(address.getPostalCode())) 
+					& (fieldValidation.isEmpty(address.getCity()))
+					& (fieldValidation.isEmpty(address.getCountry())) 
+					& (fieldValidation.isEmpty(address.getRegion()))
 					& (fieldValidation.isEmpty(address.getAddressProof()))
 					& (fieldValidation.isEmpty(address.getAddressProofPath()))) {
 				SupAddress filterAddressUp = new SupAddress();
 				filterAddressUp.setSupplierCode(address.getSupplierCode());
 				filterAddressUp.setAddressType(address.getAddressType());
 				filterAddressUp.setAddress1(address.getAddress1());
-				filterAddressUp.setAddress2(address.getAddress2());
+				try {
+					if(fieldValidation.isEmpty(address.getAddress2())) {
+						filterAddressUp.setAddress2(address.getAddress2());
+					}
+				}catch(Exception e) {
+					
+				}
 				filterAddressUp.setPostalCode(address.getPostalCode());
 				filterAddressUp.setCity(address.getCity());
 				filterAddressUp.setCountry(address.getCountry());
 				filterAddressUp.setRegion(address.getRegion());
-				filterAddressUp.setStatus(address.getStatus());
+				filterAddressUp.setStatus("1");
 				filterAddressUp.setAddressProof(address.getAddressProof());
 				filterAddressUp.setAddressProofPath(address.getAddressProofPath());
 				SupAddress save = this.supAddRepo.save(filterAddressUp);
@@ -488,11 +493,11 @@ public class VendorController {
 			} else {
 				if ((fieldValidation.isEmpty(address.getSupplierCode()))
 						& (fieldValidation.isEmpty(address.getAddressType()))
-						& (fieldValidation.isEmpty(address.getAddress2()))
+						& (fieldValidation.isEmpty(address.getAddress1()))
 						& (fieldValidation.isEmpty(address.getPostalCode()))
-						& (fieldValidation.isEmpty(address.getCity())) & (fieldValidation.isEmpty(address.getCountry()))
+						& (fieldValidation.isEmpty(address.getCity())) & 
+						(fieldValidation.isEmpty(address.getCountry()))
 						& (fieldValidation.isEmpty(address.getRegion()))
-						& (fieldValidation.isEmpty(address.getStatus()))
 						& (fieldValidation.isEmpty(address.getAddressProof()))
 						& (fieldValidation.isEmpty(address.getAddressProofPath()))) {
 					SupAddress filterAddressUp = findById.get();
@@ -500,12 +505,18 @@ public class VendorController {
 					filterAddressUp.setSupplierCode(address.getSupplierCode());
 					filterAddressUp.setAddressType(address.getAddressType());
 					filterAddressUp.setAddress1(address.getAddress1());
-					filterAddressUp.setAddress2(address.getAddress2());
+					try {
+						if(fieldValidation.isEmpty(address.getAddress2())) {
+							filterAddressUp.setAddress2(address.getAddress2());
+						}
+					}catch(Exception e) {
+						
+					}
 					filterAddressUp.setPostalCode(address.getPostalCode());
 					filterAddressUp.setCity(address.getCity());
 					filterAddressUp.setCountry(address.getCountry());
 					filterAddressUp.setRegion(address.getRegion());
-					filterAddressUp.setStatus(address.getStatus());
+					filterAddressUp.setStatus("1");
 					filterAddressUp.setAddressProof(address.getAddressProof());
 					filterAddressUp.setAddressProofPath(address.getAddressProofPath());
 
@@ -677,10 +688,13 @@ public class VendorController {
 		try {
 			if (fieldValidation.isEmpty(supBank.getAccountHolder())
 					&& fieldValidation.isEmpty(supBank.getBankAccountNo())
-					&& fieldValidation.isEmpty(supBank.getBankBic()) && fieldValidation.isEmpty(supBank.getBankBranch())
+					&& fieldValidation.isEmpty(supBank.getBankBic()) 
+					&& fieldValidation.isEmpty(supBank.getBankBranch())
 					&& fieldValidation.isEmpty(supBank.getBankEvidence())
-					&& fieldValidation.isEmpty(supBank.getBankName()) && fieldValidation.isEmpty(supBank.getChequeNo())
-					&& fieldValidation.isEmpty(supBank.getCountry()) && fieldValidation.isEmpty(supBank.getCurrency())
+					&& fieldValidation.isEmpty(supBank.getBankName()) 
+					&& fieldValidation.isEmpty(supBank.getChequeNo())
+					&& fieldValidation.isEmpty(supBank.getCountry()) 
+					&& fieldValidation.isEmpty(supBank.getCurrency())
 					&& fieldValidation.isEmpty(supBank.getEvidencePath())
 					&& fieldValidation.isEmpty(supBank.getIfscCode())
 					&& fieldValidation.isEmpty(supBank.getSupplierCode())
