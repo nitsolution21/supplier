@@ -180,11 +180,11 @@ public class VendorController {
 			} else {
 				if ((fieldValidation.isEmail(vendorReg.getEmail()))
 						& (fieldValidation.isEmpty(vendorReg.getSupplierCompName()))
-						& (vendorReg.getRegisterId() == vendorId)) {
+						) {
 					VendorRegister vr = findById.get();
 					vr.setEmail(vendorReg.getEmail());
 					vr.setSupplierCompName(vendorReg.getSupplierCompName());
-					vr.setStatus(vendorReg.getStatus());
+					vr.setStatus("1");
 					return this.vendorRepo.save(vr);
 				} else {
 					throw new VendorNotFoundException("Validation error");
@@ -246,6 +246,7 @@ public class VendorController {
 		try {
 			if ((fieldValidation.isEmpty(supDetails.getSupplierCompName()))
 					& (fieldValidation.isEmpty(supDetails.getRegistrationType()))
+					& (fieldValidation.isEmpty(supDetails.getRegisterId()))
 					& (fieldValidation.isEmpty(supDetails.getRegristrationNo()))
 					& (fieldValidation.isEmpty(supDetails.getCostCenter()))
 					& (fieldValidation.isEmpty(supDetails.getRemarks()))
@@ -255,6 +256,7 @@ public class VendorController {
 					SupDetails filterSupDetails = new SupDetails();
 					Random rd = new Random();
 					filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
+					filterSupDetails.setRegisterId(supDetails.getRegisterId());
 					filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
 					filterSupDetails.setRegristrationNo(supDetails.getRegristrationNo());
 					filterSupDetails.setCostCenter(supDetails.getCostCenter());
