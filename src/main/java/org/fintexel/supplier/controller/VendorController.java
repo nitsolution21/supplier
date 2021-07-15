@@ -664,21 +664,21 @@ public class VendorController {
 		}
 	}
 
-//		@DeleteMapping("/contact/{id}")
-//		public SupContract deleteSupContract(@PathVariable() Long id) {
-//			LOGGER.info("Inside - VendorController.deleteSupContract()");
-//			try {
-//				Optional<SupContract> findById = supContractRepo.findById(id);
-//				if(findById.isPresent()) {
-//					SupContract supContract = findById.get();
-//					supContract.getS
-//				}else {
-//					throw new VendorNotFoundException("Vendor Contact Does not exist");
-//				}
-//			}catch (Exception e) {
-//				throw new VendorNotFoundException(e.getMessage());
-//			}
-//		}
+	@DeleteMapping("/vendor/contact/{id}")
+	public Object deleteSupContract(@PathVariable() Long id) {
+		LOGGER.info("Inside - VendorController.deleteSupContract()");
+		try {
+			Optional<SupContract> findById = supContractRepo.findById(id);
+			if(findById.isPresent()) {
+				supContractRepo.deleteById(id);
+				return "Deleted Successfuly";
+			}else {
+				throw new VendorNotFoundException("Vendor Contact Does not exist");
+			}
+		}catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
 
 	// ********** Write By Soumen **********//
 	// End
@@ -700,8 +700,28 @@ public class VendorController {
 					&& fieldValidation.isEmpty(supBank.getSupplierCode())
 					&& fieldValidation.isEmpty(supBank.getSwiftCode())
 					&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())) {
-				SupBank postData = this.supBankRepo.save(supBank);
-				return postData;
+				SupBank bank = new SupBank();
+				bank.setAccountHolder(supBank.getAccountHolder());
+				bank.setBankAccountNo(supBank.getBankAccountNo());
+				bank.setBankBic(supBank.getBankBic());
+				bank.setBankBranch(supBank.getBankBranch());
+				bank.setBankEvidence(supBank.getBankEvidence());
+				bank.setBankName(supBank.getBankName());
+				bank.setChequeNo(supBank.getChequeNo());
+				bank.setCountry(supBank.getCountry());
+				bank.setCurrency(supBank.getCurrency());
+				bank.setEvidencePath(supBank.getEvidencePath());
+				bank.setIfscCode(supBank.getIfscCode());
+				bank.setSupplierCode(supBank.getSupplierCode());
+				bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
+				bank.setSwiftCode(supBank.getSwiftCode());
+				Optional<SupBank> findBySwiftCode = supBankRepo.findBySwiftCode(supBank.getSwiftCode());
+				if (findBySwiftCode.get().getSwiftCode() != supBank.getSwiftCode()) {
+					SupBank postData = this.supBankRepo.save(bank);
+					return postData;
+				} else {
+					throw new VendorNotFoundException("The Swift code all ready present");
+				}
 			} else {
 				throw new VendorNotFoundException("Some field are messing");
 			}
@@ -730,13 +750,13 @@ public class VendorController {
 						SupDetails supDetails = findByRegisterId.get(0);
 						if (!supDetails.equals(null)) {
 							List<SupBank> supBankDetails = supBankRepo.findBySupplierCode(supDetails.getSupplierCode());
-							if (!supBankDetails.isEmpty()) {
+							if (supBankDetails.size() < 1) {
 								throw new VendorNotFoundException("Bank details not found");
 							} else {
 								return supBankDetails;
 							}
 						} else {
-							throw new VendorNotFoundException("Vendor Detail not found");
+							throw new VendorNotFoundException("Vendor Detail not found!!");
 						}
 					} else {
 						throw new VendorNotFoundException("Vendor Detail not found");
@@ -762,8 +782,41 @@ public class VendorController {
 			if (!findById.isPresent()) {
 				throw new VendorNotFoundException("This Bank id not found");
 			} else {
-				SupBank sb = this.supBankRepo.save(supBank);
-				return sb;
+				if (fieldValidation.isEmpty(supBank.getAccountHolder())
+						&& fieldValidation.isEmpty(supBank.getBankAccountNo())
+						&& fieldValidation.isEmpty(supBank.getBankBic()) 
+						&& fieldValidation.isEmpty(supBank.getBankBranch())
+						&& fieldValidation.isEmpty(supBank.getBankEvidence())
+						&& fieldValidation.isEmpty(supBank.getBankName()) 
+						&& fieldValidation.isEmpty(supBank.getChequeNo())
+						&& fieldValidation.isEmpty(supBank.getCountry()) 
+						&& fieldValidation.isEmpty(supBank.getCurrency())
+						&& fieldValidation.isEmpty(supBank.getEvidencePath())
+						&& fieldValidation.isEmpty(supBank.getIfscCode())
+						&& fieldValidation.isEmpty(supBank.getSupplierCode())
+						&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())) {
+						SupBank bank = new SupBank();
+						bank.setBankId(bankId);
+						bank.setAccountHolder(supBank.getAccountHolder());
+						bank.setBankAccountNo(supBank.getBankAccountNo());
+						bank.setBankBic(supBank.getBankBic());
+						bank.setBankBranch(supBank.getBankBranch());
+						bank.setBankEvidence(supBank.getBankEvidence());
+						bank.setBankName(supBank.getBankName());
+						bank.setChequeNo(supBank.getChequeNo());
+						bank.setCountry(supBank.getCountry());
+						bank.setCurrency(supBank.getCurrency());
+						bank.setEvidencePath(supBank.getEvidencePath());
+						bank.setIfscCode(supBank.getIfscCode());
+						bank.setSupplierCode(supBank.getSupplierCode());
+						bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
+					SupBank sb = this.supBankRepo.save(bank);
+					return sb;
+				}
+				else {
+					throw new VendorNotFoundException("Validation Error");
+				}
+				
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());

@@ -9,5 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface SupBankRepo extends JpaRepository<SupBank, Long> {
 	
 	List<SupBank> findBySupplierCode(String supplierCode);
+	
+	Optional<SupBank> findBySwiftCode(String swiftCode);
 
 }
