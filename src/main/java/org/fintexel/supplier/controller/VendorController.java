@@ -685,6 +685,7 @@ public class VendorController {
 
 	@PostMapping("/vendor/bank")
 	public SupBank postBank(@RequestBody SupBank supBank) {
+		LOGGER.info("Inside - VendorController.postBank()");
 		try {
 			if (fieldValidation.isEmpty(supBank.getAccountHolder())
 					&& fieldValidation.isEmpty(supBank.getBankAccountNo())
@@ -733,7 +734,7 @@ public class VendorController {
 
 	@GetMapping("/vendor/bank")
 	public List<SupBank> getBank(@RequestHeader(name = "Authorization") String token) {
-
+		LOGGER.info("Inside - VendorController.getBank()");
 		if (token != null && token.startsWith("Bearer ")) {
 			jwtToken = token.substring(7);
 
@@ -856,7 +857,7 @@ public class VendorController {
 					if (findByRegisterId.size() > 0) {
 						List<SupDepartment> supDepartment = supDepartmentRepo
 								.findBySupplierCode(findByRegisterId.get(0).getSupplierCode());
-						if (!supDepartment.equals(null)) {
+						if (supDepartment.size() > 0) {
 							return supDepartment;
 						} else {
 							throw new VendorNotFoundException("Vendor department not present");
@@ -885,7 +886,13 @@ public class VendorController {
 					&& fieldValidation.isEmpty(supDepartment.getPhoneno())) {
 
 				if (fieldValidation.isEmail(supDepartment.getEmail())) {
-					return supDepartmentRepo.save(supDepartment);
+					SupDepartment department = new SupDepartment();
+					department.setDepartmentName(supDepartment.getDepartmentName());
+					department.setSupplierCode(supDepartment.getSupplierCode());
+					department.setSupplierContact1(supDepartment.getSupplierContact1());
+					department.setEmail(supDepartment.getEmail());
+					department.setPhoneno(supDepartment.getPhoneno());
+					return supDepartmentRepo.save(department);
 				} else {
 					throw new VendorNotFoundException("Email Format Not Match");
 				}
@@ -909,6 +916,13 @@ public class VendorController {
 						&& fieldValidation.isEmpty(supDepartment.getEmail())
 						&& fieldValidation.isEmpty(supDepartment.getPhoneno())) {
 					if (fieldValidation.isEmail(supDepartment.getEmail())) {
+						SupDepartment department = new SupDepartment();
+						department.setDepartmentName(supDepartment.getDepartmentName());
+						department.setSupplierCode(supDepartment.getSupplierCode());
+						department.setSupplierContact1(supDepartment.getSupplierContact1());
+						department.setEmail(supDepartment.getEmail());
+						department.setPhoneno(supDepartment.getPhoneno());
+						department.setDepartmentId(departmentId);
 						return supDepartmentRepo.save(supDepartment);
 					} else {
 						throw new VendorNotFoundException("Email Format Not Valid");
