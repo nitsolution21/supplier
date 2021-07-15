@@ -281,7 +281,7 @@ public class VendorController {
 		List<SupDetails> findAll = supDetailsRepo.findAll();
 		return findAll;
 	}
-	@GetMapping("/vendor")
+	@GetMapping("/vendor/details")
 	public SupDetails getSupplierDetails(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - VendorController.getSupplierDetails()");
 		if (token != null && token.startsWith("Bearer ")) {
