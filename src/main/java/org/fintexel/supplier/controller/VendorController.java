@@ -119,7 +119,7 @@ public class VendorController {
 	private String jwtToken;
 	
 	@PostMapping("/vendor")
-	public String postRegisterVendor(@RequestBody VendorRegister vendorReg) {
+	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.registerVendor()");
 		try{
 			if((fieldValidation.isEmail(vendorReg.getEmail()) &  (fieldValidation.isEmpty(vendorReg.getSupplierCompName())) )) {
@@ -148,7 +148,8 @@ public class VendorController {
 				String rowPassword=java.util.UUID.randomUUID().toString();
 				filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
 				VendorRegister save = this.vendorRepo.save(filterVendorReg);
-				return "Successfully Register";
+				save.setPassword(rowPassword);
+				return save;
 			}else {
 				throw new VendorNotFoundException("Validation error");
 			}
@@ -323,7 +324,7 @@ public class VendorController {
 		List<SupDetails> findAll = supDetailsRepo.findAll();
 		return findAll;
 	}
-	@GetMapping("/supplier/{code}")
+	@GetMapping("/vendor/{code}")
 	public SupDetails getSupplierDetails(@PathVariable() String code) {
 		LOGGER.info("Inside - VendorController.getSupplierDetails()");
 		try {
