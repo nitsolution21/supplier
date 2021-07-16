@@ -34,6 +34,15 @@ public class FieldValidation {
 			return true;
 		}
 	}
+	
+	public boolean isEmpty(float val) {
+		if(val <= 0) {
+			return false;
+		}else {
+			return true;
+		}
+	}
+	
 	public boolean isEmpty(Long val) {
 		if(val <= 0) {
 			return false;
