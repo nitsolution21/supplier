@@ -412,7 +412,6 @@ public class VendorController {
 					& (fieldValidation.isEmpty(address.getAddressProof()))
 					& (fieldValidation.isEmpty(address.getAddressProofPath()))) {
 				if (!loginSupplierCode.equals(null)) {
-					System.out.println("sup code " + loginSupplierCode);
 					SupAddress filterAddressUp = new SupAddress();
 					filterAddressUp.setSupplierCode(loginSupplierCode);
 					filterAddressUp.setAddressType(address.getAddressType());
@@ -457,7 +456,6 @@ public class VendorController {
 				List<SupAddress> vendorAddress = this.supAddRepo.findBySupplierCode(loginSupplierCode);
 
 				if (vendorAddress.size() < 1) {
-					System.out.println("in hhdhhshdhsdhsjdhsjdhsjdhs+" + "http://65.2.162.230:8088/dev/vendor/address");
 					throw new VendorNotFoundException("Vendor Not Exist");
 				} else {
 					return vendorAddress;
@@ -499,8 +497,6 @@ public class VendorController {
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			Optional<SupAddress> findById = this.supAddRepo.findById(addressId);
-			System.out.println("get supplier code from token  "+loginSupplierCode);
-			System.out.println("get supplier code from address id  "+findById.get().getSupplierCode());
 			if (!findById.isPresent()) {	
 				throw new VendorNotFoundException("Vendor Address Not Available");
 			} else {
@@ -725,7 +721,6 @@ public class VendorController {
 					&& fieldValidation.isEmpty(supBank.getSwiftCode())
 					&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())) {
 				if (!loginSupplierCode.equals(null)) {
-					System.out.println("Sup code "+loginSupplierCode);
 					SupBank bank = new SupBank();
 					bank.setAccountHolder(supBank.getAccountHolder());
 					bank.setBankAccountNo(supBank.getBankAccountNo());
@@ -742,9 +737,7 @@ public class VendorController {
 					bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
 					bank.setSwiftCode(supBank.getSwiftCode());
 					Optional<SupBank> findBySwiftCode = supBankRepo.findBySwiftCode(supBank.getSwiftCode());
-					System.out.println(findBySwiftCode.isPresent());
 					if (!findBySwiftCode.isPresent()) {
-						System.out.println("swift code " + supBank.getSwiftCode());
 						SupBank postData = this.supBankRepo.save(bank);
 						return postData;
 					} else {
@@ -757,7 +750,6 @@ public class VendorController {
 				throw new VendorNotFoundException("Some field are messing");
 			}
 		} catch (Exception e) {
-			System.out.println("Exception "+e);
 			throw new VendorNotFoundException(e.getMessage());
 		}
 
@@ -928,7 +920,6 @@ public class VendorController {
 		Optional<SupDepartment> findById = supDepartmentRepo.findById(departmentId);
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
-			System.out.println(loginSupplierCode);
 			if (findById.isPresent()) {
 				if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
 					if (fieldValidation.isEmpty(supDepartment.getDepartmentName())
@@ -936,7 +927,6 @@ public class VendorController {
 							&& fieldValidation.isEmpty(supDepartment.getEmail())
 							&& fieldValidation.isEmpty(supDepartment.getPhoneno())) {
 						if (fieldValidation.isEmail(supDepartment.getEmail())) {
-							System.out.println("in ssssss");
 							SupDepartment department = new SupDepartment();
 							department.setDepartmentName(supDepartment.getDepartmentName());
 							department.setSupplierCode(loginSupplierCode);
@@ -952,7 +942,6 @@ public class VendorController {
 							}
 							department.setPhoneno(supDepartment.getPhoneno());
 							department.setDepartmentId(departmentId);
-							System.out.println(department);
 							return supDepartmentRepo.save(department);
 						} else {
 							throw new VendorNotFoundException("Email Format Not Valid");
