@@ -214,15 +214,20 @@ public class InventoryController {
 	}
 
 	@DeleteMapping("/inventory/{inventoryId}")
-	public Object deleteInventory(@PathVariable() long inventoryId) {
+	public Object deleteInventory(@PathVariable() long inventoryId, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - InventoryController.deleteInventory()");
 		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			Optional<InventoryDetails> findById = this.inventoryRepo.findById(inventoryId);
 			if (!(findById.isPresent())) {
 				throw new VendorNotFoundException("Inventory ID does not exist - " + inventoryId);
 			} else {
-				this.inventoryRepo.deleteById(inventoryId);
-				return "Successfully Deleted";
+				if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+					this.inventoryRepo.deleteById(inventoryId);
+					return "Successfully Deleted";
+				} else {
+					throw new VendorNotFoundException("You don't have permission to delete this inventory");
+				}
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
