@@ -406,7 +406,7 @@ public class VendorController {
 				List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(supDetails.getRegisterId());
 				if (findByRegisterId.size() < 1) {
 					SupDetails filterSupDetails = new SupDetails();
-					SupRequest supRequest=new SupRequest();
+				//	SupRequest supRequest=new SupRequest();
 					Random rd = new Random();
 					filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
 					filterSupDetails.setRegisterId(supDetails.getRegisterId());
