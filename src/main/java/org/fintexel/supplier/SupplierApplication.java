@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @SpringBootApplication
 @ComponentScan(basePackages= {"org.fintexel.supplier.*"})
@@ -40,6 +41,12 @@ public class SupplierApplication implements CommandLineRunner {
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		return passwordEncoder;
 	}
+	
+	@Bean
+	public WebClient.Builder getWebClint(){
+		return WebClient.builder();
+	}
+	
 	
 	public static void main(String[] args) {
 		SpringApplication.run(SupplierApplication.class, args);

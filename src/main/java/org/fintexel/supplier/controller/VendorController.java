@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,9 +20,12 @@ import org.fintexel.supplier.entity.SupContract;
 import org.fintexel.supplier.entity.SupBank;
 import org.fintexel.supplier.entity.SupDepartment;
 import org.fintexel.supplier.entity.SupDetails;
+import org.fintexel.supplier.entity.SupRequest;
 import org.fintexel.supplier.entity.User;
 import org.fintexel.supplier.entity.VendorRegister;
+import org.fintexel.supplier.entity.flowableentity.FlowableRegistration;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
+import org.fintexel.supplier.flowable.FlowableContainer;
 import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.repository.SupAddressRepo;
 import org.fintexel.supplier.repository.SupContractRepo;
@@ -30,11 +34,21 @@ import org.fintexel.supplier.repository.SupDepartmentRepo;
 import org.fintexel.supplier.repository.SupDetailsRepo;
 import org.fintexel.supplier.repository.UserRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
+import org.fintexel.supplier.repository.flowablerepo.FlowableRegistrationRepo;
 import org.fintexel.supplier.validation.FieldValidation;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +59,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
+
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.google.gson.Gson;
 
 import net.bytebuddy.implementation.bind.annotation.BindingPriority;
 
@@ -89,8 +109,14 @@ public class VendorController {
 	@Autowired
 	SupDepartmentRepo supDepartmentRepo;
 
+	@Autowired
+	WebClient.Builder builder;
+
+	@Autowired
+	FlowableRegistrationRepo flowableRegistrationRepo;
+
 	@PostMapping("/vendor")
-	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
+	public String postRegisterVendor(@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.registerVendor()");
 		try {
 			if ((fieldValidation.isEmail(vendorReg.getEmail())
@@ -105,25 +131,90 @@ public class VendorController {
 						throw new VendorNotFoundException("Email already exist");
 					}
 				}
-//				try {
-//					RestTemplate restTemplate=new RestTemplate();
-//						List getObject=restTemplate.getForObject("url", ArrayList.class, filterVendorReg);
-//						if(getObject.status==1){
-//							filterVendorReg.setUsername(getObject.get(0).username);
-//							filterVendorReg.setPassword(getObject.get(0).password);
-//						}
-//				}catch(Exception e) {
-//					
-//				}
-				System.out.println(java.util.UUID.randomUUID().toString());
 				filterVendorReg.setUsername(vendorReg.getEmail());
 				String rowPassword = java.util.UUID.randomUUID().toString();
 				filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
 				VendorRegister save = this.vendorRepo.save(filterVendorReg);
 				save.setPassword(rowPassword);
-				return save;
-			}
-			else {
+				try {
+
+				
+
+//			FLOWABLE POST API CALL WITH PROCESS DEFINITION KEY
+//				START
+
+					Optional<FlowableRegistration> findByAuthorAndTitle = flowableRegistrationRepo
+							.findByAuthorAndTitle("supplier_reg");
+					FlowableContainer flowableContainer = new FlowableContainer();
+					RestTemplate restTemplate = new RestTemplate();
+					HttpHeaders headers = new HttpHeaders();
+					headers.setContentType(MediaType.APPLICATION_JSON);
+					headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+					headers.setBasicAuth("admin", "test");
+					Map<String, Object> map = new HashMap<>();
+					map.put("processDefinitionId", findByAuthorAndTitle.get().getId());
+					HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+					ResponseEntity<String> response = restTemplate.postForEntity(
+							"http://65.2.162.230:8080/flowable-rest/service/runtime/process-instances", entity,
+							String.class);
+					JSONObject jsonObject = new JSONObject(response.getBody());
+
+
+//				END 
+
+//					headers.set("processInstanceId", (String) jsonObject.get("id"));
+					Map<String, Object> mapp = new HashMap<>();
+					map.put("processInstanceId", (String) jsonObject.get("id"));
+					HttpEntity<Map<String, Object>> request = new HttpEntity<>(map, headers);
+					ResponseEntity<String> exchange = restTemplate.exchange(
+							"http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, request,
+							String.class, 1);
+					JSONObject jsonObject1 = new JSONObject(exchange.getBody());
+					
+					
+					JSONArray array = new JSONArray(jsonObject1.get("data").toString());
+					JSONArray arrayy = new JSONArray();
+					JSONObject suppliername = new JSONObject();
+					suppliername.put("name", "suppliername");
+					suppliername.put("scope", "local");
+					suppliername.put("type", "string");
+					suppliername.put("value", save.getSupplierCompName());
+					arrayy.put(suppliername);
+					JSONObject supplieremail = new JSONObject();
+					supplieremail.put("name", "supplieremail");
+					supplieremail.put("scope", "local");
+					supplieremail.put("type", "string");
+					supplieremail.put("value", save.getEmail());
+					arrayy.put(supplieremail);
+					JSONObject username = new JSONObject();
+					username.put("name", "username");
+					username.put("scope", "local");
+					username.put("type", "string");
+					username.put("value", save.getEmail());
+					arrayy.put(username);
+					JSONObject password = new JSONObject();
+					password.put("name", "password");
+					password.put("scope", "local");
+					password.put("type", "string");
+					password.put("value", save.getPassword());
+					arrayy.put(password);
+					HttpEntity<String> entityy = new HttpEntity<String>(arrayy.toString(), headers);
+					ResponseEntity<String> response2 = restTemplate.exchange(
+							"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/"
+									+ array.getJSONObject(0).get("id") + "/variables",
+							HttpMethod.POST, entityy, String.class, 1);
+					System.out.println(response2);
+				} catch (Exception e) {
+					
+					System.out.println("exception "+e);
+				}
+				
+				
+				
+//				END FLOWABLE
+
+				return "save";
+			} else {
 				throw new VendorNotFoundException("Validation error");
 			}
 		} catch (Exception e) {
@@ -179,8 +270,7 @@ public class VendorController {
 				throw new VendorNotFoundException("Vendor Not Available");
 			} else {
 				if ((fieldValidation.isEmail(vendorReg.getEmail()))
-						& (fieldValidation.isEmpty(vendorReg.getSupplierCompName()))
-						) {
+						& (fieldValidation.isEmpty(vendorReg.getSupplierCompName()))) {
 					VendorRegister vr = findById.get();
 					vr.setEmail(vendorReg.getEmail());
 					vr.setSupplierCompName(vendorReg.getSupplierCompName());
@@ -254,6 +344,7 @@ public class VendorController {
 				List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(supDetails.getRegisterId());
 				if (findByRegisterId.size() < 1) {
 					SupDetails filterSupDetails = new SupDetails();
+					SupRequest supRequest=new SupRequest();
 					Random rd = new Random();
 					filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
 					filterSupDetails.setRegisterId(supDetails.getRegisterId());
@@ -263,10 +354,17 @@ public class VendorController {
 					filterSupDetails.setRemarks(supDetails.getRemarks());
 					filterSupDetails.setLastlogin(supDetails.getLastlogin());
 					filterSupDetails.setSupplierCode("SU-" + java.time.LocalDate.now() + rd.nextInt(10));
-					filterSupDetails.setStatus("1");
+					filterSupDetails.setStatus("2");
+					
+					
+//					supRequest.setSupplierCode(filterSupDetails.getSupplierCode());
+//					supRequest.setTableName("");
+//					supRequest.setId(null);
+//					supRequest.setNewValue(filterSupDetails.toString());
+//					supRequest.setStatus("0");
 					return supDetailsRepo.save(filterSupDetails);
 				} else {
-					throw new VendorNotFoundException("Vendor Not Exist");
+					throw new VendorNotFoundException("Vendor Already Exist");
 				}
 
 			} else {
@@ -388,10 +486,8 @@ public class VendorController {
 			if ((fieldValidation.isEmpty(address.getSupplierCode()))
 					& (fieldValidation.isEmpty(address.getAddressType()))
 					& (fieldValidation.isEmpty(address.getAddress1()))
-					& (fieldValidation.isEmpty(address.getPostalCode())) 
-					& (fieldValidation.isEmpty(address.getCity()))
-					& (fieldValidation.isEmpty(address.getCountry())) 
-					& (fieldValidation.isEmpty(address.getRegion()))
+					& (fieldValidation.isEmpty(address.getPostalCode())) & (fieldValidation.isEmpty(address.getCity()))
+					& (fieldValidation.isEmpty(address.getCountry())) & (fieldValidation.isEmpty(address.getRegion()))
 					& (fieldValidation.isEmpty(address.getAddressProof()))
 					& (fieldValidation.isEmpty(address.getAddressProofPath()))) {
 				SupAddress filterAddressUp = new SupAddress();
@@ -399,11 +495,11 @@ public class VendorController {
 				filterAddressUp.setAddressType(address.getAddressType());
 				filterAddressUp.setAddress1(address.getAddress1());
 				try {
-					if(fieldValidation.isEmpty(address.getAddress2())) {
+					if (fieldValidation.isEmpty(address.getAddress2())) {
 						filterAddressUp.setAddress2(address.getAddress2());
 					}
-				}catch(Exception e) {
-					
+				} catch (Exception e) {
+
 				}
 				filterAddressUp.setPostalCode(address.getPostalCode());
 				filterAddressUp.setCity(address.getCity());
@@ -495,8 +591,7 @@ public class VendorController {
 						& (fieldValidation.isEmpty(address.getAddressType()))
 						& (fieldValidation.isEmpty(address.getAddress1()))
 						& (fieldValidation.isEmpty(address.getPostalCode()))
-						& (fieldValidation.isEmpty(address.getCity())) & 
-						(fieldValidation.isEmpty(address.getCountry()))
+						& (fieldValidation.isEmpty(address.getCity())) & (fieldValidation.isEmpty(address.getCountry()))
 						& (fieldValidation.isEmpty(address.getRegion()))
 						& (fieldValidation.isEmpty(address.getAddressProof()))
 						& (fieldValidation.isEmpty(address.getAddressProofPath()))) {
@@ -506,11 +601,11 @@ public class VendorController {
 					filterAddressUp.setAddressType(address.getAddressType());
 					filterAddressUp.setAddress1(address.getAddress1());
 					try {
-						if(fieldValidation.isEmpty(address.getAddress2())) {
+						if (fieldValidation.isEmpty(address.getAddress2())) {
 							filterAddressUp.setAddress2(address.getAddress2());
 						}
-					}catch(Exception e) {
-						
+					} catch (Exception e) {
+
 					}
 					filterAddressUp.setPostalCode(address.getPostalCode());
 					filterAddressUp.setCity(address.getCity());
@@ -688,13 +783,10 @@ public class VendorController {
 		try {
 			if (fieldValidation.isEmpty(supBank.getAccountHolder())
 					&& fieldValidation.isEmpty(supBank.getBankAccountNo())
-					&& fieldValidation.isEmpty(supBank.getBankBic()) 
-					&& fieldValidation.isEmpty(supBank.getBankBranch())
+					&& fieldValidation.isEmpty(supBank.getBankBic()) && fieldValidation.isEmpty(supBank.getBankBranch())
 					&& fieldValidation.isEmpty(supBank.getBankEvidence())
-					&& fieldValidation.isEmpty(supBank.getBankName()) 
-					&& fieldValidation.isEmpty(supBank.getChequeNo())
-					&& fieldValidation.isEmpty(supBank.getCountry()) 
-					&& fieldValidation.isEmpty(supBank.getCurrency())
+					&& fieldValidation.isEmpty(supBank.getBankName()) && fieldValidation.isEmpty(supBank.getChequeNo())
+					&& fieldValidation.isEmpty(supBank.getCountry()) && fieldValidation.isEmpty(supBank.getCurrency())
 					&& fieldValidation.isEmpty(supBank.getEvidencePath())
 					&& fieldValidation.isEmpty(supBank.getIfscCode())
 					&& fieldValidation.isEmpty(supBank.getSupplierCode())
