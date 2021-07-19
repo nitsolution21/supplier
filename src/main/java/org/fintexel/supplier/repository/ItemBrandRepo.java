@@ -8,5 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ItemBrandRepo extends JpaRepository<ItemBrand, Long> {
 
 	List<ItemBrand> findByBrandName(String brandName);
+	
+	List<ItemBrand> findBySupplierCode(String supplierCode);
 
 }

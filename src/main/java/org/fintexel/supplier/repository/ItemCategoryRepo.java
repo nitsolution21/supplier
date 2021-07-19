@@ -8,5 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ItemCategoryRepo extends JpaRepository<ItemCategory,Long>{
 
 	List<ItemCategory> findByCategoryName(String categoryName);
+	
+	List<ItemCategory>findBySupplierCode(String supplierCode);
 
 }

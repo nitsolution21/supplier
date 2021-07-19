@@ -31,15 +31,18 @@ public class ItemBrand {
 	
 	@Column(name = "UPDATED_ON")
 	private Date updatedOn;
+	
+	@Column(name = "SUPPLIER_CODE")
+	private String supplierCode;
 
 	@Override
 	public String toString() {
-		return "ItemBrand [brandId=" + brandId + ", brandName=" + brandName + ", createdBy=" + createdBy
+		return "ItemBrand [brandId=" + brandId + ", brandName=" + brandName + ", supplierCode="+supplierCode+", createdBy=" + createdBy
 				+ ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + ", getClass()="
 				+ getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
 	}
 
-	public ItemBrand(long brandId, String brandName, int createdBy, Date createdOn, int updatedBy, Date updatedOn) {
+	public ItemBrand(long brandId, String brandName, int createdBy, Date createdOn, int updatedBy, Date updatedOn, String supplierCode) {
 		super();
 		this.brandId = brandId;
 		this.brandName = brandName;
@@ -47,6 +50,12 @@ public class ItemBrand {
 		this.createdOn = createdOn;
 		this.updatedBy = updatedBy;
 		this.updatedOn = updatedOn;
+		this.supplierCode = supplierCode;
+	}
+	
+	public ItemBrand() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
 	public long getBrandId() {
@@ -97,9 +106,12 @@ public class ItemBrand {
 		this.updatedOn = updatedOn;
 	}
 
-	public ItemBrand() {
-		super();
-		// TODO Auto-generated constructor stub
+	public String getSupplierCode() {
+		return supplierCode;
+	}
+
+	public void setSupplierCode(String supplierCode) {
+		this.supplierCode = supplierCode;
 	}
 
 	

@@ -48,18 +48,32 @@ public class InventoryController {
 	@Autowired
 	private LoginUserDetails loginUserDetails;
 
-	@PostMapping("/category")
-	public ItemCategory addCategory(@RequestBody ItemCategory itemCategory) {
+	@PostMapping("/vendor/category")
+	public ItemCategory addCategory(@RequestBody ItemCategory itemCategory, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - InventoryController.addCategory()");
 		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			if ((fieldValidation.isEmpty(itemCategory.getCategoryName()))) {
-
-				List<ItemCategory> findByCategoryName = itemCategoryRepo
-						.findByCategoryName(itemCategory.getCategoryName());
-				if (findByCategoryName.size() < 1) {
-					return itemCategoryRepo.save(itemCategory);
+				if (!loginSupplierCode.equals(null)) {
+					ItemCategory category = new ItemCategory();
+					List<ItemCategory> findByCategoryName = itemCategoryRepo
+							.findByCategoryName(itemCategory.getCategoryName());
+					if (findByCategoryName.size() < 1) {
+						category.setCategoryName(itemCategory.getCategoryName());
+						category.setSupplierCode(loginSupplierCode);
+						return itemCategoryRepo.save(category);
+					} else {
+						findByCategoryName.forEach(catagory -> {
+						if (catagory.getSupplierCode().equals(loginSupplierCode)) {
+							throw new VendorNotFoundException("Category Name Already Exist");
+						}
+					});
+						category.setCategoryName(itemCategory.getCategoryName());
+						category.setSupplierCode(loginSupplierCode);
+						return itemCategoryRepo.save(category);
+					}
 				} else {
-					throw new VendorNotFoundException("Category Name Already Exist");
+					throw new VendorNotFoundException("Token not valid");
 				}
 			} else {
 				throw new VendorNotFoundException("Validation Error");
@@ -71,17 +85,35 @@ public class InventoryController {
 
 	}
 
-	@PostMapping("/subCategory")
-	public ItemSubCategory addSubCategory(@RequestBody ItemSubCategory itemSubCategory) {
+	@PostMapping("/vendor/subCategory")
+	public ItemSubCategory addSubCategory(@RequestBody ItemSubCategory itemSubCategory, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - addSubCategory " + itemSubCategory);
 		try {
-			if ((fieldValidation.isEmpty(itemSubCategory.getSubCategoryName()))) {
-				List<ItemSubCategory> findBySubCategoryName = itemSubCategoryRepo
-						.findBySubCategoryName(itemSubCategory.getSubCategoryName());
-				if (findBySubCategoryName.size() < 1) {
-					return itemSubCategoryRepo.save(itemSubCategory);
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+			if ((fieldValidation.isEmpty(itemSubCategory.getSubCategoryName())) && fieldValidation.isEmpty(itemSubCategory.getCategoryId())) {
+				if (!loginSupplierCode.equals(null)) {
+					List<ItemSubCategory> findBySubCategoryName = itemSubCategoryRepo
+							.findBySubCategoryName(itemSubCategory.getSubCategoryName());
+					ItemSubCategory category = new ItemSubCategory();
+					if (findBySubCategoryName.size() < 1) {
+						category.setCategoryId(itemSubCategory.getCategoryId());
+						category.setSubCategoryName(itemSubCategory.getSubCategoryName());
+						category.setSupplierCode(loginSupplierCode);
+						return itemSubCategoryRepo.save(category);
+					} else {
+						findBySubCategoryName.forEach(subCategor -> {
+							if (subCategor.getSupplierCode().equals(loginSupplierCode)) {
+								throw new VendorNotFoundException("Sub Category Name Already Exist");
+							}
+						});
+						
+						category.setCategoryId(itemSubCategory.getCategoryId());
+						category.setSubCategoryName(itemSubCategory.getSubCategoryName());
+						category.setSupplierCode(loginSupplierCode);
+						return itemSubCategoryRepo.save(category);
+					}
 				} else {
-					throw new VendorNotFoundException("Sub Category Name Already Exist");
+					throw new VendorNotFoundException("Token not valid");
 				}
 			} else {
 				throw new VendorNotFoundException("Validation Error");
@@ -91,18 +123,34 @@ public class InventoryController {
 		}
 	}
 
-	@PostMapping("/brand")
-	public ItemBrand addBrand(@RequestBody ItemBrand itemBrand) {
+	@PostMapping("/vendor/brand")
+	public ItemBrand addBrand(@RequestBody ItemBrand itemBrand, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - InventoryController.addBrand()");
 		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			if ((fieldValidation.isEmpty(itemBrand.getBrandName()))) {
- 
-				List<ItemBrand> findByBrandName = itemBrandRepo.findByBrandName(itemBrand.getBrandName());
-				if (findByBrandName.size() < 1) {
-					return itemBrandRepo.save(itemBrand);
+				if (!loginSupplierCode.equals(null)) {
+					List<ItemBrand> findByBrandName = itemBrandRepo.findByBrandName(itemBrand.getBrandName());
+					ItemBrand brand = new ItemBrand();
+					if (findByBrandName.size() < 1) {
+						brand.setBrandName(itemBrand.getBrandName());
+						brand.setSupplierCode(loginSupplierCode);
+						return itemBrandRepo.save(brand);
+					} else {
+						findByBrandName.forEach(brands -> {
+							if (brands.getSupplierCode().equals(loginSupplierCode)) {
+								throw new VendorNotFoundException("Sub Category Name Already Exist");
+							}
+						});
+						
+						brand.setBrandName(itemBrand.getBrandName());
+						brand.setSupplierCode(loginSupplierCode);
+						return itemBrandRepo.save(brand);
+					}
 				} else {
-					throw new VendorNotFoundException("Item Brand Name Already Exist");
+					throw new VendorNotFoundException("Token not valid");
 				}
+				
 			}else {
 				throw new VendorNotFoundException("Validation Error");
 			}
@@ -123,8 +171,8 @@ public class InventoryController {
 					& (fieldValidation.isEmpty(inventoryDetails.getBrandId()))
 					& (fieldValidation.isEmpty(inventoryDetails.getSubcategoryId()))					
 					) {		
-				 Optional<InventoryDetails> findBySupplierCode = inventoryRepo.findBySupplierCode(loginSupplierCode);
-				if (!findBySupplierCode.isPresent()) {
+//				 List<InventoryDetails> findBySupplierCode = inventoryRepo.findBySupplierCode(loginSupplierCode);
+				if (!loginSupplierCode.equals(null)) {
 					InventoryDetails details = new InventoryDetails();
 					details.setSupplierCode(loginSupplierCode);
 					details.setCategoryId(inventoryDetails.getCategoryId());
@@ -159,7 +207,7 @@ public class InventoryController {
 //				}
 			}else {
 				
-				throw new VendorNotFoundException("The inventory already present");
+				throw new VendorNotFoundException("Token not valid");
 			}
 			}else {
 				throw new VendorNotFoundException("Validation Error");
@@ -170,14 +218,14 @@ public class InventoryController {
 	}
 
 	@GetMapping("/vendor/inventory")
-	public InventoryDetails getInventory(@RequestHeader(name = "Authorization") String token) {
+	public List<InventoryDetails> getInventory(@RequestHeader(name = "Authorization") String token) {
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
-			 Optional<InventoryDetails> findBySupplierCode = inventoryRepo.findBySupplierCode(loginSupplierCode);
-			if (!findBySupplierCode.isPresent()) {
+			List<InventoryDetails> findBySupplierCode = inventoryRepo.findBySupplierCode(loginSupplierCode);
+			if (findBySupplierCode.size() < 1) {
 				throw new VendorNotFoundException("No Inventory Details");
 			}else {
-				return findBySupplierCode.get();
+				return findBySupplierCode;
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -186,34 +234,63 @@ public class InventoryController {
 		
 	}
 
-	@GetMapping("/category")
-	public List<ItemCategory> getCategory() {
-		List<ItemCategory> listItemCategory = itemCategoryRepo.findAll();
-		if (listItemCategory.isEmpty()) {
-			throw new VendorNotFoundException("No Category Details");
+	@GetMapping("/vendor/category")
+	public List<ItemCategory> getCategory(@RequestHeader(name = "Authorization") String token) {
+		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+			if (!loginSupplierCode.equals(null)) {
+				List<ItemCategory> listItemCategory = itemCategoryRepo.findBySupplierCode(loginSupplierCode);
+				if (listItemCategory.size() < 1) {
+					throw new VendorNotFoundException("No Category Details");
+				}
+				return listItemCategory;
+			} else {
+				throw new VendorNotFoundException("Token not valid");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
 		}
-		return itemCategoryRepo.findAll();
 	}
 
-	@GetMapping("/subCategory")
-	public List<ItemSubCategory> getSubCategory() {
-		List<ItemSubCategory> listItemSubCategory = itemSubCategoryRepo.findAll();
-		if (listItemSubCategory.isEmpty()) {
-			throw new VendorNotFoundException("No SubCategory Details");
+	@GetMapping("/vendor/subCategory")
+	public List<ItemSubCategory> getSubCategory(@RequestHeader(name = "Authorization") String token) {
+		
+		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+			if (!loginSupplierCode.equals(null)) {
+				List<ItemSubCategory> listItemSubCategory = itemSubCategoryRepo.findBySupplierCode(loginSupplierCode);
+				if (listItemSubCategory.size() < 1) {
+					throw new VendorNotFoundException("No SubCategory Details");
+				}
+				return listItemSubCategory;
+			} else {
+				throw new VendorNotFoundException("Token not valid");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
 		}
-		return itemSubCategoryRepo.findAll();
 	}
 
-	@GetMapping("/brand")
-	public List<ItemBrand> getBrand() {
-		List<ItemBrand> listItemBrand = itemBrandRepo.findAll();
-		if (listItemBrand.isEmpty()) {
-			throw new VendorNotFoundException("No Brand Details");
+	@GetMapping("/vendor/brand")
+	public List<ItemBrand> getBrand(@RequestHeader(name = "Authorization") String token) {
+		
+		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+			if (!loginSupplierCode.equals(null)) {
+				List<ItemBrand> listItemBrand = itemBrandRepo.findBySupplierCode(loginSupplierCode);
+				if (listItemBrand.size() < 1) {
+					throw new VendorNotFoundException("No Brand Details");
+				}
+				return listItemBrand;
+			} else {
+				throw new VendorNotFoundException("Token not valid");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
 		}
-		return itemBrandRepo.findAll();
 	}
 
-	@DeleteMapping("/inventory/{inventoryId}")
+	@DeleteMapping("/vendor/inventory/{inventoryId}")
 	public Object deleteInventory(@PathVariable() long inventoryId, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - InventoryController.deleteInventory()");
 		try {
@@ -234,7 +311,7 @@ public class InventoryController {
 		}
 	}
 
-	@DeleteMapping("/category/{categoryId}")
+	@DeleteMapping("/vendor/category/{categoryId}")
 	public Object deleteCategory(@PathVariable() long categoryId) {
 		LOGGER.info("Inside - InventoryController.deleteCategory()");
 		try {
@@ -250,7 +327,7 @@ public class InventoryController {
 		}
 	}
 
-	@DeleteMapping("/subCategory/{subCatId}")
+	@DeleteMapping("/vendor/subCategory/{subCatId}")
 	public Object deleteSubCategory(@PathVariable() long subCatId) {
 		LOGGER.info("Inside - InventoryController.deleteSubCategory()");
 		try {
@@ -266,7 +343,7 @@ public class InventoryController {
 		}
 	}
 
-	@DeleteMapping("/brand/{brandId}")
+	@DeleteMapping("/vendor/brand/{brandId}")
 	public Object deleteBrand(@PathVariable() long brandId) {
 		LOGGER.info("Inside - InventoryController.deleteBrand()");
 		try {
