@@ -226,28 +226,21 @@ public class VendorController {
 		}
 	}
 
-	@GetMapping("/vendor")
-	public VendorRegister getRegisterVendors(@RequestHeader(name = "Authorization") String token) {
-		LOGGER.info("Inside - VendorController.getRegisterVendor()");
-		if (token != null && token.startsWith("Bearer ")) {
-			jwtToken = token.substring(7);
-
-			try {
-				String userName = jwtUtil.extractUsername(jwtToken);
-				Optional<VendorRegister> findByUsername = vendorRepo.findByUsername(userName);
-				if (!findByUsername.isPresent()) {
-					throw new VendorNotFoundException("Vendor not found");
-				}
-				return findByUsername.get();
-			} catch (Exception e) {
-				throw new VendorNotFoundException(e.getMessage());
-			}
-		}
-
-		else {
-			throw new VendorNotFoundException("Token is not valid");
-		}
-	}
+	/*
+	 * @GetMapping("/vendor") public VendorRegister
+	 * getRegisterVendors(@RequestHeader(name = "Authorization") String token) {
+	 * LOGGER.info("Inside - VendorController.getRegisterVendor()"); if (token !=
+	 * null && token.startsWith("Bearer ")) { jwtToken = token.substring(7);
+	 * 
+	 * try { String userName = jwtUtil.extractUsername(jwtToken);
+	 * Optional<VendorRegister> findByUsername =
+	 * vendorRepo.findByUsername(userName); if (!findByUsername.isPresent()) { throw
+	 * new VendorNotFoundException("Vendor not found"); } return
+	 * findByUsername.get(); } catch (Exception e) { throw new
+	 * VendorNotFoundException(e.getMessage()); } }
+	 * 
+	 * else { throw new VendorNotFoundException("Token is not valid"); } }
+	 */
 
 	@GetMapping("/vendor/{vendorId}")
 	public Optional<VendorRegister> getRegisterVendor(@PathVariable() long vendorId) {
