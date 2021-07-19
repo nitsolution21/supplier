@@ -299,11 +299,15 @@ public class InventoryController {
 			if (!(findById.isPresent())) {
 				throw new VendorNotFoundException("Inventory ID does not exist - " + inventoryId);
 			} else {
-				if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
-					this.inventoryRepo.deleteById(inventoryId);
-					return "Successfully Deleted";
+				if (!loginSupplierCode.equals(null)) {
+					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+						this.inventoryRepo.deleteById(inventoryId);
+						return "Successfully Deleted";
+					} else {
+						throw new VendorNotFoundException("You don't have permission to delete this inventory");
+					}
 				} else {
-					throw new VendorNotFoundException("You don't have permission to delete this inventory");
+					throw new VendorNotFoundException("Token not valid");
 				}
 			}
 		} catch (Exception e) {
@@ -312,15 +316,24 @@ public class InventoryController {
 	}
 
 	@DeleteMapping("/vendor/category/{categoryId}")
-	public Object deleteCategory(@PathVariable() long categoryId) {
+	public Object deleteCategory(@PathVariable() long categoryId, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - InventoryController.deleteCategory()");
 		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			Optional<ItemCategory> findById = this.itemCategoryRepo.findById(categoryId);
 			if (!(findById.isPresent())) {
 				throw new VendorNotFoundException("Category ID does not exist - " + categoryId);
 			} else {
-				this.itemCategoryRepo.deleteById(categoryId);
-				return "Successfully Deleted";
+				if (!loginSupplierCode.equals(null)) {
+					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+						this.itemCategoryRepo.deleteById(categoryId);
+						return "Successfully Deleted";
+					} else {
+						throw new VendorNotFoundException("You don't have permission to delete this vendor category");
+					}
+				} else {
+					throw new VendorNotFoundException("Token not valid");
+				}
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -328,15 +341,24 @@ public class InventoryController {
 	}
 
 	@DeleteMapping("/vendor/subCategory/{subCatId}")
-	public Object deleteSubCategory(@PathVariable() long subCatId) {
+	public Object deleteSubCategory(@PathVariable() long subCatId, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - InventoryController.deleteSubCategory()");
 		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			Optional<ItemSubCategory> findById = this.itemSubCategoryRepo.findById(subCatId);
-			if (!(findById.isPresent())) {
-				throw new VendorNotFoundException("SubCategory ID does not exist - " + subCatId);
+			if (!loginSupplierCode.equals(null)) {
+				if (!(findById.isPresent())) {
+					throw new VendorNotFoundException("SubCategory ID does not exist - " + subCatId);
+				} else {
+					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+						this.itemSubCategoryRepo.deleteById(subCatId);
+						return "Successfully Deleted";
+					} else {
+						throw new VendorNotFoundException("You don't have permission to delete this vendor sub category");
+					}
+				}
 			} else {
-				this.itemSubCategoryRepo.deleteById(subCatId);
-				return "Successfully Deleted";
+				throw new VendorNotFoundException("Token not valid");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -344,15 +366,24 @@ public class InventoryController {
 	}
 
 	@DeleteMapping("/vendor/brand/{brandId}")
-	public Object deleteBrand(@PathVariable() long brandId) {
+	public Object deleteBrand(@PathVariable() long brandId, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - InventoryController.deleteBrand()");
 		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			Optional<ItemBrand> findById = this.itemBrandRepo.findById(brandId);
-			if (!(findById.isPresent())) {
-				throw new VendorNotFoundException("Brand ID does not exist - " + brandId);
+			if (!loginSupplierCode.equals(null)) {
+				if (!(findById.isPresent())) {
+					throw new VendorNotFoundException("Brand ID does not exist - " + brandId);
+				} else {
+					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+						this.itemBrandRepo.deleteById(brandId);
+						return "Successfully Deleted";
+					} else {
+						throw new VendorNotFoundException("You don't have permission to delete this vendor brand");
+					}
+				}
 			} else {
-				this.itemBrandRepo.deleteById(brandId);
-				return "Successfully Deleted";
+				throw new VendorNotFoundException("Token not valid");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
