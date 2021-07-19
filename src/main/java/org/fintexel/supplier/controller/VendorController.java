@@ -20,7 +20,6 @@ import org.fintexel.supplier.entity.SupContract;
 import org.fintexel.supplier.entity.SupBank;
 import org.fintexel.supplier.entity.SupDepartment;
 import org.fintexel.supplier.entity.SupDetails;
-import org.fintexel.supplier.entity.SupRequest;
 import org.fintexel.supplier.entity.User;
 import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.entity.flowableentity.FlowableRegistration;
