@@ -504,36 +504,40 @@ public class VendorController {
 					& (fieldValidation.isEmpty(supDetails.getRemarks()))
 					& (fieldValidation.isEmpty(supDetails.getLastlogin()))) {
 				Optional<SupDetails> findById = supDetailsRepo.findById(code);
-				if (findById.isPresent()) {
+				if (!loginSupplierCode.equals(null)) {
+					if (findById.isPresent()) {
 
-					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+						if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
 
-						SupDetails filterSupDetails = new SupDetails();
-						filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
-						filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
-						filterSupDetails.setRegristrationNo(supDetails.getRegristrationNo());
-						filterSupDetails.setRegisterId(supDetails.getRegisterId());
-						filterSupDetails.setCostCenter(supDetails.getCostCenter());
-						filterSupDetails.setRemarks(supDetails.getRemarks());
-						filterSupDetails.setLastlogin(supDetails.getLastlogin());
-						filterSupDetails.setSupplierCode(findById.get().getSupplierCode());
-						filterSupDetails.setStatus("2");
-						SupDetails save = supDetailsRepo.save(filterSupDetails);
-						
-						SupRequest supRequest=new SupRequest();
-						supRequest.setSupplierCode(filterSupDetails.getSupplierCode());
-						supRequest.setTableName("SUP_REQUESTS");
-						supRequest.setId(filterSupDetails.getRegisterId());
-						supRequest.setNewValue(filterSupDetails.toString());
-						supRequest.setOldValue(findById.get().toString());
-						supRequest.setStatus("0");
-						supRequestRepo.save(supRequest);
-						return save;
+							SupDetails filterSupDetails = new SupDetails();
+							filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
+							filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
+							filterSupDetails.setRegristrationNo(supDetails.getRegristrationNo());
+							filterSupDetails.setRegisterId(supDetails.getRegisterId());
+							filterSupDetails.setCostCenter(supDetails.getCostCenter());
+							filterSupDetails.setRemarks(supDetails.getRemarks());
+							filterSupDetails.setLastlogin(supDetails.getLastlogin());
+							filterSupDetails.setSupplierCode(findById.get().getSupplierCode());
+							filterSupDetails.setStatus("2");
+							SupDetails save = supDetailsRepo.save(filterSupDetails);
+							
+							SupRequest supRequest=new SupRequest();
+							supRequest.setSupplierCode(filterSupDetails.getSupplierCode());
+							supRequest.setTableName("SUP_REQUESTS");
+							supRequest.setId(filterSupDetails.getRegisterId());
+							supRequest.setNewValue(filterSupDetails.toString());
+							supRequest.setOldValue(findById.get().toString());
+							supRequest.setStatus("0");
+							supRequestRepo.save(supRequest);
+							return save;
+						} else {
+							throw new VendorNotFoundException("You don't have permission to update this vendor");
+						}
 					} else {
-						throw new VendorNotFoundException("You don't have permission to update this vendor");
+						throw new VendorNotFoundException("Vendor Not Exist");
 					}
 				} else {
-					throw new VendorNotFoundException("Vendor Not Exist");
+					throw new VendorNotFoundException("Token not valid");
 				}
 
 			} else {
@@ -633,7 +637,7 @@ public class VendorController {
 					return vendorAddress;
 				}
 			} else {
-				throw new VendorNotFoundException("Token Expire");
+				throw new VendorNotFoundException("Token Expir");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -669,46 +673,50 @@ public class VendorController {
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			Optional<SupAddress> findById = this.supAddRepo.findById(addressId);
-			if (!findById.isPresent()) {	
-				throw new VendorNotFoundException("Vendor Address Not Available");
-			} else {
-				if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
-					if ((fieldValidation.isEmpty(address.getAddressType()))
-							& (fieldValidation.isEmpty(address.getAddress1()))
-							& (fieldValidation.isEmpty(address.getPostalCode()))
-							& (fieldValidation.isEmpty(address.getCity()))
-							& (fieldValidation.isEmpty(address.getCountry()))
-							& (fieldValidation.isEmpty(address.getRegion()))
-							& (fieldValidation.isEmpty(address.getAddressProof()))
-							& (fieldValidation.isEmpty(address.getAddressProofPath()))) {
-						SupAddress filterAddressUp = findById.get();
-
-						filterAddressUp.setSupplierCode(loginSupplierCode);
-						filterAddressUp.setAddressType(address.getAddressType());
-						filterAddressUp.setAddress1(address.getAddress1());
-						try {
-							if (fieldValidation.isEmpty(address.getAddress2())) {
-								filterAddressUp.setAddress2(address.getAddress2());
-							}
-						} catch (Exception e) {
-
-						}
-						filterAddressUp.setPostalCode(address.getPostalCode());
-						filterAddressUp.setCity(address.getCity());
-						filterAddressUp.setCountry(address.getCountry());
-						filterAddressUp.setRegion(address.getRegion());
-						filterAddressUp.setStatus("1");
-						filterAddressUp.setAddressProof(address.getAddressProof());
-						filterAddressUp.setAddressProofPath(address.getAddressProofPath());
-
-						filterAddressUp.setAddressId(addressId);
-						return this.supAddRepo.save(filterAddressUp);
-					} else {
-						throw new VendorNotFoundException("Validation error");
-					}
+			if (!loginSupplierCode.equals(null)) {
+				if (!findById.isPresent()) {	
+					throw new VendorNotFoundException("Vendor Address Not Available");
 				} else {
-					throw new VendorNotFoundException("You don't have permission to update this vendor address");
+					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+						if ((fieldValidation.isEmpty(address.getAddressType()))
+								& (fieldValidation.isEmpty(address.getAddress1()))
+								& (fieldValidation.isEmpty(address.getPostalCode()))
+								& (fieldValidation.isEmpty(address.getCity()))
+								& (fieldValidation.isEmpty(address.getCountry()))
+								& (fieldValidation.isEmpty(address.getRegion()))
+								& (fieldValidation.isEmpty(address.getAddressProof()))
+								& (fieldValidation.isEmpty(address.getAddressProofPath()))) {
+							SupAddress filterAddressUp = findById.get();
+
+							filterAddressUp.setSupplierCode(loginSupplierCode);
+							filterAddressUp.setAddressType(address.getAddressType());
+							filterAddressUp.setAddress1(address.getAddress1());
+							try {
+								if (fieldValidation.isEmpty(address.getAddress2())) {
+									filterAddressUp.setAddress2(address.getAddress2());
+								}
+							} catch (Exception e) {
+
+							}
+							filterAddressUp.setPostalCode(address.getPostalCode());
+							filterAddressUp.setCity(address.getCity());
+							filterAddressUp.setCountry(address.getCountry());
+							filterAddressUp.setRegion(address.getRegion());
+							filterAddressUp.setStatus("1");
+							filterAddressUp.setAddressProof(address.getAddressProof());
+							filterAddressUp.setAddressProofPath(address.getAddressProofPath());
+
+							filterAddressUp.setAddressId(addressId);
+							return this.supAddRepo.save(filterAddressUp);
+						} else {
+							throw new VendorNotFoundException("Validation error");
+						}
+					} else {
+						throw new VendorNotFoundException("You don't have permission to update this vendor address");
+					}
 				}
+			} else {
+				throw new VendorNotFoundException("Token Expir");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -722,21 +730,25 @@ public class VendorController {
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			Optional<SupAddress> findById = this.supAddRepo.findById(addressId);
-			if (!findById.isPresent()) {
-				throw new VendorNotFoundException("Vendor Address Does not exist");
-			} else {
-				if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
-					if (findById.get().getStatus().equals("0")) {
-						throw new VendorNotFoundException("Already Deleted");
-					} else {
-						SupAddress supAddress = findById.get();
-						supAddress.setStatus("0");
-						this.supAddRepo.save(supAddress);
-						return "Successfully Deleted";
-					}
+			if (!loginSupplierCode.equals(null)) {
+				if (!findById.isPresent()) {
+					throw new VendorNotFoundException("Vendor Address Does not exist");
 				} else {
-					throw new VendorNotFoundException("You don't have permission to delete this vendor address");
+					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+						if (findById.get().getStatus().equals("0")) {
+							throw new VendorNotFoundException("Already Deleted");
+						} else {
+							SupAddress supAddress = findById.get();
+							supAddress.setStatus("0");
+							this.supAddRepo.save(supAddress);
+							return "Successfully Deleted";
+						}
+					} else {
+						throw new VendorNotFoundException("You don't have permission to delete this vendor address");
+					}
 				}
+			} else {
+				throw new VendorNotFoundException("Token Expir");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -793,7 +805,7 @@ public class VendorController {
 					throw new VendorNotFoundException("Vendor Contact Does not exist");
 				}
 			} else {
-				throw new VendorNotFoundException("Vendor Details Not Found");
+				throw new VendorNotFoundException("Token Expir");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -828,22 +840,26 @@ public class VendorController {
 					& (fieldValidation.isEmpty(contact.getContractLocation()))) {
 
 				Optional<SupContract> findById = supContractRepo.findById(id);
-				if (findById.isPresent()) {
-					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
-						SupContract filterSupContract = new SupContract();
-						filterSupContract.setSupplierCode(loginSupplierCode);
-						filterSupContract.setContractType(contact.getContractType());
-						filterSupContract.setContractTerms(contact.getContractTerms());
-						filterSupContract.setBankId(findById.get().getBankId());
-						filterSupContract.setContractProof(contact.getContractProof());
-						filterSupContract.setContractLocation(contact.getContractLocation());
-						filterSupContract.setContractId(id);
-						return supContractRepo.save(filterSupContract);
+				if (!loginSupplierCode.equals(null)) {
+					if (findById.isPresent()) {
+						if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+							SupContract filterSupContract = new SupContract();
+							filterSupContract.setSupplierCode(loginSupplierCode);
+							filterSupContract.setContractType(contact.getContractType());
+							filterSupContract.setContractTerms(contact.getContractTerms());
+							filterSupContract.setBankId(findById.get().getBankId());
+							filterSupContract.setContractProof(contact.getContractProof());
+							filterSupContract.setContractLocation(contact.getContractLocation());
+							filterSupContract.setContractId(id);
+							return supContractRepo.save(filterSupContract);
+						} else {
+							throw new VendorNotFoundException("You don't have permission to update this vendor contact");
+						}
 					} else {
-						throw new VendorNotFoundException("You don't have permission to update this vendor contact");
+						throw new VendorNotFoundException("Vendor Contact Does not exist");
 					}
 				} else {
-					throw new VendorNotFoundException("Vendor Contact Does not exist");
+					throw new VendorNotFoundException("Token Expir");
 				}
 			} else {
 				throw new VendorNotFoundException("Valitation Error");
@@ -859,15 +875,19 @@ public class VendorController {
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			Optional<SupContract> findById = supContractRepo.findById(id);
-			if (findById.isPresent()) {
-				if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
-					supContractRepo.deleteById(id);
-					return "Deleted Successfuly";
+			if (!loginSupplierCode.equals(null)) {
+				if (findById.isPresent()) {
+					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+						supContractRepo.deleteById(id);
+						return "Deleted Successfuly";
+					} else {
+						throw new VendorNotFoundException("You don't have permission to delete this vendor contact");
+					}
 				} else {
-					throw new VendorNotFoundException("You don't have permission to delete this vendor contact");
+					throw new VendorNotFoundException("Vendor Contact Does not exist");
 				}
 			} else {
-				throw new VendorNotFoundException("Vendor Contact Does not exist");
+				throw new VendorNotFoundException("Token Expir");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -942,7 +962,7 @@ public class VendorController {
 				}
 
 			} else {
-				throw new VendorNotFoundException("Vendor Detail not found");
+				throw new VendorNotFoundException("Token Expir");
 			}
 
 		} catch (Exception e) {
@@ -955,49 +975,53 @@ public class VendorController {
 	public SupBank putBank(@PathVariable("bankId") long bankId, @RequestBody SupBank supBank,
 			@RequestHeader(name = "Authorization") String token) {
 
-		Optional<SupBank> findById = this.supBankRepo.findById(bankId);
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
-			if (!findById.isPresent()) {
-				throw new VendorNotFoundException("This Bank id not found");
-			} else {
-				if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
-					if (fieldValidation.isEmpty(supBank.getAccountHolder())
-							&& fieldValidation.isEmpty(supBank.getBankAccountNo())
-							&& fieldValidation.isEmpty(supBank.getBankBic())
-							&& fieldValidation.isEmpty(supBank.getBankBranch())
-							&& fieldValidation.isEmpty(supBank.getBankEvidence())
-							&& fieldValidation.isEmpty(supBank.getBankName())
-							&& fieldValidation.isEmpty(supBank.getChequeNo())
-							&& fieldValidation.isEmpty(supBank.getCountry())
-							&& fieldValidation.isEmpty(supBank.getCurrency())
-							&& fieldValidation.isEmpty(supBank.getEvidencePath())
-							&& fieldValidation.isEmpty(supBank.getIfscCode())
-							&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())) {
-						SupBank bank = new SupBank();
-						bank.setBankId(bankId);
-						bank.setAccountHolder(supBank.getAccountHolder());
-						bank.setBankAccountNo(supBank.getBankAccountNo());
-						bank.setBankBic(supBank.getBankBic());
-						bank.setBankBranch(supBank.getBankBranch());
-						bank.setBankEvidence(supBank.getBankEvidence());
-						bank.setBankName(supBank.getBankName());
-						bank.setChequeNo(supBank.getChequeNo());
-						bank.setCountry(supBank.getCountry());
-						bank.setCurrency(supBank.getCurrency());
-						bank.setEvidencePath(supBank.getEvidencePath());
-						bank.setIfscCode(supBank.getIfscCode());
-						bank.setSupplierCode(loginSupplierCode);
-						bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
-						SupBank sb = this.supBankRepo.save(bank);
-						return sb;
-					} else {
-						throw new VendorNotFoundException("Validation Error");
-					}
+			Optional<SupBank> findById = this.supBankRepo.findById(bankId);
+			if (!loginSupplierCode.equals(null)) {
+				if (!findById.isPresent()) {
+					throw new VendorNotFoundException("This Bank id not found");
 				} else {
-					throw new VendorNotFoundException("You don't have permission to update this vendor bank");
-				}
+					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+						if (fieldValidation.isEmpty(supBank.getAccountHolder())
+								&& fieldValidation.isEmpty(supBank.getBankAccountNo())
+								&& fieldValidation.isEmpty(supBank.getBankBic())
+								&& fieldValidation.isEmpty(supBank.getBankBranch())
+								&& fieldValidation.isEmpty(supBank.getBankEvidence())
+								&& fieldValidation.isEmpty(supBank.getBankName())
+								&& fieldValidation.isEmpty(supBank.getChequeNo())
+								&& fieldValidation.isEmpty(supBank.getCountry())
+								&& fieldValidation.isEmpty(supBank.getCurrency())
+								&& fieldValidation.isEmpty(supBank.getEvidencePath())
+								&& fieldValidation.isEmpty(supBank.getIfscCode())
+								&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())) {
+							SupBank bank = new SupBank();
+							bank.setBankId(bankId);
+							bank.setAccountHolder(supBank.getAccountHolder());
+							bank.setBankAccountNo(supBank.getBankAccountNo());
+							bank.setBankBic(supBank.getBankBic());
+							bank.setBankBranch(supBank.getBankBranch());
+							bank.setBankEvidence(supBank.getBankEvidence());
+							bank.setBankName(supBank.getBankName());
+							bank.setChequeNo(supBank.getChequeNo());
+							bank.setCountry(supBank.getCountry());
+							bank.setCurrency(supBank.getCurrency());
+							bank.setEvidencePath(supBank.getEvidencePath());
+							bank.setIfscCode(supBank.getIfscCode());
+							bank.setSupplierCode(loginSupplierCode);
+							bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
+							SupBank sb = this.supBankRepo.save(bank);
+							return sb;
+						} else {
+							throw new VendorNotFoundException("Validation Error");
+						}
+					} else {
+						throw new VendorNotFoundException("You don't have permission to update this vendor bank");
+					}
 
+				}
+			} else {
+				throw new VendorNotFoundException("Token Expir");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -1007,18 +1031,22 @@ public class VendorController {
 	@DeleteMapping("/vendor/bank/{bankId}")
 	public Object deleteBank(@PathVariable("bankId") long bankId, @RequestHeader(name = "Authorization") String token) {
 
-		Optional<SupBank> findById = this.supBankRepo.findById(bankId);
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
-			if (!findById.isPresent()) {
-				throw new VendorNotFoundException("This Bank id not found");
-			} else {
-				if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
-					this.supBankRepo.deleteById(bankId);
-					return "Successfully Deleted ";
+			Optional<SupBank> findById = this.supBankRepo.findById(bankId);
+			if (!loginSupplierCode.equals(null)) {
+				if (!findById.isPresent()) {
+					throw new VendorNotFoundException("This Bank id not found");
 				} else {
-					throw new VendorNotFoundException("You don't have permission to delete this vendor bank");
+					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+						this.supBankRepo.deleteById(bankId);
+						return "Successfully Deleted ";
+					} else {
+						throw new VendorNotFoundException("You don't have permission to delete this vendor bank");
+					}
 				}
+			} else {
+				throw new VendorNotFoundException("Token Expir");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -1039,7 +1067,7 @@ public class VendorController {
 					throw new VendorNotFoundException("Vendor department not present");
 				}
 			} else {
-				throw new VendorNotFoundException("Suplieer details not present");
+				throw new VendorNotFoundException("Token Expir");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -1089,43 +1117,47 @@ public class VendorController {
 	@PutMapping("/vendor/department/{departmentId}")
 	public SupDepartment updateSupDepartment(@PathVariable long departmentId, @RequestBody SupDepartment supDepartment,
 			@RequestHeader(name = "Authorization") String token) {
-		Optional<SupDepartment> findById = supDepartmentRepo.findById(departmentId);
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
-			if (findById.isPresent()) {
-				if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
-					if (fieldValidation.isEmpty(supDepartment.getDepartmentName())
-							&& fieldValidation.isEmpty(supDepartment.getSupplierContact1())
-							&& fieldValidation.isEmpty(supDepartment.getEmail())
-							&& fieldValidation.isEmpty(supDepartment.getPhoneno())) {
-						if (fieldValidation.isEmail(supDepartment.getEmail())) {
-							SupDepartment department = new SupDepartment();
-							department.setDepartmentName(supDepartment.getDepartmentName());
-							department.setSupplierCode(loginSupplierCode);
-							department.setSupplierContact1(supDepartment.getSupplierContact1());
-							department.setEmail(supDepartment.getEmail());
-							try {
-								if (fieldValidation.isEmpty(supDepartment.getSupplierContact2()) && fieldValidation.isEmpty(supDepartment.getAlternatePhoneno())) {
-									department.setSupplierContact2(supDepartment.getSupplierContact2());
-									department.setAlternatePhoneno(supDepartment.getAlternatePhoneno());
-								}
-							} catch (Exception e) {
+			Optional<SupDepartment> findById = supDepartmentRepo.findById(departmentId);
+			if (!loginSupplierCode.equals(null)) {
+				if (findById.isPresent()) {
+					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+						if (fieldValidation.isEmpty(supDepartment.getDepartmentName())
+								&& fieldValidation.isEmpty(supDepartment.getSupplierContact1())
+								&& fieldValidation.isEmpty(supDepartment.getEmail())
+								&& fieldValidation.isEmpty(supDepartment.getPhoneno())) {
+							if (fieldValidation.isEmail(supDepartment.getEmail())) {
+								SupDepartment department = new SupDepartment();
+								department.setDepartmentName(supDepartment.getDepartmentName());
+								department.setSupplierCode(loginSupplierCode);
+								department.setSupplierContact1(supDepartment.getSupplierContact1());
+								department.setEmail(supDepartment.getEmail());
+								try {
+									if (fieldValidation.isEmpty(supDepartment.getSupplierContact2()) && fieldValidation.isEmpty(supDepartment.getAlternatePhoneno())) {
+										department.setSupplierContact2(supDepartment.getSupplierContact2());
+										department.setAlternatePhoneno(supDepartment.getAlternatePhoneno());
+									}
+								} catch (Exception e) {
 
+								}
+								department.setPhoneno(supDepartment.getPhoneno());
+								department.setDepartmentId(departmentId);
+								return supDepartmentRepo.save(department);
+							} else {
+								throw new VendorNotFoundException("Email Format Not Valid");
 							}
-							department.setPhoneno(supDepartment.getPhoneno());
-							department.setDepartmentId(departmentId);
-							return supDepartmentRepo.save(department);
 						} else {
-							throw new VendorNotFoundException("Email Format Not Valid");
+							throw new VendorNotFoundException("Validation Error");
 						}
 					} else {
-						throw new VendorNotFoundException("Validation Error");
+						throw new VendorNotFoundException("You don't have permission to update this vendor department");
 					}
 				} else {
-					throw new VendorNotFoundException("You don't have permission to update this vendor department");
+					throw new VendorNotFoundException("Department Not Found");
 				}
 			} else {
-				throw new VendorNotFoundException("Department Not Found");
+				throw new VendorNotFoundException("Token Expir");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -1136,18 +1168,22 @@ public class VendorController {
 	@DeleteMapping("/vendor/department/{departmentId}")
 	public Object deleteSupDepartment(@PathVariable long departmentId,
 			@RequestHeader(name = "Authorization") String token) {
-		Optional<SupDepartment> findById = supDepartmentRepo.findById(departmentId);
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
-			if (findById.isPresent()) {
-				if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
-					supDepartmentRepo.deleteById(departmentId);
-					return "Successfully Deleted";
+			Optional<SupDepartment> findById = supDepartmentRepo.findById(departmentId);
+			if (!loginSupplierCode.equals(null)) {
+				if (findById.isPresent()) {
+					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+						supDepartmentRepo.deleteById(departmentId);
+						return "Successfully Deleted";
+					} else {
+						throw new VendorNotFoundException("You don't have permission to delete this vendor department");
+					}
 				} else {
-					throw new VendorNotFoundException("You don't have permission to delete this vendor department");
+					throw new VendorNotFoundException("Department Not Found");
 				}
 			} else {
-				throw new VendorNotFoundException("Department Not Found");
+				throw new VendorNotFoundException("Token Expir");
 			}
 
 		} catch (Exception e) {
