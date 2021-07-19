@@ -54,7 +54,7 @@ public class VendorLoginController {
 	
 	VendorLogin loginDetails;
 	
-	@PostMapping("/vendorLogin")
+	@PostMapping("/login")
 	public ResponseEntity<?> venderLogin(@RequestBody VendorLogin vendorLogin) {
 		
 		try {

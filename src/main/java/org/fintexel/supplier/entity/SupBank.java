@@ -16,7 +16,7 @@ public class SupBank {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "BANK_ID")
-	private int bankId;
+	private long bankId;
 	
 	@Column(name = "SUPPLIER_CODE")
 	private String supplierCode;
@@ -77,7 +77,7 @@ public class SupBank {
 	
 	
 	
-	public SupBank(int bankId, String supplierCode, String bankName, String bankBranch, String bankBic,
+	public SupBank(long bankId, String supplierCode, String bankName, String bankBranch, String bankBic,
 			String bankAccountNo, String currency, String transilRoutingNo, String chequeNo, String accountHolder,
 			String swiftCode, String ifscCode, String country, String bankEvidence, String evidencePath, int createdBy,
 			Date createdOn, int updatedBy, Date updatedOn) {
@@ -125,11 +125,11 @@ public class SupBank {
 
 
 
-	public int getBankId() {
+	public long getBankId() {
 		return bankId;
 	}
 
-	public void setBankId(int bankId) {
+	public void setBankId(long bankId) {
 		this.bankId = bankId;
 	}
 

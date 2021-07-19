@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -13,6 +15,7 @@ public class SupDepartment {
 	
 	@Id
 	@Column(name = "DEPARTMENT_ID")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long departmentId;
 	
 	@Column(name = "SUPPLIER_CODE")
@@ -165,6 +168,17 @@ public class SupDepartment {
 	public void setUpdatedOn(Date updatedOn) {
 		this.updatedOn = updatedOn;
 	}
+
+	@Override
+	public String toString() {
+		return "SupDepartment [departmentId=" + departmentId + ", supplierCode=" + supplierCode + ", departmentName="
+				+ departmentName + ", supplierContact1=" + supplierContact1 + ", supplierContact2=" + supplierContact2
+				+ ", email=" + email + ", phoneno=" + phoneno + ", alternatePhoneno=" + alternatePhoneno
+				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn="
+				+ updatedOn + "]";
+	}
+	
+	
 	
 	
 	

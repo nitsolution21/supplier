@@ -32,12 +32,17 @@ public class ItemCategory {
 	
 	@Column(name = "UPDATED_ON")
 	private Date updatedOn;
+	
+	@Column(name = "SUPPLIER_CODE")
+	private String supplierCode;
+
+	
 
 	@Override
 	public String toString() {
 		return "ItemCategory [categoryId=" + categoryId + ", categoryName=" + categoryName + ", createdBy=" + createdBy
-				+ ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + ", getClass()="
-				+ getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+				+ ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn
+				+ ", supplierCode=" + supplierCode + "]";
 	}
 
 	public ItemCategory() {
@@ -46,7 +51,7 @@ public class ItemCategory {
 	}
 
 	public ItemCategory(long categoryId, String categoryName, int createdBy, Date createdOn, int updatedBy,
-			Date updatedOn) {
+			Date updatedOn, String supplierCode) {
 		super();
 		this.categoryId = categoryId;
 		this.categoryName = categoryName;
@@ -54,6 +59,7 @@ public class ItemCategory {
 		this.createdOn = createdOn;
 		this.updatedBy = updatedBy;
 		this.updatedOn = updatedOn;
+		this.supplierCode = supplierCode;
 	}
 
 	public long getCategoryId() {
@@ -102,6 +108,14 @@ public class ItemCategory {
 
 	public void setUpdatedOn(Date updatedOn) {
 		this.updatedOn = updatedOn;
+	}
+	
+	public String getSupplierCode() {
+		return supplierCode;
+	}
+
+	public void setSupplierCode(String supplierCode) {
+		this.supplierCode = supplierCode;
 	}
 
 	

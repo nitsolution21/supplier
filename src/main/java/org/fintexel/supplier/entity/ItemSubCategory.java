@@ -31,6 +31,12 @@ public class ItemSubCategory {
 	
 	@Column(name = "UPDATED_ON")
 	private Date updatedOn;
+	
+	@Column(name = "SUPPLIER_CODE")
+	private String supplierCode;
+	
+	@Column(name = "CATEGORY_ID")
+	private long categoryId;
 
 	public long getSubCategoryId() {
 		return subCategoryId;
@@ -79,19 +85,32 @@ public class ItemSubCategory {
 	public void setUpdatedOn(Date updatedOn) {
 		this.updatedOn = updatedOn;
 	}
+	
+	public String getSupplierCode() {
+		return supplierCode;
+	}
+
+	public void setSupplierCode(String supplierCode) {
+		this.supplierCode = supplierCode;
+	}
+	
+	public long getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(long categoryId) {
+		this.categoryId = categoryId;
+	}
 
 	@Override
 	public String toString() {
 		return "ItemSubCategory [subCategoryId=" + subCategoryId + ", subCategoryName=" + subCategoryName
 				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn="
-				+ updatedOn + ", getSubCategoryId()=" + getSubCategoryId() + ", getSubCategoryName()="
-				+ getSubCategoryName() + ", getCreatedBy()=" + getCreatedBy() + ", getCreatedOn()=" + getCreatedOn()
-				+ ", getUpdatedBy()=" + getUpdatedBy() + ", getUpdatedOn()=" + getUpdatedOn() + ", getClass()="
-				+ getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+				+ updatedOn + ", supplierCode=" + supplierCode + ", categoryId="+categoryId+"]";
 	}
 
 	public ItemSubCategory(long subCategoryId, String subCategoryName, int createdBy, Date createdOn, int updatedBy,
-			Date updatedOn) {
+			Date updatedOn, String supplierCode, long categoryId) {
 		super();
 		this.subCategoryId = subCategoryId;
 		this.subCategoryName = subCategoryName;
@@ -99,6 +118,8 @@ public class ItemSubCategory {
 		this.createdOn = createdOn;
 		this.updatedBy = updatedBy;
 		this.updatedOn = updatedOn;
+		this.supplierCode = supplierCode;
+		this.categoryId = categoryId;
 	}
 
 	public ItemSubCategory() {
