@@ -20,6 +20,7 @@ import org.fintexel.supplier.entity.SupContract;
 import org.fintexel.supplier.entity.SupBank;
 import org.fintexel.supplier.entity.SupDepartment;
 import org.fintexel.supplier.entity.SupDetails;
+import org.fintexel.supplier.entity.SupRequest;
 import org.fintexel.supplier.entity.User;
 import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.entity.flowableentity.FlowableRegistration;
@@ -32,6 +33,7 @@ import org.fintexel.supplier.repository.SupContractRepo;
 import org.fintexel.supplier.repository.SupBankRepo;
 import org.fintexel.supplier.repository.SupDepartmentRepo;
 import org.fintexel.supplier.repository.SupDetailsRepo;
+import org.fintexel.supplier.repository.SupRequestRepo;
 import org.fintexel.supplier.repository.UserRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.fintexel.supplier.repository.flowablerepo.FlowableRegistrationRepo;
@@ -107,6 +109,9 @@ public class VendorController {
 	@Autowired
 	private LoginUserDetails loginUserDetails;
 
+	@Autowired
+	private SupRequestRepo supRequestRepo;
+	
 	private String jwtToken;
 
 	@Autowired
@@ -405,7 +410,7 @@ public class VendorController {
 				List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(supDetails.getRegisterId());
 				if (findByRegisterId.size() < 1) {
 					SupDetails filterSupDetails = new SupDetails();
-				//	SupRequest supRequest=new SupRequest();
+					SupRequest supRequest=new SupRequest();
 					Random rd = new Random();
 					filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
 					filterSupDetails.setRegisterId(supDetails.getRegisterId());
@@ -418,11 +423,12 @@ public class VendorController {
 					filterSupDetails.setStatus("2");
 					
 					
-//					supRequest.setSupplierCode(filterSupDetails.getSupplierCode());
-//					supRequest.setTableName("");
-//					supRequest.setId(null);
-//					supRequest.setNewValue(filterSupDetails.toString());
-//					supRequest.setStatus("0");
+					supRequest.setSupplierCode(filterSupDetails.getSupplierCode());
+					supRequest.setTableName("SUP_REQUESTS");
+					supRequest.setId(null);
+					supRequest.setNewValue(filterSupDetails.toString());
+					supRequest.setStatus("0");
+					supRequestRepo.save(supRequest);
 					return supDetailsRepo.save(filterSupDetails);
 				} else {
 					throw new VendorNotFoundException("Vendor Already Exist");
@@ -511,8 +517,18 @@ public class VendorController {
 						filterSupDetails.setRemarks(supDetails.getRemarks());
 						filterSupDetails.setLastlogin(supDetails.getLastlogin());
 						filterSupDetails.setSupplierCode(findById.get().getSupplierCode());
-						filterSupDetails.setStatus("1");
-						return supDetailsRepo.save(filterSupDetails);
+						filterSupDetails.setStatus("2");
+						SupDetails save = supDetailsRepo.save(filterSupDetails);
+						
+						SupRequest supRequest=new SupRequest();
+						supRequest.setSupplierCode(filterSupDetails.getSupplierCode());
+						supRequest.setTableName("SUP_REQUESTS");
+						supRequest.setId(filterSupDetails.getRegisterId());
+						supRequest.setNewValue(filterSupDetails.toString());
+						supRequest.setOldValue(findById.get().toString());
+						supRequest.setStatus("0");
+						supRequestRepo.save(supRequest);
+						return save;
 					} else {
 						throw new VendorNotFoundException("You don't have permission to update this vendor");
 					}
