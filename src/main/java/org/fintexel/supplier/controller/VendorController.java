@@ -1,10 +1,12 @@
 package org.fintexel.supplier.controller;
 
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -408,10 +410,13 @@ public class VendorController {
 					& (fieldValidation.isEmpty(supDetails.getRemarks()))
 					& (fieldValidation.isEmpty(supDetails.getLastlogin()))) {
 				List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(supDetails.getRegisterId());
+				List<SupDetails> findAll = supDetailsRepo.findAll();
 				if (findByRegisterId.size() < 1) {
 					SupDetails filterSupDetails = new SupDetails();
 					SupRequest supRequest=new SupRequest();
 					Random rd = new Random();
+					SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");  
+					 Date date = new Date();  
 					filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
 					filterSupDetails.setRegisterId(supDetails.getRegisterId());
 					filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
@@ -419,12 +424,13 @@ public class VendorController {
 					filterSupDetails.setCostCenter(supDetails.getCostCenter());
 					filterSupDetails.setRemarks(supDetails.getRemarks());
 					filterSupDetails.setLastlogin(supDetails.getLastlogin());
-					filterSupDetails.setSupplierCode("SU-" + java.time.LocalDate.now() + rd.nextInt(10));
+					filterSupDetails.setSupplierCode("SU-" + formatter.format(date) + findAll.size()+1);
 					filterSupDetails.setStatus("2");
 					
 					
+					
 					supRequest.setSupplierCode(filterSupDetails.getSupplierCode());
-					supRequest.setTableName("SUP_REQUESTS");
+					supRequest.setTableName("SUP_DETAILS");
 					supRequest.setId(null);
 					supRequest.setNewValue(filterSupDetails.toString());
 					supRequest.setStatus("0");
@@ -522,8 +528,8 @@ public class VendorController {
 							SupDetails save = supDetailsRepo.save(filterSupDetails);
 							
 							SupRequest supRequest=new SupRequest();
-							supRequest.setSupplierCode(filterSupDetails.getSupplierCode());
-							supRequest.setTableName("SUP_REQUESTS");
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_DETAILS");
 							supRequest.setId(filterSupDetails.getRegisterId());
 							supRequest.setNewValue(filterSupDetails.toString());
 							supRequest.setOldValue(findById.get().toString());
@@ -603,10 +609,19 @@ public class VendorController {
 					filterAddressUp.setCity(address.getCity());
 					filterAddressUp.setCountry(address.getCountry());
 					filterAddressUp.setRegion(address.getRegion());
-					filterAddressUp.setStatus("1");
+					filterAddressUp.setStatus("2");
 					filterAddressUp.setAddressProof(address.getAddressProof());
 					filterAddressUp.setAddressProofPath(address.getAddressProofPath());
 					SupAddress save = this.supAddRepo.save(filterAddressUp);
+					
+					SupRequest supRequest=new SupRequest();
+					
+					supRequest.setSupplierCode(loginSupplierCode);
+					supRequest.setTableName("SUP_ADDRESS");
+					supRequest.setId(null);
+					supRequest.setNewValue(filterAddressUp.toString());
+					supRequest.setStatus("0");
+					supRequestRepo.save(supRequest);
 					return save;
 				} else {
 					throw new VendorNotFoundException("Token not valid");
@@ -702,11 +717,23 @@ public class VendorController {
 							filterAddressUp.setCity(address.getCity());
 							filterAddressUp.setCountry(address.getCountry());
 							filterAddressUp.setRegion(address.getRegion());
-							filterAddressUp.setStatus("1");
+							filterAddressUp.setStatus("2");
 							filterAddressUp.setAddressProof(address.getAddressProof());
 							filterAddressUp.setAddressProofPath(address.getAddressProofPath());
 
 							filterAddressUp.setAddressId(addressId);
+							
+							SupRequest supRequest=new SupRequest();
+							
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_ADDRESS");
+							supRequest.setId(address.getAddressId());
+							supRequest.setNewValue(filterAddressUp.toString());
+							supRequest.setOldValue(filterAddressUp.toString());
+							supRequest.setStatus("0");
+							supRequestRepo.save(supRequest);
+							
+							
 							return this.supAddRepo.save(filterAddressUp);
 						} else {
 							throw new VendorNotFoundException("Validation error");
@@ -774,6 +801,17 @@ public class VendorController {
 						filterSupContract.setContractTerms(contact.getContractTerms());
 						filterSupContract.setContractProof(contact.getContractProof());
 						filterSupContract.setContractLocation(contact.getContractLocation());
+						filterSupContract.setStatus("2");
+						SupRequest supRequest=new SupRequest();
+						
+						supRequest.setSupplierCode(loginSupplierCode);
+						supRequest.setTableName("SUP_CONTRACT");
+						supRequest.setId(null);
+						supRequest.setNewValue(filterSupContract.toString());
+						supRequest.setStatus("0");
+						supRequestRepo.save(supRequest);
+						
+						
 						return supContractRepo.save(filterSupContract);
 					} else {
 						throw new VendorNotFoundException("Please add bank first after that add contact");
@@ -850,7 +888,19 @@ public class VendorController {
 							filterSupContract.setBankId(findById.get().getBankId());
 							filterSupContract.setContractProof(contact.getContractProof());
 							filterSupContract.setContractLocation(contact.getContractLocation());
+							filterSupContract.setStatus("2");
 							filterSupContract.setContractId(id);
+							
+							
+							SupRequest supRequest=new SupRequest();
+							
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_CONTRACT");
+							supRequest.setId(null);
+							supRequest.setNewValue(filterSupContract.toString());
+							supRequest.setOldValue(findById.get().toString());
+							supRequest.setStatus("0");
+							
 							return supContractRepo.save(filterSupContract);
 						} else {
 							throw new VendorNotFoundException("You don't have permission to update this vendor contact");
@@ -928,8 +978,17 @@ public class VendorController {
 					bank.setSupplierCode(loginSupplierCode);
 					bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
 					bank.setSwiftCode(supBank.getSwiftCode());
+					bank.setStatus("2");
 					Optional<SupBank> findBySwiftCode = supBankRepo.findBySwiftCode(supBank.getSwiftCode());
 					if (!findBySwiftCode.isPresent()) {
+						SupRequest supRequest=new SupRequest();
+						
+						supRequest.setSupplierCode(loginSupplierCode);
+						supRequest.setTableName("SUP_BANK");
+						supRequest.setId(null);
+						supRequest.setNewValue(bank.toString());
+						supRequest.setStatus("0");
+						
 						SupBank postData = this.supBankRepo.save(bank);
 						return postData;
 					} else {
@@ -1010,7 +1069,19 @@ public class VendorController {
 							bank.setIfscCode(supBank.getIfscCode());
 							bank.setSupplierCode(loginSupplierCode);
 							bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
+							bank.setStatus("2");
+							
 							SupBank sb = this.supBankRepo.save(bank);
+							
+							SupRequest supRequest=new SupRequest();
+							
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_BANK");
+							supRequest.setId(null);
+							supRequest.setNewValue(bank.toString());
+							supRequest.setOldValue(findById.get().toString());
+							supRequest.setStatus("0");
+							
 							return sb;
 						} else {
 							throw new VendorNotFoundException("Validation Error");
@@ -1090,6 +1161,7 @@ public class VendorController {
 						department.setSupplierCode(loginSupplierCode);
 						department.setSupplierContact1(supDepartment.getSupplierContact1());
 						department.setEmail(supDepartment.getEmail());
+						department.setStatus("2");
 						try {
 							if (fieldValidation.isEmpty(supDepartment.getSupplierContact2()) && fieldValidation.isEmpty(supDepartment.getAlternatePhoneno())) {
 								department.setSupplierContact2(supDepartment.getSupplierContact2());
@@ -1099,6 +1171,15 @@ public class VendorController {
 
 						}
 						department.setPhoneno(supDepartment.getPhoneno());
+						
+						SupRequest supRequest=new SupRequest();
+						
+						supRequest.setSupplierCode(loginSupplierCode);
+						supRequest.setTableName("SUP_DEPARTMENT");
+						supRequest.setId(null);
+						supRequest.setNewValue(department.toString());
+						supRequest.setStatus("0");
+						
 						return supDepartmentRepo.save(department);
 					} else {
 						throw new VendorNotFoundException("Token Expir");
@@ -1133,6 +1214,7 @@ public class VendorController {
 								department.setSupplierCode(loginSupplierCode);
 								department.setSupplierContact1(supDepartment.getSupplierContact1());
 								department.setEmail(supDepartment.getEmail());
+								department.setStatus("0");
 								try {
 									if (fieldValidation.isEmpty(supDepartment.getSupplierContact2()) && fieldValidation.isEmpty(supDepartment.getAlternatePhoneno())) {
 										department.setSupplierContact2(supDepartment.getSupplierContact2());
@@ -1143,6 +1225,17 @@ public class VendorController {
 								}
 								department.setPhoneno(supDepartment.getPhoneno());
 								department.setDepartmentId(departmentId);
+								
+								SupRequest supRequest=new SupRequest();
+								
+								supRequest.setSupplierCode(loginSupplierCode);
+								supRequest.setTableName("SUP_DEPARTMENT");
+								supRequest.setId(null);
+								supRequest.setNewValue(department.toString());
+								supRequest.setOldValue(findById.get().toString());
+								supRequest.setStatus("0");
+								
+								
 								return supDepartmentRepo.save(department);
 							} else {
 								throw new VendorNotFoundException("Email Format Not Valid");

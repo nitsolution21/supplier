@@ -40,6 +40,9 @@ public class SupContract {
 	@Column(name = "CONTRACT_LOCATION")
 	private String contractLocation;
 	
+	@Column(name = "STATUS")
+	private String status;
+	
 	@Column(name = "CREATED_BY")
 	private int createdBy;
 	
@@ -112,6 +115,14 @@ public class SupContract {
 		this.contractLocation = contractLocation;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	public int getCreatedBy() {
 		return createdBy;
 	}
@@ -148,12 +159,13 @@ public class SupContract {
 	public String toString() {
 		return "SupContract [contractId=" + contractId + ", supplierCode=" + supplierCode + ", bankId=" + bankId
 				+ ", contractType=" + contractType + ", contractTerms=" + contractTerms + ", contractProof="
-				+ contractProof + ", contractLocation=" + contractLocation + ", createdBy=" + createdBy + ", createdOn="
-				+ createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + "]";
+				+ contractProof + ", contractLocation=" + contractLocation + ", status=" + status + ", createdBy="
+				+ createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn
+				+ "]";
 	}
 
 	public SupContract(Long contractId, String supplierCode, int bankId, String contractType, int contractTerms,
-			String contractProof, String contractLocation, int createdBy, Date createdOn, int updatedBy,
+			String contractProof, String contractLocation, String status, int createdBy, Date createdOn, int updatedBy,
 			Date updatedOn) {
 		super();
 		this.contractId = contractId;
@@ -163,6 +175,7 @@ public class SupContract {
 		this.contractTerms = contractTerms;
 		this.contractProof = contractProof;
 		this.contractLocation = contractLocation;
+		this.status = status;
 		this.createdBy = createdBy;
 		this.createdOn = createdOn;
 		this.updatedBy = updatedBy;
@@ -173,6 +186,7 @@ public class SupContract {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
 	
 	
 	

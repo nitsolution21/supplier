@@ -39,6 +39,9 @@ public class SupDepartment {
 	@Column(name = "ALTERNATE_PHONENO")
 	private String alternatePhoneno;
 	
+	@Column(name = "STATUS")
+	private String status;
+	
 	@Column(name = "CREATED_BY")
 	private int createdBy;
 	
@@ -50,28 +53,6 @@ public class SupDepartment {
 	
 	@Column(name = "UPDATED_ON")
 	private Date updatedOn;
-	
-	public SupDepartment(long departmentId, String supplierCode, String departmentName, String supplierContact1, String supplierContact2, String email, String phoneno,
-			String alternatePhoneno, int createdBy, Date createdOn, int updatedBy, Date updatedOn) {
-		super();
-		this.departmentId = departmentId;
-		this.supplierCode = supplierCode;
-		this.departmentName = departmentName;
-		this.email = email;
-		this.phoneno = phoneno;
-		this.alternatePhoneno = alternatePhoneno;
-		this.createdBy = createdBy;
-		this.createdOn = createdOn;
-		this.updatedBy = updatedBy;
-		this.updatedOn = updatedOn;
-		this.supplierContact1 = supplierContact1;
-		this.supplierContact2 = supplierContact2;
-	}
-
-	public SupDepartment() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	public long getDepartmentId() {
 		return departmentId;
@@ -96,7 +77,7 @@ public class SupDepartment {
 	public void setDepartmentName(String departmentName) {
 		this.departmentName = departmentName;
 	}
-	
+
 	public String getSupplierContact1() {
 		return supplierContact1;
 	}
@@ -137,6 +118,14 @@ public class SupDepartment {
 		this.alternatePhoneno = alternatePhoneno;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	public int getCreatedBy() {
 		return createdBy;
 	}
@@ -173,11 +162,34 @@ public class SupDepartment {
 	public String toString() {
 		return "SupDepartment [departmentId=" + departmentId + ", supplierCode=" + supplierCode + ", departmentName="
 				+ departmentName + ", supplierContact1=" + supplierContact1 + ", supplierContact2=" + supplierContact2
-				+ ", email=" + email + ", phoneno=" + phoneno + ", alternatePhoneno=" + alternatePhoneno
-				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn="
-				+ updatedOn + "]";
+				+ ", email=" + email + ", phoneno=" + phoneno + ", alternatePhoneno=" + alternatePhoneno + ", status="
+				+ status + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy
+				+ ", updatedOn=" + updatedOn + "]";
 	}
-	
+
+	public SupDepartment(long departmentId, String supplierCode, String departmentName, String supplierContact1,
+			String supplierContact2, String email, String phoneno, String alternatePhoneno, String status,
+			int createdBy, Date createdOn, int updatedBy, Date updatedOn) {
+		super();
+		this.departmentId = departmentId;
+		this.supplierCode = supplierCode;
+		this.departmentName = departmentName;
+		this.supplierContact1 = supplierContact1;
+		this.supplierContact2 = supplierContact2;
+		this.email = email;
+		this.phoneno = phoneno;
+		this.alternatePhoneno = alternatePhoneno;
+		this.status = status;
+		this.createdBy = createdBy;
+		this.createdOn = createdOn;
+		this.updatedBy = updatedBy;
+		this.updatedOn = updatedOn;
+	}
+
+	public SupDepartment() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	
 	
 	

@@ -34,7 +34,7 @@ public class SupDetails {
 	private String registrationType;
 	
 	@Column(name = "REGRISTRATION_NO")
-	private String regristrationNo; 
+	private String registrationNo; 
 	
 	@Column(name = "STATUS")
 	private String status;
@@ -105,11 +105,11 @@ public class SupDetails {
 	}
 
 	public String getRegristrationNo() {
-		return regristrationNo;
+		return registrationNo;
 	}
 
-	public void setRegristrationNo(String regristrationNo) {
-		this.regristrationNo = regristrationNo;
+	public void setRegristrationNo(String registrationNo) {
+		this.registrationNo = registrationNo;
 	}
 
 	public String getStatus() {
@@ -185,14 +185,14 @@ public class SupDetails {
 //	}
 
 	public SupDetails(String supplierCode, Long registerId, String supplierCompName, String registrationType,
-			String regristrationNo, String status, String costCenter, String remarks, Date lastlogin, int createdBy,
+			String registrationNo, String status, String costCenter, String remarks, Date lastlogin, int createdBy,
 			Date createdOn, int updatedBy, Date updatedOn) {
 		super();
 		this.supplierCode = supplierCode;
 		this.registerId = registerId;
 		this.supplierCompName = supplierCompName;
 		this.registrationType = registrationType;
-		this.regristrationNo = regristrationNo;
+		this.registrationNo = registrationNo;
 		this.status = status;
 		this.costCenter = costCenter;
 		this.remarks = remarks;
@@ -211,7 +211,7 @@ public class SupDetails {
 	@Override
 	public String toString() {
 		return "SupDetails [supplierCode=" + supplierCode + ", registerId=" + registerId + ", supplierCompName="
-				+ supplierCompName + ", registrationType=" + registrationType + ", regristrationNo=" + regristrationNo
+				+ supplierCompName + ", registrationType=" + registrationType + ", registrationNo=" + registrationNo
 				+ ", status=" + status + ", costCenter=" + costCenter + ", remarks=" + remarks + ", lastlogin="
 				+ lastlogin + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy
 				+ ", updatedOn=" + updatedOn ;

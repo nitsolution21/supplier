@@ -72,58 +72,9 @@ public class SupBank {
 	
 	@Column(name = "UPDATED_ON")
 	private Date updatedOn;
-
 	
-	
-	
-	
-	public SupBank(long bankId, String supplierCode, String bankName, String bankBranch, String bankBic,
-			String bankAccountNo, String currency, String transilRoutingNo, String chequeNo, String accountHolder,
-			String swiftCode, String ifscCode, String country, String bankEvidence, String evidencePath, int createdBy,
-			Date createdOn, int updatedBy, Date updatedOn) {
-		super();
-		this.bankId = bankId;
-		this.supplierCode = supplierCode;
-		this.bankName = bankName;
-		this.bankBranch = bankBranch;
-		this.bankBic = bankBic;
-		this.bankAccountNo = bankAccountNo;
-		this.currency = currency;
-		this.transilRoutingNo = transilRoutingNo;
-		this.chequeNo = chequeNo;
-		this.accountHolder = accountHolder;
-		this.swiftCode = swiftCode;
-		this.ifscCode = ifscCode;
-		this.country = country;
-		this.bankEvidence = bankEvidence;
-		this.evidencePath = evidencePath;
-		this.createdBy = createdBy;
-		this.createdOn = createdOn;
-		this.updatedBy = updatedBy;
-		this.updatedOn = updatedOn;
-	}
-
-	
-	
-	public SupBank() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-
-
-	@Override
-	public String toString() {
-		return "SupBank [bankId=" + bankId + ", supplierCode=" + supplierCode + ", bankName=" + bankName
-				+ ", bankBranch=" + bankBranch + ", bankBic=" + bankBic + ", bankAccountNo=" + bankAccountNo
-				+ ", currency=" + currency + ", transilRoutingNo=" + transilRoutingNo + ", chequeNo=" + chequeNo
-				+ ", accountHolder=" + accountHolder + ", swiftCode=" + swiftCode + ", ifscCode=" + ifscCode
-				+ ", country=" + country + ", bankEvidence=" + bankEvidence + ", evidencePath=" + evidencePath
-				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn="
-				+ updatedOn + "]";
-	}
-
-
+	@Column(name = "STATUS")
+	private String status;
 
 	public long getBankId() {
 		return bankId;
@@ -277,6 +228,62 @@ public class SupBank {
 		this.updatedOn = updatedOn;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	@Override
+	public String toString() {
+		return "SupBank [bankId=" + bankId + ", supplierCode=" + supplierCode + ", bankName=" + bankName
+				+ ", bankBranch=" + bankBranch + ", bankBic=" + bankBic + ", bankAccountNo=" + bankAccountNo
+				+ ", currency=" + currency + ", transilRoutingNo=" + transilRoutingNo + ", chequeNo=" + chequeNo
+				+ ", accountHolder=" + accountHolder + ", swiftCode=" + swiftCode + ", ifscCode=" + ifscCode
+				+ ", country=" + country + ", bankEvidence=" + bankEvidence + ", evidencePath=" + evidencePath
+				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn="
+				+ updatedOn + ", status=" + status + "]";
+	}
+
+	public SupBank(long bankId, String supplierCode, String bankName, String bankBranch, String bankBic,
+			String bankAccountNo, String currency, String transilRoutingNo, String chequeNo, String accountHolder,
+			String swiftCode, String ifscCode, String country, String bankEvidence, String evidencePath, int createdBy,
+			Date createdOn, int updatedBy, Date updatedOn, String status) {
+		super();
+		this.bankId = bankId;
+		this.supplierCode = supplierCode;
+		this.bankName = bankName;
+		this.bankBranch = bankBranch;
+		this.bankBic = bankBic;
+		this.bankAccountNo = bankAccountNo;
+		this.currency = currency;
+		this.transilRoutingNo = transilRoutingNo;
+		this.chequeNo = chequeNo;
+		this.accountHolder = accountHolder;
+		this.swiftCode = swiftCode;
+		this.ifscCode = ifscCode;
+		this.country = country;
+		this.bankEvidence = bankEvidence;
+		this.evidencePath = evidencePath;
+		this.createdBy = createdBy;
+		this.createdOn = createdOn;
+		this.updatedBy = updatedBy;
+		this.updatedOn = updatedOn;
+		this.status = status;
+	}
+
+	public SupBank() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	
+	
+	
+	
+	
 	
 	
 }
