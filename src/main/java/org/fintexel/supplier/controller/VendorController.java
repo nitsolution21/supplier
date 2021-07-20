@@ -213,6 +213,9 @@ public class VendorController {
 							"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/"
 									+ array.getJSONObject(0).get("id") + "/variables",
 							HttpMethod.POST, entityy, String.class, 1);
+					
+					LOGGER.info("Taks ID 2" +array.getJSONObject(0).get("id"));
+					
 					System.out.println(response2);
 				} catch (Exception e) {
 					
