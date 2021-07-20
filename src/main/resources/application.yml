@@ -65,7 +65,12 @@ logging:
         org.springframework.web: ERROR
         org.fintexel.supplier.*: INFO
         org.hibernate: ERROR
-   
+connection: 
+  pool: 
+    initialPoolSize: 5
+    minPoolSize: 10
+    maxPoolSize: 20
+    maxIdleTime: 3000
 ---
 spring: 
   profiles: prod

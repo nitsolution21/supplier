@@ -175,6 +175,8 @@ public class VendorController {
 //					headers.set("processInstanceId", (String) jsonObject.get("id"));
 					Map<String, Object> mapp = new HashMap<>();
 					map.put("processInstanceId", (String) jsonObject.get("id"));
+					LOGGER.info("Task ID - "+(String) jsonObject.get("id"));
+					
 					HttpEntity<Map<String, Object>> request = new HttpEntity<>(map, headers);
 					ResponseEntity<String> exchange = restTemplate.exchange(
 							"http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, request,
@@ -213,6 +215,9 @@ public class VendorController {
 							"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/"
 									+ array.getJSONObject(0).get("id") + "/variables",
 							HttpMethod.POST, entityy, String.class, 1);
+					
+					LOGGER.info("Taks ID 2" +array.getJSONObject(0).get("id"));
+					
 					System.out.println(response2);
 				} catch (Exception e) {
 					
