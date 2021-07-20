@@ -407,10 +407,11 @@ public class VendorController {
 	public SupDetails postSupplierDetails(@RequestBody SupDetails supDetails) {
 		LOGGER.info("Inside - VendorController.postSupplierDetails()");
 		try {
+			System.out.println(supDetails.getRegistrationNo());
 			if ((fieldValidation.isEmpty(supDetails.getSupplierCompName()))
 					& (fieldValidation.isEmpty(supDetails.getRegistrationType()))
 					& (fieldValidation.isEmpty(supDetails.getRegisterId()))
-					& (fieldValidation.isEmpty(supDetails.getRegristrationNo()))
+					& (fieldValidation.isEmpty(supDetails.getRegistrationNo()))
 					& (fieldValidation.isEmpty(supDetails.getCostCenter()))
 					& (fieldValidation.isEmpty(supDetails.getRemarks()))
 					& (fieldValidation.isEmpty(supDetails.getLastlogin()))) {
@@ -425,20 +426,20 @@ public class VendorController {
 					filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
 					filterSupDetails.setRegisterId(supDetails.getRegisterId());
 					filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
-					filterSupDetails.setRegristrationNo(supDetails.getRegristrationNo());
+					filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
 					filterSupDetails.setCostCenter(supDetails.getCostCenter());
 					filterSupDetails.setRemarks(supDetails.getRemarks());
 					filterSupDetails.setLastlogin(supDetails.getLastlogin());
-					filterSupDetails.setSupplierCode("SU-" + formatter.format(date) + findAll.size()+1);
+					filterSupDetails.setSupplierCode("SU-" + formatter.format(date) +"-"+ findAll.size());
 					filterSupDetails.setStatus("2");
 					
 					
 					
 					supRequest.setSupplierCode(filterSupDetails.getSupplierCode());
 					supRequest.setTableName("SUP_DETAILS");
-					supRequest.setId(null);
 					supRequest.setNewValue(filterSupDetails.toString());
 					supRequest.setStatus("0");
+					
 					supRequestRepo.save(supRequest);
 					return supDetailsRepo.save(filterSupDetails);
 				} else {
@@ -510,7 +511,7 @@ public class VendorController {
 			if ((fieldValidation.isEmpty(supDetails.getSupplierCompName()))
 					& (fieldValidation.isEmpty(supDetails.getRegistrationType()))
 					& (fieldValidation.isEmpty(supDetails.getRegisterId()))
-					& (fieldValidation.isEmpty(supDetails.getRegristrationNo()))
+					& (fieldValidation.isEmpty(supDetails.getRegistrationNo()))
 					& (fieldValidation.isEmpty(supDetails.getCostCenter()))
 					& (fieldValidation.isEmpty(supDetails.getRemarks()))
 					& (fieldValidation.isEmpty(supDetails.getLastlogin()))) {
@@ -523,7 +524,7 @@ public class VendorController {
 							SupDetails filterSupDetails = new SupDetails();
 							filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
 							filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
-							filterSupDetails.setRegristrationNo(supDetails.getRegristrationNo());
+							filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
 							filterSupDetails.setRegisterId(supDetails.getRegisterId());
 							filterSupDetails.setCostCenter(supDetails.getCostCenter());
 							filterSupDetails.setRemarks(supDetails.getRemarks());

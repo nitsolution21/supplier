@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -11,7 +13,7 @@ import javax.persistence.Table;
 @Table(name = "SUP_REQUESTS")
 public class SupRequest {
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "REQ_ID") private Long reqId;
 	@Column(name = "SUPPLIER_CODE") private String supplierCode;
 	@Column(name = "TABLE_NAME") private String tableName;

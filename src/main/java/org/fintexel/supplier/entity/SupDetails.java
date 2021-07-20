@@ -65,27 +65,21 @@ public class SupDetails {
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updatedOn;
-	
-//	@ManyToOne(fetch = FetchType.LAZY, targetEntity = VendorRegister.class)
-//	@JoinColumn(name = "REGISTER_ID", insertable = false, updatable = false)
-//	private VendorRegister user;
 
-
-	public Long getRegisterId() {
-		return registerId;
-	}
-
-	public void setRegisterId(Long supId) {
-		this.registerId = supId;
-	}
-
-	
 	public String getSupplierCode() {
 		return supplierCode;
 	}
 
 	public void setSupplierCode(String supplierCode) {
 		this.supplierCode = supplierCode;
+	}
+
+	public Long getRegisterId() {
+		return registerId;
+	}
+
+	public void setRegisterId(Long registerId) {
+		this.registerId = registerId;
 	}
 
 	public String getSupplierCompName() {
@@ -104,11 +98,11 @@ public class SupDetails {
 		this.registrationType = registrationType;
 	}
 
-	public String getRegristrationNo() {
+	public String getRegistrationNo() {
 		return registrationNo;
 	}
 
-	public void setRegristrationNo(String registrationNo) {
+	public void setRegistrationNo(String registrationNo) {
 		this.registrationNo = registrationNo;
 	}
 
@@ -176,14 +170,6 @@ public class SupDetails {
 		this.updatedOn = updatedOn;
 	}
 
-//	public VendorRegister getUser() {
-//		return user;
-//	}
-//
-//	public void setUser(VendorRegister user) {
-//		this.user = user;
-//	}
-
 	public SupDetails(String supplierCode, Long registerId, String supplierCompName, String registrationType,
 			String registrationNo, String status, String costCenter, String remarks, Date lastlogin, int createdBy,
 			Date createdOn, int updatedBy, Date updatedOn) {
@@ -214,8 +200,15 @@ public class SupDetails {
 				+ supplierCompName + ", registrationType=" + registrationType + ", registrationNo=" + registrationNo
 				+ ", status=" + status + ", costCenter=" + costCenter + ", remarks=" + remarks + ", lastlogin="
 				+ lastlogin + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy
-				+ ", updatedOn=" + updatedOn ;
+				+ ", updatedOn=" + updatedOn + "]";
 	}
+	
+//	@ManyToOne(fetch = FetchType.LAZY, targetEntity = VendorRegister.class)
+//	@JoinColumn(name = "REGISTER_ID", insertable = false, updatable = false)
+//	private VendorRegister user;
+
+
+
 	
 	
 
