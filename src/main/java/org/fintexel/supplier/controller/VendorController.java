@@ -421,7 +421,7 @@ public class VendorController {
 					SupDetails filterSupDetails = new SupDetails();
 					SupRequest supRequest=new SupRequest();
 					Random rd = new Random();
-					SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");  
+					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");  
 					 Date date = new Date();  
 					filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
 					filterSupDetails.setRegisterId(supDetails.getRegisterId());
@@ -430,7 +430,7 @@ public class VendorController {
 					filterSupDetails.setCostCenter(supDetails.getCostCenter());
 					filterSupDetails.setRemarks(supDetails.getRemarks());
 					filterSupDetails.setLastlogin(supDetails.getLastlogin());
-					filterSupDetails.setSupplierCode("SU-" + formatter.format(date) +"-"+ findAll.size());
+					filterSupDetails.setSupplierCode("SU:" + formatter.format(date) +":"+ findAll.size());
 					filterSupDetails.setStatus("2");
 					
 					
