@@ -10,6 +10,7 @@ import org.fintexel.supplier.entity.ItemSubCategory;
 import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
+import org.fintexel.supplier.helper.FileUploadHelper;
 import org.fintexel.supplier.helper.LoginUserDetails;
 import org.fintexel.supplier.repository.InventoryRepo;
 import org.fintexel.supplier.repository.ItemBrandRepo;
@@ -27,7 +28,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -47,6 +50,9 @@ public class InventoryController {
 	private FieldValidation fieldValidation;
 	@Autowired
 	private LoginUserDetails loginUserDetails;
+	
+	@Autowired
+	private FileUploadHelper fileUploadHelper; 
 
 	@PostMapping("/vendor/category")
 	public ItemCategory addCategory(@RequestBody ItemCategory itemCategory, @RequestHeader(name = "Authorization") String token) {
@@ -388,5 +394,28 @@ public class InventoryController {
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
+	}
+	
+	@PostMapping("/uploadSupplierBankProof")
+	public Object uploadSupplierBankProof(@RequestParam("file") MultipartFile file, @RequestHeader(name = "Authorization") String token) {
+		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+			if (!loginSupplierCode.equals(null)) {
+				if (file.getSize() < 1) {
+					throw new VendorNotFoundException("Request must contain file");
+				}
+				boolean uploadFile = fileUploadHelper.uploadFile(file, "uploadfile", "bank_details", "test");
+				if (uploadFile) {
+					return "File is successfully uploaded";
+				} else {
+					return "Something went wrong !! Please try again";
+				}
+			} else {
+				throw new VendorNotFoundException("Token not valid");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
 	}
 }
