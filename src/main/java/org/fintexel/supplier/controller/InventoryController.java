@@ -1,5 +1,8 @@
 package org.fintexel.supplier.controller;
 
+import java.nio.file.Files;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -399,12 +402,14 @@ public class InventoryController {
 	@PostMapping("/uploadSupplierBankProof")
 	public Object uploadSupplierBankProof(@RequestParam("file") MultipartFile file, @RequestHeader(name = "Authorization") String token) {
 		try {
+			System.out.println("in upload");
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			if (!loginSupplierCode.equals(null)) {
 				if (file.getSize() < 1) {
 					throw new VendorNotFoundException("Request must contain file");
 				}
-				boolean uploadFile = fileUploadHelper.uploadFile(file, "uploadfile", "bank_details", "test");
+				
+				boolean uploadFile = fileUploadHelper.uploadFile(file); 
 				if (uploadFile) {
 					return "File is successfully uploaded";
 				} else {
