@@ -3,11 +3,13 @@ package org.fintexel.supplier.entity;
 public class LoginResponce {
 	private String username;
 	private String token;
+	private long registerId;
 	
-	public LoginResponce(String username, String token) {
+	public LoginResponce(String username, String token, long registerId) {
 		super();
 		this.username = username;
 		this.token = token;
+		this.registerId = registerId;
 	}
 
 	public LoginResponce() {
@@ -29,6 +31,14 @@ public class LoginResponce {
 
 	public void setToken(String token) {
 		this.token = token;
+	}
+	
+	public long getRegisterId() {
+		return registerId;
+	}
+
+	public void setRegisterId(long registerId) {
+		this.registerId = registerId;
 	}
 
 	@Override

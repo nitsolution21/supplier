@@ -4,22 +4,34 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+
+import org.json.JSONObject;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "SUP_ADDRESS")
 public class SupAddress {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ADDRESS_ID")
-	private int addressId;
+	private Long addressId;
 	
 	@Column(name = "SUPPLIER_CODE")
 	private String supplierCode;
+	
+	@Column(name = "ADDRESS_TYPE")
+	private String addressType;
 	
 	@Column(name = "ADDRESS1")
 	private String address1;
@@ -39,6 +51,9 @@ public class SupAddress {
 	@Column(name = "REGION")
 	private String region;
 	
+	@Column(name = "STATUS")
+	private String status;
+	
 	@Column(name = "ADDRESS_PROOF")
 	private String addressProof;
 	
@@ -48,48 +63,33 @@ public class SupAddress {
 	@Column(name = "CREATED_BY")
 	private int createdBy;
 	
-	@Column(name = "CREATED_ON")
+	@Column(name = "CREATED_ON",columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date createdOn;
 	
 	@Column(name = "UPDATED_BY")
 	private int updatedBy;
 	
-	@Column(name = "UPDATED_ON")
+	@Column(name = "UPDATED_ON",columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updatedOn;
-	
-	public SupAddress() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	
 
-	public SupAddress(int addressId, String supplierCode, String address1, String address2, String city, int postalCode,
-			String country, String region, String addressProof, String addressProofPath, int createdBy, Date createdOn,
-			int updatedBy, Date updatedOn) {
-		super();
-		this.addressId = addressId;
-		this.supplierCode = supplierCode;
-		this.address1 = address1;
-		this.address2 = address2;
-		this.city = city;
-		this.postalCode = postalCode;
-		this.country = country;
-		this.region = region;
-		this.addressProof = addressProof;
-		this.addressProofPath = addressProofPath;
-		this.createdBy = createdBy;
-		this.createdOn = createdOn;
-		this.updatedBy = updatedBy;
-		this.updatedOn = updatedOn;
+	@Override
+	public String toString() {
+		return "SupAddress [addressId=" + addressId + ", supplierCode=" + supplierCode + ", addressType=" + addressType
+				+ ", address1=" + address1 + ", address2=" + address2 + ", city=" + city + ", postalCode=" + postalCode
+				+ ", country=" + country + ", region=" + region + ", status=" + status + ", addressProof="
+				+ addressProof + ", addressProofPath=" + addressProofPath + ", createdBy=" + createdBy + ", createdOn="
+				+ createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + "]";
 	}
 
-
-
-	public int getAddressId() {
+	public Long getAddressId() {
 		return addressId;
 	}
 
-	public void setAddressId(int addressId) {
+	public void setAddressId(Long addressId) {
 		this.addressId = addressId;
 	}
 
@@ -99,6 +99,14 @@ public class SupAddress {
 
 	public void setSupplierCode(String supplierCode) {
 		this.supplierCode = supplierCode;
+	}
+
+	public String getAddressType() {
+		return addressType;
+	}
+
+	public void setAddressType(String addressType) {
+		this.addressType = addressType;
 	}
 
 	public String getAddress1() {
@@ -149,6 +157,14 @@ public class SupAddress {
 		this.region = region;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	public String getAddressProof() {
 		return addressProof;
 	}
@@ -197,23 +213,66 @@ public class SupAddress {
 		this.updatedOn = updatedOn;
 	}
 
+	public SupAddress(Long addressId, String supplierCode, String addressType, String address1, String address2,
+			String city, int postalCode, String country, String region, String status, String addressProof,
+			String addressProofPath, int createdBy, Date createdOn, int updatedBy, Date updatedOn) {
+		super();
+		this.addressId = addressId;
+		this.supplierCode = supplierCode;
+		this.addressType = addressType;
+		this.address1 = address1;
+		this.address2 = address2;
+		this.city = city;
+		this.postalCode = postalCode;
+		this.country = country;
+		this.region = region;
+		this.status = status;
+		this.addressProof = addressProof;
+		this.addressProofPath = addressProofPath;
+		this.createdBy = createdBy;
+		this.createdOn = createdOn;
+		this.updatedBy = updatedBy;
+		this.updatedOn = updatedOn;
+	}
 
-	@Override
-	public String toString() {
-		return "SupAddress [addressId=" + addressId + ", supplierCode=" + supplierCode + ", address1=" + address1
-				+ ", address2=" + address2 + ", city=" + city + ", postalCode=" + postalCode + ", country=" + country
-				+ ", region=" + region + ", addressProof=" + addressProof + ", addressProofPath=" + addressProofPath
-				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn="
-				+ updatedOn + "]";
+	public SupAddress() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 	
 	
-	
+	public SupAddress(String supplierCode) {
+		
+	}
 	
 
 	
+	public SupAddress(Long addressId, String supplierCode, String addressType, String address1, String address2,
+			String city, int postalCode, String country, String region, String addressProof,
+			String addressProofPath) {
+		super();
+		this.addressId = addressId;
+		this.supplierCode = supplierCode;
+		this.addressType = addressType;
+		this.address1 = address1;
+		this.address2 = address2;
+		this.city = city;
+		this.postalCode = postalCode;
+		this.country = country;
+		this.region = region;
+		this.addressProof = addressProof;
+		this.addressProofPath = addressProofPath;
+	}
+
 	
-	
+	public static SupAddress fromJson(String value) {
+		JSONObject obj = new JSONObject(value);
+		    return new SupAddress (Long.parseLong(obj.getString("addressId"))  , obj.getString("supplierCode") , obj.getString("addressType") ,
+		    		obj.getString("address1") , obj.getString("address2") ,
+		    		obj.getString("city") , Integer.parseInt(obj.getString("postalCode")) ,
+		    		obj.getString("country") , obj.getString("region") ,
+		    		obj.getString("addressProof") , obj.getString("addressProofPath"));
+	}
 	
 	
 	

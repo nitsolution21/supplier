@@ -37,20 +37,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.
 				csrf()
 				.disable()
-				.cors()
-				.disable()
+				.cors().and()
 				.authorizeRequests()
-				.antMatchers(HttpMethod.POST,"/vendorLogin").permitAll()
-				.antMatchers(HttpMethod.POST,"/vendor").permitAll()
+				.antMatchers(HttpMethod.POST,"/login").permitAll()
+				.antMatchers(HttpMethod.POST,"/registration").permitAll()
 				.antMatchers(HttpMethod.GET,"/vendorLogin").permitAll()
 				.antMatchers(HttpMethod.GET,"/vendorLogin/{id}").permitAll()
 				.antMatchers(HttpMethod.PUT,"/vendorLogin/{id}").permitAll()
+				.antMatchers(HttpMethod.POST,"/supplier").permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		
 		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 	}
+	
+//	@Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http.cors().and()...
+//    }
 	
 	@Bean
 	public AuthenticationManager getAuthenticationManager() throws Exception {
