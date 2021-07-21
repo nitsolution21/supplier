@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.fintexel.supplier.entity.ChangePassword;
 import org.fintexel.supplier.entity.LoginResponce;
+import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.entity.VendorLogin;
 import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,7 +55,14 @@ public class VendorLoginController {
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
-	VendorLogin loginDetails;
+	@Autowired
+	private VendorRegisterRepo registerRepo;
+	
+	private VendorLogin loginDetails;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	 
 	
 	@PostMapping("/login")
 	public ResponseEntity<?> venderLogin(@RequestBody VendorLogin vendorLogin) {
@@ -137,4 +147,47 @@ public class VendorLoginController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
+	
+	@PostMapping("/changePassword")
+	public VendorRegister changePassword(@RequestBody ChangePassword changePassword, @RequestHeader(name = "Authorization") String token) {
+		try {
+			if (token != null && token.startsWith("Bearer ")) {
+				String jwtToken = token.substring(7);
+				String userName = jwtUtil.extractUsername(jwtToken);
+				if (userName.equals(changePassword.getUsername())) {
+					Optional<VendorRegister> findByUsername = registerRepo.findByUsername(userName);
+					if (!findByUsername.isPresent()) {
+						throw new VendorNotFoundException("Vendor not found");
+					}
+					else {
+						if (passwordEncoder.matches(changePassword.getOldPassword(), findByUsername.get().getPassword())) {
+							VendorRegister register = new VendorRegister();
+							String rowPassword = java.util.UUID.randomUUID().toString();
+							register.setPassword(passwordEncoder.encode(rowPassword));
+							register.setRegisterId(findByUsername.get().getRegisterId());
+							VendorRegister save = registerRepo.save(register);
+							save.setPassword(rowPassword);
+							return save;
+							
+						} else {
+							throw new VendorNotFoundException("Old password not natch");
+						}
+					}
+				} else {
+					throw new VendorNotFoundException("You don't have permission to change the password");
+				}
+			}
+			else {
+				throw new VendorNotFoundException("Token Not Valid");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+	}
+	
+//	@PostMapping("/forgotPassword")
+//	public Object forgotPassword(@RequestBody ) {
+//		
+//	}
 }
