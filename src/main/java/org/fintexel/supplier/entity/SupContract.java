@@ -11,6 +11,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.json.JSONObject;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
@@ -187,7 +189,28 @@ public class SupContract {
 		// TODO Auto-generated constructor stub
 	}
 
+	public SupContract(Long contractId, String supplierCode, int bankId, String contractType, int contractTerms,
+			String contractProof, String contractLocation, String status) {
+		super();
+		this.contractId = contractId;
+		this.supplierCode = supplierCode;
+		this.bankId = bankId;
+		this.contractType = contractType;
+		this.contractTerms = contractTerms;
+		this.contractProof = contractProof;
+		this.contractLocation = contractLocation;
+		this.status = status;
+	}
 	
+	
+	public static SupContract fromJson(String value) {
+		JSONObject obj = new JSONObject(value);
+		    return new SupContract (Long.parseLong((String)obj.get("contractId")) , 
+		    		(String)obj.get("supplierCode") , Integer.parseInt((String)obj.get("bankId")) ,
+		    		(String)obj.get("contractType") , Integer.parseInt((String)obj.get("contractTerms")) ,
+		    		(String)obj.get("contractProof") , (String)obj.get("contractLocation") ,
+		    		(String)obj.get("status"));
+	}
 	
 	
 

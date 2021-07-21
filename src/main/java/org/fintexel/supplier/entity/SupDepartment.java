@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.json.JSONObject;
+
 @Entity
 @Table(name = "SUP_DEPARTMENT")
 public class SupDepartment {
@@ -191,6 +193,35 @@ public class SupDepartment {
 		// TODO Auto-generated constructor stub
 	}
 	
+	
+	public SupDepartment(long departmentId, String supplierCode, String departmentName, String supplierContact1,
+			String supplierContact2, String email, String phoneno, String alternatePhoneno, String status) {
+		super();
+		this.departmentId = departmentId;
+		this.supplierCode = supplierCode;
+		this.departmentName = departmentName;
+		this.supplierContact1 = supplierContact1;
+		this.supplierContact2 = supplierContact2;
+		this.email = email;
+		this.phoneno = phoneno;
+		this.alternatePhoneno = alternatePhoneno;
+		this.status = status;
+
+	}
+	
+	public SupDepartment(String supplierCode) {
+		
+	}
+	
+	
+	public static SupDepartment fromJson(String value) {
+		JSONObject obj = new JSONObject(value);
+		    return new SupDepartment (Long.parseLong((String)obj.get("departmentId")) ,
+		    		(String) obj.get("supplierCode"), (String) obj.get("departmentName"),
+		    		(String) obj.get("supplierContact1"), (String) obj.get("supplierContact2"),
+		    		(String) obj.get("email"), (String) obj.get("phoneno"),
+		    		(String) obj.get("alternatePhoneno"), (String) obj.get("status"));
+	}
 	
 	
 	

@@ -15,6 +15,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.json.JSONObject;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
@@ -209,7 +211,29 @@ public class SupDetails {
 
 
 
+	public SupDetails(String supplierCode, Long registerId, String supplierCompName, String registrationType,
+			String registrationNo, String status, String costCenter, String remarks, Date lastlogin) {
+		super();
+		this.supplierCode = supplierCode;
+		this.registerId = registerId;
+		this.supplierCompName = supplierCompName;
+		this.registrationType = registrationType;
+		this.registrationNo = registrationNo;
+		this.status = status;
+		this.costCenter = costCenter;
+		this.remarks = remarks;
+		this.lastlogin = lastlogin;
+	}
 	
+	
+	public static SupDetails fromJson(String value) {
+		JSONObject obj = new JSONObject(value);
+		    return new SupDetails ((String) obj.get("supplierCode"),
+		    		Long.parseLong((String) obj.get("registerId"))  , (String) obj.get("supplierCompName") ,
+		    		(String) obj.get("registrationType") , (String) obj.get("registrationNo") ,
+		    		(String) obj.get("status") , (String) obj.get("costCenter") ,
+		    		(String) obj.get("remarks") , (Date) obj.get("lastlogin") );
+	}
 	
 
 
