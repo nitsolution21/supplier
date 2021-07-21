@@ -14,6 +14,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+import org.json.JSONObject;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
@@ -239,7 +241,38 @@ public class SupAddress {
 	}
 	
 	
+	public SupAddress(String supplierCode) {
+		
+	}
 	
+
+	
+	public SupAddress(Long addressId, String supplierCode, String addressType, String address1, String address2,
+			String city, int postalCode, String country, String region, String addressProof,
+			String addressProofPath) {
+		super();
+		this.addressId = addressId;
+		this.supplierCode = supplierCode;
+		this.addressType = addressType;
+		this.address1 = address1;
+		this.address2 = address2;
+		this.city = city;
+		this.postalCode = postalCode;
+		this.country = country;
+		this.region = region;
+		this.addressProof = addressProof;
+		this.addressProofPath = addressProofPath;
+	}
+
+	
+	public static SupAddress fromJson(String value) {
+		JSONObject obj = new JSONObject(value);
+		    return new SupAddress (Long.parseLong(obj.getString("addressId"))  , obj.getString("supplierCode") , obj.getString("addressType") ,
+		    		obj.getString("address1") , obj.getString("address2") ,
+		    		obj.getString("city") , Integer.parseInt(obj.getString("postalCode")) ,
+		    		obj.getString("country") , obj.getString("region") ,
+		    		obj.getString("addressProof") , obj.getString("addressProofPath"));
+	}
 	
 	
 	

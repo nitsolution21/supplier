@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.json.JSONObject;
+
 @Entity
 @Table(name = "SUP_BANK")
 public class SupBank {
@@ -280,7 +282,40 @@ public class SupBank {
 	}
 
 	
+	public SupBank(long bankId, String supplierCode, String bankName, String bankBranch, String bankBic,
+			String bankAccountNo, String currency, String transilRoutingNo, String chequeNo, String accountHolder,
+			String swiftCode, String ifscCode, String country, String bankEvidence, String evidencePath, String status) {
+		super();
+		this.bankId = bankId;
+		this.supplierCode = supplierCode;
+		this.bankName = bankName;
+		this.bankBranch = bankBranch;
+		this.bankBic = bankBic;
+		this.bankAccountNo = bankAccountNo;
+		this.currency = currency;
+		this.transilRoutingNo = transilRoutingNo;
+		this.chequeNo = chequeNo;
+		this.accountHolder = accountHolder;
+		this.swiftCode = swiftCode;
+		this.ifscCode = ifscCode;
+		this.country = country;
+		this.bankEvidence = bankEvidence;
+		this.evidencePath = evidencePath;
+		this.status = status;
+	}
+
 	
+	
+	
+	public static SupBank fromJson(String value) {
+		JSONObject obj = new JSONObject(value);
+		    return new SupBank (Long.parseLong((String) obj.get("bankId")) , (String)obj.get("supplierCode") ,
+		    		(String) obj.get("bankName") ,(String) obj.get("bankBranch") ,(String) obj.get("bankBic") ,
+		    		(String) obj.get("bankAccountNo") , (String) obj.get("currency") , (String) obj.get("transilRoutingNo") ,
+		    		(String) obj.get("chequeNo") , (String) obj.get("accountHolder") , (String) obj.get("swiftCode") ,
+		    		(String) obj.get("ifscCode") , (String) obj.get("country") , (String) obj.get("bankEvidence") ,
+		    		(String) obj.get("evidencePath") ,(String) obj.get("status") );
+	}
 	
 	
 	
