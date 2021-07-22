@@ -1,22 +1,44 @@
 package org.fintexel.supplier.controller;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.fintexel.supplier.entity.ChangePassword;
+import org.fintexel.supplier.entity.ForgotPassword;
+import org.fintexel.supplier.entity.ForgotPasswordRequestEntity;
 import org.fintexel.supplier.entity.LoginResponce;
+import org.fintexel.supplier.entity.RecoverPassword;
 import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.entity.VendorLogin;
 import org.fintexel.supplier.entity.VendorRegister;
+import org.fintexel.supplier.entity.flowableentity.FlowableRegistration;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
+import org.fintexel.supplier.flowable.FlowableContainer;
 import org.fintexel.supplier.helper.JwtUtil;
+import org.fintexel.supplier.repository.ForgotPasswordRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
+import org.fintexel.supplier.repository.flowablerepo.FlowableRegistrationRepo;
 import org.fintexel.supplier.services.VendorDetailsService;
 import org.fintexel.supplier.validation.FieldValidation;
 import org.hibernate.hql.internal.ast.tree.IsNullLogicOperatorNode;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,11 +54,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class VendorLoginController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(VendorLoginController.class);
+	
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
@@ -62,6 +87,12 @@ public class VendorLoginController {
 
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
+	FlowableRegistrationRepo flowableRegistrationRepo;
+	
+	@Autowired
+	ForgotPasswordRepo forgotPasswordRepo; 
 
 	@PostMapping("/login")
 	public ResponseEntity<?> venderLogin(@RequestBody VendorLogin vendorLogin) {
@@ -163,11 +194,14 @@ public class VendorLoginController {
 							if (passwordEncoder.matches(changePassword.getOldPassword(),
 									findByUsername.get().getPassword())) {
 								VendorRegister register = new VendorRegister();
-								String rowPassword = java.util.UUID.randomUUID().toString();
-								register.setPassword(passwordEncoder.encode(rowPassword));
+								register.setPassword(passwordEncoder.encode(changePassword.getNewPassword()));
 								register.setRegisterId(findByUsername.get().getRegisterId());
+								register.setEmail(findByUsername.get().getEmail());
+								register.setStatus(findByUsername.get().getStatus());
+								register.setSupplierCompName(findByUsername.get().getSupplierCompName());
+								register.setUsername(changePassword.getUsername());
 								VendorRegister save = registerRepo.save(register);
-								save.setPassword(rowPassword);
+								save.setPassword(changePassword.getNewPassword());
 								return save;
 
 							} else {
@@ -188,9 +222,156 @@ public class VendorLoginController {
 		}
 
 	}
+	
+	@PostMapping("/forgotPassword")
+	public Object forgotPassword(@RequestBody ForgotPasswordRequestEntity forgotPasswordRequestEntity) {
+		try {
+			if (fieldValidation.isEmpty(forgotPasswordRequestEntity.getEmail()) && fieldValidation.isEmpty(forgotPasswordRequestEntity.getUrl())) {
+				if (fieldValidation.isEmail(forgotPasswordRequestEntity.getEmail())) {
+					Optional<VendorRegister> findByEmail = registerRepo.findByEmail(forgotPasswordRequestEntity.getEmail());
+					if (!findByEmail.isPresent()) {
+						throw new VendorNotFoundException("We could't foumd your email id");
+					} 
+					String token = java.util.UUID.randomUUID().toString();
+//					DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+//					LocalDateTime now = LocalDateTime.now();
+//					
+//					SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");  
+					 Date date = new Date();
+					System.out.println(date);
+					try {
+						System.out.println("in flowable try");
+						Optional<FlowableRegistration> findByAuthorAndTitle = flowableRegistrationRepo
+								.findByAuthorAndTitle("forgot_supplier_pwd");
+						
+						RestTemplate restTemplate = new RestTemplate();
+						HttpHeaders headers = new HttpHeaders();
+						headers.setContentType(MediaType.APPLICATION_JSON);
+						headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+						headers.setBasicAuth("admin", "test");
+						Map<String, Object> map = new HashMap<>();
+						map.put("processDefinitionId", findByAuthorAndTitle.get().getId());
+						HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+						ResponseEntity<String> response = restTemplate.postForEntity(
+								"http://65.2.162.230:8080/flowable-rest/service/runtime/process-instances", entity,
+								String.class);
+						JSONObject jsonObject = new JSONObject(response.getBody());
+						Map<String, Object> mapp = new HashMap<>();
+						map.put("processInstanceId", (String) jsonObject.get("id"));
+						
+						LOGGER.info("Task ID for forgot password - "+(String) jsonObject.get("id"));
+						
+						HttpEntity<Map<String, Object>> request = new HttpEntity<>(map, headers);
+						ResponseEntity<String> exchange = restTemplate.exchange(
+								"http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, request,
+								String.class, 1);
+						JSONObject jsonObject1 = new JSONObject(exchange.getBody());
+						
+						JSONArray array = new JSONArray(jsonObject1.get("data").toString());
+						JSONArray arrayy = new JSONArray();
+						
+						
+						JSONObject forgotPwdEmail = new JSONObject();
+						forgotPwdEmail.put("name", "supplierforgotemailid");
+						forgotPwdEmail.put("scope", "local");
+						forgotPwdEmail.put("type", "string");
+						forgotPwdEmail.put("value", forgotPasswordRequestEntity.getEmail());
+						arrayy.put(forgotPwdEmail);
+						
+						JSONObject forgotPwdLink = new JSONObject();
+						forgotPwdLink.put("name", "forogtpwdlink");
+						forgotPwdLink.put("scope", "local");
+						forgotPwdLink.put("type", "string");
+						forgotPwdLink.put("value", forgotPasswordRequestEntity.getUrl() + "/" + token);
+						arrayy.put(forgotPwdLink);
+						
+						HttpEntity<String> entityy = new HttpEntity<String>(arrayy.toString(), headers);
+						ResponseEntity<String> response2 = restTemplate.exchange(
+								"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/"
+										+ array.getJSONObject(0).get("id") + "/variables",
+								HttpMethod.POST, entityy, String.class, 1);
+						
+						LOGGER.info("Taks ID 2 for forgot password " +array.getJSONObject(0).get("id"));
+						
+						System.out.println(response2);
+					} catch (Exception e) {
+						System.out.println(e);
+					}
+					
+					ForgotPassword forgotPassword = new ForgotPassword();
+					forgotPassword.setEmail(forgotPasswordRequestEntity.getEmail());
+					forgotPassword.setToken(token);
+					forgotPassword.setCreatedOn(date);
+					forgotPassword.setStatus("MAILSEND");
+					forgotPasswordRepo.save(forgotPassword);
+					return "Please check your mail";
+					
+					
+				} else {
+					throw new VendorNotFoundException("Provide correct email id");
+				}
+			} else {
+				throw new VendorNotFoundException("Email id and URL required");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	@PostMapping("/recoverPassword")
+	public Object recoverPassword(@RequestBody RecoverPassword recoverPassword) {
+		try {
+			if (fieldValidation.isEmpty(recoverPassword.getNewPasswoed()) && fieldValidation.isEmpty(recoverPassword.getToken())) {
+				Optional<ForgotPassword> findByToken = forgotPasswordRepo.findByToken(recoverPassword.getToken());
+				if (findByToken.isEmpty()) {
+					if (!findByToken.get().getStatus().equals("EXPIRE")) {
+						Date date = new Date();
+						if (date.getYear() == findByToken.get().getCreatedOn().getYear() && date.getMonth() == findByToken.get().getCreatedOn().getMonth() && date.getDate() == findByToken.get().getCreatedOn().getDate() && date.getHours() == findByToken.get().getCreatedOn().getHours()) {
+							int expireDate = date.getMinutes() - findByToken.get().getCreatedOn().getMinutes();
+							
+							if (expireDate <= 5) {
+								Optional<VendorRegister> findByEmail = registerRepo.findByEmail(findByToken.get().getEmail());
+								if (findByEmail.isPresent()) {
+									VendorRegister register = new VendorRegister();
+									register.setPassword(passwordEncoder.encode(recoverPassword.getNewPasswoed()));
+									register.setRegisterId(findByEmail.get().getRegisterId());
+									register.setEmail(findByEmail.get().getEmail());
+									register.setStatus(findByEmail.get().getStatus());
+									register.setSupplierCompName(findByEmail.get().getSupplierCompName());
+									register.setUsername(findByEmail.get().getUsername());
+									VendorRegister save = registerRepo.save(register);
+									//save.setPassword(recoverPassword.getNewPasswoed());
+									ForgotPassword forgotPassword = new ForgotPassword();
+									forgotPassword.setCreatedOn(findByToken.get().getCreatedOn());
+									forgotPassword.setEmail(findByToken.get().getEmail());
+									forgotPassword.setToken(recoverPassword.getToken());
+									forgotPassword.setId(findByToken.get().getId());
+									forgotPassword.setStatus("EXPIRE");
+									forgotPasswordRepo.save(forgotPassword);
+									return "password has been changed!! please remember your password";
+									
+								} else {
+									throw new VendorNotFoundException("Can't Find your emai id");
+								}
+							} else {
+								throw new VendorNotFoundException("Time expire");
+							}
+						} else {
+							throw new VendorNotFoundException("Time expire");
+						}
+					} else {
+						throw new VendorNotFoundException("Token expire");
+					}
+				} else {
+					throw new VendorNotFoundException("Token not valid");
+				}
+			} else {
+				throw new VendorNotFoundException("Password and token required");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
 
-//	@PostMapping("/forgotPassword")
-//	public Object forgotPassword(@RequestBody ) {
-//		
-//	}
+	
 }

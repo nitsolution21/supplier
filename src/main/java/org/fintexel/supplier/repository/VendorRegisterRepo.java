@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface VendorRegisterRepo extends JpaRepository<VendorRegister,Long>{
 	
 	public Optional<VendorRegister> findByUsername(String userName);
+	
+	public Optional<VendorRegister> findByEmail(String email);
 }
