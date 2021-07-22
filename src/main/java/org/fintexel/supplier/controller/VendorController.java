@@ -440,6 +440,7 @@ public class VendorController {
 					supRequest.setId(save.getRegisterId());
 					supRequest.setNewValue(suppliernamenew.toString());
 					supRequest.setStatus("0");
+					supRequest.setReqType("CREATE");
 					supRequestRepo.save(supRequest);
 					return save;
 				} else {
@@ -531,26 +532,26 @@ public class VendorController {
 							filterSupDetails.setLastlogin(supDetails.getLastlogin());
 							filterSupDetails.setSupplierCode(findById.get().getSupplierCode());
 							filterSupDetails.setStatus("2");
-							SupDetails save = supDetailsRepo.save(filterSupDetails);
 							
 							
 							List<SupRequest> findAllWithStatus = supRequestRepo.findAllWithStatus("0");
 							for(SupRequest obj:findAllWithStatus) {
 								if(obj.getId().equals(filterSupDetails.getRegisterId())) {
 									throw new VendorNotFoundException("This Request is Already Pending");
-								}else {
-									JSONObject suppliernamenew = new JSONObject(filterSupDetails);
-									JSONObject suppliernameold = new JSONObject(findById.get());
-									SupRequest supRequest=new SupRequest();
-									supRequest.setSupplierCode(loginSupplierCode);
-									supRequest.setTableName("SUP_DETAILS");
-									supRequest.setId(filterSupDetails.getRegisterId());
-									supRequest.setNewValue(suppliernamenew.toString());
-									supRequest.setOldValue(suppliernameold.toString());
-									supRequest.setStatus("0");
-									supRequestRepo.save(supRequest);
 								}
 							}
+							JSONObject suppliernamenew = new JSONObject(filterSupDetails);
+							JSONObject suppliernameold = new JSONObject(findById.get());
+							SupRequest supRequest=new SupRequest();
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_DETAILS");
+							supRequest.setId(filterSupDetails.getRegisterId());
+							supRequest.setNewValue(suppliernamenew.toString());
+							supRequest.setOldValue(suppliernameold.toString());
+							supRequest.setStatus("0");
+							supRequest.setReqType("UPDATE");
+							SupDetails save = supDetailsRepo.save(filterSupDetails);
+							supRequestRepo.save(supRequest);
 							return save;
 						} else {
 							throw new VendorNotFoundException("You don't have permission to update this vendor");
@@ -637,6 +638,7 @@ public class VendorController {
 					supRequest.setId(save.getAddressId());
 					supRequest.setNewValue(suppliername.toString());
 					supRequest.setStatus("0");
+					supRequest.setReqType("CREATE");
 					supRequestRepo.save(supRequest);
 					return save;
 				} else {
@@ -743,21 +745,19 @@ public class VendorController {
 							for(SupRequest obj:findAllWithStatus) {
 								if(obj.getId().equals(filterAddressUp.getAddressId())) {
 									throw new VendorNotFoundException("This Request is Already Pending");
-								}else {
-									SupRequest supRequest=new SupRequest();
-									JSONObject suppliernameold = new JSONObject(findById.get());
-									JSONObject suppliernamenew = new JSONObject(filterAddressUp);
-									supRequest.setSupplierCode(loginSupplierCode);
-									supRequest.setTableName("SUP_ADDRESS");
-									supRequest.setId(address.getAddressId());
-									supRequest.setNewValue(suppliernamenew.toString());
-									supRequest.setOldValue(suppliernameold.toString());
-									supRequest.setStatus("0");
-									supRequestRepo.save(supRequest);
 								}
 							}
-							
-							
+							SupRequest supRequest=new SupRequest();
+							JSONObject suppliernameold = new JSONObject(findById.get());
+							JSONObject suppliernamenew = new JSONObject(filterAddressUp);
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_ADDRESS");
+							supRequest.setId(address.getAddressId());
+							supRequest.setNewValue(suppliernamenew.toString());
+							supRequest.setOldValue(suppliernameold.toString());
+							supRequest.setStatus("0");
+							supRequest.setReqType("UPDATE");
+							supRequestRepo.save(supRequest);
 							return this.supAddRepo.save(filterAddressUp);
 						} else {
 							throw new VendorNotFoundException("Validation error");
@@ -834,6 +834,7 @@ public class VendorController {
 						supRequest.setId(save.getContractId());
 						supRequest.setNewValue(suppliernamenew.toString());
 						supRequest.setStatus("0");
+						supRequest.setReqType("CREATE");
 						supRequestRepo.save(supRequest);
 						
 						
@@ -921,18 +922,19 @@ public class VendorController {
 							for(SupRequest obj:findAllWithStatus) {
 								if(obj.getId().equals(filterSupContract.getBankId())) {
 									throw new VendorNotFoundException("This Request is Already Pending");
-								}else {
-									SupRequest supRequest=new SupRequest();
-									JSONObject suppliernamenew = new JSONObject(filterSupContract);
-									JSONObject suppliernameold = new JSONObject(findById.get());
-									supRequest.setSupplierCode(loginSupplierCode);
-									supRequest.setTableName("SUP_CONTRACT");
-									supRequest.setId(contact.getContractId());
-									supRequest.setNewValue(suppliernamenew.toString());
-									supRequest.setOldValue(suppliernameold.toString());
-									supRequest.setStatus("0");
 								}
 							}
+							SupRequest supRequest=new SupRequest();
+							JSONObject suppliernamenew = new JSONObject(filterSupContract);
+							JSONObject suppliernameold = new JSONObject(findById.get());
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_CONTRACT");
+							supRequest.setId(contact.getContractId());
+							supRequest.setNewValue(suppliernamenew.toString());
+							supRequest.setOldValue(suppliernameold.toString());
+							supRequest.setStatus("0");
+							supRequest.setReqType("UPDATE");
+							supRequestRepo.save(supRequest);
 							
 							return supContractRepo.save(filterSupContract);
 						} else {
@@ -1022,6 +1024,8 @@ public class VendorController {
 						supRequest.setId(postData.getBankId());
 						supRequest.setNewValue(suppliernamenew.toString());
 						supRequest.setStatus("0");
+						supRequest.setReqType("CREATE");
+						supRequestRepo.save(supRequest);
 						return postData;
 					} else {
 						throw new VendorNotFoundException("The Swift code all ready present");
@@ -1109,19 +1113,19 @@ public class VendorController {
 							for(SupRequest obj:findAllWithStatus) {
 								if(obj.getId().equals(bank.getBankId())) {
 									throw new VendorNotFoundException("This Request is Already Pending");
-								}else {
-									SupRequest supRequest=new SupRequest();
-									JSONObject suppliernamenew = new JSONObject(bank);
-									JSONObject suppliernameold = new JSONObject(findById.get());
-									supRequest.setSupplierCode(loginSupplierCode);
-									supRequest.setTableName("SUP_BANK");
-									supRequest.setId(supBank.getBankId());
-									supRequest.setNewValue(suppliernamenew.toString());
-									supRequest.setOldValue(suppliernameold.toString());
-									supRequest.setStatus("0");
 								}
 							}
-							
+							SupRequest supRequest=new SupRequest();
+							JSONObject suppliernamenew = new JSONObject(bank);
+							JSONObject suppliernameold = new JSONObject(findById.get());
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_BANK");
+							supRequest.setId(supBank.getBankId());
+							supRequest.setNewValue(suppliernamenew.toString());
+							supRequest.setOldValue(suppliernameold.toString());
+							supRequest.setStatus("0");
+							supRequest.setReqType("UPDATE");
+							supRequestRepo.save(supRequest);
 							return sb;
 						} else {
 							throw new VendorNotFoundException("Validation Error");
@@ -1219,7 +1223,8 @@ public class VendorController {
 						supRequest.setId(save.getDepartmentId());
 						supRequest.setNewValue(department.toString());
 						supRequest.setStatus("0");
-						
+						supRequest.setReqType("CREATE");
+						supRequestRepo.save(supRequest);
 						return save;
 					} else {
 						throw new VendorNotFoundException("Token Expir");
@@ -1270,20 +1275,19 @@ public class VendorController {
 								for(SupRequest obj:findAllWithStatus) {
 									if(obj.getId().equals(department.getDepartmentId())) {
 										throw new VendorNotFoundException("This Request is Already Pending");
-									}else {
-										SupRequest supRequest=new SupRequest();
-										JSONObject suppliernamenew = new JSONObject(department);
-										JSONObject suppliernameold = new JSONObject(findById.get());
-										supRequest.setSupplierCode(loginSupplierCode);
-										supRequest.setTableName("SUP_DEPARTMENT");
-										supRequest.setId(supDepartment.getDepartmentId());
-										supRequest.setNewValue(suppliernamenew.toString());
-										supRequest.setOldValue(suppliernameold.toString());
-										supRequest.setStatus("0");
-										
 									}
 								}
-								
+								SupRequest supRequest=new SupRequest();
+								JSONObject suppliernamenew = new JSONObject(department);
+								JSONObject suppliernameold = new JSONObject(findById.get());
+								supRequest.setSupplierCode(loginSupplierCode);
+								supRequest.setTableName("SUP_DEPARTMENT");
+								supRequest.setId(supDepartment.getDepartmentId());
+								supRequest.setNewValue(suppliernamenew.toString());
+								supRequest.setOldValue(suppliernameold.toString());
+								supRequest.setStatus("0");
+								supRequest.setReqType("UPDATE");
+								supRequestRepo.save(supRequest);
 								return supDepartmentRepo.save(department);
 							} else {
 								throw new VendorNotFoundException("Email Format Not Valid");
