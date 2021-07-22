@@ -22,8 +22,14 @@ public class CurrencyMaster {
     @Column(name = "ID", nullable = false, unique = true)
 	private long id;
 	
-	@Column(name = "NAME")
-	private String name;
+	@Column(name = "CODE")
+	private String code;
+	
+	@Column(name = "CURRENCY")
+	private String currency;
+	
+	@Column(name = "COUNTRY")
+	private String country;
 	
 	@Column(name = "CREATED_BY")
 	private String createdBy;
@@ -41,10 +47,13 @@ public class CurrencyMaster {
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updatedOn;
 
-	public CurrencyMaster(long id, String name, String createdBy, Date createdOn, String updatedBy, Date updatedOn) {
+	public CurrencyMaster(long id, String code, String currency, String country, String createdBy, Date createdOn,
+			String updatedBy, Date updatedOn) {
 		super();
 		this.id = id;
-		this.name = name;
+		this.code = code;
+		this.currency = currency;
+		this.country = country;
 		this.createdBy = createdBy;
 		this.createdOn = createdOn;
 		this.updatedBy = updatedBy;
@@ -63,12 +72,28 @@ public class CurrencyMaster {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getCode() {
+		return code;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
 	}
 
 	public String getCreatedBy() {
@@ -102,6 +127,12 @@ public class CurrencyMaster {
 	public void setUpdatedOn(Date updatedOn) {
 		this.updatedOn = updatedOn;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "CurrencyMaster [id=" + id + ", code=" + code + ", currency=" + currency + ", country=" + country
+				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn="
+				+ updatedOn + "]";
+	}
 	
 }

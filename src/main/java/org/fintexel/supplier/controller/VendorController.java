@@ -19,6 +19,7 @@ import java.util.Random;
 import javax.validation.Valid;
 
 import org.fintexel.supplier.entity.ApproveMap;
+import org.fintexel.supplier.entity.CurrencyMaster;
 import org.fintexel.supplier.entity.RegType;
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupContract;
@@ -33,6 +34,7 @@ import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.flowable.FlowableContainer;
 import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.helper.LoginUserDetails;
+import org.fintexel.supplier.repository.CurrencyMasterRepo;
 import org.fintexel.supplier.repository.RegTypeRepo;
 import org.fintexel.supplier.repository.SupAddressRepo;
 import org.fintexel.supplier.repository.SupContractRepo;
@@ -131,6 +133,9 @@ public class VendorController {
 
 	@Autowired
 	RegTypeRepo regTypeRepo;
+	
+	@Autowired
+	CurrencyMasterRepo currencyMasterRepo;
 	
 	
 	
@@ -1738,10 +1743,10 @@ public class VendorController {
 	
 	
 	
-//	@GetMapping("/currency")
-//	public List<CurrencyMaster> getcurrency() {
-//		return currencyMasterRepo.findAll();
-//	}
+	@GetMapping("/currency")
+	public List<CurrencyMaster> getcurrency() {
+		return currencyMasterRepo.findAll();
+	}
 	
 
 }
