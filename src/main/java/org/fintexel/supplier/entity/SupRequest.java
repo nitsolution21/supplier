@@ -18,6 +18,7 @@ public class SupRequest {
 	@Column(name = "SUPPLIER_CODE") private String supplierCode;
 	@Column(name = "TABLE_NAME") private String tableName;
 	@Column(name = "_ID") private Long id;
+	@Column(name = "REQ_TYPE") private String reqType;
 	@Column(name = "OLD_VALUE") private String oldValue;
 	@Column(name = "NEW_VALUE") private String newValue;
 	@Column(name = "STATUS") private String status;
@@ -26,17 +27,15 @@ public class SupRequest {
 	@Column(name = "CREATED_ON") private Date createdOn;
 	@Column(name = "APPROVED_BY") private int approvedBy;
 	@Column(name = "APPROVED_ON") private Date approvedOn;
-	public SupRequest() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	public SupRequest(Long reqId, String supplierCode, String tableName, Long id, String oldValue, String newValue,
-			String status, String comment, int createdBy, Date createdOn, int approvedBy, Date approvedOn) {
+	public SupRequest(Long reqId, String supplierCode, String tableName, Long id, String reqType, String oldValue,
+			String newValue, String status, String comment, int createdBy, Date createdOn, int approvedBy,
+			Date approvedOn) {
 		super();
 		this.reqId = reqId;
 		this.supplierCode = supplierCode;
 		this.tableName = tableName;
 		this.id = id;
+		this.reqType = reqType;
 		this.oldValue = oldValue;
 		this.newValue = newValue;
 		this.status = status;
@@ -46,12 +45,9 @@ public class SupRequest {
 		this.approvedBy = approvedBy;
 		this.approvedOn = approvedOn;
 	}
-	@Override
-	public String toString() {
-		return "SupRequest [reqId=" + reqId + ", supplierCode=" + supplierCode + ", tableName=" + tableName + ", id="
-				+ id + ", oldValue=" + oldValue + ", newValue=" + newValue + ", status=" + status + ", comment="
-				+ comment + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", approvedBy=" + approvedBy
-				+ ", approvedOn=" + approvedOn + "]";
+	public SupRequest() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 	public Long getReqId() {
 		return reqId;
@@ -76,6 +72,12 @@ public class SupRequest {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public String getReqType() {
+		return reqType;
+	}
+	public void setReqType(String reqType) {
+		this.reqType = reqType;
 	}
 	public String getOldValue() {
 		return oldValue;
@@ -125,6 +127,14 @@ public class SupRequest {
 	public void setApprovedOn(Date approvedOn) {
 		this.approvedOn = approvedOn;
 	}
+	@Override
+	public String toString() {
+		return "SupRequest [reqId=" + reqId + ", supplierCode=" + supplierCode + ", tableName=" + tableName + ", id="
+				+ id + ", reqType=" + reqType + ", oldValue=" + oldValue + ", newValue=" + newValue + ", status="
+				+ status + ", comment=" + comment + ", createdBy=" + createdBy + ", createdOn=" + createdOn
+				+ ", approvedBy=" + approvedBy + ", approvedOn=" + approvedOn + "]";
+	}
+	
 	
 	
 	

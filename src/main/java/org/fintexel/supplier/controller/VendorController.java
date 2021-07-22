@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import java.util.Random;
 
 import javax.validation.Valid;
 
+import org.fintexel.supplier.entity.RegType;
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupContract;
 import org.fintexel.supplier.entity.SupBank;
@@ -30,6 +32,7 @@ import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.flowable.FlowableContainer;
 import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.helper.LoginUserDetails;
+import org.fintexel.supplier.repository.RegTypeRepo;
 import org.fintexel.supplier.repository.SupAddressRepo;
 import org.fintexel.supplier.repository.SupContractRepo;
 import org.fintexel.supplier.repository.SupBankRepo;
@@ -125,6 +128,11 @@ public class VendorController {
 	@Autowired
 	FlowableRegistrationRepo flowableRegistrationRepo;
 
+	@Autowired
+	RegTypeRepo regTypeRepo;
+	
+	
+	
 	@PostMapping("/registration")
 	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.registerVendor()");
@@ -144,8 +152,6 @@ public class VendorController {
 				filterVendorReg.setUsername(vendorReg.getEmail());
 				String rowPassword = java.util.UUID.randomUUID().toString();
 				filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
-				VendorRegister save = this.vendorRepo.save(filterVendorReg);
-				save.setPassword(rowPassword);
 				try {
 
 				
@@ -176,7 +182,7 @@ public class VendorController {
 					Map<String, Object> mapp = new HashMap<>();
 					map.put("processInstanceId", (String) jsonObject.get("id"));
 					LOGGER.info("Task ID - "+(String) jsonObject.get("id"));
-					
+					filterVendorReg.setTaskId((String) jsonObject.get("id"));
 					HttpEntity<Map<String, Object>> request = new HttpEntity<>(map, headers);
 					ResponseEntity<String> exchange = restTemplate.exchange(
 							"http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, request,
@@ -190,27 +196,28 @@ public class VendorController {
 					suppliername.put("name", "suppliername");
 					suppliername.put("scope", "local");
 					suppliername.put("type", "string");
-					suppliername.put("value", save.getSupplierCompName());
+					suppliername.put("value", vendorReg.getSupplierCompName());
 					arrayy.put(suppliername);
 					JSONObject supplieremail = new JSONObject();
 					supplieremail.put("name", "supplieremail");
 					supplieremail.put("scope", "local");
 					supplieremail.put("type", "string");
-					supplieremail.put("value", save.getEmail());
+					supplieremail.put("value", vendorReg.getEmail());
 					arrayy.put(supplieremail);
 					JSONObject username = new JSONObject();
 					username.put("name", "username");
 					username.put("scope", "local");
 					username.put("type", "string");
-					username.put("value", save.getEmail());
+					username.put("value", vendorReg.getEmail());
 					arrayy.put(username);
 					JSONObject password = new JSONObject();
 					password.put("name", "password");
 					password.put("scope", "local");
 					password.put("type", "string");
-					password.put("value", save.getPassword());
+					password.put("value", vendorReg.getPassword());
 					arrayy.put(password);
 					HttpEntity<String> entityy = new HttpEntity<String>(arrayy.toString(), headers);
+					filterVendorReg.setProcessId((String)array.getJSONObject(0).get("id"));
 					ResponseEntity<String> response2 = restTemplate.exchange(
 							"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/"
 									+ array.getJSONObject(0).get("id") + "/variables",
@@ -227,7 +234,8 @@ public class VendorController {
 				
 				
 //				END FLOWABLE
-
+				VendorRegister save = this.vendorRepo.save(filterVendorReg);
+				save.setPassword(rowPassword);
 				return save;
 			} else {
 				throw new VendorNotFoundException("Validation error");
@@ -403,6 +411,29 @@ public class VendorController {
 
 	// ********** Write By Soumen **********//
 	// Start
+	
+	
+	@GetMapping("/regtype")
+	public List<RegType> getRegType(@RequestHeader(name = "Authorization") String token){
+		LOGGER.info("Inside - VendorController.getRegType()");
+		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+			if (!loginSupplierCode.equals(null)) {
+				List<RegType> findAll = regTypeRepo.findAll();
+				if(findAll.size()<1) {
+					throw new VendorNotFoundException("No Data Present");
+				}else {
+					return findAll;
+				}
+			}else {
+				throw new VendorNotFoundException("Token Expir");
+			}
+		}catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	
 	@PostMapping("/vendor")
 	public SupDetails postSupplierDetails(@RequestBody SupDetails supDetails) {
 		LOGGER.info("Inside - VendorController.postSupplierDetails()");
@@ -431,15 +462,15 @@ public class VendorController {
 					filterSupDetails.setRemarks(supDetails.getRemarks());
 					filterSupDetails.setLastlogin(supDetails.getLastlogin());
 					filterSupDetails.setSupplierCode("SU:" + formatter.format(date) +":"+ findAll.size());
-					filterSupDetails.setStatus("2");
+					filterSupDetails.setStatus("PENDING");
 					SupDetails save = supDetailsRepo.save(filterSupDetails);
 					JSONObject suppliernamenew = new JSONObject(filterSupDetails);
-					System.out.println(suppliernamenew);
 					supRequest.setSupplierCode(filterSupDetails.getSupplierCode());
 					supRequest.setTableName("SUP_DETAILS");
 					supRequest.setId(save.getRegisterId());
 					supRequest.setNewValue(suppliernamenew.toString());
-					supRequest.setStatus("0");
+					supRequest.setStatus("PENDING");
+					supRequest.setReqType("CREATE");
 					supRequestRepo.save(supRequest);
 					return save;
 				} else {
@@ -530,27 +561,27 @@ public class VendorController {
 							filterSupDetails.setRemarks(supDetails.getRemarks());
 							filterSupDetails.setLastlogin(supDetails.getLastlogin());
 							filterSupDetails.setSupplierCode(findById.get().getSupplierCode());
-							filterSupDetails.setStatus("2");
-							SupDetails save = supDetailsRepo.save(filterSupDetails);
+							filterSupDetails.setStatus("PENDING");
 							
 							
-							List<SupRequest> findAllWithStatus = supRequestRepo.findAllWithStatus("0");
+							List<SupRequest> findAllWithStatus = supRequestRepo.findAllWithStatus("PENDING");
 							for(SupRequest obj:findAllWithStatus) {
 								if(obj.getId().equals(filterSupDetails.getRegisterId())) {
 									throw new VendorNotFoundException("This Request is Already Pending");
-								}else {
-									JSONObject suppliernamenew = new JSONObject(filterSupDetails);
-									JSONObject suppliernameold = new JSONObject(findById.get());
-									SupRequest supRequest=new SupRequest();
-									supRequest.setSupplierCode(loginSupplierCode);
-									supRequest.setTableName("SUP_DETAILS");
-									supRequest.setId(filterSupDetails.getRegisterId());
-									supRequest.setNewValue(suppliernamenew.toString());
-									supRequest.setOldValue(suppliernameold.toString());
-									supRequest.setStatus("0");
-									supRequestRepo.save(supRequest);
 								}
 							}
+							JSONObject suppliernamenew = new JSONObject(filterSupDetails);
+							JSONObject suppliernameold = new JSONObject(findById.get());
+							SupRequest supRequest=new SupRequest();
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_DETAILS");
+							supRequest.setId(filterSupDetails.getRegisterId());
+							supRequest.setNewValue(suppliernamenew.toString());
+							supRequest.setOldValue(suppliernameold.toString());
+							supRequest.setStatus("PENDING");
+							supRequest.setReqType("UPDATE");
+							SupDetails save = supDetailsRepo.save(filterSupDetails);
+							supRequestRepo.save(supRequest);
 							return save;
 						} else {
 							throw new VendorNotFoundException("You don't have permission to update this vendor");
@@ -570,32 +601,41 @@ public class VendorController {
 		}
 	}
 
-//	@DeleteMapping("/vendor/{code}")
-//	public String deleteSupDetails(@PathVariable() String code, @RequestHeader(name = "Authorization") String token) {
-//		LOGGER.info("Inside - VendorController.deleteSupDetails()");
-//		try {
-//			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
-//			Optional<SupDetails> findById = supDetailsRepo.findById(code);
-//			if (findById.isPresent()) {
-//				if (findById.get().getSupplierCode() == loginSupplierCode) {
-//					if (!findById.get().getStatus().equals("0")) {
-//						SupDetails supDetails = findById.get();
-//						supDetails.setStatus("0");
-//						supDetailsRepo.save(supDetails);
-//						return "Successfully Deleted";
-//					} else {
-//						throw new VendorNotFoundException("Already Deleted");
-//					}
-//				} else {
-//					throw new VendorNotFoundException("You don't have permission to delete this vendor");
-//				}
-//			} else {
-//				throw new VendorNotFoundException("Vendor Not Exist");
-//			}
-//		} catch (Exception e) {
-//			throw new VendorNotFoundException(e.getMessage());
-//		}
-//	}
+	@DeleteMapping("/vendor/{code}")
+	public String deleteSupDetails(@PathVariable() String code, @RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - VendorController.deleteSupDetails()");
+		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+			Optional<SupDetails> findById = supDetailsRepo.findById(code);
+			if (findById.isPresent()) {
+				if (findById.get().getSupplierCode() == loginSupplierCode) {
+					if (!findById.get().getStatus().equals("DELETE")) {
+						SupDetails supDetails = findById.get();
+						supDetails.setStatus("PENDING");
+						SupRequest supRequest=new SupRequest();
+						JSONObject suppliernamenew = new JSONObject(findById.get());
+						supRequest.setSupplierCode(findById.get().getSupplierCode());
+						supRequest.setTableName("SUP_DETAILS");
+						supRequest.setId(findById.get().getRegisterId());
+						supRequest.setNewValue(suppliernamenew.toString());
+						supRequest.setStatus("PENDING");
+						supRequest.setReqType("DELETE");
+						supRequestRepo.save(supRequest);
+						supDetailsRepo.save(supDetails);
+						return "Request Sent to Admin";
+					} else {
+						throw new VendorNotFoundException("Already Deleted");
+					}
+				} else {
+					throw new VendorNotFoundException("You don't have permission to delete this vendor");
+				}
+			} else {
+				throw new VendorNotFoundException("Vendor Not Exist");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
 
 	@PostMapping("/vendor/address")
 	public SupAddress postAddressVendor(@RequestBody SupAddress address,
@@ -625,7 +665,7 @@ public class VendorController {
 					filterAddressUp.setCity(address.getCity());
 					filterAddressUp.setCountry(address.getCountry());
 					filterAddressUp.setRegion(address.getRegion());
-					filterAddressUp.setStatus("2");
+					filterAddressUp.setStatus("PENDING");
 					filterAddressUp.setAddressProof(address.getAddressProof());
 					filterAddressUp.setAddressProofPath(address.getAddressProofPath());
 					SupAddress save = this.supAddRepo.save(filterAddressUp);
@@ -636,7 +676,8 @@ public class VendorController {
 					supRequest.setTableName("SUP_ADDRESS");
 					supRequest.setId(save.getAddressId());
 					supRequest.setNewValue(suppliername.toString());
-					supRequest.setStatus("0");
+					supRequest.setStatus("PENDING");
+					supRequest.setReqType("CREATE");
 					supRequestRepo.save(supRequest);
 					return save;
 				} else {
@@ -733,7 +774,7 @@ public class VendorController {
 							filterAddressUp.setCity(address.getCity());
 							filterAddressUp.setCountry(address.getCountry());
 							filterAddressUp.setRegion(address.getRegion());
-							filterAddressUp.setStatus("2");
+							filterAddressUp.setStatus("PENDING");
 							filterAddressUp.setAddressProof(address.getAddressProof());
 							filterAddressUp.setAddressProofPath(address.getAddressProofPath());
 
@@ -743,21 +784,19 @@ public class VendorController {
 							for(SupRequest obj:findAllWithStatus) {
 								if(obj.getId().equals(filterAddressUp.getAddressId())) {
 									throw new VendorNotFoundException("This Request is Already Pending");
-								}else {
-									SupRequest supRequest=new SupRequest();
-									JSONObject suppliernameold = new JSONObject(findById.get());
-									JSONObject suppliernamenew = new JSONObject(filterAddressUp);
-									supRequest.setSupplierCode(loginSupplierCode);
-									supRequest.setTableName("SUP_ADDRESS");
-									supRequest.setId(address.getAddressId());
-									supRequest.setNewValue(suppliernamenew.toString());
-									supRequest.setOldValue(suppliernameold.toString());
-									supRequest.setStatus("0");
-									supRequestRepo.save(supRequest);
 								}
 							}
-							
-							
+							SupRequest supRequest=new SupRequest();
+							JSONObject suppliernameold = new JSONObject(findById.get());
+							JSONObject suppliernamenew = new JSONObject(filterAddressUp);
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_ADDRESS");
+							supRequest.setId(address.getAddressId());
+							supRequest.setNewValue(suppliernamenew.toString());
+							supRequest.setOldValue(suppliernameold.toString());
+							supRequest.setStatus("PENDING");
+							supRequest.setReqType("UPDATE");
+							supRequestRepo.save(supRequest);
 							return this.supAddRepo.save(filterAddressUp);
 						} else {
 							throw new VendorNotFoundException("Validation error");
@@ -786,13 +825,22 @@ public class VendorController {
 					throw new VendorNotFoundException("Vendor Address Does not exist");
 				} else {
 					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
-						if (findById.get().getStatus().equals("0")) {
+						if (findById.get().getStatus().equals("DELETE")) {
 							throw new VendorNotFoundException("Already Deleted");
 						} else {
 							SupAddress supAddress = findById.get();
-							supAddress.setStatus("0");
+							supAddress.setStatus("PENDING");
+							SupRequest supRequest=new SupRequest();
+							JSONObject suppliername = new JSONObject(findById.get());
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_ADDRESS");
+							supRequest.setId(findById.get().getAddressId());
+							supRequest.setNewValue(suppliername.toString());
+							supRequest.setStatus("PENDING");
+							supRequest.setReqType("DELETE");
+							supRequestRepo.save(supRequest);
 							this.supAddRepo.save(supAddress);
-							return "Successfully Deleted";
+							return "Request Sent to Admin";
 						}
 					} else {
 						throw new VendorNotFoundException("You don't have permission to delete this vendor address");
@@ -825,7 +873,7 @@ public class VendorController {
 						filterSupContract.setContractTerms(contact.getContractTerms());
 						filterSupContract.setContractProof(contact.getContractProof());
 						filterSupContract.setContractLocation(contact.getContractLocation());
-						filterSupContract.setStatus("2");
+						filterSupContract.setStatus("PENDING");
 						SupRequest supRequest=new SupRequest();
 						SupContract save = supContractRepo.save(filterSupContract);
 						JSONObject suppliernamenew = new JSONObject(filterSupContract);
@@ -833,7 +881,8 @@ public class VendorController {
 						supRequest.setTableName("SUP_CONTRACT");
 						supRequest.setId(save.getContractId());
 						supRequest.setNewValue(suppliernamenew.toString());
-						supRequest.setStatus("0");
+						supRequest.setStatus("PENDING");
+						supRequest.setReqType("CREATE");
 						supRequestRepo.save(supRequest);
 						
 						
@@ -913,7 +962,7 @@ public class VendorController {
 							filterSupContract.setBankId(findById.get().getBankId());
 							filterSupContract.setContractProof(contact.getContractProof());
 							filterSupContract.setContractLocation(contact.getContractLocation());
-							filterSupContract.setStatus("2");
+							filterSupContract.setStatus("PENDING");
 							filterSupContract.setContractId(id);
 							
 							
@@ -921,18 +970,19 @@ public class VendorController {
 							for(SupRequest obj:findAllWithStatus) {
 								if(obj.getId().equals(filterSupContract.getBankId())) {
 									throw new VendorNotFoundException("This Request is Already Pending");
-								}else {
-									SupRequest supRequest=new SupRequest();
-									JSONObject suppliernamenew = new JSONObject(filterSupContract);
-									JSONObject suppliernameold = new JSONObject(findById.get());
-									supRequest.setSupplierCode(loginSupplierCode);
-									supRequest.setTableName("SUP_CONTRACT");
-									supRequest.setId(contact.getContractId());
-									supRequest.setNewValue(suppliernamenew.toString());
-									supRequest.setOldValue(suppliernameold.toString());
-									supRequest.setStatus("0");
 								}
 							}
+							SupRequest supRequest=new SupRequest();
+							JSONObject suppliernamenew = new JSONObject(filterSupContract);
+							JSONObject suppliernameold = new JSONObject(findById.get());
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_CONTRACT");
+							supRequest.setId(contact.getContractId());
+							supRequest.setNewValue(suppliernamenew.toString());
+							supRequest.setOldValue(suppliernameold.toString());
+							supRequest.setStatus("PENDING");
+							supRequest.setReqType("UPDATE");
+							supRequestRepo.save(supRequest);
 							
 							return supContractRepo.save(filterSupContract);
 						} else {
@@ -961,8 +1011,24 @@ public class VendorController {
 			if (!loginSupplierCode.equals(null)) {
 				if (findById.isPresent()) {
 					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
-						supContractRepo.deleteById(id);
-						return "Deleted Successfuly";
+						SupContract supContract = findById.get();
+						if (supContract.getStatus().equals("DELETE")) {
+							throw new VendorNotFoundException("Already Deleted");
+						} else {
+							supContract.setStatus("PENDING");
+							SupRequest supRequest=new SupRequest();
+							SupContract save = supContractRepo.save(findById.get());
+							JSONObject suppliernamenew = new JSONObject(findById.get());
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_CONTRACT");
+							supRequest.setId(findById.get().getContractId());
+							supRequest.setNewValue(suppliernamenew.toString());
+							supRequest.setStatus("PENDING");
+							supRequest.setReqType("DELETE");
+							supRequestRepo.save(supRequest);
+							supContractRepo.save(supContract);
+							return "Request Set to Admin";
+						}
 					} else {
 						throw new VendorNotFoundException("You don't have permission to delete this vendor contact");
 					}
@@ -1011,7 +1077,7 @@ public class VendorController {
 					bank.setSupplierCode(loginSupplierCode);
 					bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
 					bank.setSwiftCode(supBank.getSwiftCode());
-					bank.setStatus("2");
+					bank.setStatus("PENDING");
 					Optional<SupBank> findBySwiftCode = supBankRepo.findBySwiftCode(supBank.getSwiftCode());
 					if (!findBySwiftCode.isPresent()) {
 						SupBank postData = this.supBankRepo.save(bank);
@@ -1021,7 +1087,9 @@ public class VendorController {
 						supRequest.setTableName("SUP_BANK");
 						supRequest.setId(postData.getBankId());
 						supRequest.setNewValue(suppliernamenew.toString());
-						supRequest.setStatus("0");
+						supRequest.setStatus("PENDING");
+						supRequest.setReqType("CREATE");
+						supRequestRepo.save(supRequest);
 						return postData;
 					} else {
 						throw new VendorNotFoundException("The Swift code all ready present");
@@ -1101,7 +1169,7 @@ public class VendorController {
 							bank.setIfscCode(supBank.getIfscCode());
 							bank.setSupplierCode(loginSupplierCode);
 							bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
-							bank.setStatus("2");
+							bank.setStatus("PENDING");
 							
 							SupBank sb = this.supBankRepo.save(bank);
 							
@@ -1109,19 +1177,19 @@ public class VendorController {
 							for(SupRequest obj:findAllWithStatus) {
 								if(obj.getId().equals(bank.getBankId())) {
 									throw new VendorNotFoundException("This Request is Already Pending");
-								}else {
-									SupRequest supRequest=new SupRequest();
-									JSONObject suppliernamenew = new JSONObject(bank);
-									JSONObject suppliernameold = new JSONObject(findById.get());
-									supRequest.setSupplierCode(loginSupplierCode);
-									supRequest.setTableName("SUP_BANK");
-									supRequest.setId(supBank.getBankId());
-									supRequest.setNewValue(suppliernamenew.toString());
-									supRequest.setOldValue(suppliernameold.toString());
-									supRequest.setStatus("0");
 								}
 							}
-							
+							SupRequest supRequest=new SupRequest();
+							JSONObject suppliernamenew = new JSONObject(bank);
+							JSONObject suppliernameold = new JSONObject(findById.get());
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_BANK");
+							supRequest.setId(supBank.getBankId());
+							supRequest.setNewValue(suppliernamenew.toString());
+							supRequest.setOldValue(suppliernameold.toString());
+							supRequest.setStatus("PENDING");
+							supRequest.setReqType("UPDATE");
+							supRequestRepo.save(supRequest);
 							return sb;
 						} else {
 							throw new VendorNotFoundException("Validation Error");
@@ -1150,8 +1218,25 @@ public class VendorController {
 					throw new VendorNotFoundException("This Bank id not found");
 				} else {
 					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
-						this.supBankRepo.deleteById(bankId);
-						return "Successfully Deleted ";
+						SupBank supBank = findById.get();
+						if (supBank.getStatus().equals("DELETE")) {
+							throw new VendorNotFoundException("Already Deleted");
+						} else {
+							supBank.setStatus("PENDING");
+							SupRequest supRequest=new SupRequest();
+							JSONObject suppliernamenew = new JSONObject(findById.get());
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_BANK");
+							supRequest.setId(findById.get().getBankId());
+							supRequest.setNewValue(suppliernamenew.toString());
+							supRequest.setStatus("PENDING");
+							supRequest.setReqType("DELETE");
+							supRequestRepo.save(supRequest);
+							supBankRepo.save(supBank);
+							return "Request Sent to Admin";
+
+						}
+						
 					} else {
 						throw new VendorNotFoundException("You don't have permission to delete this vendor bank");
 					}
@@ -1201,7 +1286,7 @@ public class VendorController {
 						department.setSupplierCode(loginSupplierCode);
 						department.setSupplierContact1(supDepartment.getSupplierContact1());
 						department.setEmail(supDepartment.getEmail());
-						department.setStatus("2");
+						department.setStatus("PENDING");
 						try {
 							if (fieldValidation.isEmpty(supDepartment.getSupplierContact2()) && fieldValidation.isEmpty(supDepartment.getAlternatePhoneno())) {
 								department.setSupplierContact2(supDepartment.getSupplierContact2());
@@ -1218,8 +1303,9 @@ public class VendorController {
 						supRequest.setTableName("SUP_DEPARTMENT");
 						supRequest.setId(save.getDepartmentId());
 						supRequest.setNewValue(department.toString());
-						supRequest.setStatus("0");
-						
+						supRequest.setStatus("PENDING");
+						supRequest.setReqType("CREATE");
+						supRequestRepo.save(supRequest);
 						return save;
 					} else {
 						throw new VendorNotFoundException("Token Expir");
@@ -1254,7 +1340,7 @@ public class VendorController {
 								department.setSupplierCode(loginSupplierCode);
 								department.setSupplierContact1(supDepartment.getSupplierContact1());
 								department.setEmail(supDepartment.getEmail());
-								department.setStatus("0");
+								department.setStatus("PENDING");
 								try {
 									if (fieldValidation.isEmpty(supDepartment.getSupplierContact2()) && fieldValidation.isEmpty(supDepartment.getAlternatePhoneno())) {
 										department.setSupplierContact2(supDepartment.getSupplierContact2());
@@ -1270,20 +1356,19 @@ public class VendorController {
 								for(SupRequest obj:findAllWithStatus) {
 									if(obj.getId().equals(department.getDepartmentId())) {
 										throw new VendorNotFoundException("This Request is Already Pending");
-									}else {
-										SupRequest supRequest=new SupRequest();
-										JSONObject suppliernamenew = new JSONObject(department);
-										JSONObject suppliernameold = new JSONObject(findById.get());
-										supRequest.setSupplierCode(loginSupplierCode);
-										supRequest.setTableName("SUP_DEPARTMENT");
-										supRequest.setId(supDepartment.getDepartmentId());
-										supRequest.setNewValue(suppliernamenew.toString());
-										supRequest.setOldValue(suppliernameold.toString());
-										supRequest.setStatus("0");
-										
 									}
 								}
-								
+								SupRequest supRequest=new SupRequest();
+								JSONObject suppliernamenew = new JSONObject(department);
+								JSONObject suppliernameold = new JSONObject(findById.get());
+								supRequest.setSupplierCode(loginSupplierCode);
+								supRequest.setTableName("SUP_DEPARTMENT");
+								supRequest.setId(supDepartment.getDepartmentId());
+								supRequest.setNewValue(suppliernamenew.toString());
+								supRequest.setOldValue(suppliernameold.toString());
+								supRequest.setStatus("PENDING");
+								supRequest.setReqType("UPDATE");
+								supRequestRepo.save(supRequest);
 								return supDepartmentRepo.save(department);
 							} else {
 								throw new VendorNotFoundException("Email Format Not Valid");
@@ -1315,8 +1400,23 @@ public class VendorController {
 			if (!loginSupplierCode.equals(null)) {
 				if (findById.isPresent()) {
 					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
-						supDepartmentRepo.deleteById(departmentId);
-						return "Successfully Deleted";
+						SupDepartment supDepartment = findById.get();
+						if (supDepartment.getStatus().equals("DELETE")) {
+							throw new VendorNotFoundException("Already Deleted");
+						} else {
+							supDepartment.setStatus("PENDING");
+							supDepartmentRepo.save(supDepartment);
+							SupRequest supRequest=new SupRequest();
+							JSONObject suppliernamenew = new JSONObject(findById.get());
+							supRequest.setSupplierCode(loginSupplierCode);
+							supRequest.setTableName("SUP_DEPARTMENT");
+							supRequest.setId(findById.get().getDepartmentId());
+							supRequest.setNewValue(findById.get().toString());
+							supRequest.setStatus("PENDING");
+							supRequest.setReqType("DELETE");
+							supRequestRepo.save(supRequest);
+							return "Request Sent to Admin";
+						}
 					} else {
 						throw new VendorNotFoundException("You don't have permission to delete this vendor department");
 					}
@@ -1337,7 +1437,7 @@ public class VendorController {
 	public List<SupRequest> getPendingVendors() {
 		LOGGER.info("Inside - VendorController.getPendingVendors()");
 		try {
-			List<SupRequest> findAllWithStatus = supRequestRepo.findAllWithStatus("1");
+			List<SupRequest> findAllWithStatus = supRequestRepo.findAllWithStatus("PENDING");
 			if(findAllWithStatus.size()<1) {
 				return findAllWithStatus;
 			}else {
@@ -1354,7 +1454,7 @@ public class VendorController {
 	public List<SupRequest> getPendingRequest(@PathVariable() String code) {
 		LOGGER.info("Inside - VendorController.getPendingRequest()");
 		try {
-			List<SupRequest> findWithStatus = supRequestRepo.findAllStatus("1",code);
+			List<SupRequest> findWithStatus = supRequestRepo.findAllStatus("PENDING",code);
 			return findWithStatus;
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -1362,8 +1462,9 @@ public class VendorController {
 		
 	}
 	
-	@PostMapping("vendor/approved")
-	public void vendorApproved(@RequestBody() SupRequest supRequest) {
+	@PostMapping("vendor/approved/{id}")
+//	public void vendorApproved(@RequestBody() SupRequest supRequest) {
+	public void vendorApproved(@PathVariable() Long id) {
 		LOGGER.info("Inside - VendorController.vendorApproved()");
 		try {
 //			String tableName;
@@ -1371,46 +1472,56 @@ public class VendorController {
 //			"SUP_BANK":name.equals("contact")?"SUP_CONTRACT":name.equals("department")?
 //			"SUP_DEPARTMENT":name.equals("details")?"SUP_DETAILS":"";
 			
-			Optional<SupRequest> findById = supRequestRepo.findById(supRequest.getId());
+			Optional<SupRequest> findById = supRequestRepo.findById(id);
 			SupRequest supRequest2 = findById.get();
 			String oldValue = supRequest2.getOldValue();
 			String newValue = supRequest2.getNewValue();
 			String tableName= supRequest2.getTableName();
-			supRequest2.setStatus("1");
+			supRequest2.setStatus("APPROVED");
 			
 			if(tableName.equals("SUP_ADDRESS")) {
 				SupAddress supAddressOld = SupAddress.fromJson(oldValue);
 				SupAddress supAddressNew = SupAddress.fromJson(newValue);
 				supAddressNew.setAddressId(supAddressOld.getAddressId());
-				supAddressNew.setStatus("1");
+				supAddressNew.setStatus(findById.get().getStatus());
 				supAddRepo.save(supAddressNew);
 				supRequestRepo.save(supRequest2);
 			}else if(tableName.equals("SUP_CONTRACT")) {
 				SupContract supContactOld = SupContract.fromJson(oldValue);
 				SupContract supContactnew = SupContract.fromJson(newValue);
 				supContactnew.setContractId(supContactOld.getContractId());
-				supContactnew.setStatus("1");
+				supContactnew.setStatus(findById.get().getStatus());
 				supContractRepo.save(supContactnew);
 				supRequestRepo.save(supRequest2);
 			}else if(tableName.equals("SUP_DEPARTMENT")) {
 				SupDepartment supDepartmentOld = SupDepartment.fromJson(oldValue);
 				SupDepartment supDepartmentnew = SupDepartment.fromJson(newValue);
 				supDepartmentnew.setDepartmentId(supDepartmentOld.getDepartmentId());
-				supDepartmentnew.setStatus("1");
+				supDepartmentnew.setStatus(findById.get().getStatus());
 				supDepartmentRepo.save(supDepartmentnew);
 				supRequestRepo.save(supRequest2);
 			}else if(tableName.equals("SUP_BANK")) {
 				SupBank supBankOld = SupBank.fromJson(oldValue);
 				SupBank supBankNew = SupBank.fromJson(newValue);
 				supBankNew.setBankId(supBankOld.getBankId());
-				supBankNew.setStatus("1");
+				supBankNew.setStatus(findById.get().getStatus());
 				supBankRepo.save(supBankNew);
 				supRequestRepo.save(supRequest2);
 			}else if(tableName.equals("SUP_DETAILS")) {
 				SupDetails supDetailsOld = SupDetails.fromJson(oldValue);
 				SupDetails supDetailsNew = SupDetails.fromJson(newValue);
 				supDetailsNew.setRegisterId(supDetailsOld.getRegisterId());
-				supDetailsNew.setStatus("1");
+				supDetailsNew.setStatus(findById.get().getStatus());
+				List<RegType> findAll = regTypeRepo.findAll();
+				for (RegType find : findAll) {
+					if((!find.getName().equals(supDetailsNew.getRegistrationType())) && (findById.get().getStatus().equals("APPROVED"))) {
+						
+					}else {
+						RegType regType=new RegType();
+						regType.setName(supDetailsNew.getRegistrationType());
+						regTypeRepo.save(regType);
+					}
+				}
 				supDetailsRepo.save(supDetailsNew);
 				supRequestRepo.save(supRequest2);
 			}
