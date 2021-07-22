@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import java.util.Random;
 
 import javax.validation.Valid;
 
+import org.fintexel.supplier.entity.RegType;
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupContract;
 import org.fintexel.supplier.entity.SupBank;
@@ -30,6 +32,7 @@ import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.flowable.FlowableContainer;
 import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.helper.LoginUserDetails;
+import org.fintexel.supplier.repository.RegTypeRepo;
 import org.fintexel.supplier.repository.SupAddressRepo;
 import org.fintexel.supplier.repository.SupContractRepo;
 import org.fintexel.supplier.repository.SupBankRepo;
@@ -125,6 +128,11 @@ public class VendorController {
 	@Autowired
 	FlowableRegistrationRepo flowableRegistrationRepo;
 
+	@Autowired
+	RegTypeRepo regTypeRepo;
+	
+	
+	
 	@PostMapping("/registration")
 	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.registerVendor()");
@@ -403,6 +411,29 @@ public class VendorController {
 
 	// ********** Write By Soumen **********//
 	// Start
+	
+	
+	@GetMapping("/regtype")
+	public List<RegType> getRegType(@RequestHeader(name = "Authorization") String token){
+		LOGGER.info("Inside - VendorController.getRegType()");
+		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+			if (!loginSupplierCode.equals(null)) {
+				List<RegType> findAll = regTypeRepo.findAll();
+				if(findAll.size()<1) {
+					throw new VendorNotFoundException("No Data Present");
+				}else {
+					return findAll;
+				}
+			}else {
+				throw new VendorNotFoundException("Token Expir");
+			}
+		}catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	
 	@PostMapping("/vendor")
 	public SupDetails postSupplierDetails(@RequestBody SupDetails supDetails) {
 		LOGGER.info("Inside - VendorController.postSupplierDetails()");
@@ -1431,8 +1462,9 @@ public class VendorController {
 		
 	}
 	
-	@PostMapping("vendor/approved")
-	public void vendorApproved(@RequestBody() SupRequest supRequest) {
+	@PostMapping("vendor/approved/{id}")
+//	public void vendorApproved(@RequestBody() SupRequest supRequest) {
+	public void vendorApproved(@PathVariable() Long id) {
 		LOGGER.info("Inside - VendorController.vendorApproved()");
 		try {
 //			String tableName;
@@ -1440,7 +1472,7 @@ public class VendorController {
 //			"SUP_BANK":name.equals("contact")?"SUP_CONTRACT":name.equals("department")?
 //			"SUP_DEPARTMENT":name.equals("details")?"SUP_DETAILS":"";
 			
-			Optional<SupRequest> findById = supRequestRepo.findById(supRequest.getId());
+			Optional<SupRequest> findById = supRequestRepo.findById(id);
 			SupRequest supRequest2 = findById.get();
 			String oldValue = supRequest2.getOldValue();
 			String newValue = supRequest2.getNewValue();
@@ -1451,35 +1483,45 @@ public class VendorController {
 				SupAddress supAddressOld = SupAddress.fromJson(oldValue);
 				SupAddress supAddressNew = SupAddress.fromJson(newValue);
 				supAddressNew.setAddressId(supAddressOld.getAddressId());
-				supAddressNew.setStatus(supRequest.getStatus());
+				supAddressNew.setStatus(findById.get().getStatus());
 				supAddRepo.save(supAddressNew);
 				supRequestRepo.save(supRequest2);
 			}else if(tableName.equals("SUP_CONTRACT")) {
 				SupContract supContactOld = SupContract.fromJson(oldValue);
 				SupContract supContactnew = SupContract.fromJson(newValue);
 				supContactnew.setContractId(supContactOld.getContractId());
-				supContactnew.setStatus(supRequest.getStatus());
+				supContactnew.setStatus(findById.get().getStatus());
 				supContractRepo.save(supContactnew);
 				supRequestRepo.save(supRequest2);
 			}else if(tableName.equals("SUP_DEPARTMENT")) {
 				SupDepartment supDepartmentOld = SupDepartment.fromJson(oldValue);
 				SupDepartment supDepartmentnew = SupDepartment.fromJson(newValue);
 				supDepartmentnew.setDepartmentId(supDepartmentOld.getDepartmentId());
-				supDepartmentnew.setStatus(supRequest.getStatus());
+				supDepartmentnew.setStatus(findById.get().getStatus());
 				supDepartmentRepo.save(supDepartmentnew);
 				supRequestRepo.save(supRequest2);
 			}else if(tableName.equals("SUP_BANK")) {
 				SupBank supBankOld = SupBank.fromJson(oldValue);
 				SupBank supBankNew = SupBank.fromJson(newValue);
 				supBankNew.setBankId(supBankOld.getBankId());
-				supBankNew.setStatus(supRequest.getStatus());
+				supBankNew.setStatus(findById.get().getStatus());
 				supBankRepo.save(supBankNew);
 				supRequestRepo.save(supRequest2);
 			}else if(tableName.equals("SUP_DETAILS")) {
 				SupDetails supDetailsOld = SupDetails.fromJson(oldValue);
 				SupDetails supDetailsNew = SupDetails.fromJson(newValue);
 				supDetailsNew.setRegisterId(supDetailsOld.getRegisterId());
-				supDetailsNew.setStatus(supRequest.getStatus());
+				supDetailsNew.setStatus(findById.get().getStatus());
+				List<RegType> findAll = regTypeRepo.findAll();
+				for (RegType find : findAll) {
+					if((!find.getName().equals(supDetailsNew.getRegistrationType())) && (findById.get().getStatus().equals("APPROVED"))) {
+						
+					}else {
+						RegType regType=new RegType();
+						regType.setName(supDetailsNew.getRegistrationType());
+						regTypeRepo.save(regType);
+					}
+				}
 				supDetailsRepo.save(supDetailsNew);
 				supRequestRepo.save(supRequest2);
 			}
