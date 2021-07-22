@@ -200,6 +200,8 @@ public class VendorLoginController {
 								register.setStatus(findByUsername.get().getStatus());
 								register.setSupplierCompName(findByUsername.get().getSupplierCompName());
 								register.setUsername(changePassword.getUsername());
+								register.setProcessId(findByUsername.get().getProcessId());
+								register.setTaskId(findByUsername.get().getTaskId());
 								VendorRegister save = registerRepo.save(register);
 								save.setPassword(changePassword.getNewPassword());
 								return save;
@@ -238,9 +240,7 @@ public class VendorLoginController {
 //					
 //					SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");  
 					 Date date = new Date();
-					System.out.println(date);
 					try {
-						System.out.println("in flowable try");
 						Optional<FlowableRegistration> findByAuthorAndTitle = flowableRegistrationRepo
 								.findByAuthorAndTitle("forgot_supplier_pwd");
 						
@@ -293,9 +293,7 @@ public class VendorLoginController {
 						
 						LOGGER.info("Taks ID 2 for forgot password " +array.getJSONObject(0).get("id"));
 						
-						System.out.println(response2);
 					} catch (Exception e) {
-						System.out.println(e);
 					}
 					
 					ForgotPassword forgotPassword = new ForgotPassword();
@@ -323,7 +321,7 @@ public class VendorLoginController {
 		try {
 			if (fieldValidation.isEmpty(recoverPassword.getNewPasswoed()) && fieldValidation.isEmpty(recoverPassword.getToken())) {
 				Optional<ForgotPassword> findByToken = forgotPasswordRepo.findByToken(recoverPassword.getToken());
-				if (findByToken.isEmpty()) {
+				if (findByToken.isPresent()) {
 					if (!findByToken.get().getStatus().equals("EXPIRE")) {
 						Date date = new Date();
 						if (date.getYear() == findByToken.get().getCreatedOn().getYear() && date.getMonth() == findByToken.get().getCreatedOn().getMonth() && date.getDate() == findByToken.get().getCreatedOn().getDate() && date.getHours() == findByToken.get().getCreatedOn().getHours()) {
@@ -339,6 +337,8 @@ public class VendorLoginController {
 									register.setStatus(findByEmail.get().getStatus());
 									register.setSupplierCompName(findByEmail.get().getSupplierCompName());
 									register.setUsername(findByEmail.get().getUsername());
+									register.setProcessId(findByEmail.get().getProcessId());
+									register.setTaskId(findByEmail.get().getTaskId());
 									VendorRegister save = registerRepo.save(register);
 									//save.setPassword(recoverPassword.getNewPasswoed());
 									ForgotPassword forgotPassword = new ForgotPassword();
