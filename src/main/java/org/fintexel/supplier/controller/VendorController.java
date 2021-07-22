@@ -18,6 +18,7 @@ import java.util.Random;
 
 import javax.validation.Valid;
 
+import org.fintexel.supplier.entity.ApproveMap;
 import org.fintexel.supplier.entity.RegType;
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupContract;
@@ -1462,9 +1463,8 @@ public class VendorController {
 		
 	}
 	
-	@PostMapping("vendor/approved/{id}")
-//	public void vendorApproved(@RequestBody() SupRequest supRequest) {
-	public void vendorApproved(@PathVariable() Long id) {
+	@PostMapping("vendor/approved")
+	public void vendorApproved(@RequestBody() List<ApproveMap>  approveMap) {
 		LOGGER.info("Inside - VendorController.vendorApproved()");
 		try {
 //			String tableName;
@@ -1472,7 +1472,8 @@ public class VendorController {
 //			"SUP_BANK":name.equals("contact")?"SUP_CONTRACT":name.equals("department")?
 //			"SUP_DEPARTMENT":name.equals("details")?"SUP_DETAILS":"";
 			
-			Optional<SupRequest> findById = supRequestRepo.findById(id);
+			for(ApproveMap obj: approveMap) {
+			Optional<SupRequest> findById = supRequestRepo.findById(obj.getId());
 			SupRequest supRequest2 = findById.get();
 			String oldValue = supRequest2.getOldValue();
 			String newValue = supRequest2.getNewValue();
@@ -1514,7 +1515,7 @@ public class VendorController {
 				supDetailsNew.setStatus(findById.get().getStatus());
 				List<RegType> findAll = regTypeRepo.findAll();
 				for (RegType find : findAll) {
-					if((!find.getName().equals(supDetailsNew.getRegistrationType())) && (findById.get().getStatus().equals("APPROVED"))) {
+					if((!find.getName().equals(supDetailsNew.getRegistrationType())) && (obj.getStatus().equals("APPROVED"))) {
 						
 					}else {
 						RegType regType=new RegType();
@@ -1524,6 +1525,8 @@ public class VendorController {
 				}
 				supDetailsRepo.save(supDetailsNew);
 				supRequestRepo.save(supRequest2);
+			}
+			
 			}
 			
 			
