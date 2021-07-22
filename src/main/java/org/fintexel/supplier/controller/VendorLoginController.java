@@ -177,7 +177,7 @@ public class VendorLoginController {
 	}
 
 	@PostMapping("/changePassword")
-	public VendorRegister changePassword(@RequestBody ChangePassword changePassword,
+	public Object changePassword(@RequestBody ChangePassword changePassword,
 			@RequestHeader(name = "Authorization") String token) {
 		try {
 			if (token != null && token.startsWith("Bearer ")) {
@@ -204,7 +204,7 @@ public class VendorLoginController {
 								register.setTaskId(findByUsername.get().getTaskId());
 								VendorRegister save = registerRepo.save(register);
 								save.setPassword(changePassword.getNewPassword());
-								return save;
+								return "Password changed!!!";
 
 							} else {
 								throw new VendorNotFoundException("Old password not natch");
