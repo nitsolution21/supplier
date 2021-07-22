@@ -152,8 +152,6 @@ public class VendorController {
 				filterVendorReg.setUsername(vendorReg.getEmail());
 				String rowPassword = java.util.UUID.randomUUID().toString();
 				filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
-				VendorRegister save = this.vendorRepo.save(filterVendorReg);
-				save.setPassword(rowPassword);
 				try {
 
 				
@@ -184,7 +182,7 @@ public class VendorController {
 					Map<String, Object> mapp = new HashMap<>();
 					map.put("processInstanceId", (String) jsonObject.get("id"));
 					LOGGER.info("Task ID - "+(String) jsonObject.get("id"));
-					
+					filterVendorReg.setTaskId((String) jsonObject.get("id"));
 					HttpEntity<Map<String, Object>> request = new HttpEntity<>(map, headers);
 					ResponseEntity<String> exchange = restTemplate.exchange(
 							"http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, request,
@@ -198,27 +196,28 @@ public class VendorController {
 					suppliername.put("name", "suppliername");
 					suppliername.put("scope", "local");
 					suppliername.put("type", "string");
-					suppliername.put("value", save.getSupplierCompName());
+					suppliername.put("value", vendorReg.getSupplierCompName());
 					arrayy.put(suppliername);
 					JSONObject supplieremail = new JSONObject();
 					supplieremail.put("name", "supplieremail");
 					supplieremail.put("scope", "local");
 					supplieremail.put("type", "string");
-					supplieremail.put("value", save.getEmail());
+					supplieremail.put("value", vendorReg.getEmail());
 					arrayy.put(supplieremail);
 					JSONObject username = new JSONObject();
 					username.put("name", "username");
 					username.put("scope", "local");
 					username.put("type", "string");
-					username.put("value", save.getEmail());
+					username.put("value", vendorReg.getEmail());
 					arrayy.put(username);
 					JSONObject password = new JSONObject();
 					password.put("name", "password");
 					password.put("scope", "local");
 					password.put("type", "string");
-					password.put("value", save.getPassword());
+					password.put("value", vendorReg.getPassword());
 					arrayy.put(password);
 					HttpEntity<String> entityy = new HttpEntity<String>(arrayy.toString(), headers);
+					filterVendorReg.setProcessId((String)array.getJSONObject(0).get("id"));
 					ResponseEntity<String> response2 = restTemplate.exchange(
 							"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/"
 									+ array.getJSONObject(0).get("id") + "/variables",
@@ -235,7 +234,8 @@ public class VendorController {
 				
 				
 //				END FLOWABLE
-
+				VendorRegister save = this.vendorRepo.save(filterVendorReg);
+				save.setPassword(rowPassword);
 				return save;
 			} else {
 				throw new VendorNotFoundException("Validation error");
