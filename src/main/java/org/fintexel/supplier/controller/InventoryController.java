@@ -402,7 +402,6 @@ public class InventoryController {
 	@PostMapping("/uploadSupplierBankProof")
 	public Object uploadSupplierBankProof(@RequestParam("file") MultipartFile file, @RequestHeader(name = "Authorization") String token) {
 		try {
-			System.out.println("in upload");
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			if (!loginSupplierCode.equals(null)) {
 				if (file.getSize() < 1) {
