@@ -159,7 +159,7 @@ public class VendorController {
 
 //			FLOWABLE POST API CALL WITH PROCESS DEFINITION KEY
 //				START
-
+//				 REQUEST FOR PROCESS ID START	
 					Optional<FlowableRegistration> findByAuthorAndTitle = flowableRegistrationRepo
 							.findByAuthorAndTitle("supplier_reg");
 					FlowableContainer flowableContainer = new FlowableContainer();
@@ -174,20 +174,29 @@ public class VendorController {
 					ResponseEntity<String> response = restTemplate.postForEntity(
 							"http://65.2.162.230:8080/flowable-rest/service/runtime/process-instances", entity,
 							String.class);
+					
+					
+					
+//				REQUEST FOR PROCESS ID END	
+					
+//				REQUEST FOR TASK ID START
+					
+					
 					JSONObject jsonObject = new JSONObject(response.getBody());
-
-
-//				END 
-
-//					headers.set("processInstanceId", (String) jsonObject.get("id"));
 					Map<String, Object> mapp = new HashMap<>();
 					map.put("processInstanceId", (String) jsonObject.get("id"));
 					LOGGER.info("Task ID - "+(String) jsonObject.get("id"));
-					filterVendorReg.setTaskId((String) jsonObject.get("id"));
+					filterVendorReg.setProcessId((String) jsonObject.get("id"));
 					HttpEntity<Map<String, Object>> request = new HttpEntity<>(map, headers);
 					ResponseEntity<String> exchange = restTemplate.exchange(
 							"http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, request,
 							String.class, 1);
+					
+					
+					
+//				REQUEST FOR TASK ID END
+					
+//				REQUEST FOR VARIABLE MAPPING START
 					JSONObject jsonObject1 = new JSONObject(exchange.getBody());
 					
 					
@@ -215,10 +224,10 @@ public class VendorController {
 					password.put("name", "password");
 					password.put("scope", "local");
 					password.put("type", "string");
-					password.put("value", vendorReg.getPassword());
+					password.put("value", rowPassword);
 					arrayy.put(password);
 					HttpEntity<String> entityy = new HttpEntity<String>(arrayy.toString(), headers);
-					filterVendorReg.setProcessId((String)array.getJSONObject(0).get("id"));
+					filterVendorReg.setTaskId((String)array.getJSONObject(0).get("id"));
 					ResponseEntity<String> response2 = restTemplate.exchange(
 							"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/"
 									+ array.getJSONObject(0).get("id") + "/variables",
@@ -226,13 +235,65 @@ public class VendorController {
 					
 					LOGGER.info("Taks ID 2" +array.getJSONObject(0).get("id"));
 					
-					System.out.println(response2);
 				} catch (Exception e) {
-					
-					System.out.println("exception "+e);
 				}
 				
+//				REQUEST FOR VARIABLE MAPPING END
 				
+//				AUTO CLAIM  START
+				
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+				MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+				map.add("j_username", "indexer");
+				map.add("j_password", "123");
+				map.add("submit", "Login");
+				map.add("_spring_security_remember_me", "true");
+				HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+				ResponseEntity<String> response = restTemplate.postForEntity( "http://65.2.162.230:8080/DB-idm/app/authentication", request , String.class );
+				JSONObject claimcookie = new JSONObject(response.getHeaders());
+				String replace = claimcookie.get("Set-Cookie").toString().replace("[", "").replace("]", "").replace("\"", "");						
+				HttpHeaders requestHeaders = new HttpHeaders();
+				requestHeaders.add("Cookie", replace);
+				HttpEntity requestEntity = new HttpEntity(null, requestHeaders);
+				ResponseEntity rssResponse = restTemplate.exchange(
+				    "http://65.2.162.230:8080/DB-task/app/rest/tasks/"+filterVendorReg.getTaskId() + "/action/claim",
+				    HttpMethod.PUT,
+				    requestEntity,
+				    String.class);
+				
+//				AUTO CLAIM  END
+				
+//				AUTO COMPLEATE START
+
+				
+				HttpHeaders header = new HttpHeaders();
+				header.add("Cookie", replace);
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+				JSONObject autoCompleate = new JSONObject();
+				autoCompleate.put("taskIdActual", filterVendorReg.getTaskId());
+				autoCompleate.put("suppliername", filterVendorReg.getSupplierCompName());
+				autoCompleate.put("supplieremail", filterVendorReg.getEmail());
+				autoCompleate.put("username", filterVendorReg.getUsername());
+				autoCompleate.put("password", rowPassword);
+				JSONObject autoCompleate1 = new JSONObject();
+				autoCompleate1.put("formId", "f8c6946d-e924-11eb-8253-0a5bf303a9fe");
+				autoCompleate1.put("values", autoCompleate.toString());
+//				Map<String, Object> mapp = new HashMap<>();
+//				mapp.put("formId", "f8c6946d-e924-11eb-8253-0a5bf303a9fe");
+//				mapp.put("values", autoCompleate.toString());
+				System.out.println("Body  "+autoCompleate1);
+				System.out.println("headers  "+header);
+				HttpEntity<Map<String, Object>> entity = new HttpEntity(autoCompleate1, header);
+//				HttpEntity<String> entity = new HttpEntity<String>(autoCompleate1.toString(), header);			
+				ResponseEntity rssResponsee = restTemplate.exchange(
+						"http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+filterVendorReg.getTaskId(),
+					    HttpMethod.POST	,
+					    entity,
+					    String.class);
+				
+//				AUTO COMPLEATE END
 				
 //				END FLOWABLE
 				VendorRegister save = this.vendorRepo.save(filterVendorReg);
@@ -439,7 +500,6 @@ public class VendorController {
 	public SupDetails postSupplierDetails(@RequestBody SupDetails supDetails) {
 		LOGGER.info("Inside - VendorController.postSupplierDetails()");
 		try {
-			System.out.println(supDetails.getRegistrationNo());
 			if ((fieldValidation.isEmpty(supDetails.getSupplierCompName()))
 					& (fieldValidation.isEmpty(supDetails.getRegistrationType()))
 					& (fieldValidation.isEmpty(supDetails.getRegisterId()))
@@ -521,7 +581,6 @@ public class VendorController {
 //		try {
 //			Optional<SupDetails> findById = supDetailsRepo.findById(code);
 //			if (findById.isPresent()) {
-//				System.out.println(findById.get());
 //				return findById.get();
 //			} else {
 //				throw new VendorNotFoundException("Vendor Not Exist");
@@ -567,8 +626,10 @@ public class VendorController {
 							
 							List<SupRequest> findAllWithStatus = supRequestRepo.findAllWithStatus("PENDING");
 							for(SupRequest obj:findAllWithStatus) {
-								if(obj.getId().equals(filterSupDetails.getRegisterId())) {
-									throw new VendorNotFoundException("This Request is Already Pending");
+								if(obj.getId()!=null) {
+									if(obj.getId().equals(filterSupDetails.getRegisterId())) {
+										throw new VendorNotFoundException("This Request is Already Pending");
+									}
 								}
 							}
 							JSONObject suppliernamenew = new JSONObject(filterSupDetails);
@@ -783,8 +844,10 @@ public class VendorController {
 							
 							List<SupRequest> findAllWithStatus = supRequestRepo.findAllWithStatus("0");
 							for(SupRequest obj:findAllWithStatus) {
-								if(obj.getId().equals(filterAddressUp.getAddressId())) {
-									throw new VendorNotFoundException("This Request is Already Pending");
+								if(obj.getId()!=null) {
+									if(obj.getId().equals(filterAddressUp.getAddressId())) {
+										throw new VendorNotFoundException("This Request is Already Pending");
+									}
 								}
 							}
 							SupRequest supRequest=new SupRequest();
@@ -969,8 +1032,10 @@ public class VendorController {
 							
 							List<SupRequest> findAllWithStatus = supRequestRepo.findAllWithStatus("0");
 							for(SupRequest obj:findAllWithStatus) {
-								if(obj.getId().equals(filterSupContract.getBankId())) {
-									throw new VendorNotFoundException("This Request is Already Pending");
+								if(obj.getId()!=null) {
+									if(obj.getId().equals(filterSupContract.getBankId())) {
+										throw new VendorNotFoundException("This Request is Already Pending");
+									}
 								}
 							}
 							SupRequest supRequest=new SupRequest();
@@ -1176,8 +1241,10 @@ public class VendorController {
 							
 							List<SupRequest> findAllWithStatus = supRequestRepo.findAllWithStatus("0");
 							for(SupRequest obj:findAllWithStatus) {
-								if(obj.getId().equals(bank.getBankId())) {
-									throw new VendorNotFoundException("This Request is Already Pending");
+								if(obj.getId()!=null) {
+									if(obj.getId().equals(bank.getBankId())) {
+										throw new VendorNotFoundException("This Request is Already Pending");
+									}
 								}
 							}
 							SupRequest supRequest=new SupRequest();
@@ -1355,8 +1422,10 @@ public class VendorController {
 								
 								List<SupRequest> findAllWithStatus = supRequestRepo.findAllWithStatus("0");
 								for(SupRequest obj:findAllWithStatus) {
-									if(obj.getId().equals(department.getDepartmentId())) {
-										throw new VendorNotFoundException("This Request is Already Pending");
+									if(obj.getId()!=null) {
+										if(obj.getId().equals(department.getDepartmentId())) {
+											throw new VendorNotFoundException("This Request is Already Pending");
+										}
 									}
 								}
 								SupRequest supRequest=new SupRequest();
