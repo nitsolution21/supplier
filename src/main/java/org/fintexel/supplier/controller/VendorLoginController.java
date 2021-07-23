@@ -279,7 +279,7 @@ public class VendorLoginController {
 						arrayy.put(forgotPwdEmail);
 						
 						JSONObject forgotPwdLink = new JSONObject();
-						forgotPwdLink.put("name", "forogtpwdlink");
+						forgotPwdLink.put("name", "forgotpwdlink"); 
 						forgotPwdLink.put("scope", "local");
 						forgotPwdLink.put("type", "string");
 						forgotPwdLink.put("value", forgotPasswordRequestEntity.getUrl() + "/" + token);
