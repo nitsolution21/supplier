@@ -46,6 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.PUT,"/vendorLogin/{id}").permitAll()
 				.antMatchers(HttpMethod.POST,"/supplier").permitAll()
 				.antMatchers(HttpMethod.POST,"/forgotPassword").permitAll()
+				.antMatchers(HttpMethod.GET,"/v2/api-docs").permitAll()
+				.antMatchers(HttpMethod.GET,"/swagger-ui.html").permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
