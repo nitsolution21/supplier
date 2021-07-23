@@ -274,30 +274,26 @@ public class VendorController {
 				
 				HttpHeaders header = new HttpHeaders();
 				header.add("Cookie", replace);
-				headers.setContentType(MediaType.APPLICATION_JSON);
-				headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+				header.setContentType(MediaType.APPLICATION_JSON);
+				header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 				JSONObject autoCompleate = new JSONObject();
 				autoCompleate.put("taskIdActual", filterVendorReg.getTaskId());
 				autoCompleate.put("suppliername", filterVendorReg.getSupplierCompName());
 				autoCompleate.put("supplieremail", filterVendorReg.getEmail());
 				autoCompleate.put("username", filterVendorReg.getUsername());
 				autoCompleate.put("password", rowPassword);
-				JSONObject autoCompleate1 = new JSONObject();
-				autoCompleate1.put("formId", "f8c6946d-e924-11eb-8253-0a5bf303a9fe");
-				autoCompleate1.put("values", autoCompleate.toString());
-//				Map<String, Object> mapp = new HashMap<>();
-//				mapp.put("formId", "f8c6946d-e924-11eb-8253-0a5bf303a9fe");
-//				mapp.put("values", autoCompleate.toString());
-				System.out.println("Body  "+autoCompleate1);
+				Map<String, Object> mapp = new HashMap<>();
+				mapp.put("formId", "f8c6946d-e924-11eb-8253-0a5bf303a9fe");
+				mapp.put("values", autoCompleate);
+				System.out.println("Body  "+mapp);
 				System.out.println("headers  "+header);
-				HttpEntity<Map<String, Object>> entity = new HttpEntity(autoCompleate1, header);
-//				HttpEntity<String> entity = new HttpEntity<String>(autoCompleate1.toString(), header);			
+				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(mapp, header);			
 				ResponseEntity rssResponsee = restTemplate.exchange(
 						"http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+filterVendorReg.getTaskId(),
 					    HttpMethod.POST	,
 					    entity,
 					    String.class);
-				
+				System.out.print("Result  "+rssResponsee.getHeaders());
 //				AUTO COMPLEATE END
 				
 //				END FLOWABLE
