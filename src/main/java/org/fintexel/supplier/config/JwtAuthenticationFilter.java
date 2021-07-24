@@ -22,6 +22,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
