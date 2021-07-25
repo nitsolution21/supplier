@@ -143,9 +143,9 @@ public class VendorController {
 	@PostMapping("/registration")
 	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
 		LOGGER.info("Inside - VendorController.registerVendor()");
+		String taskID1_="",taskID2_="",processInstID_="";
 		try {
-			if ((fieldValidation.isEmail(vendorReg.getEmail())
-					& (fieldValidation.isEmpty(vendorReg.getSupplierCompName())))) {
+			if ((fieldValidation.isEmail(vendorReg.getEmail()) & (fieldValidation.isEmpty(vendorReg.getSupplierCompName())))) {
 				VendorRegister filterVendorReg = new VendorRegister();
 				filterVendorReg.setEmail(vendorReg.getEmail());
 				filterVendorReg.setSupplierCompName(vendorReg.getSupplierCompName());
@@ -156,151 +156,174 @@ public class VendorController {
 						throw new VendorNotFoundException("Email already exist");
 					}
 				}
+				
 				filterVendorReg.setUsername(vendorReg.getEmail());
 				String rowPassword = java.util.UUID.randomUUID().toString();
 				filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
-				try {
-
+				
+				/*  ----------- REQUEST PROCESS ID with PROCESS DEFINITION KEY ------------------------------------------------------- */
+				
+				
+				Optional<FlowableRegistration> findByAuthorAndTitle = flowableRegistrationRepo.findByAuthorAndTitle("supplier_reg");
+				RestTemplate restTemplate = new RestTemplate();
+				
+				HttpHeaders BaseAuthHeader = new HttpHeaders();
+				BaseAuthHeader.setContentType(MediaType.APPLICATION_JSON);
+				BaseAuthHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+				BaseAuthHeader.setBasicAuth("admin", "test");
+				
+				
+				/* ==============================	 ProcessInstance Request		================================================*/
+				Map<String, Object> pDMap = new HashMap<>();
+				pDMap.put("processDefinitionId", findByAuthorAndTitle.get().getId());
+				HttpEntity<Map<String, Object>> pDEntity = new HttpEntity<>(pDMap, BaseAuthHeader);
+				ResponseEntity<String> response = restTemplate.postForEntity("http://65.2.162.230:8080/flowable-rest/service/runtime/process-instances", pDEntity, String.class);
+				
+				
+				
+				/* ==============================	 Query Task 1		================================================*/
+				
+				
+				Map<String, Object> queryMap = new HashMap<>();
+				JSONObject jsonObject = new JSONObject(response.getBody());
+				processInstID_= (String) jsonObject.get("id"); 
+				queryMap.put("processInstanceId", processInstID_);
+				
+				filterVendorReg.setProcessId(processInstID_);
+				LOGGER.info("ProcessInstanceID : "+processInstID_);
 				
 
-//			FLOWABLE POST API CALL WITH PROCESS DEFINITION KEY
-//				START
-//				 REQUEST FOR PROCESS ID START	
-					Optional<FlowableRegistration> findByAuthorAndTitle = flowableRegistrationRepo
-							.findByAuthorAndTitle("supplier_reg");
-					FlowableContainer flowableContainer = new FlowableContainer();
-					RestTemplate restTemplate = new RestTemplate();
-					HttpHeaders headers = new HttpHeaders();
-					headers.setContentType(MediaType.APPLICATION_JSON);
-					headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-					headers.setBasicAuth("admin", "test");
-					Map<String, Object> map = new HashMap<>();
-					map.put("processDefinitionId", findByAuthorAndTitle.get().getId());
-					HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
-					ResponseEntity<String> response = restTemplate.postForEntity(
-							"http://65.2.162.230:8080/flowable-rest/service/runtime/process-instances", entity,
-							String.class);
-					
-					
-					
-//				REQUEST FOR PROCESS ID END	
-					
-//				REQUEST FOR TASK ID START
-					
-					
-					JSONObject jsonObject = new JSONObject(response.getBody());
-					Map<String, Object> mapp = new HashMap<>();
-					map.put("processInstanceId", (String) jsonObject.get("id"));
-					LOGGER.info("Task ID - "+(String) jsonObject.get("id"));
-					filterVendorReg.setProcessId((String) jsonObject.get("id"));
-					HttpEntity<Map<String, Object>> request = new HttpEntity<>(map, headers);
-					ResponseEntity<String> exchange = restTemplate.exchange(
-							"http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, request,
-							String.class, 1);
-					
-					
-					
-//				REQUEST FOR TASK ID END
-					
-//				REQUEST FOR VARIABLE MAPPING START
-					JSONObject jsonObject1 = new JSONObject(exchange.getBody());
-					
-					
-					JSONArray array = new JSONArray(jsonObject1.get("data").toString());
-					JSONArray arrayy = new JSONArray();
-					JSONObject suppliername = new JSONObject();
-					suppliername.put("name", "suppliername");
-					suppliername.put("scope", "local");
-					suppliername.put("type", "string");
-					suppliername.put("value", vendorReg.getSupplierCompName());
-					arrayy.put(suppliername);
-					JSONObject supplieremail = new JSONObject();
-					supplieremail.put("name", "supplieremail");
-					supplieremail.put("scope", "local");
-					supplieremail.put("type", "string");
-					supplieremail.put("value", vendorReg.getEmail());
-					arrayy.put(supplieremail);
-					JSONObject username = new JSONObject();
-					username.put("name", "username");
-					username.put("scope", "local");
-					username.put("type", "string");
-					username.put("value", vendorReg.getEmail());
-					arrayy.put(username);
-					JSONObject password = new JSONObject();
-					password.put("name", "password");
-					password.put("scope", "local");
-					password.put("type", "string");
-					password.put("value", rowPassword);
-					arrayy.put(password);
-					HttpEntity<String> entityy = new HttpEntity<String>(arrayy.toString(), headers);
-					filterVendorReg.setTaskId((String)array.getJSONObject(0).get("id"));
-					ResponseEntity<String> response2 = restTemplate.exchange(
-							"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/"
-									+ array.getJSONObject(0).get("id") + "/variables",
-							HttpMethod.POST, entityy, String.class, 1);
-					
-					LOGGER.info("Taks ID 2" +array.getJSONObject(0).get("id"));
-					
-				} catch (Exception e) {
-				}
+				HttpEntity<Map<String, Object>> baseAuthEntity = new HttpEntity<>(queryMap, BaseAuthHeader);
+				ResponseEntity<String> queryRequest_1 = restTemplate.exchange( "http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, baseAuthEntity, String.class, 1);
 				
-//				REQUEST FOR VARIABLE MAPPING END
+
+				/*  ----------- 	POST FORM VARIABLES	 ------------------------------------------------------- */
 				
-//				AUTO CLAIM  START
+				JSONArray taskJA = new JSONArray(new JSONObject(queryRequest_1.getBody()).get("data").toString());
+				JSONArray formReqBody = new JSONArray();
 				
-				HttpHeaders headers = new HttpHeaders();
-				headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-				MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
-				map.add("j_username", "indexer");
-				map.add("j_password", "123");
-				map.add("submit", "Login");
-				map.add("_spring_security_remember_me", "true");
-				HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-				ResponseEntity<String> response = restTemplate.postForEntity( "http://65.2.162.230:8080/DB-idm/app/authentication", request , String.class );
-				JSONObject claimcookie = new JSONObject(response.getHeaders());
-				String replace = claimcookie.get("Set-Cookie").toString().replace("[", "").replace("]", "").replace("\"", "");						
-				HttpHeaders requestHeaders = new HttpHeaders();
-				requestHeaders.add("Cookie", replace);
-				HttpEntity requestEntity = new HttpEntity(null, requestHeaders);
-				ResponseEntity rssResponse = restTemplate.exchange(
-				    "http://65.2.162.230:8080/DB-task/app/rest/tasks/"+filterVendorReg.getTaskId() + "/action/claim",
-				    HttpMethod.PUT,
-				    requestEntity,
-				    String.class);
+				taskID1_ = (String)taskJA.getJSONObject(0).get("id");
 				
-//				AUTO CLAIM  END
+				LOGGER.info("Registration TaskID_1 : " +taskID1_);
 				
-//				AUTO COMPLEATE START
+				JSONObject suppliername = new JSONObject(); 
+				suppliername.put("name", "suppliername"); suppliername.put("scope", "local"); suppliername.put("type", "string"); suppliername.put("value", vendorReg.getSupplierCompName()); formReqBody.put(suppliername);
+				
+				JSONObject supplieremail = new JSONObject();
+				supplieremail.put("name", "supplieremail"); supplieremail.put("scope", "local"); supplieremail.put("type", "string"); supplieremail.put("value", vendorReg.getEmail()); formReqBody.put(supplieremail);
+				
+				JSONObject username = new JSONObject();
+				username.put("name", "username"); username.put("scope", "local"); username.put("type", "string"); username.put("value", vendorReg.getEmail()); formReqBody.put(username);
+				
+				JSONObject password = new JSONObject();
+				password.put("name", "password"); password.put("scope", "local"); password.put("type", "string"); password.put("value", rowPassword); formReqBody.put(password);
+				
+				HttpEntity<String> formReqEntity = new HttpEntity<String>(formReqBody.toString(), BaseAuthHeader);
+				
+				filterVendorReg.setTaskId(taskID1_);
+				
+				ResponseEntity<String> formResponse = restTemplate.exchange( "http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/" + taskID1_ + "/variables", HttpMethod.POST, formReqEntity, String.class, 1);
+				
+				
+				/*  ----------- 	GET COOKIE FROM DB-idm	 ------------------------------------------------------- */
+				
+				HttpHeaders loginHeader = new HttpHeaders();
+				loginHeader.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+				MultiValueMap<String, String> loginMap= new LinkedMultiValueMap<String, String>();
+				
+				loginMap.add("j_username", "indexer");
+				loginMap.add("j_password", "123");
+				loginMap.add("submit", "Login");
+				loginMap.add("_spring_security_remember_me", "true");
+				
+				HttpEntity<MultiValueMap<String, String>> loginReq = new HttpEntity<MultiValueMap<String, String>>(loginMap, loginHeader);
+				ResponseEntity<String> loginResponse = restTemplate.postForEntity( "http://65.2.162.230:8080/DB-idm/app/authentication", loginReq , String.class );
+				JSONObject cookieJO = new JSONObject(loginResponse.getHeaders());
+				String coockie_ = cookieJO.get("Set-Cookie").toString().replace("[", "").replace("]", "").replace("\"", "");	
+				
+				LOGGER.info("Coockie : " +coockie_);
+			
 
 				
-				HttpHeaders header = new HttpHeaders();
-				header.add("Cookie", replace);
-				header.setContentType(MediaType.APPLICATION_JSON);
-				header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+				/*  ----------- 	AUTO CLAIMING Registration 	 ------------------------------------------------------- */
+				
+				HttpHeaders autoCliamHeader = new HttpHeaders();
+				autoCliamHeader.add("Cookie", coockie_);
+				HttpEntity autoClaimEntity = new HttpEntity(null, autoCliamHeader);
+				ResponseEntity autoClaimResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/tasks/"+ taskID1_ + "/action/claim", HttpMethod.PUT, autoClaimEntity, String.class);
+				
+
+				/*  ----------- 	AUTO COMPLETE Registration 	 ------------------------------------------------------- */
+				
+				HttpHeaders autoCompleteHeader = new HttpHeaders();
+				autoCompleteHeader.add("Cookie", coockie_);
+				autoCompleteHeader.setContentType(MediaType.APPLICATION_JSON);
+				
+				
 				JSONObject autoCompleate = new JSONObject();
-				autoCompleate.put("taskIdActual", filterVendorReg.getTaskId());
+				autoCompleate.put("taskIdActual", taskID1_);
 				autoCompleate.put("suppliername", filterVendorReg.getSupplierCompName());
 				autoCompleate.put("supplieremail", filterVendorReg.getEmail());
 				autoCompleate.put("username", filterVendorReg.getUsername());
 				autoCompleate.put("password", rowPassword);
-				Map<String, Object> mapp = new HashMap<>();
-				mapp.put("formId", "f8c6946d-e924-11eb-8253-0a5bf303a9fe");
-				mapp.put("values", autoCompleate);
-				System.out.println("Body  "+mapp);
-				System.out.println("headers  "+header);
-				HttpEntity<Map<String, Object>> entity = new HttpEntity<>(mapp, header);			
-				ResponseEntity rssResponsee = restTemplate.exchange(
-						"http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+filterVendorReg.getTaskId(),
-					    HttpMethod.POST	,
-					    entity,
-					    String.class);
-				System.out.print("Result  "+rssResponsee.getHeaders());
-//				AUTO COMPLEATE END
 				
-//				END FLOWABLE
+				JSONObject autoCompleate_ = new JSONObject();
+				autoCompleate_.put("formId", "56d9e9ee-ed45-11eb-ba6c-0a5bf303a9fe");
+				autoCompleate_.put("values", autoCompleate);
+				
+				LOGGER.info("Body  "+autoCompleate_);
+				LOGGER.info("headers  "+autoCompleteHeader);
+				
+				
+				HttpEntity<String> autoCompeleteEntity = new HttpEntity<String>(autoCompleate_.toString(), autoCompleteHeader);			
+				ResponseEntity autoCompleteResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+taskID1_, HttpMethod.POST, autoCompeleteEntity, String.class);
+				LOGGER.info("Result  "+autoCompleteResponse.getHeaders());
+
+
+				
+				/*  ----------- 	QUERY TO FETCH TASKID_2	 ------------------------------------------------------- */
+				
+				queryRequest_1 = restTemplate.exchange( "http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, baseAuthEntity, String.class, 1);
+				taskJA = new JSONArray(new JSONObject(queryRequest_1.getBody()).get("data").toString());
+				
+				taskID2_ = (String)taskJA.getJSONObject(0).get("id");
+				LOGGER.info("Registration TaskID_2 : " +taskID2_);
+				
+				
+
+				/*
+				//  ----------- 	AUTO CLAIMING Registration 2 	 ------------------------------------------------------- 
+				autoClaimResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/tasks/"+ taskID2_ + "/action/claim", HttpMethod.PUT, autoClaimEntity, String.class);	
+				
+				//  ----------- 	AUTO COMPLETE Registration 2 -------------------------------------------------------- 
+				
+					
+				JSONObject autoComp2 = new JSONObject();
+				autoComp2.put("taskIdActual", taskID2_);
+				autoComp2.put("suppliername", filterVendorReg.getSupplierCompName());
+				autoComp2.put("supplieremail", filterVendorReg.getEmail());
+				autoComp2.put("approvesupplier", "yes");
+				autoComp2.put("approverremarkssupregistration", "");
+				
+				
+				autoCompleate_ = new JSONObject();
+				autoCompleate_.put("formId", "56d9e9ef-ed45-11eb-ba6c-0a5bf303a9fe");
+				autoCompleate_.put("values", autoComp2);
+				
+				LOGGER.info("autoCompleate_  "+autoCompleate_);
+				LOGGER.info("autoCompleteHeader  "+autoCompleteHeader);
+				
+				
+				HttpEntity<String> autoCompeleteEntity2 = new HttpEntity<String>(autoCompleate_.toString(), autoCompleteHeader);			
+				autoCompleteResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+taskID2_, HttpMethod.POST, autoCompeleteEntity2, String.class);
+				LOGGER.info("Result  "+autoCompleteResponse.getHeaders());
+				*/
+				
 				VendorRegister save = this.vendorRepo.save(filterVendorReg);
 				save.setPassword(rowPassword);
 				return save;
+				
+				
 			} else {
 				throw new VendorNotFoundException("Validation error");
 			}
