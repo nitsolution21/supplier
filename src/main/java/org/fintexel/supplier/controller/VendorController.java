@@ -161,6 +161,19 @@ public class VendorController {
 				String rowPassword = java.util.UUID.randomUUID().toString();
 				filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
 				
+				VendorRegister save = this.vendorRepo.save(filterVendorReg);
+				filterVendorReg.setPassword(rowPassword);
+				filterVendorReg.setEmail(save.getEmail());
+				filterVendorReg.setRegisterId(save.getRegisterId());
+				filterVendorReg.setCreatedBy(save.getCreatedBy());
+				filterVendorReg.setCreatedOn(save.getCreatedOn());
+				filterVendorReg.setStatus(save.getStatus());
+				filterVendorReg.setSupplierCompName(save.getSupplierCompName());
+				filterVendorReg.setUsername(save.getUsername());
+				filterVendorReg.setUpdatedBy(save.getUpdatedBy());
+				filterVendorReg.setUpdatedOn(save.getUpdatedOn());
+				
+				
 				/*  ----------- REQUEST PROCESS ID with PROCESS DEFINITION KEY ------------------------------------------------------- */
 				
 				
@@ -218,6 +231,9 @@ public class VendorController {
 				JSONObject password = new JSONObject();
 				password.put("name", "password"); password.put("scope", "local"); password.put("type", "string"); password.put("value", rowPassword); formReqBody.put(password);
 				
+				JSONObject registrationid = new JSONObject();
+				registrationid.put("name", "registrationid"); registrationid.put("scope", "local"); registrationid.put("type", "string"); registrationid.put("value", "SR "+filterVendorReg.getRegisterId()); formReqBody.put(registrationid);
+				
 				HttpEntity<String> formReqEntity = new HttpEntity<String>(formReqBody.toString(), BaseAuthHeader);
 				
 				filterVendorReg.setTaskId(taskID1_);
@@ -251,6 +267,7 @@ public class VendorController {
 				autoCliamHeader.add("Cookie", coockie_);
 				HttpEntity autoClaimEntity = new HttpEntity(null, autoCliamHeader);
 				ResponseEntity autoClaimResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/tasks/"+ taskID1_ + "/action/claim", HttpMethod.PUT, autoClaimEntity, String.class);
+				System.out.println("auto complite froom shantanu:    "+autoClaimResponse);
 				
 
 				/*  ----------- 	AUTO COMPLETE Registration 	 ------------------------------------------------------- */
@@ -266,6 +283,7 @@ public class VendorController {
 				autoCompleate.put("supplieremail", filterVendorReg.getEmail());
 				autoCompleate.put("username", filterVendorReg.getUsername());
 				autoCompleate.put("password", rowPassword);
+				autoCompleate.put("registrationid", "SR "+filterVendorReg.getRegisterId());
 				
 				JSONObject autoCompleate_ = new JSONObject();
 				autoCompleate_.put("formId", "56d9e9ee-ed45-11eb-ba6c-0a5bf303a9fe");
@@ -319,9 +337,10 @@ public class VendorController {
 				LOGGER.info("Result  "+autoCompleteResponse.getHeaders());
 				*/
 				
-				VendorRegister save = this.vendorRepo.save(filterVendorReg);
-				save.setPassword(rowPassword);
-				return save;
+				VendorRegister save1 = this.vendorRepo.save(filterVendorReg);
+				save1.setPassword(rowPassword);
+//				save1.setRegisterId("SR "+save1.getRegisterId());
+				return save1;
 				
 				
 			} else {
