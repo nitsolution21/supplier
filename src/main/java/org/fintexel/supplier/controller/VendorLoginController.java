@@ -20,12 +20,14 @@ import org.fintexel.supplier.entity.RecoverPassword;
 import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.entity.VendorLogin;
 import org.fintexel.supplier.entity.VendorRegister;
+import org.fintexel.supplier.entity.flowableentity.FlowableForm;
 import org.fintexel.supplier.entity.flowableentity.FlowableRegistration;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.flowable.FlowableContainer;
 import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.repository.ForgotPasswordRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
+import org.fintexel.supplier.repository.flowablerepo.FlowableFormRepo;
 import org.fintexel.supplier.repository.flowablerepo.FlowableRegistrationRepo;
 import org.fintexel.supplier.services.VendorDetailsService;
 import org.fintexel.supplier.validation.FieldValidation;
@@ -44,6 +46,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -94,6 +98,14 @@ public class VendorLoginController {
 	
 	@Autowired
 	ForgotPasswordRepo forgotPasswordRepo; 
+	
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	private String taskId;
+	
+	@Autowired
+	private FlowableFormRepo flowableFormRepo; 
 
 	@PostMapping("/login")
 	public ResponseEntity<?> venderLogin(@RequestBody VendorLogin vendorLogin) {
@@ -260,7 +272,7 @@ public class VendorLoginController {
 						Map<String, Object> mapp = new HashMap<>();
 						map.put("processInstanceId", (String) jsonObject.get("id"));
 						
-						LOGGER.info("Task ID for forgot password - "+(String) jsonObject.get("id"));
+						//LOGGER.info("Task ID for forgot password - "+(String) jsonObject.get("id"));
 						
 						HttpEntity<Map<String, Object>> request = new HttpEntity<>(map, headers);
 						ResponseEntity<String> exchange = restTemplate.exchange(
@@ -292,10 +304,71 @@ public class VendorLoginController {
 										+ array.getJSONObject(0).get("id") + "/variables",
 								HttpMethod.POST, entityy, String.class, 1);
 						
-						LOGGER.info("Taks ID 2 for forgot password " +array.getJSONObject(0).get("id"));
+						taskId = (String)array.getJSONObject(0).get("id");
+						
+						LOGGER.info("Taks ID for forgot password " +array.getJSONObject(0).get("id"));
 						
 					} catch (Exception e) {
 					}
+					
+//					AUTO CLAIM  START
+					
+					HttpHeaders headers = new HttpHeaders();
+					headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+					MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+					map.add("j_username", "indexer");
+					map.add("j_password", "123");
+					map.add("submit", "Login");
+					map.add("_spring_security_remember_me", "true");
+					HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+					ResponseEntity<String> response = restTemplate.postForEntity( "http://65.2.162.230:8080/DB-idm/app/authentication", request , String.class );
+					JSONObject claimcookie = new JSONObject(response.getHeaders());
+					String replace = claimcookie.get("Set-Cookie").toString().replace("[", "").replace("]", "").replace("\"", "");						
+					HttpHeaders requestHeaders = new HttpHeaders();
+					requestHeaders.add("Cookie", replace);
+					HttpEntity requestEntity = new HttpEntity(null, requestHeaders);
+					ResponseEntity rssResponse = restTemplate.exchange(
+					    "http://65.2.162.230:8080/DB-task/app/rest/tasks/"+taskId + "/action/claim",
+					    HttpMethod.PUT,
+					    requestEntity,
+					    String.class);
+					
+//					AUTO CLAIM  END
+					
+//					AUTO COMPLEATE START
+
+						
+					HttpHeaders header = new HttpHeaders();
+//					header.add("Cookie", replace);
+					header.setContentType(MediaType.APPLICATION_JSON);
+					header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+					JSONObject autoCompleate = new JSONObject();
+					autoCompleate.put("taskIdActual", taskId);
+//					autoCompleate.put("suppliername", findByEmail.get().getSupplierCompName());
+//					autoCompleate.put("supplieremail", findByEmail.get().getEmail());
+//					autoCompleate.put("username", findByEmail.get().getUsername());
+//					autoCompleate.put("password", findByEmail.get().getPassword());
+					autoCompleate.put("supplierforgotemailid", forgotPasswordRequestEntity.getEmail());
+					autoCompleate.put("forgotpwdlink", forgotPasswordRequestEntity.getUrl());
+					Map<String, Object> mapp = new HashMap<>();
+					Optional<FlowableForm> findByFromId = flowableFormRepo.findByFromId("frmforgotpwdsupplier");
+					mapp.put("formId", findByFromId.get().getId());
+					mapp.put("values", autoCompleate); 
+					System.out.println("Body  "+mapp);
+					System.out.println("headers  "+header);
+					HttpEntity<Map<String, Object>> entity = new HttpEntity<>(mapp,header);			
+					ResponseEntity rssResponsee = restTemplate.exchange(
+							"http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+taskId,
+						    HttpMethod.POST	,
+						    entity,
+						    String.class);
+//					System.out.print("Result  "+rssResponsee.getHeaders());
+					System.out.print("Result  "+rssResponsee.getHeaders());
+					
+					
+					
+					
+//					AUTO COMPLEATE END
 					
 					ForgotPassword forgotPassword = new ForgotPassword();
 					forgotPassword.setEmail(forgotPasswordRequestEntity.getEmail());
