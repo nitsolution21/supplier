@@ -123,7 +123,7 @@ public class VendorLoginController {
 
 		Optional<VendorRegister> findByUsername = vendorRegisterRepo.findByUsername(vendor.getUsername());
 
-		return ResponseEntity.ok(new LoginResponce(vendor.getUsername(), token, findByUsername.get().getRegisterId()));
+		return ResponseEntity.ok(new LoginResponce(vendor.getUsername(), token, findByUsername.get().getRegisterId(), findByUsername.get().getSupplierCompName()));
 	}
 
 	@GetMapping("/vendorLogin")

@@ -4,12 +4,14 @@ public class LoginResponce {
 	private String username;
 	private String token;
 	private long registerId;
+	private String supplierCompanyName;
 	
-	public LoginResponce(String username, String token, long registerId) {
+	public LoginResponce(String username, String token, long registerId, String supplierCompanyName) {
 		super();
 		this.username = username;
 		this.token = token;
 		this.registerId = registerId;
+		this.supplierCompanyName = supplierCompanyName;
 	}
 
 	public LoginResponce() {
@@ -40,10 +42,18 @@ public class LoginResponce {
 	public void setRegisterId(long registerId) {
 		this.registerId = registerId;
 	}
+	
+	public String getSupplierCompanyName() {
+		return supplierCompanyName;
+	}
+
+	public void setSupplierCompanyName(String supplierCompanyName) {
+		this.supplierCompanyName = supplierCompanyName;
+	}
 
 	@Override
 	public String toString() {
-		return "LoginResponce [username=" + username + ", token=" + token + "]";
+		return "LoginResponce [username=" + username + ", token=" + token + ", registerId="+registerId+", supplierCompanyName"+supplierCompanyName+"]";
 	}
 	
 	
