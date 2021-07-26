@@ -339,24 +339,20 @@ public class VendorLoginController {
 
 						
 					HttpHeaders header = new HttpHeaders();
-//					header.add("Cookie", replace);
+					header.add("Cookie", replace);
 					header.setContentType(MediaType.APPLICATION_JSON);
 					header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 					JSONObject autoCompleate = new JSONObject();
 					autoCompleate.put("taskIdActual", taskId);
-//					autoCompleate.put("suppliername", findByEmail.get().getSupplierCompName());
-//					autoCompleate.put("supplieremail", findByEmail.get().getEmail());
-//					autoCompleate.put("username", findByEmail.get().getUsername());
-//					autoCompleate.put("password", findByEmail.get().getPassword());
 					autoCompleate.put("supplierforgotemailid", forgotPasswordRequestEntity.getEmail());
-					autoCompleate.put("forgotpwdlink", forgotPasswordRequestEntity.getUrl());
-					Map<String, Object> mapp = new HashMap<>();
+					autoCompleate.put("forgotpwdlink", forgotPasswordRequestEntity.getUrl()+taskId);
+					JSONObject mapp = new JSONObject(); 
 					Optional<FlowableForm> findByFromId = flowableFormRepo.findByFromId("frmforgotpwdsupplier");
 					mapp.put("formId", findByFromId.get().getId());
 					mapp.put("values", autoCompleate); 
 					System.out.println("Body  "+mapp);
 					System.out.println("headers  "+header);
-					HttpEntity<Map<String, Object>> entity = new HttpEntity<>(mapp,header);			
+					HttpEntity<Map<String, Object>> entity = new HttpEntity(mapp.toString(),header);			
 					ResponseEntity rssResponsee = restTemplate.exchange(
 							"http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+taskId,
 						    HttpMethod.POST	,
