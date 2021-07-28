@@ -7,9 +7,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties
+@EnableSwagger2
 public class YMLConfig {
 	
 	private String name;

@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -45,6 +47,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET,"/vendorLogin/{id}").permitAll()
 				.antMatchers(HttpMethod.PUT,"/vendorLogin/{id}").permitAll()
 				.antMatchers(HttpMethod.POST,"/supplier").permitAll()
+				.antMatchers(HttpMethod.POST,"/forgotPassword").permitAll()
+				.antMatchers(HttpMethod.GET,"/v2/api-docs").permitAll()
+				.antMatchers(HttpMethod.GET,"/swagger-ui.html").permitAll()
+				.antMatchers(HttpMethod.GET,"/webjars/**").permitAll()
+				.antMatchers(HttpMethod.GET,"/swagger-resources/**").permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

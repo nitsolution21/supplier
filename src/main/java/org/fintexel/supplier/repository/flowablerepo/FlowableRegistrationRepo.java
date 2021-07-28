@@ -11,5 +11,4 @@ import org.springframework.data.jpa.repository.Query;
 public interface FlowableRegistrationRepo extends JpaRepository<FlowableRegistration, String>{
 	 @Query("select s from FlowableRegistration s where s.key = ?1 and s.version=(select max(p.version) from FlowableRegistration p where p.key=?1)")
 	 Optional<FlowableRegistration> findByAuthorAndTitle(String key);
-
 }

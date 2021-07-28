@@ -44,6 +44,12 @@ public class VendorRegister {
 	@Column(name = "STATUS")
 	private String status;
 	
+	@Column(name = "FL_PROCESS_ID")
+	private String processId;
+	
+	@Column(name = "FL_TASK_ID")
+	private String taskId;
+	
 	@Column(name = "CREATED_BY")
 	private int createdBy;
 	
@@ -59,7 +65,38 @@ public class VendorRegister {
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updatedOn;
-	
+
+	public VendorRegister(long registerId, String email, String supplierCompName, String username, String password,
+			String status, String processId, String taskId, int createdBy, Date createdOn, int updatedBy,
+			Date updatedOn) {
+		super();
+		this.registerId = registerId;
+		this.email = email;
+		this.supplierCompName = supplierCompName;
+		this.username = username;
+		this.password = password;
+		this.status = status;
+		this.processId = processId;
+		this.taskId = taskId;
+		this.createdBy = createdBy;
+		this.createdOn = createdOn;
+		this.updatedBy = updatedBy;
+		this.updatedOn = updatedOn;
+	}
+
+	public VendorRegister() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public String toString() {
+		return "VendorRegister [registerId=" + registerId + ", email=" + email + ", supplierCompName="
+				+ supplierCompName + ", username=" + username + ", password=" + password + ", status=" + status
+				+ ", processId=" + processId + ", taskId=" + taskId + ", createdBy=" + createdBy + ", createdOn="
+				+ createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + "]";
+	}
+
 	public long getRegisterId() {
 		return registerId;
 	}
@@ -108,6 +145,22 @@ public class VendorRegister {
 		this.status = status;
 	}
 
+	public String getProcessId() {
+		return processId;
+	}
+
+	public void setProcessId(String processId) {
+		this.processId = processId;
+	}
+
+	public String getTaskId() {
+		return taskId;
+	}
+
+	public void setTaskId(String taskId) {
+		this.taskId = taskId;
+	}
+
 	public int getCreatedBy() {
 		return createdBy;
 	}
@@ -139,36 +192,8 @@ public class VendorRegister {
 	public void setUpdatedOn(Date updatedOn) {
 		this.updatedOn = updatedOn;
 	}
+	
 
-	public VendorRegister() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	public VendorRegister(int registerId,
-			@NotEmpty(message = "Please enter the email") @Email(message = "Please enter valid email") String email,
-			String supplierCompName, String username, String password, String status, int createdBy, Date createdOn,
-			int updatedBy, Date updatedOn) {
-		super();
-		this.registerId = registerId;
-		this.email = email;
-		this.supplierCompName = supplierCompName;
-		this.username = username;
-		this.password = password;
-		this.status = status;
-		this.createdBy = createdBy;
-		this.createdOn = createdOn;
-		this.updatedBy = updatedBy;
-		this.updatedOn = updatedOn;
-	}
-
-	@Override
-	public String toString() {
-		return "VendorRegister [registerId=" + registerId + ", email=" + email + ", supplierCompName="
-				+ supplierCompName + ", username=" + username + ", password=" + password + ", status=" + status
-				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn="
-				+ updatedOn + "]";
-	}
 	
 
 	
