@@ -1,8 +1,5 @@
 package org.fintexel.supplier;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.fintexel.supplier.config.YMLConfig;
 import org.fintexel.supplier.validation.FieldValidation;
 import org.slf4j.Logger;
@@ -14,12 +11,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @ComponentScan(basePackages= {"org.fintexel.supplier.*"})

@@ -16,9 +16,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.json.JSONObject;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+@Component
 @Entity
 @Table(name = "SUP_DETAILS")
 public class SupDetails {
