@@ -148,7 +148,7 @@ public class UploadServiceImpl implements UploadService {
 		try {
 			if(fileName != null) {
 				LOGGER.info("FileName 2 - "+fileName);
-				pkg = OPCPackage.open("/Users/praveenkumarsunchula/Documents/GIT_Folders/dbox4.xlsx");
+				pkg = OPCPackage.open("/home/soumen/Downloads/dbox.xlsx");
 				LOGGER.info("21");
 				workbook = new XSSFWorkbook(pkg);
 				LOGGER.info("22");
@@ -326,7 +326,47 @@ public class UploadServiceImpl implements UploadService {
 				LOGGER.info("Registration TaskID_2 : " +taskID2_);
 				
 				
+				
+				/*   -----------    AUTO CLAIM FOR REGISTRATION APPROVAL ---------------------------------------- */
+				
+				HttpHeaders autoCliamRegApprovalHeader = new HttpHeaders();
+				autoCliamRegApprovalHeader.add("Cookie", coockie_);
+				HttpEntity autoCliamRegApprovalEntity = new HttpEntity(null, autoCliamRegApprovalHeader);
+				ResponseEntity autoCliamRegApprovalResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/tasks/"+ taskID2_ +"/action/claim", HttpMethod.PUT, autoCliamRegApprovalEntity, String.class);
+				System.out.println("###auto complite for registration approval froom shantanu:    "+autoCliamRegApprovalEntity);
+				System.out.println("###auto complite for registration approval id:    "+taskID2_);
+				
 
+				/*   -----------    AUTO COMPLEATE FOR REGISTRATION APPROVAL ---------------------------------------- */
+				
+				
+				HttpHeaders autoCompleteRegApprovalHeader = new HttpHeaders();
+//				autoCompleteRegApprovalHeader.add("Cookie", coockie_);
+				autoCompleteRegApprovalHeader.setContentType(MediaType.APPLICATION_JSON);
+				
+				String approveSupplier = "yes";
+				String approverRemarksSupRegistration = "";
+				JSONObject autoCompleteRegApproval = new JSONObject();
+				autoCompleteRegApproval.put("taskIdActual", taskID2_);
+				autoCompleteRegApproval.put("suppliername", filterVendorReg.getSupplierCompName());
+				autoCompleteRegApproval.put("supplieremail", filterVendorReg.getEmail());
+				autoCompleteRegApproval.put("approvesupplier",approveSupplier);
+				autoCompleteRegApproval.put("approverremarkssupregistration", approverRemarksSupRegistration);
+				
+				JSONObject autoCompleteRegApproval_ = new JSONObject();
+				autoCompleteRegApproval_.put("formId", "56d9e9ef-ed45-11eb-ba6c-0a5bf303a9fe");
+				autoCompleteRegApproval_.put("values", autoCompleteRegApproval);
+				
+				System.out.println("autoCompleteHeader" + autoCompleteRegApprovalHeader);
+				System.out.println("autoCompleteBody" + autoCompleteRegApproval_);
+				
+				HttpEntity<String> autoCompleteRegEntity = new HttpEntity<String>(autoCompleteRegApproval_.toString(), autoCompleteRegApprovalHeader);			
+				ResponseEntity autoCompleteRegResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+taskID2_, HttpMethod.POST, autoCompleteRegEntity, String.class);
+				
+				System.out.println("autoCompleteRegResponse" + autoCompleteRegResponse);
+				
+				
+				
 				VendorRegister save1 = this.vendorRepo.save(filterVendorReg);
 				save1.setPassword(rowPassword);
 //				save1.setRegisterId("SR "+save1.getRegisterId());
