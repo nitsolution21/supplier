@@ -15,6 +15,8 @@ public class CustomerContact {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "CONTRACT_ID") private Long contractId;
+	@Column(name = "CID") private Long cId;
+	@Column(name = "SUPPLIER_CODE") private String supplierCode;
 	@Column(name = "CONTRACT_TYPE") private String contractType;
 	@Column(name = "CONTRACT_TERMS") private Long contractTerms;
 	@Column(name = "CONTRACT_PROOF") private String contractProof;
@@ -28,6 +30,18 @@ public class CustomerContact {
 	}
 	public void setContractId(Long contractId) {
 		this.contractId = contractId;
+	}
+	public Long getcId() {
+		return cId;
+	}
+	public void setcId(Long cId) {
+		this.cId = cId;
+	}
+	public String getSupplierCode() {
+		return supplierCode;
+	}
+	public void setSupplierCode(String supplierCode) {
+		this.supplierCode = supplierCode;
 	}
 	public String getContractType() {
 		return contractType;
@@ -79,15 +93,18 @@ public class CustomerContact {
 	}
 	@Override
 	public String toString() {
-		return "CustomerContact [contractId=" + contractId + ", contractType=" + contractType + ", contractTerms="
-				+ contractTerms + ", contractProof=" + contractProof + ", contractLocation=" + contractLocation
-				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn="
-				+ updatedOn + "]";
+		return "CustomerContact [contractId=" + contractId + ", cId=" + cId + ", supplierCode=" + supplierCode
+				+ ", contractType=" + contractType + ", contractTerms=" + contractTerms + ", contractProof="
+				+ contractProof + ", contractLocation=" + contractLocation + ", createdBy=" + createdBy + ", createdOn="
+				+ createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + "]";
 	}
-	public CustomerContact(Long contractId, String contractType, Long contractTerms, String contractProof,
-			String contractLocation, String createdBy, Date createdOn, String updatedBy, Date updatedOn) {
+	public CustomerContact(Long contractId, Long cId, String supplierCode, String contractType, Long contractTerms,
+			String contractProof, String contractLocation, String createdBy, Date createdOn, String updatedBy,
+			Date updatedOn) {
 		super();
 		this.contractId = contractId;
+		this.cId = cId;
+		this.supplierCode = supplierCode;
 		this.contractType = contractType;
 		this.contractTerms = contractTerms;
 		this.contractProof = contractProof;
@@ -101,6 +118,7 @@ public class CustomerContact {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
 	
 	
 	

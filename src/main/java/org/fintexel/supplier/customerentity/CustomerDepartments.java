@@ -15,6 +15,7 @@ public class CustomerDepartments {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "DEPARTMENT_ID") private Long departmentId;
+	@Column(name = "CID") private Long cId;
 	@Column(name = "DEPARTMENT_NAME") private String departmentName;
 	@Column(name = "EMAIL") private String email;
 	@Column(name = "PHONENO") private String phoneNo;

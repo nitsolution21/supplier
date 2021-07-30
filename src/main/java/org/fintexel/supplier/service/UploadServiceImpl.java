@@ -343,6 +343,7 @@ public class UploadServiceImpl implements UploadService {
 				HttpHeaders autoCompleteRegApprovalHeader = new HttpHeaders();
 //				autoCompleteRegApprovalHeader.add("Cookie", coockie_);
 				autoCompleteRegApprovalHeader.setContentType(MediaType.APPLICATION_JSON);
+				autoCompleteRegApprovalHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 				
 				String approveSupplier = "yes";
 				String approverRemarksSupRegistration = "";
@@ -353,15 +354,16 @@ public class UploadServiceImpl implements UploadService {
 				autoCompleteRegApproval.put("approvesupplier",approveSupplier);
 				autoCompleteRegApproval.put("approverremarkssupregistration", approverRemarksSupRegistration);
 				
-				JSONObject autoCompleteRegApproval_ = new JSONObject();
-				autoCompleteRegApproval_.put("formId", "56d9e9ef-ed45-11eb-ba6c-0a5bf303a9fe");
-				autoCompleteRegApproval_.put("values", autoCompleteRegApproval);
+				JSONObject autoCompleteRegApprovalBody = new JSONObject();
+				autoCompleteRegApprovalBody.put("formId", "56d9e9ef-ed45-11eb-ba6c-0a5bf303a9fe");
+				autoCompleteRegApprovalBody.put("values", autoCompleteRegApproval);
 				
 				System.out.println("autoCompleteHeader" + autoCompleteRegApprovalHeader);
-				System.out.println("autoCompleteBody" + autoCompleteRegApproval_);
+				System.out.println("autoCompleteBody" + autoCompleteRegApprovalBody);
 				
-				HttpEntity<String> autoCompleteRegEntity = new HttpEntity<String>(autoCompleteRegApproval_.toString(), autoCompleteRegApprovalHeader);			
-				ResponseEntity autoCompleteRegResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+taskID2_, HttpMethod.POST, autoCompleteRegEntity, String.class);
+				HttpEntity<String> autoCompleteRegApprovalEntity = new HttpEntity<String>(autoCompleteRegApprovalBody.toString(), autoCompleteRegApprovalHeader);			
+				System.out.println("##httpEntity autocompleate" + autoCompleteRegApprovalEntity);
+				ResponseEntity autoCompleteRegResponse = restTemplate.postForEntity( "http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+taskID2_, autoCompleteRegApprovalEntity, String.class);
 				
 				System.out.println("autoCompleteRegResponse" + autoCompleteRegResponse);
 				

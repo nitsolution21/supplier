@@ -15,6 +15,7 @@ public class CustomerAddress {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ADDRESS_ID") private Long addressId;
+	@Column(name = "CID") private Long cId;
 	@Column(name = "ADDRESS_TYPE") private String addressType;
 	@Column(name = "ADDRESS1") private String address1;
 	@Column(name = "ADDRESS2") private String address2;
@@ -34,6 +35,12 @@ public class CustomerAddress {
 	}
 	public void setAddressId(Long addressId) {
 		this.addressId = addressId;
+	}
+	public Long getcId() {
+		return cId;
+	}
+	public void setcId(Long cId) {
+		this.cId = cId;
 	}
 	public String getAddressType() {
 		return addressType;
@@ -121,17 +128,18 @@ public class CustomerAddress {
 	}
 	@Override
 	public String toString() {
-		return "CustomerAddress [addressId=" + addressId + ", addressType=" + addressType + ", address1=" + address1
-				+ ", address2=" + address2 + ", city=" + city + ", postalCode=" + postalCode + ", country=" + country
-				+ ", region=" + region + ", addressProof=" + addressProof + ", addressProofPath=" + addressProofPath
-				+ ", status=" + status + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy="
-				+ updatedBy + ", updatedOn=" + updatedOn + "]";
+		return "CustomerAddress [addressId=" + addressId + ", cId=" + cId + ", addressType=" + addressType
+				+ ", address1=" + address1 + ", address2=" + address2 + ", city=" + city + ", postalCode=" + postalCode
+				+ ", country=" + country + ", region=" + region + ", addressProof=" + addressProof
+				+ ", addressProofPath=" + addressProofPath + ", status=" + status + ", createdBy=" + createdBy
+				+ ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + "]";
 	}
-	public CustomerAddress(Long addressId, String addressType, String address1, String address2, String city,
+	public CustomerAddress(Long addressId, Long cId, String addressType, String address1, String address2, String city,
 			String postalCode, String country, String region, String addressProof, String addressProofPath,
 			String status, String createdBy, Date createdOn, String updatedBy, Date updatedOn) {
 		super();
 		this.addressId = addressId;
+		this.cId = cId;
 		this.addressType = addressType;
 		this.address1 = address1;
 		this.address2 = address2;
@@ -151,6 +159,10 @@ public class CustomerAddress {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	
+	
+	
 	
 	
 	
