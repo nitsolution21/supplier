@@ -309,18 +309,18 @@ public class VendorController {
 				
 				
 
-				/*
-				//  ----------- 	AUTO CLAIMING Registration 2 	 ------------------------------------------------------- 
+				
+				//  ----------- 	AUTO CLAIMING REGISTRATION APPROVAL 	 ------------------------------------------------------- 
 				autoClaimResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/tasks/"+ taskID2_ + "/action/claim", HttpMethod.PUT, autoClaimEntity, String.class);	
 				
-				//  ----------- 	AUTO COMPLETE Registration 2 -------------------------------------------------------- 
+				//  ----------- 	AUTO COMPLETE REGISTRATION APPROVAL -------------------------------------------------------- 
 				
 					
 				JSONObject autoComp2 = new JSONObject();
 				autoComp2.put("taskIdActual", taskID2_);
 				autoComp2.put("suppliername", filterVendorReg.getSupplierCompName());
 				autoComp2.put("supplieremail", filterVendorReg.getEmail());
-				autoComp2.put("approvesupplier", "yes");
+				autoComp2.put("approvesupplier", "Yes");
 				autoComp2.put("approverremarkssupregistration", "");
 				
 				
@@ -335,7 +335,7 @@ public class VendorController {
 				HttpEntity<String> autoCompeleteEntity2 = new HttpEntity<String>(autoCompleate_.toString(), autoCompleteHeader);			
 				autoCompleteResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+taskID2_, HttpMethod.POST, autoCompeleteEntity2, String.class);
 				LOGGER.info("Result  "+autoCompleteResponse.getHeaders());
-				*/
+				
 				
 				VendorRegister save1 = this.vendorRepo.save(filterVendorReg);
 				save1.setPassword(rowPassword);

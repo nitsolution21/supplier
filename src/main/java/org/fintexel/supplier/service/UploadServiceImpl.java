@@ -341,11 +341,11 @@ public class UploadServiceImpl implements UploadService {
 				
 				
 				HttpHeaders autoCompleteRegApprovalHeader = new HttpHeaders();
-//				autoCompleteRegApprovalHeader.add("Cookie", coockie_);
+				autoCompleteRegApprovalHeader.add("Cookie", coockie_);
 				autoCompleteRegApprovalHeader.setContentType(MediaType.APPLICATION_JSON);
 				autoCompleteRegApprovalHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 				
-				String approveSupplier = "yes";
+				String approveSupplier = "Yes";
 				String approverRemarksSupRegistration = "";
 				JSONObject autoCompleteRegApproval = new JSONObject();
 				autoCompleteRegApproval.put("taskIdActual", taskID2_);
