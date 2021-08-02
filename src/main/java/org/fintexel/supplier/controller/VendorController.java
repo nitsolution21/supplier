@@ -162,7 +162,7 @@ public class VendorController {
 				filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
 				
 				VendorRegister save = this.vendorRepo.save(filterVendorReg);
-				filterVendorReg.setPassword(rowPassword);
+				filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
 				filterVendorReg.setEmail(save.getEmail());
 				filterVendorReg.setRegisterId(save.getRegisterId());
 				filterVendorReg.setCreatedBy(save.getCreatedBy());
