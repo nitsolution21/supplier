@@ -523,17 +523,14 @@ public class VendorController {
 	public List<RegType> getRegType(@RequestHeader(name = "Authorization") String token){
 		LOGGER.info("Inside - VendorController.getRegType()");
 		try {
-			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
-			if (!loginSupplierCode.equals(null)) {
+			
 				List<RegType> findAll = regTypeRepo.findAll();
 				if(findAll.size()<1) {
 					throw new VendorNotFoundException("No Data Present");
 				}else {
 					return findAll;
 				}
-			}else {
-				throw new VendorNotFoundException("Token Expir");
-			}
+			
 		}catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}

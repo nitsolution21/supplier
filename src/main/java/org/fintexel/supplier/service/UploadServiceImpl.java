@@ -95,8 +95,12 @@ public class UploadServiceImpl implements UploadService {
 
 	@Override
 	public boolean upload(MultipartFile uploadFile) {
+		
+		
 		LOGGER.info("Inside  - UploadServiceImpl.upload()");
 
+		Map<String, String> eoorMap = new HashMap<>();
+		
 		DataFormatter dataFormatter = new DataFormatter();
 		String sheetName = "Sheet1";
 		boolean returnFlag = true;
@@ -136,8 +140,24 @@ public class UploadServiceImpl implements UploadService {
 					LOGGER.info("UploadErrorEntity Class -  " + UploadErrorEntity.toString());
 				}
 
+			}
+			System.out.println("#####################uploadEntity********************" + uploadEntity.toString());
+
+			if (fieldValidation.isEmpty(uploadEntity.getEmail())) {
+				/*  -------------------   BULK REGISTRATION   START -----------------------------------   */
 				uploadEntity.setEmail(rows.getCell(0).toString());
-				uploadEntity.setSupplierCompName(rows.getCell(1).toString());
+				
+				try {
+					uploadEntity.setSupplierCompName(rows.getCell(1).toString());
+				}catch(Exception e) {
+					
+				}
+				
+				/*  -------------------   BULK REGISTRATION   END -----------------------------------   */
+				
+				
+				/*  -------------------   BULK DETAILS   START -----------------------------------   */
+				
 				uploadEntity.setRegistrationType(rows.getCell(2).toString());
 				uploadEntity.setCostCenter(rows.getCell(3).toString());
 				uploadEntity.setRemarks(rows.getCell(4).toString());
@@ -149,14 +169,33 @@ public class UploadServiceImpl implements UploadService {
 					// TODO: handle exception
 				}
 
+				
+				/*  -------------------   BULK DETAILS   END -----------------------------------   */
+				
+				
+				uploadEntity.setAddressType(rows.getCell(7).toString());
+				uploadEntity.setAddress1(rows.getCell(8).toString());
+//				uploadEntity.setAddress2(rows.getCell(9).toString());
+				uploadEntity.setPostalCode(711402 );
+//				Math.round(Integer.parseInt(rows.getCell(10).toString().toString()))
+				uploadEntity.setCity(rows.getCell(11).toString());
+				uploadEntity.setCountry(rows.getCell(12).toString()); 
+				uploadEntity.setRegion(rows.getCell(13).toString());
+				uploadEntity.setAddressProof(rows.getCell(14).toString());
+				uploadEntity.setAddressProofPath(rows.getCell(15).toString());
 //				uploadEntity.setSlno(rows.getCell(7).toString());
 //				uploadEntity.setSlno(rows.getCell(8).toString());
 //				uploadEntity.setSlno(rows.getCell(9).toString());
 
+				
+				
+				uploadService.validateEachVendor(uploadEntity);
+				uploadService.validateSupplierDetails(uploadEntity);
+				uploadService.validateSupplierAddress(uploadEntity);
+			} else {
+
 			}
-			System.out.println("#####################uploadEntity********************" + uploadEntity.toString());
-			uploadService.validateEachVendor(uploadEntity);
-			uploadService.validateSupplierDetails(uploadEntity);
+
 		}
 
 		return returnFlag;
@@ -537,6 +576,7 @@ public class UploadServiceImpl implements UploadService {
 				if (findByRegisterId.size() < 1) {
 					return false;
 				} else {
+					uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
 					uploadService.bulkUploadSupplierAddress(uploadEntity);
 					return true;
 				}
@@ -547,7 +587,6 @@ public class UploadServiceImpl implements UploadService {
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
-
 
 	}
 
@@ -572,14 +611,11 @@ public class UploadServiceImpl implements UploadService {
 				filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
 				filterSupDetails.setCostCenter(supDetails.getCostCenter());
 				filterSupDetails.setRemarks(supDetails.getRemarks());
-				System.out.println("$$$$$$$$$$$        t");
 				filterSupDetails.setLastlogin(new Date());
-				System.out.println("$$$$$$$$$$$  ");
 				filterSupDetails.setSupplierCode("SU:" + formatter.format(date) + ":" + findAll.size());
-				filterSupDetails.setStatus("PENDING");
+				filterSupDetails.setStatus("APPROVED");
 
 				SupDetails save = supDetailsRepo.save(filterSupDetails);
-				System.out.println("$$$$$$$$$$$  " + save.toString());
 			} else {
 				throw new VendorNotFoundException("Vendor Already Exist");
 			}
@@ -593,36 +629,26 @@ public class UploadServiceImpl implements UploadService {
 	public void bulkUploadSupplierAddress(UploadEntity address) {
 		LOGGER.info("Inside bulkUploadSupplierAddress()");
 		try {
+			SupAddress filterAddressUp = new SupAddress();
 
-			String loginSupplierCode = "";
-			if ((fieldValidation.isEmpty(address.getAddressType())) & (fieldValidation.isEmpty(address.getAddress1()))
-					& (fieldValidation.isEmpty(address.getPostalCode())) & (fieldValidation.isEmpty(address.getCity()))
-					& (fieldValidation.isEmpty(address.getCountry())) & (fieldValidation.isEmpty(address.getRegion()))
-					& (fieldValidation.isEmpty(address.getAddressProof()))
-					& (fieldValidation.isEmpty(address.getAddressProofPath()))) {
-				if (!loginSupplierCode.equals(null)) {
-					SupAddress filterAddressUp = new SupAddress();
-					filterAddressUp.setSupplierCode(loginSupplierCode);
-					filterAddressUp.setAddressType(address.getAddressType());
-					filterAddressUp.setAddress1(address.getAddress1());
-					try {
-						if (fieldValidation.isEmpty(address.getAddress2())) {
-							filterAddressUp.setAddress2(address.getAddress2());
-						}
-					} catch (Exception e) {
-
-					}
-					filterAddressUp.setPostalCode(address.getPostalCode());
-					filterAddressUp.setCity(address.getCity());
-					filterAddressUp.setCountry(address.getCountry());
-					filterAddressUp.setRegion(address.getRegion());
-					filterAddressUp.setStatus("PENDING");
-					filterAddressUp.setAddressProof(address.getAddressProof());
-					filterAddressUp.setAddressProofPath(address.getAddressProofPath());
-					SupAddress save = this.supAddressRepo.save(filterAddressUp);
+			filterAddressUp.setSupplierCode(address.getSupplierCode());
+			filterAddressUp.setAddressType(address.getAddressType());
+			filterAddressUp.setAddress1(address.getAddress1());
+			try {
+				if (fieldValidation.isEmpty(address.getAddress2())) {
+					filterAddressUp.setAddress2(address.getAddress2());
 				}
-			}
+			} catch (Exception e) {
 
+			}
+			filterAddressUp.setPostalCode(address.getPostalCode());
+			filterAddressUp.setCity(address.getCity());
+			filterAddressUp.setCountry(address.getCountry());
+			filterAddressUp.setRegion(address.getRegion());
+			filterAddressUp.setStatus("APPROVED");
+			filterAddressUp.setAddressProof(address.getAddressProof());
+			filterAddressUp.setAddressProofPath(address.getAddressProofPath());
+			
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
