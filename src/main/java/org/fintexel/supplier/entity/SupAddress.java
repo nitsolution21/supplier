@@ -15,9 +15,11 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import org.json.JSONObject;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+@Component
 @Entity
 @Table(name = "SUP_ADDRESS")
 public class SupAddress {

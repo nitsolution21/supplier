@@ -33,13 +33,13 @@ public class InventoryDetails {
 	private int sku;
 	
 	@Column(name = "CATEGORY_ID")
-	private int categoryId;
+	private long categoryId;
 	
 	@Column(name = "BRAND_ID")
-	private int brandId;
+	private long brandId;
 	
 	@Column(name = "SUBCATEGORY_ID")
-	private int subcategoryId;
+	private long subcategoryId;
 	  
 	@Column(name = "STATUS")
 	private String status;
@@ -108,27 +108,27 @@ public class InventoryDetails {
 		this.sku = sku;
 	}
 
-	public int getCategoryId() {
+	public long getCategoryId() {
 		return categoryId;
 	}
 
-	public void setCategoryId(int categoryId) {
+	public void setCategoryId(long categoryId) {
 		this.categoryId = categoryId;
 	}
 
-	public int getBrandId() {
+	public long getBrandId() {
 		return brandId;
 	}
 
-	public void setBrandId(int brandId) {
+	public void setBrandId(long brandId) {
 		this.brandId = brandId;
 	}
 
-	public int getSubcategoryId() {
+	public long getSubcategoryId() {
 		return subcategoryId;
 	}
 
-	public void setSubcategoryId(int subcategoryId) {
+	public void setSubcategoryId(long subcategoryId) {
 		this.subcategoryId = subcategoryId;
 	}
 
@@ -197,7 +197,7 @@ public class InventoryDetails {
 	}
 
 	public InventoryDetails(long itemId, String supplierCode, String itemDescription, int qty, float unitPrice, int sku,
-			int categoryId, int brandId, int subcategoryId, String status, float discount, int createdBy,
+			long categoryId, long brandId, long subcategoryId, String status, float discount, int createdBy,
 			Date createdOn, int updatedBy, Date updatedOn) {
 		super();
 		this.itemId = itemId;

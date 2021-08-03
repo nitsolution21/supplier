@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.fintexel.supplier.entity.InventoryDetails;
+import org.fintexel.supplier.entity.InventoryResponse;
 import org.fintexel.supplier.entity.ItemBrand;
 import org.fintexel.supplier.entity.ItemCategory;
 import org.fintexel.supplier.entity.ItemSubCategory;
+import org.fintexel.supplier.entity.SubCategoryResponse;
 import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
@@ -133,7 +135,7 @@ public class InventoryController {
 	}
 
 	@PostMapping("/vendor/subCategory")
-	public ItemSubCategory addSubCategory(@RequestBody ItemSubCategory itemSubCategory,
+	public SubCategoryResponse addSubCategory(@RequestBody ItemSubCategory itemSubCategory,
 			@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - addSubCategory " + itemSubCategory);
 		try {
@@ -148,7 +150,19 @@ public class InventoryController {
 						category.setCategoryId(itemSubCategory.getCategoryId());
 						category.setSubCategoryName(itemSubCategory.getSubCategoryName());
 						category.setSupplierCode(loginSupplierCode);
-						return itemSubCategoryRepo.save(category);
+						ItemSubCategory save = itemSubCategoryRepo.save(category);
+						Optional<ItemCategory> findById = itemCategoryRepo.findById(save.getCategoryId());
+						SubCategoryResponse categoryResponse = new SubCategoryResponse();
+						categoryResponse.setCategoryId(findById.get().getCategoryId());
+						categoryResponse.setCategoryName(findById.get().getCategoryName());
+						categoryResponse.setCreatedBy(save.getCreatedBy());
+						categoryResponse.setCreatedOn(save.getCreatedOn());
+						categoryResponse.setUpdatedBy(save.getUpdatedBy());
+						categoryResponse.setUpdatedOn(save.getUpdatedOn());
+						categoryResponse.setSubCategoryId(save.getSubCategoryId());
+						categoryResponse.setSubCategoryName(save.getSubCategoryName());
+						categoryResponse.setSupplierCode(save.getSupplierCode());
+						return categoryResponse;
 					} else {
 						findBySubCategoryName.forEach(subCategor -> {
 							if (subCategor.getSupplierCode().equals(loginSupplierCode)) {
@@ -159,7 +173,19 @@ public class InventoryController {
 						category.setCategoryId(itemSubCategory.getCategoryId());
 						category.setSubCategoryName(itemSubCategory.getSubCategoryName());
 						category.setSupplierCode(loginSupplierCode);
-						return itemSubCategoryRepo.save(category);
+						ItemSubCategory save = itemSubCategoryRepo.save(category);
+						Optional<ItemCategory> findById = itemCategoryRepo.findById(save.getCategoryId());
+						SubCategoryResponse categoryResponse = new SubCategoryResponse();
+						categoryResponse.setCategoryId(findById.get().getCategoryId());
+						categoryResponse.setCategoryName(findById.get().getCategoryName());
+						categoryResponse.setCreatedBy(save.getCreatedBy());
+						categoryResponse.setCreatedOn(save.getCreatedOn());
+						categoryResponse.setUpdatedBy(save.getUpdatedBy());
+						categoryResponse.setUpdatedOn(save.getUpdatedOn());
+						categoryResponse.setSubCategoryId(save.getSubCategoryId());
+						categoryResponse.setSubCategoryName(save.getSubCategoryName());
+						categoryResponse.setSupplierCode(save.getSupplierCode());
+						return categoryResponse;
 					}
 				} else {
 					throw new VendorNotFoundException("Token not valid");
@@ -245,7 +271,7 @@ public class InventoryController {
 	}
 
 	@PostMapping("/vendor/inventory")
-	public InventoryDetails addInventory(@RequestBody InventoryDetails inventoryDetails,
+	public InventoryResponse addInventory(@RequestBody InventoryDetails inventoryDetails,
 			@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - InventoryController.addInventory()");
 		try {
@@ -283,7 +309,36 @@ public class InventoryController {
 					} catch (Exception e) {
 
 					}
-					return inventoryRepo.save(details);
+					InventoryDetails save = inventoryRepo.save(details);
+					
+					Optional<ItemBrand> findByIdBrand = itemBrandRepo.findById(save.getBrandId());
+					
+					Optional<ItemCategory> findByIdCategory = itemCategoryRepo.findById(save.getCategoryId());
+					
+					Optional<ItemSubCategory> findByIdSubCategory = itemSubCategoryRepo.findById(save.getSubcategoryId());
+					InventoryResponse inventoryResponse = new InventoryResponse();
+					
+					inventoryResponse.setBrandId(save.getBrandId());
+					inventoryResponse.setBrandName(findByIdBrand.get().getBrandName());
+					inventoryResponse.setCategoryId(save.getCategoryId());
+					inventoryResponse.setCategoryName(findByIdCategory.get().getCategoryName());
+					inventoryResponse.setCreatedBy(save.getCreatedBy());
+					inventoryResponse.setCreatedOn(save.getCreatedOn());
+					inventoryResponse.setDiscount(save.getDiscount());
+					inventoryResponse.setItemDescription(save.getItemDescription());
+					inventoryResponse.setItemId(save.getItemId());
+					inventoryResponse.setQty(save.getQty());
+					inventoryResponse.setSku(save.getSku());
+					inventoryResponse.setStatus(save.getStatus());
+					inventoryResponse.setSubcategoryId(save.getSubcategoryId());
+					inventoryResponse.setSubcategoryName(findByIdSubCategory.get().getSubCategoryName());
+					inventoryResponse.setSupplierCode(save.getSupplierCode());
+					inventoryResponse.setUnitPrice(save.getUnitPrice());
+					inventoryResponse.setUpdatedBy(save.getUpdatedBy());
+					inventoryResponse.setUpdatedOn(save.getUpdatedOn());
+					
+					return inventoryResponse;
+					
 //				} else {
 //					throw new VendorNotFoundException("Inventory Already Exist");
 //				}
