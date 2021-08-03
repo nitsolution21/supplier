@@ -548,8 +548,6 @@ public class VendorController {
 					& (fieldValidation.isEmpty(supDetails.getRegistrationType()))
 					& (fieldValidation.isEmpty(supDetails.getRegisterId()))
 					& (fieldValidation.isEmpty(supDetails.getRegistrationNo()))
-					& (fieldValidation.isEmpty(supDetails.getCostCenter()))
-					& (fieldValidation.isEmpty(supDetails.getRemarks()))
 					& (fieldValidation.isEmpty(supDetails.getLastlogin()))) {
 				List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(supDetails.getRegisterId());
 				List<SupDetails> findAll = supDetailsRepo.findAll();
@@ -563,8 +561,14 @@ public class VendorController {
 					filterSupDetails.setRegisterId(supDetails.getRegisterId());
 					filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
 					filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
-					filterSupDetails.setCostCenter(supDetails.getCostCenter());
-					filterSupDetails.setRemarks(supDetails.getRemarks());
+					//filterSupDetails.setCostCenter(supDetails.getCostCenter());
+					try {
+						if (fieldValidation.isEmpty(supDetails.getRemarks())) {
+							filterSupDetails.setRemarks(supDetails.getRemarks());
+						}
+					} catch (Exception e) {
+
+					}
 					filterSupDetails.setLastlogin(supDetails.getLastlogin());
 					filterSupDetails.setSupplierCode("SU:" + formatter.format(date) +":"+ findAll.size());
 					filterSupDetails.setStatus("PENDING");

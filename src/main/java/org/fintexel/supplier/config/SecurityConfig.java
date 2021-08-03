@@ -53,6 +53,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET,"/webjars/**").permitAll()
 				.antMatchers(HttpMethod.GET,"/swagger-resources/**").permitAll()
 				.antMatchers(HttpMethod.POST,"/upload").permitAll()
+				.antMatchers(HttpMethod.POST,"/customer/login").permitAll()
+				.antMatchers(HttpMethod.POST,"/customer/registration").permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
