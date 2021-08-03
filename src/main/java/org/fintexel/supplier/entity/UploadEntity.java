@@ -3,6 +3,8 @@ package org.fintexel.supplier.entity;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -45,6 +47,40 @@ public class UploadEntity {
 	private String region;
 	private String addressProof;
 	private String addressProofPath;
+	
+	
+	
+	private long bankId;
+	private String bankName;
+	private String bankBranch;
+	private String bankBic;
+	private String bankAccountNo;
+	private String currency;
+	private String transilRoutingNo;
+	private String chequeNo;
+	private String accountHolder;
+	private String swiftCode;
+	private String ifscCode;
+	private String bankEvidence;
+	private String evidencePath;
+	
+	
+	
+	private long departmentId;
+	private String departmentName;
+	private String supplierContact1;
+	private String supplierContact2;
+	private String phoneno;
+	private String supEmail;
+	private String alternatePhoneno;
+	
+	
+
+	private Long contractId;
+	private String contractType;
+	private int contractTerms;
+	private String contractProof;
+	private String contractLocation;
 	public String getSlno() {
 		return slno;
 	}
@@ -195,6 +231,156 @@ public class UploadEntity {
 	public void setAddressProofPath(String addressProofPath) {
 		this.addressProofPath = addressProofPath;
 	}
+	public long getBankId() {
+		return bankId;
+	}
+	public void setBankId(long bankId) {
+		this.bankId = bankId;
+	}
+	public String getBankName() {
+		return bankName;
+	}
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+	public String getBankBranch() {
+		return bankBranch;
+	}
+	public void setBankBranch(String bankBranch) {
+		this.bankBranch = bankBranch;
+	}
+	public String getBankBic() {
+		return bankBic;
+	}
+	public void setBankBic(String bankBic) {
+		this.bankBic = bankBic;
+	}
+	public String getBankAccountNo() {
+		return bankAccountNo;
+	}
+	public void setBankAccountNo(String bankAccountNo) {
+		this.bankAccountNo = bankAccountNo;
+	}
+	public String getCurrency() {
+		return currency;
+	}
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+	public String getTransilRoutingNo() {
+		return transilRoutingNo;
+	}
+	public void setTransilRoutingNo(String transilRoutingNo) {
+		this.transilRoutingNo = transilRoutingNo;
+	}
+	public String getChequeNo() {
+		return chequeNo;
+	}
+	public void setChequeNo(String chequeNo) {
+		this.chequeNo = chequeNo;
+	}
+	public String getAccountHolder() {
+		return accountHolder;
+	}
+	public void setAccountHolder(String accountHolder) {
+		this.accountHolder = accountHolder;
+	}
+	public String getSwiftCode() {
+		return swiftCode;
+	}
+	public void setSwiftCode(String swiftCode) {
+		this.swiftCode = swiftCode;
+	}
+	public String getIfscCode() {
+		return ifscCode;
+	}
+	public void setIfscCode(String ifscCode) {
+		this.ifscCode = ifscCode;
+	}
+	public String getBankEvidence() {
+		return bankEvidence;
+	}
+	public void setBankEvidence(String bankEvidence) {
+		this.bankEvidence = bankEvidence;
+	}
+	public String getEvidencePath() {
+		return evidencePath;
+	}
+	public void setEvidencePath(String evidencePath) {
+		this.evidencePath = evidencePath;
+	}
+	public long getDepartmentId() {
+		return departmentId;
+	}
+	public void setDepartmentId(long departmentId) {
+		this.departmentId = departmentId;
+	}
+	public String getDepartmentName() {
+		return departmentName;
+	}
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
+	}
+	public String getSupplierContact1() {
+		return supplierContact1;
+	}
+	public void setSupplierContact1(String supplierContact1) {
+		this.supplierContact1 = supplierContact1;
+	}
+	public String getSupplierContact2() {
+		return supplierContact2;
+	}
+	public void setSupplierContact2(String supplierContact2) {
+		this.supplierContact2 = supplierContact2;
+	}
+	public String getPhoneno() {
+		return phoneno;
+	}
+	public void setPhoneno(String phoneno) {
+		this.phoneno = phoneno;
+	}
+	public String getSupEmail() {
+		return supEmail;
+	}
+	public void setSupEmail(String supEmail) {
+		this.supEmail = supEmail;
+	}
+	public String getAlternatePhoneno() {
+		return alternatePhoneno;
+	}
+	public void setAlternatePhoneno(String alternatePhoneno) {
+		this.alternatePhoneno = alternatePhoneno;
+	}
+	public Long getContractId() {
+		return contractId;
+	}
+	public void setContractId(Long contractId) {
+		this.contractId = contractId;
+	}
+	public String getContractType() {
+		return contractType;
+	}
+	public void setContractType(String contractType) {
+		this.contractType = contractType;
+	}
+	public int getContractTerms() {
+		return contractTerms;
+	}
+	public void setContractTerms(int contractTerms) {
+		this.contractTerms = contractTerms;
+	}
+	public String getContractProof() {
+		return contractProof;
+	}
+	public void setContractProof(String contractProof) {
+		this.contractProof = contractProof;
+	}
+	public String getContractLocation() {
+		return contractLocation;
+	}
+	public void setContractLocation(String contractLocation) {
+		this.contractLocation = contractLocation;
+	}
 	@Override
 	public String toString() {
 		return "UploadEntity [slno=" + slno + ", email=" + email + ", supplierCode=" + supplierCode + ", registerId="
@@ -204,8 +390,86 @@ public class UploadEntity {
 				+ createdBy + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + ", addressId=" + addressId
 				+ ", addressType=" + addressType + ", address1=" + address1 + ", address2=" + address2 + ", city="
 				+ city + ", postalCode=" + postalCode + ", country=" + country + ", region=" + region
-				+ ", addressProof=" + addressProof + ", addressProofPath=" + addressProofPath + "]";
+				+ ", addressProof=" + addressProof + ", addressProofPath=" + addressProofPath + ", bankId=" + bankId
+				+ ", bankName=" + bankName + ", bankBranch=" + bankBranch + ", bankBic=" + bankBic + ", bankAccountNo="
+				+ bankAccountNo + ", currency=" + currency + ", transilRoutingNo=" + transilRoutingNo + ", chequeNo="
+				+ chequeNo + ", accountHolder=" + accountHolder + ", swiftCode=" + swiftCode + ", ifscCode=" + ifscCode
+				+ ", bankEvidence=" + bankEvidence + ", evidencePath=" + evidencePath + ", departmentId=" + departmentId
+				+ ", departmentName=" + departmentName + ", supplierContact1=" + supplierContact1
+				+ ", supplierContact2=" + supplierContact2 + ", phoneno=" + phoneno + ", supEmail=" + supEmail
+				+ ", alternatePhoneno=" + alternatePhoneno + ", contractId=" + contractId + ", contractType="
+				+ contractType + ", contractTerms=" + contractTerms + ", contractProof=" + contractProof
+				+ ", contractLocation=" + contractLocation + "]";
 	}
+	public UploadEntity(String slno, String email, String supplierCode, Long registerId, String supplierCompName,
+			String registrationType, String registrationNo, String status, String costCenter, String remarks,
+			Date lastlogin, Date createdOn, int createdBy, int updatedBy, Date updatedOn, Long addressId,
+			String addressType, String address1, String address2, String city, int postalCode, String country,
+			String region, String addressProof, String addressProofPath, long bankId, String bankName,
+			String bankBranch, String bankBic, String bankAccountNo, String currency, String transilRoutingNo,
+			String chequeNo, String accountHolder, String swiftCode, String ifscCode, String bankEvidence,
+			String evidencePath, long departmentId, String departmentName, String supplierContact1,
+			String supplierContact2, String phoneno, String supEmail, String alternatePhoneno, Long contractId,
+			String contractType, int contractTerms, String contractProof, String contractLocation) {
+		super();
+		this.slno = slno;
+		this.email = email;
+		this.supplierCode = supplierCode;
+		this.registerId = registerId;
+		this.supplierCompName = supplierCompName;
+		this.registrationType = registrationType;
+		this.registrationNo = registrationNo;
+		this.status = status;
+		this.costCenter = costCenter;
+		this.remarks = remarks;
+		this.lastlogin = lastlogin;
+		this.createdOn = createdOn;
+		this.createdBy = createdBy;
+		this.updatedBy = updatedBy;
+		this.updatedOn = updatedOn;
+		this.addressId = addressId;
+		this.addressType = addressType;
+		this.address1 = address1;
+		this.address2 = address2;
+		this.city = city;
+		this.postalCode = postalCode;
+		this.country = country;
+		this.region = region;
+		this.addressProof = addressProof;
+		this.addressProofPath = addressProofPath;
+		this.bankId = bankId;
+		this.bankName = bankName;
+		this.bankBranch = bankBranch;
+		this.bankBic = bankBic;
+		this.bankAccountNo = bankAccountNo;
+		this.currency = currency;
+		this.transilRoutingNo = transilRoutingNo;
+		this.chequeNo = chequeNo;
+		this.accountHolder = accountHolder;
+		this.swiftCode = swiftCode;
+		this.ifscCode = ifscCode;
+		this.bankEvidence = bankEvidence;
+		this.evidencePath = evidencePath;
+		this.departmentId = departmentId;
+		this.departmentName = departmentName;
+		this.supplierContact1 = supplierContact1;
+		this.supplierContact2 = supplierContact2;
+		this.phoneno = phoneno;
+		this.supEmail = supEmail;
+		this.alternatePhoneno = alternatePhoneno;
+		this.contractId = contractId;
+		this.contractType = contractType;
+		this.contractTerms = contractTerms;
+		this.contractProof = contractProof;
+		this.contractLocation = contractLocation;
+	}
+	public UploadEntity() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
+	
 	
 	
 	

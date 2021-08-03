@@ -22,5 +22,17 @@ public interface UploadService {
 	boolean validateSupplierAddress(UploadEntity uploadEntity);
 	
 	void bulkUploadSupplierAddress(UploadEntity supAddress);
+	
+	boolean validateSupplierBank(UploadEntity uploadEntity);
+	
+	void bulkUploadSupplierBank(UploadEntity supAddress);
+	
+	boolean validateSupplierDepartment(UploadEntity uploadEntity);
+	
+	void bulkUploadSupplierDepartment(UploadEntity supAddress);
+	
+	boolean validateSupplierContact(UploadEntity uploadEntity);
+	
+	void bulkUploadSupplierContact(UploadEntity supAddress);
 
 }
