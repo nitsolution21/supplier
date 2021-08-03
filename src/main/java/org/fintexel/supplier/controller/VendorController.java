@@ -316,27 +316,27 @@ public class VendorController {
 				//  ----------- 	AUTO COMPLETE REGISTRATION APPROVAL -------------------------------------------------------- 
 				
 					
-				JSONObject autoComp2 = new JSONObject();
-				autoComp2.put("taskIdActual", taskID2_);
-				autoComp2.put("suppliername", filterVendorReg.getSupplierCompName());
-				autoComp2.put("supplieremail", filterVendorReg.getEmail());
-				autoComp2.put("approvesupplier", "Yes");
-				autoComp2.put("approverremarkssupregistration", "");
-				
-				
-				autoCompleate_ = new JSONObject();
-				autoCompleate_.put("formId", "56d9e9ef-ed45-11eb-ba6c-0a5bf303a9fe");
-				autoCompleate_.put("values", autoComp2);
-				
-				LOGGER.info("autoCompleate_  "+autoCompleate_);
-				LOGGER.info("autoCompleteHeader  "+autoCompleteHeader);
-				
-				
-				HttpEntity<String> autoCompeleteEntity2 = new HttpEntity<String>(autoCompleate_.toString(), autoCompleteHeader);			
-				autoCompleteResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+taskID2_, HttpMethod.POST, autoCompeleteEntity2, String.class);
-				LOGGER.info("Result  "+autoCompleteResponse.getHeaders());
-				
-				
+//				JSONObject autoComp2 = new JSONObject();
+//				autoComp2.put("taskIdActual", taskID2_);
+//				autoComp2.put("suppliername", filterVendorReg.getSupplierCompName());
+//				autoComp2.put("supplieremail", filterVendorReg.getEmail());
+//				autoComp2.put("approvesupplier", "Yes");
+//				autoComp2.put("approverremarkssupregistration", "");
+//				
+//				
+//				autoCompleate_ = new JSONObject();
+//				autoCompleate_.put("formId", "56d9e9ef-ed45-11eb-ba6c-0a5bf303a9fe");
+//				autoCompleate_.put("values", autoComp2);
+//				
+//				LOGGER.info("autoCompleate_  "+autoCompleate_);
+//				LOGGER.info("autoCompleteHeader  "+autoCompleteHeader);
+//				
+//				
+//				HttpEntity<String> autoCompeleteEntity2 = new HttpEntity<String>(autoCompleate_.toString(), autoCompleteHeader);			
+//				autoCompleteResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+taskID2_, HttpMethod.POST, autoCompeleteEntity2, String.class);
+//				LOGGER.info("Result  "+autoCompleteResponse.getHeaders());
+//				
+//				
 				VendorRegister save1 = this.vendorRepo.save(filterVendorReg);
 				save1.setPassword(rowPassword);
 //				save1.setRegisterId("SR "+save1.getRegisterId());
