@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.fintexel.supplier.customerentity.CustomerRegister;
+import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.entity.ChangePassword;
 import org.fintexel.supplier.entity.ForgotPassword;
 import org.fintexel.supplier.entity.ForgotPasswordRequestEntity;
@@ -29,6 +31,7 @@ import org.fintexel.supplier.repository.ForgotPasswordRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.fintexel.supplier.repository.flowablerepo.FlowableFormRepo;
 import org.fintexel.supplier.repository.flowablerepo.FlowableRegistrationRepo;
+import org.fintexel.supplier.services.CustomerDetailsServices;
 import org.fintexel.supplier.services.VendorDetailsService;
 import org.fintexel.supplier.validation.FieldValidation;
 import org.hibernate.hql.internal.ast.tree.IsNullLogicOperatorNode;
@@ -69,9 +72,15 @@ public class VendorLoginController {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private CustomerRegisterRepo customerRegisterRepo;
 
 	@Autowired
 	private VendorDetailsService vendorDetailsService;
+	
+	@Autowired
+	private CustomerDetailsServices customerDetailsServices;
 
 	@Autowired
 	private VendorRegisterRepo vendorRegisterRepo;
@@ -109,7 +118,7 @@ public class VendorLoginController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> venderLogin(@RequestBody VendorLogin vendorLogin) {
-
+		LOGGER.info("Inside - VendorLoginController.venderLogin()");
 		try {
 			this.authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(vendorLogin.getUsername(), vendorLogin.getPassword()));

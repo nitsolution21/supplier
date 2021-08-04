@@ -8,10 +8,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.fintexel.supplier.entity.VendorDetails;
 import org.fintexel.supplier.exceptions.VendorErrorResponse;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.exceptions.VendorRestExceptionHandler;
 import org.fintexel.supplier.helper.JwtUtil;
+import org.fintexel.supplier.services.CustomerDetailsServices;
 import org.fintexel.supplier.services.VendorDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,10 +30,18 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Autowired
-	private VendorDetailsService vendorDetailsService; 
+	private VendorDetailsService vendorDetailsService;
+	
+	@Autowired
+	private CustomerDetailsServices customerDetailsServices; 
+	
+	@Autowired
+	private YMLConfig myConfig;
 	
 	@Autowired
 	private JwtUtil jwtUtil; 
+	
+	UserDetails userDetails;
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -51,7 +61,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				throw new VendorNotFoundException("token is not validated");
 			}
 			
-			UserDetails userDetails = vendorDetailsService.loadUserByUsername(username);
+			
+			//UserDetails userDetails = customerDetailsServices.loadUserByUsername(username);
+			
+//			UserDetails userDetails = vendorDetailsService.loadUserByUsername(username);
+			
+			if ((myConfig.getContextpath() +"/login").equals("/dev/login")) {
+				System.out.println("in customer login");
+				this.userDetails = vendorDetailsService.loadUserByUsername(username);
+				
+			} 
+			else {
+				System.out.println("in customer login");
+				this.userDetails = customerDetailsServices.loadUserByUsername(username);
+			}
 			
 			if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 				
