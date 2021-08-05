@@ -1415,7 +1415,7 @@ public class VendorController {
 						supRequest.setSupplierCode(loginSupplierCode);
 						supRequest.setTableName("SUP_DEPARTMENT");
 						supRequest.setId(save.getDepartmentId());
-						supRequest.setNewValue(department.toString());
+						supRequest.setNewValue(suppliernamenew.toString());
 						supRequest.setStatus("PENDING");
 						supRequest.setReqType("CREATE");
 						supRequestRepo.save(supRequest);
