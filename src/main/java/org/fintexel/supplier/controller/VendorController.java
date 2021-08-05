@@ -1553,7 +1553,8 @@ public class VendorController {
 		LOGGER.info("Inside - VendorController.getPendingVendors()");
 		try {
 			List<SupRequest> findAllWithStatus = supRequestRepo.findAllWithStatus("PENDING");
-			if(findAllWithStatus.size()<1) {
+			LOGGER.info("okk????????????  " + findAllWithStatus.size());
+			if(findAllWithStatus.size()>1) {
 				return findAllWithStatus;
 			}else {
 				throw new VendorNotFoundException("No Pending Data");
