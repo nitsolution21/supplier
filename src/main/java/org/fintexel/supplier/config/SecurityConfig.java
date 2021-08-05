@@ -67,9 +67,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST,"/customer/login").permitAll()
 				.antMatchers(HttpMethod.POST,"/customer/registration").permitAll()
 				.antMatchers(HttpMethod.POST,"/customerlogin").permitAll()
-				.antMatchers(HttpMethod.POST,"/vendor/pending/request/{code}").permitAll()
+				.antMatchers(HttpMethod.GET,"/vendor/pending/request/{code}").permitAll()
 				.antMatchers(HttpMethod.POST,"/vendor/approved").permitAll()
-				.antMatchers(HttpMethod.POST,"/vendor/pending").permitAll()
+				.antMatchers(HttpMethod.GET,"/vendor/pending").permitAll()
 				.anyRequest().authenticated()
 				.and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
