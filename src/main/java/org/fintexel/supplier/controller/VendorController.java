@@ -1164,14 +1164,18 @@ public class VendorController {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			if (fieldValidation.isEmpty(supBank.getAccountHolder())
 					&& fieldValidation.isEmpty(supBank.getBankAccountNo())
-					&& fieldValidation.isEmpty(supBank.getBankBic()) && fieldValidation.isEmpty(supBank.getBankBranch())
+//					&& fieldValidation.isEmpty(supBank.getBankBic())
+					&& fieldValidation.isEmpty(supBank.getBankBranch())
 					&& fieldValidation.isEmpty(supBank.getBankEvidence())
-					&& fieldValidation.isEmpty(supBank.getBankName()) && fieldValidation.isEmpty(supBank.getChequeNo())
-					&& fieldValidation.isEmpty(supBank.getCountry()) && fieldValidation.isEmpty(supBank.getCurrency())
-					&& fieldValidation.isEmpty(supBank.getEvidencePath())
+					&& fieldValidation.isEmpty(supBank.getBankName()) 
+//					&& fieldValidation.isEmpty(supBank.getChequeNo())
+					&& fieldValidation.isEmpty(supBank.getCountry())
+					&& fieldValidation.isEmpty(supBank.getCurrency())
+//					&& fieldValidation.isEmpty(supBank.getEvidencePath())
 					&& fieldValidation.isEmpty(supBank.getIfscCode())
-					&& fieldValidation.isEmpty(supBank.getSwiftCode())
-					&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())) {
+//					&& fieldValidation.isEmpty(supBank.getSwiftCode())
+//					&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())
+					) {
 				if (!loginSupplierCode.equals(null)) {
 					SupBank bank = new SupBank();
 					bank.setAccountHolder(supBank.getAccountHolder());
