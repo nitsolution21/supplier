@@ -67,6 +67,9 @@ public class UploadServiceImpl implements UploadService {
 	private FlowableRegistrationRepo flowableRegistrationRepo;
 
 	@Autowired
+	private BCryptPasswordEncoder passEncoder;
+	
+	@Autowired
 	private SupContractRepo supContractRepo;
 
 	@Autowired
@@ -354,9 +357,10 @@ public class UploadServiceImpl implements UploadService {
 			String rowPassword = java.util.UUID.randomUUID().toString();
 			filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
 
-			VendorRegister save = this.vendorRepo.save(filterVendorReg);
+			VendorRegister saveRegisterObj = this.vendorRepo.save(filterVendorReg);
+			System.out.println("Save Object  "+saveRegisterObj.toString());
 
-			filterVendorReg.setRegisterId(save.getRegisterId());
+			filterVendorReg.setRegisterId(saveRegisterObj.getRegisterId());
 
 			/*
 			 * ----------- REQUEST PROCESS ID with PROCESS DEFINITION KEY
@@ -566,10 +570,10 @@ public class UploadServiceImpl implements UploadService {
 					"http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskID2_, autoCompleteRegApprovalEntity,
 					String.class);
 
-			VendorRegister save1 = this.vendorRepo.save(filterVendorReg);
-			uploadEntity.setRegisterId(save1.getRegisterId());
+//			VendorRegister save1 = this.vendorRepo.save(filterVendorReg);
+//			uploadEntity.setRegisterId(save1.getRegisterId());
 //			uploadEntity.setRegistrationNo(save1.getRegistrationNo());
-			save1.setPassword(rowPassword);
+//			save1.setPassword(rowPassword);
 
 		} catch (Exception e) {
 			errorMap.put(uploadEntity.getEmail(), e.getMessage());
