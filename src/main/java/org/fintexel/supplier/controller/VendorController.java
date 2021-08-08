@@ -1590,6 +1590,8 @@ public class VendorController {
 //			"SUP_BANK":name.equals("contact")?"SUP_CONTRACT":name.equals("department")?
 //			"SUP_DEPARTMENT":name.equals("details")?"SUP_DETAILS":"";
 			
+			LOGGER.info("Inside - VendorController.vendorApproved()   "+ approveMap);
+			
 			for(ApproveMap obj: approveMap) {
 			Optional<SupRequest> findById = supRequestRepo.findById(obj.getId());
 			SupRequest supRequest2 = findById.get();
