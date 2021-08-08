@@ -1582,7 +1582,7 @@ public class VendorController {
 	}
 	
 	@PostMapping("vendor/approved")
-	public void vendorApproved(@RequestBody() List<ApproveMap>  approveMap) {
+	public void vendorApproved(@RequestBody() ArrayList<ApproveMap>  approveMap) {
 		LOGGER.info("Inside - VendorController.vendorApproved()");
 		try {
 //			String tableName;

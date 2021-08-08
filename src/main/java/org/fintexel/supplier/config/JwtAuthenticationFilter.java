@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				this.userDetails = vendorDetailsService.loadUserByUsername(username);
 				
 			} 
-			else {
+			else if((myConfig.getContextpath() + "/customer/login").equals("/dev/customer/login")){
 				System.out.println("in customer login");
 				this.userDetails = customerDetailsServices.loadUserByUsername(username);
 			}
