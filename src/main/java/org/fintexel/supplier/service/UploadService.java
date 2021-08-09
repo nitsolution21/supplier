@@ -8,6 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public interface UploadService {
+	
+	
+	/* ------------ BULK UPLOAD START ---------------------*/
 
 	boolean upload(MultipartFile uploadFile);
 
@@ -15,24 +18,34 @@ public interface UploadService {
 	
 	void bulkRegister(String email, String companyname);
 	
-	boolean validateSupplierDetails(UploadEntity uploadEntity);
+	boolean validateSupplierDetails(UploadEntity uploadEntity , String type);
 	
-	void bulkUploadSupplierDetails(UploadEntity supDetails);
+	void bulkUploadSupplierDetails(UploadEntity supDetails , String type);
 	
-	boolean validateSupplierAddress(UploadEntity uploadEntity);
+	boolean validateSupplierAddress(UploadEntity uploadEntity , String type);
 	
-	void bulkUploadSupplierAddress(UploadEntity supAddress);
+	void bulkUploadSupplierAddress(UploadEntity supAddress , String type);
 	
-	boolean validateSupplierBank(UploadEntity uploadEntity);
+	boolean validateSupplierBank(UploadEntity uploadEntity , String type);
 	
-	void bulkUploadSupplierBank(UploadEntity supAddress);
+	void bulkUploadSupplierBank(UploadEntity supAddress , String type);
 	
-	boolean validateSupplierDepartment(UploadEntity uploadEntity);
+	boolean validateSupplierDepartment(UploadEntity uploadEntity , String type);
 	
-	void bulkUploadSupplierDepartment(UploadEntity supAddress);
+	void bulkUploadSupplierDepartment(UploadEntity supAddress , String type);
 	
-	boolean validateSupplierContact(UploadEntity uploadEntity);
+	boolean validateSupplierContact(UploadEntity uploadEntity , String type);
 	
-	void bulkUploadSupplierContact(UploadEntity supAddress);
+	void bulkUploadSupplierContact(UploadEntity supAddress , String type);
+	
+	
+	
+	/* ------------ BULK UPLOAD END ---------------------*/
+	
+	
+	/* ------------ BULK UPDATE START ---------------------*/
+	
+	boolean update(MultipartFile uploadFile);
+	
 
 }

@@ -68,7 +68,7 @@ public class UploadServiceImpl implements UploadService {
 
 	@Autowired
 	private BCryptPasswordEncoder passEncoder;
-	
+
 	@Autowired
 	private SupContractRepo supContractRepo;
 
@@ -113,6 +113,8 @@ public class UploadServiceImpl implements UploadService {
 
 	Map<String, String> errorMap = new HashMap<>();
 
+	/* ===================== BULK UPLOAD START ========================= */
+
 	@Override
 	public boolean upload(MultipartFile uploadFile) {
 
@@ -150,191 +152,173 @@ public class UploadServiceImpl implements UploadService {
 
 			}
 
-//			if (fieldValidation.isEmpty(rows.getCell(0).toString())) {
-
-			/*
-			 * * ------------------- BULK REGISTRATION STAR *
-			 * -----------------------------------
-			 */
-
-			uploadEntity.setEmail(rows.getCell(0).toString());
-
 			try {
-
-				uploadEntity.setSupplierCompName(rows.getCell(1).toString());
-				uploadService.validateEachVendor(uploadEntity);
-
-			} catch (Exception e) {
-
-				errorMap.put(uploadEntity.getEmail(), "In Upload(reg)  "+e.getMessage());
-
-			}
-
-			/*
-			 * ------------------- BULK REGISTRATION END -----------------------------------
-			 */
-
-			/* ------------------- BULK DETAILS START ----------------------------------- */
-
-			try {
-
-				uploadEntity.setRegistrationType(rows.getCell(2).toString());
-				uploadEntity.setCostCenter(rows.getCell(3).toString());
-				uploadEntity.setRemarks(rows.getCell(4).toString());
-				uploadEntity.setRegistrationNo(rows.getCell(5).toString());
-
+				uploadEntity.setEmail(rows.getCell(0).toString());
+				/*
+				 * * ------------------- BULK REGISTRATION STAR *
+				 * -----------------------------------
+				 */
 				try {
 
-					uploadEntity.setLastlogin(
-							new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rows.getCell(6).toString()));
+					uploadEntity.setSupplierCompName(rows.getCell(1).toString());
+					uploadService.validateEachVendor(uploadEntity);
 
 				} catch (Exception e) {
 
-					errorMap.put(uploadEntity.getEmail(), "In Upload(details)  "+e.getMessage());
+					errorMap.put(uploadEntity.getEmail(), "In Upload(reg)  " + e.getMessage());
 
 				}
 
-				uploadService.validateSupplierDetails(uploadEntity);
+				/*
+				 * ------------------- BULK REGISTRATION END -----------------------------------
+				 */
 
+				/* ------------------- BULK DETAILS START ----------------------------------- */
+
+				try {
+
+					uploadEntity.setRegistrationType(rows.getCell(2).toString());
+//					uploadEntity.setCostCenter(rows.getCell(3).toString());
+//					uploadEntity.setRemarks(rows.getCell(4).toString());
+					uploadEntity.setRegistrationNo(rows.getCell(5).toString());
+
+					try {
+
+						uploadEntity.setLastlogin(
+								new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rows.getCell(6).toString()));
+
+					} catch (Exception e) {
+
+						errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
+
+					}
+
+					uploadService.validateSupplierDetails(uploadEntity, "UPLOAD");
+
+				} catch (Exception e) {
+
+					errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
+
+				}
+
+				/* ------------------- BULK DETAILS END ----------------------------------- */
+
+				/* ------------------- BULK ADDRESS START ----------------------------------- */
+
+				try {
+
+					uploadEntity.setAddressType(rows.getCell(7).toString());
+					uploadEntity.setAddress1(rows.getCell(8).toString());
+					uploadEntity.setPostalCode((int) Float.parseFloat(rows.getCell(10).toString()));
+					uploadEntity.setCity(rows.getCell(11).toString());
+					uploadEntity.setCountry(rows.getCell(12).toString());
+					uploadEntity.setRegion(rows.getCell(13).toString());
+					uploadEntity.setAddressProof(rows.getCell(14).toString());
+					uploadEntity.setAddressProofPath(rows.getCell(15).toString());
+
+					uploadService.validateSupplierAddress(uploadEntity, "UPLOAD");
+
+				} catch (Exception e) {
+
+					errorMap.put(uploadEntity.getEmail(), "In Upload(address)  " + e.getMessage());
+
+				}
+
+				/* ------------------- BULK ADDRESS END ----------------------------------- */
+
+				/*
+				 * ------------------- BULK BANK DETAILS START
+				 * -----------------------------------
+				 */
+				try {
+
+					uploadEntity.setAccountHolder(rows.getCell(16).toString());
+					uploadEntity.setBankAccountNo(rows.getCell(17).toString());
+					try {
+						uploadEntity.setBankBic(rows.getCell(18).toString());
+					} catch (Exception e) {
+
+					}
+					uploadEntity.setBankBranch(rows.getCell(19).toString());
+					uploadEntity.setBankEvidence(rows.getCell(20).toString());
+					uploadEntity.setBankName(rows.getCell(21).toString());
+					try {
+						uploadEntity.setChequeNo(rows.getCell(22).toString());
+					} catch (Exception e) {
+
+					}
+
+					uploadEntity.setCountry(rows.getCell(23).toString());
+					uploadEntity.setCurrency(rows.getCell(24).toString());
+					uploadEntity.setEvidencePath(rows.getCell(25).toString());
+					uploadEntity.setIfscCode(rows.getCell(26).toString());
+					try {
+						uploadEntity.setSwiftCode(rows.getCell(27).toString());
+					} catch (Exception e) {
+
+					}
+					try {
+						uploadEntity.setTransilRoutingNo(rows.getCell(28).toString());
+					} catch (Exception e) {
+
+					}
+
+					uploadService.validateSupplierBank(uploadEntity, "UPLOAD");
+
+				} catch (Exception e) {
+
+					errorMap.put(uploadEntity.getEmail(), "In Upload(bank)  " + e.getMessage());
+
+				}
+
+				/*
+				 * ------------------- BULK BANK DETAILS END -----------------------------------
+				 */
+
+				/*
+				 * ------------------- BULK BANK DEPT START -----------------------------------
+				 */
+
+				try {
+
+					uploadEntity.setDepartmentName(rows.getCell(29).toString());
+					uploadEntity.setSupplierContact1(rows.getCell(30).toString());
+
+					uploadEntity.setSupEmail(rows.getCell(32).toString());
+					uploadEntity.setPhoneno(rows.getCell(33).toString());
+
+					uploadService.validateSupplierDepartment(uploadEntity, "UPLOAD");
+
+				} catch (Exception e) {
+					errorMap.put(uploadEntity.getEmail(), "In Upload(dept)  " + e.getMessage());
+				}
+
+				/* ------------------- BULK BANK DEPT END ----------------------------------- */
+
+				/* ------------------- BULK CONTACT START ----------------------------------- */
+
+				try {
+
+					uploadEntity.setContractType(rows.getCell(35).toString());
+
+					uploadEntity.setContractTerms((int) Float.parseFloat(rows.getCell(36).toString()));
+					uploadEntity.setContractProof(rows.getCell(37).toString());
+					uploadEntity.setContractLocation(rows.getCell(38).toString());
+
+					uploadService.validateSupplierContact(uploadEntity , "UPLOAD");
+
+					/* ------------------- BULK CONTACT END ----------------------------------- */
+
+				} catch (Exception e) {
+					errorMap.put(uploadEntity.getEmail(), "In Upload(contact)  " + e.getMessage());
+				}
 			} catch (Exception e) {
-
-				errorMap.put(uploadEntity.getEmail(), "In Upload(details)  "+e.getMessage());
-
+				errorMap.put(uploadEntity.getEmail(), "In Upload(reg)  " + "Email is Empty");
 			}
-
-			/* ------------------- BULK DETAILS END ----------------------------------- */
-
-			/* ------------------- BULK ADDRESS START ----------------------------------- */
-
-			try {
-
-				uploadEntity.setAddressType(rows.getCell(7).toString());
-				uploadEntity.setAddress1(rows.getCell(8).toString());
-				uploadEntity.setPostalCode((int) Float.parseFloat(rows.getCell(10).toString()));
-				uploadEntity.setCity(rows.getCell(11).toString());
-				uploadEntity.setCountry(rows.getCell(12).toString());
-				uploadEntity.setRegion(rows.getCell(13).toString());
-				uploadEntity.setAddressProof(rows.getCell(14).toString());
-				uploadEntity.setAddressProofPath(rows.getCell(15).toString());
-
-				uploadService.validateSupplierAddress(uploadEntity);
-
-			} catch (Exception e) {
-				
-				errorMap.put(uploadEntity.getEmail(), "In Upload(address)  "+e.getMessage());
-			
-			}
-
-			/* ------------------- BULK ADDRESS END ----------------------------------- */
-
-			/*
-			 * ------------------- BULK BANK DETAILS START
-			 * -----------------------------------
-			 */
-			try {
-
-				uploadEntity.setAccountHolder(rows.getCell(16).toString());
-				uploadEntity.setBankAccountNo(rows.getCell(17).toString());
-				uploadEntity.setBankBic(rows.getCell(18).toString());
-				uploadEntity.setBankBranch(rows.getCell(19).toString());
-				uploadEntity.setBankEvidence(rows.getCell(20).toString());
-				uploadEntity.setBankName(rows.getCell(21).toString());
-				uploadEntity.setChequeNo(rows.getCell(22).toString());
-				uploadEntity.setCountry(rows.getCell(23).toString());
-				uploadEntity.setCurrency(rows.getCell(24).toString());
-				uploadEntity.setEvidencePath(rows.getCell(25).toString());
-				uploadEntity.setIfscCode(rows.getCell(26).toString());
-				uploadEntity.setSwiftCode(rows.getCell(27).toString());
-				uploadEntity.setTransilRoutingNo(rows.getCell(28).toString());
-				
-				uploadService.validateSupplierBank(uploadEntity);
-			
-			} catch (Exception e) {
-				
-				errorMap.put(uploadEntity.getEmail(), "In Upload(bank)  "+e.getMessage());
-				
-			}
-
-			/*
-			 * ------------------- BULK BANK DETAILS END -----------------------------------
-			 */
-
-			/*
-			 * ------------------- BULK BANK DEPT START -----------------------------------
-			 */
-
-			try {
-
-				uploadEntity.setDepartmentName(rows.getCell(29).toString());
-				uploadEntity.setSupplierContact1(rows.getCell(30).toString());
-
-				uploadEntity.setSupEmail(rows.getCell(32).toString());
-				uploadEntity.setPhoneno(rows.getCell(33).toString());
-
-				uploadService.validateSupplierDepartment(uploadEntity);
-
-			} catch (Exception e) {
-				errorMap.put(uploadEntity.getEmail(), "In Upload(dept)  "+e.getMessage());
-			}
-
-			/* ------------------- BULK BANK DEPT END ----------------------------------- */
-
-			/* ------------------- BULK CONTACT START ----------------------------------- */
-
-			try {
-
-				uploadEntity.setContractType(rows.getCell(35).toString());
-
-				uploadEntity.setContractTerms((int) Float.parseFloat(rows.getCell(36).toString()));
-				uploadEntity.setContractProof(rows.getCell(37).toString());
-				uploadEntity.setContractLocation(rows.getCell(38).toString());
-
-				uploadService.validateSupplierContact(uploadEntity);
-
-			} catch (Exception e) {
-				errorMap.put(uploadEntity.getEmail(), "In Upload(contact)  "+e.getMessage());
-			}
-
-			/* ------------------- BULK CONTACT END ----------------------------------- */
-
-//			} else {
-//
-//			}
 
 		}
-		
+
 		return returnFlag;
-	}
-
-	private Sheet loadTemplate(File fileName, String sheetName) {
-
-		XSSFWorkbook workbook = null;
-		OPCPackage pkg;
-		Sheet sheet = null;
-		int count = 0;
-		File file = null;
-		LOGGER.info("1");
-		try {
-			if (fileName != null) {
-				
-				pkg = OPCPackage.open("/home/soumen/Downloads/dbox.xlsx");
-				workbook = new XSSFWorkbook(pkg);
-				count = workbook.getNumberOfSheets();
-				if (count < 0) {
-					
-					LOGGER.error("Invalid File");
-					
-				} else {
-					
-					LOGGER.info("3");
-					sheet = workbook.getSheet(sheetName);
-					
-				}
-			}
-		} catch (Exception e) {
-			LOGGER.error("Catch Block - " + e);
-		}
-		return sheet;
 	}
 
 	@Override
@@ -358,7 +342,7 @@ public class UploadServiceImpl implements UploadService {
 			filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
 
 			VendorRegister saveRegisterObj = this.vendorRepo.save(filterVendorReg);
-			System.out.println("Save Object  "+saveRegisterObj.toString());
+			System.out.println("Save Object  " + saveRegisterObj.toString());
 
 			filterVendorReg.setRegisterId(saveRegisterObj.getRegisterId());
 
@@ -477,7 +461,6 @@ public class UploadServiceImpl implements UploadService {
 					.postForEntity("http://65.2.162.230:8080/DB-idm/app/authentication", loginReq, String.class);
 			JSONObject cookieJO = new JSONObject(loginResponse.getHeaders());
 			String coockie_ = cookieJO.get("Set-Cookie").toString().replace("[", "").replace("]", "").replace("\"", "");
-
 
 			/*
 			 * ----------- AUTO CLAIMING Registration
@@ -617,7 +600,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public boolean validateSupplierDetails(UploadEntity uploadEntity) {
+	public boolean validateSupplierDetails(UploadEntity uploadEntity, String type) {
 
 		LOGGER.info("Inside validateSupplierDetails()");
 		try {
@@ -625,17 +608,35 @@ public class UploadServiceImpl implements UploadService {
 			if ((fieldValidation.isEmpty(uploadEntity.getSupplierCompName()))
 					& (fieldValidation.isEmpty(uploadEntity.getRegistrationType()))
 					& (fieldValidation.isEmpty(uploadEntity.getRegistrationNo()))
-					& (fieldValidation.isEmpty(uploadEntity.getCostCenter()))
-					& (fieldValidation.isEmpty(uploadEntity.getRemarks()))) {
+//					& (fieldValidation.isEmpty(uploadEntity.getCostCenter()))
+//					& (fieldValidation.isEmpty(uploadEntity.getRemarks()))
+			) {
 
 				Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
 				List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(findByEmail.get().getRegisterId());
-				if (findByRegisterId.size() < 1) {
-					uploadEntity.setRegisterId(findByEmail.get().getRegisterId());
-					uploadService.bulkUploadSupplierDetails(uploadEntity);
-					return true;
+
+				if (type.equals("UPLOAD")) {
+					if (findByRegisterId.size() < 1) {
+						uploadEntity.setRegisterId(findByEmail.get().getRegisterId());
+						uploadService.bulkUploadSupplierDetails(uploadEntity, "UPLOAD");
+						return true;
+					} else {
+						errorMap.put(uploadEntity.getEmail(), "Vendor Details Already Exist");
+						return false;
+					}
+
+				} else if (type.equals("UPDATE")) {
+					if (findByRegisterId.size() < 1) {
+						errorMap.put(uploadEntity.getEmail(), "Vendor Details Not Exist");
+						return false;
+					} else {
+						uploadEntity.setRegisterId(findByEmail.get().getRegisterId());
+						uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
+						;
+						uploadService.bulkUploadSupplierDetails(uploadEntity, "UPDATE");
+						return true;
+					}
 				} else {
-					errorMap.put(uploadEntity.getEmail(), "Vendor Details Already Exist");
 					return false;
 				}
 
@@ -652,7 +653,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public boolean validateSupplierAddress(UploadEntity uploadEntity) {
+	public boolean validateSupplierAddress(UploadEntity uploadEntity, String type) {
 		LOGGER.info("Inside validateSupplierAddress()");
 
 		try {
@@ -665,15 +666,55 @@ public class UploadServiceImpl implements UploadService {
 					& (fieldValidation.isEmpty(uploadEntity.getAddressProof()))
 					& (fieldValidation.isEmpty(uploadEntity.getAddressProofPath()))) {
 
-				Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
-				List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(findByEmail.get().getRegisterId());
-				if (findByRegisterId.size() < 1) {
-					errorMap.put(uploadEntity.getEmail(), "In Supplier Address , Supplier Details is Not Created");
-					return false;
+				if (type.equals("UPLOAD")) {
+
+					Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
+					List<SupDetails> findByRegisterId = supDetailsRepo
+							.findByRegisterId(findByEmail.get().getRegisterId());
+					if (findByRegisterId.size() < 1) {
+						errorMap.put(uploadEntity.getEmail(), "In Supplier Address , Supplier Details is Not Created");
+						return false;
+					} else {
+						uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
+						uploadService.bulkUploadSupplierAddress(uploadEntity, "UPLOAD");
+						return true;
+					}
+
+				} else if (type.equals("UPDATE")) {
+					if (fieldValidation.isEmpty(uploadEntity.getAddressId())) {
+						Optional<SupAddress> findById = supAddressRepo.findById(uploadEntity.getAddressId());
+						if (findById.isPresent()) {
+							if (findById.get().getStatus().equals("DELETE")) {
+								errorMap.put(uploadEntity.getEmail(), "In Supplier Address is Deleted");
+								return false;
+
+							} else {
+								Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
+								List<SupDetails> findByRegisterId = supDetailsRepo
+										.findByRegisterId(findByEmail.get().getRegisterId());
+								if (findByRegisterId.size() < 1) {
+									errorMap.put(uploadEntity.getEmail(),
+											"In Supplier Address , Supplier Details is Not Created");
+									return false;
+								} else {
+									uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
+									uploadService.bulkUploadSupplierAddress(uploadEntity, "UPDATE");
+									return true;
+								}
+
+							}
+
+						} else {
+							errorMap.put(uploadEntity.getEmail(), "In Supplier Address is Not Present");
+							return false;
+						}
+
+					} else {
+						errorMap.put(uploadEntity.getEmail(), "In Supplier Address Field is Null");
+						return false;
+					}
 				} else {
-					uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
-					uploadService.bulkUploadSupplierAddress(uploadEntity);
-					return true;
+					return false;
 				}
 			} else {
 				errorMap.put(uploadEntity.getEmail(), "In Supplier Address Field is Null");
@@ -688,35 +729,86 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public boolean validateSupplierBank(UploadEntity supBank) {
+	public boolean validateSupplierBank(UploadEntity supBank, String type) {
 
 		LOGGER.info("Inside validateSupplierBank()");
 		try {
+
 			if (fieldValidation.isEmpty(supBank.getAccountHolder())
 					&& fieldValidation.isEmpty(supBank.getBankAccountNo())
-					&& fieldValidation.isEmpty(supBank.getBankBic()) && fieldValidation.isEmpty(supBank.getBankBranch())
+//					&& fieldValidation.isEmpty(supBank.getBankBic()) 
+					&& fieldValidation.isEmpty(supBank.getBankBranch())
 					&& fieldValidation.isEmpty(supBank.getBankEvidence())
-					&& fieldValidation.isEmpty(supBank.getBankName()) && fieldValidation.isEmpty(supBank.getChequeNo())
+					&& fieldValidation.isEmpty(supBank.getBankName())
+//					&& fieldValidation.isEmpty(supBank.getChequeNo())
 					&& fieldValidation.isEmpty(supBank.getCountry()) && fieldValidation.isEmpty(supBank.getCurrency())
 					&& fieldValidation.isEmpty(supBank.getEvidencePath())
-					&& fieldValidation.isEmpty(supBank.getIfscCode()) && fieldValidation.isEmpty(supBank.getSwiftCode())
-					&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())) {
+					&& fieldValidation.isEmpty(supBank.getIfscCode())
+//					&& fieldValidation.isEmpty(supBank.getSwiftCode())
+//					&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())
+			) {
 
-				Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
-				List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(findByEmail.get().getRegisterId());
-				if (findByRegisterId.size() < 1) {
-					errorMap.put(uploadEntity.getEmail(), "In Supplier Bank , Supplier Details is Not Created");
-					return false;
-				} else {
-					uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
-					Optional<SupBank> findBySwiftCode = supBankRepo.findBySwiftCode(supBank.getSwiftCode());
-					if (!findBySwiftCode.isPresent()) {
-						uploadService.bulkUploadSupplierBank(supBank);
-						return true;
+				if (type.equals("UPLOAD")) {
+
+					Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
+					List<SupDetails> findByRegisterId = supDetailsRepo
+							.findByRegisterId(findByEmail.get().getRegisterId());
+					if (findByRegisterId.size() < 1) {
+						errorMap.put(uploadEntity.getEmail(), "In Supplier Bank , Supplier Details is Not Created");
+						return false;
 					} else {
-						errorMap.put(uploadEntity.getEmail(), "In Supplier bank Swift Code is Present");
+						uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
+						Optional<SupBank> findBySwiftCode = supBankRepo.findBySwiftCode(supBank.getSwiftCode());
+						if (!findBySwiftCode.isPresent()) {
+							uploadService.bulkUploadSupplierBank(supBank, "UPLOAD");
+							return true;
+						} else {
+							errorMap.put(uploadEntity.getEmail(), "In Supplier bank Swift Code is Present");
+							return false;
+						}
+					}
+
+				} else if (type.equals("UPDATE")) {
+
+					if (fieldValidation.isEmpty(supBank.getBankId())) {
+						Optional<SupBank> findById = supBankRepo.findById(supBank.getBankId());
+						if (findById.isPresent()) {
+							if (findById.get().getStatus().equals("DELETE")) {
+								Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
+								List<SupDetails> findByRegisterId = supDetailsRepo
+										.findByRegisterId(findByEmail.get().getRegisterId());
+								if (findByRegisterId.size() < 1) {
+									errorMap.put(uploadEntity.getEmail(),
+											"In Supplier Bank , Supplier Details is Not Created");
+									return false;
+								} else {
+									uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
+									Optional<SupBank> findBySwiftCode = supBankRepo
+											.findBySwiftCode(supBank.getSwiftCode());
+									if (!findBySwiftCode.isPresent()) {
+										uploadService.bulkUploadSupplierBank(supBank, "UPLOAD");
+										return true;
+									} else {
+										errorMap.put(uploadEntity.getEmail(), "In Supplier bank Swift Code is Present");
+										return false;
+									}
+								}
+							} else {
+								errorMap.put(uploadEntity.getEmail(), "In Supplier Bank is Deleted");
+								return false;
+							}
+
+						} else {
+							errorMap.put(uploadEntity.getEmail(), "In Supplier Bank id is Not Present in DB");
+							return false;
+						}
+					} else {
+						errorMap.put(uploadEntity.getEmail(), "In Supplier Bank id is Null");
 						return false;
 					}
+
+				} else {
+					return false;
 				}
 
 			} else {
@@ -731,29 +823,69 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public boolean validateSupplierDepartment(UploadEntity supDepartment) {
+	public boolean validateSupplierDepartment(UploadEntity supDepartment, String type) {
 		LOGGER.info("Inside validateSupplierDepartment()");
 		try {
 
-			if (fieldValidation.isEmpty(supDepartment.getDepartmentName())
-					&& fieldValidation.isEmpty(supDepartment.getSupplierContact1())
-					&& fieldValidation.isEmpty(supDepartment.getSupEmail())
-					&& fieldValidation.isEmpty(supDepartment.getPhoneno())) {
-				Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
-				List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(findByEmail.get().getRegisterId());
-				if (findByRegisterId.size() < 1) {
-					errorMap.put(uploadEntity.getEmail(), "In Supplier Department , Supplier Details is Not Created");
-					return false;
+			if (type.equals("UPLOAD")) {
+				if (fieldValidation.isEmpty(supDepartment.getDepartmentName())
+						&& fieldValidation.isEmpty(supDepartment.getSupplierContact1())
+						&& fieldValidation.isEmpty(supDepartment.getSupEmail())
+						&& fieldValidation.isEmpty(supDepartment.getPhoneno())) {
+					Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
+					List<SupDetails> findByRegisterId = supDetailsRepo
+							.findByRegisterId(findByEmail.get().getRegisterId());
+					if (findByRegisterId.size() < 1) {
+						errorMap.put(uploadEntity.getEmail(),
+								"In Supplier Department , Supplier Details is Not Created");
+						return false;
+					} else {
+						supDepartment.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
+						uploadService.bulkUploadSupplierDepartment(supDepartment, "UPLOAD");
+						return true;
+					}
+
 				} else {
-					uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
-					uploadService.bulkUploadSupplierDepartment(supDepartment);
-					return true;
+					errorMap.put(uploadEntity.getEmail(), "In Supplier Department Field is Null");
+					return false;
+				}
+			} else if (type.equals("UPDATE")) {
+
+				Optional<SupDepartment> findById = supDepartmentRepo.findById(supDepartment.getDepartmentId());
+				if (findById.isPresent()) {
+					if (findById.get().getStatus().equals("DELETE")) {
+						errorMap.put(uploadEntity.getEmail(), "In Supplier Department is Deleted");
+						return false;
+					} else {
+						if (fieldValidation.isEmpty(supDepartment.getDepartmentName())
+								&& fieldValidation.isEmpty(supDepartment.getSupplierContact1())
+								&& fieldValidation.isEmpty(supDepartment.getSupEmail())
+								&& fieldValidation.isEmpty(supDepartment.getPhoneno())) {
+							Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
+							List<SupDetails> findByRegisterId = supDetailsRepo
+									.findByRegisterId(findByEmail.get().getRegisterId());
+							if (findByRegisterId.size() < 1) {
+								errorMap.put(uploadEntity.getEmail(),
+										"In Supplier Department , Supplier Details is Not Created");
+								return false;
+							} else {
+								supDepartment.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
+								supDepartment.setDepartmentId(findById.get().getDepartmentId());
+								uploadService.bulkUploadSupplierDepartment(supDepartment, "UPLOAD");
+								return true;
+							}
+						} else {
+							return false;
+						}
+					}
+				} else {
+					return false;
 				}
 
 			} else {
-				errorMap.put(uploadEntity.getEmail(), "In Supplier Department Field is Null");
 				return false;
 			}
+
 		} catch (Exception e) {
 			errorMap.put(uploadEntity.getEmail(), e.getMessage());
 			return false;
@@ -761,7 +893,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public boolean validateSupplierContact(UploadEntity contact) {
+	public boolean validateSupplierContact(UploadEntity contact , String type) {
 		LOGGER.info("Inside - validateSupplierContact()");
 		try {
 			if ((fieldValidation.isEmpty(contact.getContractType()))
@@ -780,8 +912,29 @@ public class UploadServiceImpl implements UploadService {
 					if (findBySupplierCode.size() > 0) {
 						uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
 						uploadEntity.setBankId(findBySupplierCode.get(0).getBankId());
-						uploadService.bulkUploadSupplierContact(contact);
-						return true;
+						
+						if(type.equals("UPLOAD")) {
+							uploadService.bulkUploadSupplierContact(contact , "UPLOAD");
+							return true;
+						}else if(type.equals("UPDATE")) {
+							Optional<SupContract> findById = supContractRepo.findById(contact.getAddressId());
+							if(findById.isPresent()) {
+								
+								if(findById.get().getStatus().equals("DELETE")) {
+									return false;
+								}else {
+									contact.setContractId(findById.get().getContractId());
+									uploadService.bulkUploadSupplierContact(contact , "UPDATE");
+									return true;
+								}
+								
+							}else{
+								return false;
+							}
+						}else {
+							return false;
+						}
+						
 					} else {
 						errorMap.put(uploadEntity.getEmail(), "In Supplier Contact , Bank is Not Created");
 						return false;
@@ -802,27 +955,46 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public void bulkUploadSupplierDetails(UploadEntity supDetails) {
+	public void bulkUploadSupplierDetails(UploadEntity supDetails, String type) {
 		LOGGER.info("Inside bulkUploadSupplierDetails()");
 		try {
 
-			List<SupDetails> findAll = supDetailsRepo.findAll();
-			SupDetails filterSupDetails = new SupDetails();
-			SupRequest supRequest = new SupRequest();
-			Random rd = new Random();
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
-			Date date = new Date();
-			filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
-			filterSupDetails.setRegisterId(supDetails.getRegisterId());
-			filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
-			filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
-			filterSupDetails.setCostCenter(supDetails.getCostCenter());
-			filterSupDetails.setRemarks(supDetails.getRemarks());
-			filterSupDetails.setLastlogin(new Date());
-			filterSupDetails.setSupplierCode("SU:" + formatter.format(date) + ":" + findAll.size());
-			filterSupDetails.setStatus("APPROVED");
+			if (type.equals("UPLOAD")) {
 
-			SupDetails save = supDetailsRepo.save(filterSupDetails);
+				List<SupDetails> findAll = supDetailsRepo.findAll();
+				SupDetails filterSupDetails = new SupDetails();
+				Random rd = new Random();
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+				Date date = new Date();
+				filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
+				filterSupDetails.setRegisterId(supDetails.getRegisterId());
+				filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
+				filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
+				filterSupDetails.setCostCenter(supDetails.getCostCenter());
+				filterSupDetails.setRemarks(supDetails.getRemarks());
+				filterSupDetails.setLastlogin(new Date());
+				filterSupDetails.setSupplierCode("SU:" + formatter.format(date) + ":" + findAll.size());
+				filterSupDetails.setStatus("APPROVED");
+
+				SupDetails save = supDetailsRepo.save(filterSupDetails);
+
+			} else if (type.equals("UPDATE")) {
+				SupDetails filterSupDetails = new SupDetails();
+
+				filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
+				filterSupDetails.setRegisterId(supDetails.getRegisterId());
+				filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
+				filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
+				filterSupDetails.setCostCenter(supDetails.getCostCenter());
+				filterSupDetails.setRemarks(supDetails.getRemarks());
+				filterSupDetails.setLastlogin(new Date());
+				filterSupDetails.setSupplierCode(supDetails.getSupplierCode());
+				filterSupDetails.setStatus("APPROVED");
+
+				SupDetails save = supDetailsRepo.save(filterSupDetails);
+
+			}
+
 		} catch (Exception e) {
 			errorMap.put(uploadEntity.getEmail(), e.getMessage());
 		}
@@ -830,11 +1002,11 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public void bulkUploadSupplierAddress(UploadEntity address) {
+	public void bulkUploadSupplierAddress(UploadEntity address, String type) {
 		LOGGER.info("Inside bulkUploadSupplierAddress()");
 		try {
-			SupAddress filterAddressUp = new SupAddress();
 
+			SupAddress filterAddressUp = new SupAddress();
 			filterAddressUp.setSupplierCode(address.getSupplierCode());
 			filterAddressUp.setAddressType(address.getAddressType());
 			filterAddressUp.setAddress1(address.getAddress1());
@@ -852,7 +1024,14 @@ public class UploadServiceImpl implements UploadService {
 			filterAddressUp.setStatus("APPROVED");
 			filterAddressUp.setAddressProof(address.getAddressProof());
 			filterAddressUp.setAddressProofPath(address.getAddressProofPath());
-			supAddressRepo.save(filterAddressUp);
+
+			if (type.equals("UPLOAD")) {
+				supAddressRepo.save(filterAddressUp);
+			} else if (type.equals("UPLOAD")) {
+				filterAddressUp.setAddressId(address.getAddressId());
+				supAddressRepo.save(filterAddressUp);
+			}
+
 		} catch (Exception e) {
 			errorMap.put(uploadEntity.getEmail(), e.getMessage());
 		}
@@ -860,7 +1039,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public void bulkUploadSupplierBank(UploadEntity supBank) {
+	public void bulkUploadSupplierBank(UploadEntity supBank, String type) {
 
 		LOGGER.info("Inside bulkUploadSupplierBank()");
 		try {
@@ -868,19 +1047,44 @@ public class UploadServiceImpl implements UploadService {
 			bank.setSupplierCode(supBank.getSupplierCode());
 			bank.setAccountHolder(supBank.getAccountHolder());
 			bank.setBankAccountNo(supBank.getBankAccountNo());
-			bank.setBankBic(supBank.getBankBic());
+			try {
+				bank.setBankBic(supBank.getBankBic());
+			} catch (Exception e) {
+
+			}
 			bank.setBankBranch(supBank.getBankBranch());
 			bank.setBankEvidence(supBank.getBankEvidence());
 			bank.setBankName(supBank.getBankName());
-			bank.setChequeNo(supBank.getChequeNo());
+
+			try {
+				bank.setChequeNo(supBank.getChequeNo());
+			} catch (Exception e) {
+
+			}
 			bank.setCountry(supBank.getCountry());
 			bank.setCurrency(supBank.getCurrency());
 			bank.setEvidencePath(supBank.getEvidencePath());
 			bank.setIfscCode(supBank.getIfscCode());
-			bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
-			bank.setSwiftCode(supBank.getSwiftCode());
+			try {
+				bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
+			} catch (Exception e) {
+
+			}
+			try {
+				bank.setSwiftCode(supBank.getSwiftCode());
+			} catch (Exception e) {
+
+			}
+
 			bank.setStatus("APPROVED");
-			SupBank postData = this.supBankRepo.save(bank);
+
+			if (type.equals("UPLOAD")) {
+				SupBank postData = this.supBankRepo.save(bank);
+			} else if (type.equals("UPLOAD")) {
+				bank.setBankId(supBank.getBankId());
+				SupBank postData = this.supBankRepo.save(bank);
+			}
+
 		} catch (Exception e) {
 			errorMap.put(uploadEntity.getEmail(), e.getMessage());
 		}
@@ -888,7 +1092,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public void bulkUploadSupplierDepartment(UploadEntity supDepartment) {
+	public void bulkUploadSupplierDepartment(UploadEntity supDepartment, String type) {
 
 		LOGGER.info("Inside bulkUploadSupplierDepartment()");
 		try {
@@ -909,7 +1113,14 @@ public class UploadServiceImpl implements UploadService {
 			}
 			department.setPhoneno(supDepartment.getPhoneno());
 
-			supDepartmentRepo.save(department);
+			if(type.equals("UPLOAD")) {
+				supDepartmentRepo.save(department);
+			}else if(type.equals("UPDATE")) {
+				department.setDepartmentId(supDepartment.getDepartmentId());
+				supDepartmentRepo.save(department);
+			}
+			
+		
 
 		} catch (Exception e) {
 			errorMap.put(uploadEntity.getEmail(), e.getMessage());
@@ -918,7 +1129,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public void bulkUploadSupplierContact(UploadEntity contact) {
+	public void bulkUploadSupplierContact(UploadEntity contact , String type) {
 
 		LOGGER.info("Inside bulkUploadSupplierContact()");
 		try {
@@ -931,11 +1142,242 @@ public class UploadServiceImpl implements UploadService {
 			filterSupContract.setContractProof(contact.getContractProof());
 			filterSupContract.setContractLocation(contact.getContractLocation());
 			filterSupContract.setStatus("APPROVED");
-			supContractRepo.save(filterSupContract);
+			
+			if(type.equals("UPDATE")) {
+				supContractRepo.save(filterSupContract);
+			}else if(type.equals("UPLOAD")) {
+				filterSupContract.setContractId(contact.getContractId());
+				supContractRepo.save(filterSupContract);
+			}
+			
 		} catch (Exception e) {
 			errorMap.put(uploadEntity.getEmail(), e.getMessage());
 		}
 
 	}
+
+	/* ===================== BULK UPLOAD END ========================= */
+
+	private Sheet loadTemplate(File fileName, String sheetName) {
+
+		XSSFWorkbook workbook = null;
+		OPCPackage pkg;
+		Sheet sheet = null;
+		int count = 0;
+		File file = null;
+		LOGGER.info("1");
+		try {
+			if (fileName != null) {
+
+				pkg = OPCPackage.open("/home/soumen/Downloads/dboxupdate.xlsx");
+				workbook = new XSSFWorkbook(pkg);
+				count = workbook.getNumberOfSheets();
+				if (count < 0) {
+
+					LOGGER.error("Invalid File");
+
+				} else {
+
+					LOGGER.info("3");
+					sheet = workbook.getSheet(sheetName);
+
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("Catch Block - " + e);
+		}
+		return sheet;
+	}
+
+	/* ========================= BULK UPDATE START ============================ */
+
+	@Override
+	public boolean update(MultipartFile uploadFile) {
+		LOGGER.info("Inside  - UploadServiceImpl.update()");
+
+		DataFormatter dataFormatter = new DataFormatter();
+		String sheetName = "Sheet1";
+		boolean returnFlag = true;
+
+		File fileName = new File(uploadFile.getOriginalFilename());
+		Sheet sheet = loadTemplate(fileName, sheetName);
+
+		int minRow = sheet.getFirstRowNum() + 1;
+		int maxRow = sheet.getLastRowNum();
+		Row row = sheet.getRow(sheet.getFirstRowNum());
+		int minCell = row.getFirstCellNum();
+		int maxCell = row.getLastCellNum() - 1;
+
+		for (int i = minRow; i <= maxRow; i++) {
+			Row rows = sheet.getRow(i);
+
+			for (int c = minCell; c <= maxCell; c++) {
+				returnFlag = false;
+				Cell cells = rows.getCell(c);
+				String cellValue = dataFormatter.formatCellValue(cells);
+				if (cellValue.equals(null) || cellValue.equals("")) {
+					returnFlag = true;
+					UploadErrorEntity.setRowNumber(i);
+					UploadErrorEntity.setCellNumber(c);
+					UploadErrorEntity.setErrorDescription("Blank Value");
+
+				}
+
+			}
+
+			try {
+				uploadEntity.setEmail(rows.getCell(0).toString());
+
+				/* ------------------- BULK DETAILS START ----------------------------------- */
+
+				try {
+					uploadEntity.setSupplierCompName(rows.getCell(1).toString());
+					uploadEntity.setRegistrationType(rows.getCell(2).toString());
+					uploadEntity.setRegistrationNo(rows.getCell(3).toString());
+
+					try {
+
+						uploadEntity.setLastlogin(
+								new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rows.getCell(4).toString()));
+
+					} catch (Exception e) {
+
+						errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
+
+					}
+
+					uploadService.validateSupplierDetails(uploadEntity, "UPDATE");
+
+				} catch (Exception e) {
+
+					errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
+
+				}
+
+				/* ------------------- BULK DETAILS END ----------------------------------- */
+
+				/* ------------------- BULK ADDRESS START ----------------------------------- */
+
+				try {
+
+					uploadEntity.setAddressId((long) Float.parseFloat(rows.getCell(5).toString()));
+					uploadEntity.setAddressType(rows.getCell(6).toString());
+					uploadEntity.setAddress1(rows.getCell(7).toString());
+
+					uploadEntity.setPostalCode((int) Float.parseFloat(rows.getCell(9).toString()));
+					uploadEntity.setCity(rows.getCell(10).toString());
+					uploadEntity.setCountry(rows.getCell(11).toString());
+					uploadEntity.setRegion(rows.getCell(12).toString());
+					uploadEntity.setAddressProof(rows.getCell(13).toString());
+					uploadEntity.setAddressProofPath(rows.getCell(14).toString());
+
+					uploadService.validateSupplierAddress(uploadEntity, "UPDATE");
+
+				} catch (Exception e) {
+
+					errorMap.put(uploadEntity.getEmail(), "In Upload(address)  " + e.getMessage());
+
+				}
+
+				/* ------------------- BULK ADDRESS END ----------------------------------- */
+
+				/*
+				 * ------------------- BULK BANK DETAILS START
+				 * -----------------------------------
+				 */
+				try {
+					uploadEntity.setBankId((long) Float.parseFloat(rows.getCell(15).toString()));
+					uploadEntity.setAccountHolder(rows.getCell(16).toString());
+					uploadEntity.setBankAccountNo(rows.getCell(17).toString());
+					try {
+						uploadEntity.setBankBic(rows.getCell(18).toString());
+					} catch (Exception e) {
+
+					}
+					uploadEntity.setBankBranch(rows.getCell(19).toString());
+					uploadEntity.setBankEvidence(rows.getCell(20).toString());
+					uploadEntity.setBankName(rows.getCell(21).toString());
+					try {
+						uploadEntity.setChequeNo(rows.getCell(22).toString());
+					} catch (Exception e) {
+
+					}
+
+					uploadEntity.setCountry(rows.getCell(23).toString());
+					uploadEntity.setCurrency(rows.getCell(24).toString());
+					uploadEntity.setEvidencePath(rows.getCell(25).toString());
+					uploadEntity.setIfscCode(rows.getCell(26).toString());
+					try {
+						uploadEntity.setSwiftCode(rows.getCell(27).toString());
+					} catch (Exception e) {
+
+					}
+					try {
+						uploadEntity.setTransilRoutingNo(rows.getCell(28).toString());
+					} catch (Exception e) {
+
+					}
+
+					uploadService.validateSupplierBank(uploadEntity, "UPDATE");
+
+				} catch (Exception e) {
+
+					errorMap.put(uploadEntity.getEmail(), "In Upload(bank)  " + e.getMessage());
+
+				}
+
+				/*
+				 * ------------------- BULK BANK DETAILS END -----------------------------------
+				 */
+
+				/*
+				 * ------------------- BULK BANK DEPT START -----------------------------------
+				 */
+
+				try {
+
+					uploadEntity.setDepartmentId((long) Float.parseFloat(rows.getCell(29).toString()));
+					uploadEntity.setDepartmentName(rows.getCell(30).toString());
+					uploadEntity.setSupplierContact1(rows.getCell(31).toString());
+
+					uploadEntity.setSupEmail(rows.getCell(33).toString());
+					uploadEntity.setPhoneno(rows.getCell(34).toString());
+
+					uploadService.validateSupplierDepartment(uploadEntity, "UPDATE");
+
+				} catch (Exception e) {
+					errorMap.put(uploadEntity.getEmail(), "In Upload(dept)  " + e.getMessage());
+				}
+
+				/* ------------------- BULK BANK DEPT END ----------------------------------- */
+
+				/* ------------------- BULK CONTACT START ----------------------------------- */
+
+				try {
+
+					uploadEntity.setContractId((long) Float.parseFloat(rows.getCell(35).toString()));
+					uploadEntity.setContractType(rows.getCell(36).toString());
+
+					uploadEntity.setContractTerms((int) Float.parseFloat(rows.getCell(37).toString()));
+					uploadEntity.setContractProof(rows.getCell(38).toString());
+					uploadEntity.setContractLocation(rows.getCell(39).toString());
+
+					uploadService.validateSupplierContact(uploadEntity , "UPDATE");
+
+					/* ------------------- BULK CONTACT END ----------------------------------- */
+
+				} catch (Exception e) {
+					errorMap.put(uploadEntity.getEmail(), "In Upload(contact)  " + e.getMessage());
+				}
+			} catch (Exception e) {
+				errorMap.put(uploadEntity.getEmail(), "In Upload(reg)  " + "Email is Empty");
+			}
+
+		}
+
+		return false;
+	}
+
+	/* ========================= BULK UPDATE END ============================ */
 
 }
