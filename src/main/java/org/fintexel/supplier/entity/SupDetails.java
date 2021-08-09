@@ -1,5 +1,6 @@
 package org.fintexel.supplier.entity;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.annotation.Generated;
@@ -19,6 +20,8 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Component
 @Entity
@@ -214,7 +217,7 @@ public class SupDetails {
 
 
 	public SupDetails(String supplierCode, Long registerId, String supplierCompName, String registrationType,
-			String registrationNo, String status, String costCenter, String remarks, Date lastlogin) {
+			String registrationNo, String status,  String remarks ) {
 		super();
 		this.supplierCode = supplierCode;
 		this.registerId = registerId;
@@ -222,19 +225,31 @@ public class SupDetails {
 		this.registrationType = registrationType;
 		this.registrationNo = registrationNo;
 		this.status = status;
-		this.costCenter = costCenter;
+//		this.costCenter = costCenter;
 		this.remarks = remarks;
-		this.lastlogin = lastlogin;
+//		this.lastlogin = lastLogin;
 	}
 	
 	
-	public static SupDetails fromJson(String value) {
-		JSONObject obj = new JSONObject(value);
-		    return new SupDetails ((String) obj.get("supplierCode"),
-		    		Long.parseLong((String) obj.get("registerId"))  , (String) obj.get("supplierCompName") ,
-		    		(String) obj.get("registrationType") , (String) obj.get("registrationNo") ,
-		    		(String) obj.get("status") , (String) obj.get("costCenter") ,
-		    		(String) obj.get("remarks") , (Date) obj.get("lastlogin") );
+	public static SupDetails fromJson(String value) throws Exception {
+		 JsonObject obj = (JsonObject) JsonParser.parseString(value);
+		 System.out.println("ok  " +obj);
+		 try {
+			 Date date = new Date(obj.get("lastlogin").toString());
+			 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			 String format = formatter.format(date);
+			 System.out.println("date  "+format);
+			  return new SupDetails ((String) obj.get("supplierCode").toString(),
+			    		Long.parseLong((String) obj.get("registerId").toString())  , (String) obj.get("supplierCompName").toString() ,
+			    		(String) obj.get("registrationType").toString() , (String) obj.get("registrationNo").toString() ,
+			    		(String) obj.get("status").toString() ,
+			    		(String) obj.get("remarks").toString());
+		 }catch(Exception e) {
+			 System.out.println(e);
+			 throw new Exception(e);
+			 
+		 }
+		  
 	}
 	
 

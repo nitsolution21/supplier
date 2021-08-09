@@ -11,6 +11,9 @@ import javax.persistence.Table;
 
 import org.json.JSONObject;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 @Entity
 @Table(name = "SUP_BANK")
 public class SupBank {
@@ -308,13 +311,13 @@ public class SupBank {
 	
 	
 	public static SupBank fromJson(String value) {
-		JSONObject obj = new JSONObject(value);
-		    return new SupBank (Long.parseLong((String) obj.get("bankId")) , (String)obj.get("supplierCode") ,
-		    		(String) obj.get("bankName") ,(String) obj.get("bankBranch") ,(String) obj.get("bankBic") ,
-		    		(String) obj.get("bankAccountNo") , (String) obj.get("currency") , (String) obj.get("transilRoutingNo") ,
-		    		(String) obj.get("chequeNo") , (String) obj.get("accountHolder") , (String) obj.get("swiftCode") ,
-		    		(String) obj.get("ifscCode") , (String) obj.get("country") , (String) obj.get("bankEvidence") ,
-		    		(String) obj.get("evidencePath") ,(String) obj.get("status") );
+		 JsonObject obj = (JsonObject) JsonParser.parseString(value);
+		    return new SupBank (Long.parseLong((String) obj.get("bankId").toString()) , (String)obj.get("supplierCode").toString() ,
+		    		(String) obj.get("bankName").toString() ,(String) obj.get("bankBranch").toString() ,(String) obj.get("bankBic").toString() ,
+		    		(String) obj.get("bankAccountNo").toString() , (String) obj.get("currency").toString() , (String) obj.get("transilRoutingNo").toString() ,
+		    		(String) obj.get("chequeNo").toString() , (String) obj.get("accountHolder").toString() , (String) obj.get("swiftCode").toString() ,
+		    		(String) obj.get("ifscCode").toString() , (String) obj.get("country").toString() , (String) obj.get("bankEvidence").toString() ,
+		    		(String) obj.get("evidencePath").toString() ,(String) obj.get("status").toString() );
 	}
 	
 	
