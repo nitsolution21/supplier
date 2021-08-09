@@ -4,12 +4,14 @@ public class LoginResponceForCustomer {
 	private long userId;
 	private String token;
 	private String role;
+	private long cId;
 	
-	public LoginResponceForCustomer(long userId, String token, String role) {
+	public LoginResponceForCustomer(long userId, String token, String role, long cId) {
 		super();
 		this.userId = userId;
 		this.token = token;
 		this.role = role;
+		this.cId = cId;
 	}
 
 	public LoginResponceForCustomer() {
@@ -39,6 +41,14 @@ public class LoginResponceForCustomer {
 
 	public void setRole(String role) {
 		this.role = role;
+	}
+
+	public long getcId() {
+		return cId;
+	}
+
+	public void setcId(long cId) {
+		this.cId = cId;
 	}
 	
 	

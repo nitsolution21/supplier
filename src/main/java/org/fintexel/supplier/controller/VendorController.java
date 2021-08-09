@@ -1418,7 +1418,7 @@ public class VendorController {
 						supRequest.setSupplierCode(loginSupplierCode);
 						supRequest.setTableName("SUP_DEPARTMENT");
 						supRequest.setId(save.getDepartmentId());
-						supRequest.setNewValue(department.toString());
+						supRequest.setNewValue(suppliernamenew.toString());
 						supRequest.setStatus("PENDING");
 						supRequest.setReqType("CREATE");
 						supRequestRepo.save(supRequest);
@@ -1582,7 +1582,7 @@ public class VendorController {
 	}
 	
 	@PostMapping("vendor/approved")
-	public void vendorApproved(@RequestBody() List<ApproveMap>  approveMap) {
+	public void vendorApproved(@RequestBody() ArrayList<ApproveMap>  approveMap) {
 		LOGGER.info("Inside - VendorController.vendorApproved()");
 		try {
 //			String tableName;
@@ -1590,46 +1590,72 @@ public class VendorController {
 //			"SUP_BANK":name.equals("contact")?"SUP_CONTRACT":name.equals("department")?
 //			"SUP_DEPARTMENT":name.equals("details")?"SUP_DETAILS":"";
 			
+			
 			for(ApproveMap obj: approveMap) {
 			Optional<SupRequest> findById = supRequestRepo.findById(obj.getId());
 			SupRequest supRequest2 = findById.get();
-			String oldValue = supRequest2.getOldValue();
+			String oldValue="";
+			if(!supRequest2.getReqType().equals("UPDATE")) {
+				 oldValue = supRequest2.getOldValue();
+			}
 			String newValue = supRequest2.getNewValue();
 			String tableName= supRequest2.getTableName();
 			supRequest2.setStatus("APPROVED");
-			
 			if(tableName.equals("SUP_ADDRESS")) {
-				SupAddress supAddressOld = SupAddress.fromJson(oldValue);
+				if(supRequest2.getReqType().equals("CREATE")) {
+					SupAddress supAddressOld = SupAddress.fromJson(oldValue);
+					
+				}			
+				
 				SupAddress supAddressNew = SupAddress.fromJson(newValue);
-				supAddressNew.setAddressId(supAddressOld.getAddressId());
+				supAddressNew.setAddressId(supAddressNew.getAddressId());
 				supAddressNew.setStatus(findById.get().getStatus());
 				supAddRepo.save(supAddressNew);
 				supRequestRepo.save(supRequest2);
-			}else if(tableName.equals("SUP_CONTRACT")) {
-				SupContract supContactOld = SupContract.fromJson(oldValue);
-				SupContract supContactnew = SupContract.fromJson(newValue);
-				supContactnew.setContractId(supContactOld.getContractId());
-				supContactnew.setStatus(findById.get().getStatus());
-				supContractRepo.save(supContactnew);
-				supRequestRepo.save(supRequest2);
-			}else if(tableName.equals("SUP_DEPARTMENT")) {
-				SupDepartment supDepartmentOld = SupDepartment.fromJson(oldValue);
+				
+			}
+//			else if(tableName.equals("SUP_CONTRACT")) {
+//				if(!supRequest2.getReqType().equals("CREATE")) {
+//					SupContract supContactOld = SupContract.fromJson(oldValue);
+//					
+//				}
+//				
+//				SupContract supContactnew = SupContract.fromJson(newValue);
+//				supContactnew.setContractId(supContactnew.getContractId());
+//				supContactnew.setStatus(findById.get().getStatus());
+//				supContractRepo.save(supContactnew);
+//				supRequestRepo.save(supRequest2);
+//			}
+			else if(tableName.equals("SUP_DEPARTMENT")) {
+				if(supRequest2.getReqType().equals("UPDATE")) {
+					SupDepartment supDepartmentOld = SupDepartment.fromJson(oldValue);
+				}
+				
 				SupDepartment supDepartmentnew = SupDepartment.fromJson(newValue);
-				supDepartmentnew.setDepartmentId(supDepartmentOld.getDepartmentId());
+				LOGGER.info("Inside - VendorController.vendorApproved() -dept" +supDepartmentnew);
+				supDepartmentnew.setDepartmentId(supDepartmentnew.getDepartmentId());
 				supDepartmentnew.setStatus(findById.get().getStatus());
 				supDepartmentRepo.save(supDepartmentnew);
 				supRequestRepo.save(supRequest2);
+				LOGGER.info("before if3");
 			}else if(tableName.equals("SUP_BANK")) {
-				SupBank supBankOld = SupBank.fromJson(oldValue);
+				if(supRequest2.getReqType().equals("UPDATE")) {
+					SupBank supBankOld = SupBank.fromJson(oldValue);
+				}
 				SupBank supBankNew = SupBank.fromJson(newValue);
-				supBankNew.setBankId(supBankOld.getBankId());
+				supBankNew.setBankId(supBankNew.getBankId());
 				supBankNew.setStatus(findById.get().getStatus());
 				supBankRepo.save(supBankNew);
 				supRequestRepo.save(supRequest2);
+				LOGGER.info("before if4");
 			}else if(tableName.equals("SUP_DETAILS")) {
-				SupDetails supDetailsOld = SupDetails.fromJson(oldValue);
+				if(supRequest2.getReqType().equals("UPDATE")) {
+					SupDetails supDetailsOld = SupDetails.fromJson(oldValue);
+				}
+			
 				SupDetails supDetailsNew = SupDetails.fromJson(newValue);
-				supDetailsNew.setRegisterId(supDetailsOld.getRegisterId());
+				System.out.println("______________" +supRequest2);
+				supDetailsNew.setRegisterId(supDetailsNew.getRegisterId());
 				supDetailsNew.setStatus(findById.get().getStatus());
 				List<RegType> findAll = regTypeRepo.findAll();
 				for (RegType find : findAll) {
@@ -1641,6 +1667,7 @@ public class VendorController {
 						regTypeRepo.save(regType);
 					}
 				}
+				LOGGER.info("before if5");
 				supDetailsRepo.save(supDetailsNew);
 				supRequestRepo.save(supRequest2);
 			}
