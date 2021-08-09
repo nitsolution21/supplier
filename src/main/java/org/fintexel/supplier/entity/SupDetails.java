@@ -235,10 +235,10 @@ public class SupDetails {
 		 JsonObject obj = (JsonObject) JsonParser.parseString(value);
 		 System.out.println("ok  " +obj);
 		 try {
-			 Date date = new Date(obj.get("lastlogin").toString());
-			 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			 String format = formatter.format(date);
-			 System.out.println("date  "+format);
+//			 Date date = new Date(obj.get("lastlogin").toString());
+//			 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//			 String format = formatter.format(date);
+//			 System.out.println("date  "+format);
 			  return new SupDetails ((String) obj.get("supplierCode").toString(),
 			    		Long.parseLong((String) obj.get("registerId").toString())  , (String) obj.get("supplierCompName").toString() ,
 			    		(String) obj.get("registrationType").toString() , (String) obj.get("registrationNo").toString() ,
