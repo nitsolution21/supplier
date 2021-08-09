@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.fintexel.supplier.exceptions.VendorErrorResponse;
+import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.service.UploadService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,5 +60,33 @@ public class UploadController {
 
 	}
 	
+	
+	@PostMapping("/update")
+	public String update(@RequestPart("file") final MultipartFile file) {
+		LOGGER.info("Inside - UploadController.update()");
+		try {
+			
+			if(file.isEmpty()) {
+				LOGGER.info("File is Empty");
+			}else {
+				LOGGER.info("File name is - "+file.getName());
+			}
+			
+			Date date = new Date();
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			String strDate= formatter.format(date);		
+			String uploadRefID = file.getOriginalFilename()+"_"+strDate.toString();
+			LOGGER.info("Ref ID  - "+uploadRefID);
+
+			
+			boolean flag = uploadService.update(file);
+			LOGGER.info("return Flag  - "+flag);
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+		return null;
+	}
 
 }
