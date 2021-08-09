@@ -1,6 +1,8 @@
 package org.fintexel.supplier.entity;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import javax.annotation.Generated;
@@ -16,7 +18,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.fintexel.supplier.validation.FieldValidation;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -27,6 +31,9 @@ import com.google.gson.JsonParser;
 @Entity
 @Table(name = "SUP_DETAILS")
 public class SupDetails {
+	@Autowired
+	private static FieldValidation fieldValidation;
+	
 	@Id
 	@Column(name = "SUPPLIER_CODE")
 	private String supplierCode;
@@ -217,7 +224,7 @@ public class SupDetails {
 
 
 	public SupDetails(String supplierCode, Long registerId, String supplierCompName, String registrationType,
-			String registrationNo, String status,  String remarks ) {
+			String registrationNo, String status ) {
 		super();
 		this.supplierCode = supplierCode;
 		this.registerId = registerId;
@@ -225,8 +232,9 @@ public class SupDetails {
 		this.registrationType = registrationType;
 		this.registrationNo = registrationNo;
 		this.status = status;
-//		this.costCenter = costCenter;
-		this.remarks = remarks;
+		
+		
+//		this.remarks = remarks;
 //		this.lastlogin = lastLogin;
 	}
 	
@@ -235,15 +243,25 @@ public class SupDetails {
 		 JsonObject obj = (JsonObject) JsonParser.parseString(value);
 		 System.out.println("ok  " +obj);
 		 try {
-//			 Date date = new Date(obj.get("lastlogin").toString());
-//			 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//			 String format = formatter.format(date);
-//			 System.out.println("date  "+format);
-			  return new SupDetails ((String) obj.get("supplierCode").toString(),
+			  SupDetails supDetails = new SupDetails ((String) obj.get("supplierCode").toString(),
 			    		Long.parseLong((String) obj.get("registerId").toString())  , (String) obj.get("supplierCompName").toString() ,
 			    		(String) obj.get("registrationType").toString() , (String) obj.get("registrationNo").toString() ,
-			    		(String) obj.get("status").toString() ,
-			    		(String) obj.get("remarks").toString());
+			    		(String) obj.get("status").toString() 
+			    		);
+				DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				LocalDateTime lastLoginNow = LocalDateTime.now();
+				  Date lastLogin=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(lastLoginNow.format(lastLogingFormat));  
+			  supDetails.setLastlogin(lastLogin);
+			  try {
+				if(fieldValidation.isEmpty((String) obj.get("remarks").toString())) {
+					supDetails.setRemarks(obj.get("remarks").toString());
+				}
+				 
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+//				 throw new Exception(e);
+			}
+			  return supDetails;
 		 }catch(Exception e) {
 			 System.out.println(e);
 			 throw new Exception(e);
