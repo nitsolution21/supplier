@@ -9,7 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.fintexel.supplier.exceptions.VendorNotFoundException;
+import org.fintexel.supplier.validation.FieldValidation;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -17,6 +20,9 @@ import com.google.gson.JsonParser;
 @Entity
 @Table(name = "SUP_DEPARTMENT")
 public class SupDepartment {
+	
+	@Autowired
+	private static FieldValidation fieldValidation;
 	
 	@Id
 	@Column(name = "DEPARTMENT_ID")
@@ -220,12 +226,27 @@ public class SupDepartment {
 	public static SupDepartment fromJson(String value) {
 		 JsonObject obj = (JsonObject) JsonParser.parseString(value);
 		 System.out.println(value);
-		    return new SupDepartment (Long.parseLong(obj.get("departmentId").toString()) ,
+		 try {
+			 SupDepartment department =  new SupDepartment (Long.parseLong(obj.get("departmentId").toString()) ,
 		    		 obj.get("supplierCode").toString(), (String) obj.get("departmentName").toString(),
 		    		(String) obj.get("supplierContact1").toString(),// (String) obj.get("supplierContact2").toString(),
 		    		(String) obj.get("email").toString(), (String) obj.get("phoneno").toString(),
 //		    		(String) obj.get("alternatePhoneno").toString(),
 		    		(String) obj.get("status").toString());
+			 try {
+				if (fieldValidation.isEmpty((String) obj.get("supplierContact2").toString()) && fieldValidation.isEmpty((String) obj.get("alternatePhoneno").toString())) {
+					department.setAlternatePhoneno((String) obj.get("alternatePhoneno").toString());
+					department.setSupplierContact2((String) obj.get("supplierContact2").toString());
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			 
+			 return department;
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new VendorNotFoundException(e.getMessage());
+		}
 	}
 	
 	

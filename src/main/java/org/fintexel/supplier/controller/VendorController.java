@@ -1705,8 +1705,10 @@ public class VendorController {
 				}			
 				
 				SupAddress supAddressNew = SupAddress.fromJson(newValue);
-				supAddressNew.setAddressId(supAddressNew.getAddressId());
-				supAddressNew.setStatus(findById.get().getStatus());
+				
+				//supAddressNew.setAddressId(supAddressNew.getAddressId());
+				//supAddressNew.setStatus(findById.get().getStatus());
+				supAddressNew.setStatus(obj.getStatus());
 				supAddRepo.save(supAddressNew);
 				supRequestRepo.save(supRequest2);
 				
@@ -1730,8 +1732,9 @@ public class VendorController {
 				
 				SupDepartment supDepartmentnew = SupDepartment.fromJson(newValue);
 				LOGGER.info("Inside - VendorController.vendorApproved() -dept" +supDepartmentnew);
-				supDepartmentnew.setDepartmentId(supDepartmentnew.getDepartmentId());
-				supDepartmentnew.setStatus(findById.get().getStatus());
+//				supDepartmentnew.setDepartmentId(supDepartmentnew.getDepartmentId());
+//				supDepartmentnew.setStatus(findById.get().getStatus());
+				supDepartmentnew.setStatus(obj.getStatus());
 				supDepartmentRepo.save(supDepartmentnew);
 				supRequestRepo.save(supRequest2);
 				LOGGER.info("before if3");
@@ -1740,8 +1743,10 @@ public class VendorController {
 					SupBank supBankOld = SupBank.fromJson(oldValue);
 				}
 				SupBank supBankNew = SupBank.fromJson(newValue);
-				supBankNew.setBankId(supBankNew.getBankId());
-				supBankNew.setStatus(findById.get().getStatus());
+//				supBankNew.setBankId(supBankNew.getBankId());
+//				supBankNew.setStatus(findById.get().getStatus());
+				supBankNew.setStatus(obj.getStatus());
+				
 				supBankRepo.save(supBankNew);
 				supRequestRepo.save(supRequest2);
 				LOGGER.info("before if4");
@@ -1751,19 +1756,19 @@ public class VendorController {
 				}
 			
 				SupDetails supDetailsNew = SupDetails.fromJson(newValue);
-				System.out.println("______________" +supRequest2);
-				supDetailsNew.setRegisterId(supDetailsNew.getRegisterId());
-				supDetailsNew.setStatus(findById.get().getStatus());
-				List<RegType> findAll = regTypeRepo.findAll();
-				for (RegType find : findAll) {
-					if((!find.getName().equals(supDetailsNew.getRegistrationType())) && (obj.getStatus().equals("APPROVED"))) {
-						
-					}else {
-						RegType regType=new RegType();
-						regType.setName(supDetailsNew.getRegistrationType());
-						regTypeRepo.save(regType);
-					}
-				}
+				LOGGER.info("______________" +supRequest2);
+//				supDetailsNew.setRegisterId(supDetailsNew.getRegisterId());
+				supDetailsNew.setStatus(obj.getStatus());
+//				List<RegType> findAll = regTypeRepo.findAll();
+//				for (RegType find : findAll) {
+//					if((!find.getName().equals(supDetailsNew.getRegistrationType())) && (obj.getStatus().equals("APPROVED"))) {
+//						
+//					}else {
+//						RegType regType=new RegType();
+//						regType.setName(supDetailsNew.getRegistrationType());
+//						regTypeRepo.save(regType);
+//					}
+//				}
 				LOGGER.info("before if5");
 				supDetailsRepo.save(supDetailsNew);
 				supRequestRepo.save(supRequest2);

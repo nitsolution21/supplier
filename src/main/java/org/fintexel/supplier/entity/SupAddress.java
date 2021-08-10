@@ -15,7 +15,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+import org.fintexel.supplier.validation.FieldValidation;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -25,6 +27,9 @@ import com.google.gson.JsonObject;
 @Entity
 @Table(name = "SUP_ADDRESS")
 public class SupAddress {
+	
+	@Autowired
+	private static FieldValidation fieldValidation;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -272,13 +277,19 @@ public class SupAddress {
 	public static SupAddress fromJson(String value) throws Exception {
 		try {
 			  JsonObject obj = (JsonObject) JsonParser.parseString(value);
-		     SupAddress supAddress = new SupAddress (Long.parseLong(obj.get("addressId").toString()) , obj.get("supplierCode").toString() , obj.get("addressType").toString() ,
-		    		obj.get("address1").toString() , 
+		     SupAddress supAddress = new SupAddress (Long.parseLong(obj.get("addressId").toString()) , (String) obj.get("supplierCode").toString() , (String) obj.get("addressType").toString() ,
+		    		(String) obj.get("address1").toString() , 
 //		    		obj.get("address2").toString() ,
-		    		obj.get("city").toString() ,Integer.parseInt( obj.get("postalCode").toString()) ,
-		    		obj.get("country").toString() , obj.get("region").toString() ,
-		    		obj.get("addressProof").toString() , obj.get("addressProofPath").toString());
-		     System.out.print("Json "+ supAddress );
+		    		(String) obj.get("city").toString() ,Integer.parseInt( obj.get("postalCode").toString()) ,
+		    		(String) obj.get("country").toString() , (String) obj.get("region").toString() ,
+		    		(String) obj.get("addressProof").toString() , (String) obj.get("addressProofPath").toString());
+		     try {
+				if (fieldValidation.isEmpty((String) obj.get("address2").toString())) {
+					supAddress.setAddress2((String) obj.get("address2").toString());
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 		     return supAddress;
 		}catch(Exception e) {
 			 System.out.print("Json "+ e.toString() );
