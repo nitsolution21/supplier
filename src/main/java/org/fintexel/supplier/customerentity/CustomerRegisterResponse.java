@@ -6,6 +6,9 @@ public class CustomerRegisterResponse {
 	private String email;
 	private String name;
 	private String role;
+	private String department ;
+	private String 	functionality;
+	private String access;
 	private long cId;
 	private long userId;
 	private String username;
@@ -16,12 +19,15 @@ public class CustomerRegisterResponse {
 	private String updatedBy;
 	private Date updatedOn;
 	
-	public CustomerRegisterResponse(String email, String name, String role, long cId, long userId, String username,
+	public CustomerRegisterResponse(String email, String name, String role,String department, String functionality, String access, long cId, long userId, String username,
 			String password, String status, String createdBy, Date createdOn, String updatedBy, Date updatedOn) {
 		super();
 		this.email = email;
 		this.name = name;
 		this.role = role;
+		this.department = department;
+		this.functionality = functionality;
+		this.access = access;
 		this.cId = cId;
 		this.userId = userId;
 		this.username = username;
@@ -60,6 +66,30 @@ public class CustomerRegisterResponse {
 
 	public void setRole(String role) {
 		this.role = role;
+	}
+	
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public String getFunctionalityy() {
+		return functionality;
+	}
+
+	public void setFunctionality(String functionality) {
+		this.functionality = functionality;
+	}
+
+	public String getAccess() {
+		return access;
+	}
+
+	public void setAccess(String access) {
+		this.access = access;
 	}
 
 	public long getcId() {
@@ -136,11 +166,14 @@ public class CustomerRegisterResponse {
 
 	@Override
 	public String toString() {
-		return "CustomerRegisterResponse [email=" + email + ", name=" + name + ", role=" + role + ", cId=" + cId
-				+ ", userId=" + userId + ", username=" + username + ", password=" + password + ", status=" + status
-				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn="
-				+ updatedOn + "]";
+		return "CustomerRegisterResponse [email=" + email + ", name=" + name + ", role=" + role + ", department="
+				+ department + ", functionally=" + functionality + ", access=" + access + ", cId=" + cId + ", userId="
+				+ userId + ", username=" + username + ", password=" + password + ", status=" + status + ", createdBy="
+				+ createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn
+				+ "]";
 	}
+
+	
 	
 	
 }

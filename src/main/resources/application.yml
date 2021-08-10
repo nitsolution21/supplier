@@ -78,6 +78,9 @@ spring.servlet.multipart:
   max-file-size: 100MB
 #file.upload-path: C:\\Users\\shant\\Desktop\\uploadfile\\
 file.upload-path: /home/ubuntu/supplierApp/fileuploaded/
+jwt.secret.key: secret
+jwt.token.validity: 36000000
+
 ---
 spring: 
   profiles: prod

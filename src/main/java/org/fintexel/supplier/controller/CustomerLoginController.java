@@ -6,19 +6,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.fintexel.supplier.customerentity.CustomerDepartment;
+import org.fintexel.supplier.customerentity.CustomerDepartments;
+import org.fintexel.supplier.customerentity.CustomerFunctionalitiesMaster;
 import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerentity.CustomerRegisterRequest;
 import org.fintexel.supplier.customerentity.CustomerRegisterResponse;
+import org.fintexel.supplier.customerentity.CustomerUserDepartments;
+import org.fintexel.supplier.customerentity.CustomerUserFunctionaliti;
 import org.fintexel.supplier.customerentity.CustomerUserRoles;
 import org.fintexel.supplier.customerentity.LoginResponceForCustomer;
 import org.fintexel.supplier.customerentity.RolesMaster;
+import org.fintexel.supplier.customerrepository.CustomerDepartmentRepo;
+import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
+import org.fintexel.supplier.customerrepository.CustomerFunctionalitiesMasterRepo;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
+import org.fintexel.supplier.customerrepository.CustomerUserDepartmentsRepo;
+import org.fintexel.supplier.customerrepository.CustomerUserFunctionalitiRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserRolesRepo;
 import org.fintexel.supplier.customerrepository.RolesMasterRepo;
 import org.fintexel.supplier.entity.VendorLogin;
 import org.fintexel.supplier.entity.flowableentity.FlowableForm;
 import org.fintexel.supplier.entity.flowableentity.FlowableRegistration;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
+import org.fintexel.supplier.helper.GetCustomerDetails;
 import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.repository.flowablerepo.FlowableFormRepo;
 import org.fintexel.supplier.repository.flowablerepo.FlowableRegistrationRepo;
@@ -84,6 +95,9 @@ public class CustomerLoginController {
 	@Autowired
 	private FlowableFormRepo flowableFormRepo;
 	
+	@Autowired
+	private GetCustomerDetails getCustomerDetails;
+	
 	@PostMapping("/login")
 	private ResponseEntity<?> customerLogin(@RequestBody VendorLogin vendorLogin) {
 		LOGGER.info("Inside - CustomerLoginController.customerLogin()");
@@ -103,12 +117,32 @@ public class CustomerLoginController {
 			if (findByUserId.isPresent()) {
 				Optional<RolesMaster> findById = rolesMasterRepo.findById(findByUserId.get().getRoleId());
 				if (findById.isPresent()) {
-					return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), findByUsername.get().getcId()));
+					if (findById.get().getRole().equals("SADMIN")) {
+						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), "All", "All", "All", findByUsername.get().getcId()));
+					}
+					else if(findById.get().getRole().equals("ADMIN")) {
+						
+						String departments = getCustomerDetails.getDepartments(findByUsername.get().getUserId());
+						
+						String functionaliti = getCustomerDetails.getFunctionaliti(findByUsername.get().getUserId());
+						
+						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), departments, functionaliti, "Both", findByUsername.get().getcId()));
+					}
+					else if(findById.get().getRole().equals("USER")) {
+						String departments = getCustomerDetails.getDepartments(findByUsername.get().getUserId());
+						
+						String functionaliti = getCustomerDetails.getFunctionaliti(findByUsername.get().getUserId());
+						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), departments, functionaliti, "Read", findByUsername.get().getcId()));
+					}
+					else {
+						throw new VendorNotFoundException("Role is incorrect!!");
+					}
+					
 				} else {
-					throw new VendorNotFoundException("Roll is not presen");
+					throw new VendorNotFoundException("Role is not presen");
 				}
 			} else {
-				throw new VendorNotFoundException("Customer roll not define");
+				throw new VendorNotFoundException("Customer role not define");
 			}
 		} else {
 			throw new VendorNotFoundException("Customer not found");
@@ -118,7 +152,7 @@ public class CustomerLoginController {
 	@PostMapping("/registration")
 	private CustomerRegisterResponse customerRegistration(@RequestBody() CustomerRegisterRequest customerRegisterRequest) {
 		LOGGER.info("Inside - CustomerLoginController.customerRegistration()");
-		String taskID1_="", processInstID_="";
+		String taskID1_="", processInstID_=""; 
 		try {
 			if (fieldValidation.isEmpty(customerRegisterRequest.getName())
 				&& fieldValidation.isEmpty(customerRegisterRequest.getEmail())
@@ -161,6 +195,41 @@ public class CustomerLoginController {
 								customerRegisterResponse.setStatus(registerCustomer.getStatus());
 								customerRegisterResponse.setUpdatedBy(registerCustomer.getUpdatedBy());
 								customerRegisterResponse.setUpdatedOn(registerCustomer.getUpdatedOn());
+								
+								if (findByMasterTable.get().getRole().equals("SADMIN")) {
+									customerRegisterResponse.setAccess("All");
+									
+									customerRegisterResponse.setDepartment("All");
+									
+									customerRegisterResponse.setFunctionality("All");
+								}
+								
+								if (findByMasterTable.get().getRole().equals("ADMIN")) {
+									
+									String departments = getCustomerDetails.getDepartments(registerCustomer.getUserId());
+									
+									customerRegisterResponse.setDepartment(departments);
+									
+									customerRegisterResponse.setAccess("Both");
+									
+									String functionaliti = getCustomerDetails.getFunctionaliti(registerCustomer.getUserId());
+									
+									customerRegisterResponse.setFunctionality(functionaliti);
+									
+								}
+								
+								if(findByMasterTable.get().getRole().equals("USER")) {
+									String departments = getCustomerDetails.getDepartments(registerCustomer.getUserId());
+									
+									customerRegisterResponse.setDepartment(departments);
+									
+									customerRegisterResponse.setAccess("Read");
+									
+									String functionaliti = getCustomerDetails.getFunctionaliti(registerCustomer.getUserId());
+									
+									customerRegisterResponse.setFunctionality(functionaliti);
+								}
+								
 								
 								/*  ----------- REQUEST PROCESS ID with PROCESS DEFINITION KEY ------------------------------------------------------- */
 								
