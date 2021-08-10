@@ -8,8 +8,9 @@ public class LoginResponceForCustomer {
 	private String 	functionality;
 	private String access;
 	private long cId;
+	private String username;
 	
-	public LoginResponceForCustomer(long userId, String token, String role, String department, String functionality, String access, long cId) {
+	public LoginResponceForCustomer(long userId, String token, String role, String department, String functionality, String access, long cId, String username) {
 		super();
 		this.userId = userId;
 		this.token = token;
@@ -18,6 +19,7 @@ public class LoginResponceForCustomer {
 		this.functionality = functionality;
 		this.access = access;
 		this.cId = cId;
+		this.username = username;
 	}
 
 	public LoginResponceForCustomer() {
@@ -80,6 +82,16 @@ public class LoginResponceForCustomer {
 	public void setAccess(String access) {
 		this.access = access;
 	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
+	
 	
 	
 }

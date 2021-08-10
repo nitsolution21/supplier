@@ -118,7 +118,7 @@ public class CustomerLoginController {
 				Optional<RolesMaster> findById = rolesMasterRepo.findById(findByUserId.get().getRoleId());
 				if (findById.isPresent()) {
 					if (findById.get().getRole().equals("SADMIN")) {
-						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), "All", "All", "All", findByUsername.get().getcId()));
+						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), "All", "All", "All", findByUsername.get().getcId(), findByUsername.get().getUsername()));
 					}
 					else if(findById.get().getRole().equals("ADMIN")) {
 						
@@ -126,13 +126,13 @@ public class CustomerLoginController {
 						
 						String functionaliti = getCustomerDetails.getFunctionaliti(findByUsername.get().getUserId());
 						
-						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), departments, functionaliti, "Both", findByUsername.get().getcId()));
+						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), departments, functionaliti, "Both", findByUsername.get().getcId(), findByUsername.get().getUsername()));
 					}
 					else if(findById.get().getRole().equals("USER")) {
 						String departments = getCustomerDetails.getDepartments(findByUsername.get().getUserId());
 						
 						String functionaliti = getCustomerDetails.getFunctionaliti(findByUsername.get().getUserId());
-						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), departments, functionaliti, "Read", findByUsername.get().getcId()));
+						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), departments, functionaliti, "Read", findByUsername.get().getcId(), findByUsername.get().getUsername()));
 					}
 					else {
 						throw new VendorNotFoundException("Role is incorrect!!");
