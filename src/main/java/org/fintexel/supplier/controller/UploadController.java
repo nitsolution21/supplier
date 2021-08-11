@@ -5,14 +5,19 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.fintexel.supplier.entity.FileUploadResponse;
 import org.fintexel.supplier.exceptions.VendorErrorResponse;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
+import org.fintexel.supplier.helper.FileUploadHelper;
+import org.fintexel.supplier.helper.LoginUserDetails;
 import org.fintexel.supplier.service.UploadService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +31,12 @@ public class UploadController {
 
 	@Autowired
 	private UploadService uploadService;
+	
+	@Autowired
+	private LoginUserDetails loginUserDetails;
+	
+	@Autowired
+	private FileUploadHelper fileUploadHelper;
 	
 	
 	@PostMapping("/upload")
@@ -87,6 +98,33 @@ public class UploadController {
 		}
 		
 		return null;
+	}
+	
+	@PostMapping("/uploadSupplierProof")
+	public FileUploadResponse uploadSupplierProof(@RequestParam("file") MultipartFile file,
+			@RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - UploadController.uploadSupplierProof()");
+		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+			if (!loginSupplierCode.equals(null)) {
+				if (file.getSize() < 1) {
+					throw new VendorNotFoundException("File is Empty");
+				}
+
+				FileUploadResponse uploadFile = fileUploadHelper.uploadFile(file);
+				if (!uploadFile.equals(null)) {
+					return uploadFile;
+				} else {
+					throw new VendorNotFoundException("Something went wrong !! Please try again");
+				}
+			} else {
+				throw new VendorNotFoundException("Token not valid");
+			}
+		} catch (Exception e) {
+			LOGGER.info(e.getMessage());
+			throw new VendorNotFoundException(e.getMessage());
+		}
+
 	}
 
 }

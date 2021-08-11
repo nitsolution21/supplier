@@ -1,13 +1,14 @@
 package org.fintexel.supplier.customerentity;
 
 import java.util.Date;
+import java.util.List;
 
 public class CustomerRegisterResponse {
 	private String email;
 	private String name;
 	private String role;
-	private String department ;
-	private String 	functionality;
+	private  List<CustomerDepartments> customerDepartments;
+	private List<CustomerFunctionalitiesMaster> functionality;
 	private String access;
 	private long cId;
 	private long userId;
@@ -19,13 +20,20 @@ public class CustomerRegisterResponse {
 	private String updatedBy;
 	private Date updatedOn;
 	
-	public CustomerRegisterResponse(String email, String name, String role,String department, String functionality, String access, long cId, long userId, String username,
-			String password, String status, String createdBy, Date createdOn, String updatedBy, Date updatedOn) {
+	public CustomerRegisterResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public CustomerRegisterResponse(String email, String name, String role,
+			List<CustomerDepartments> customerDepartments, List<CustomerFunctionalitiesMaster> functionality,
+			String access, long cId, long userId, String username, String password, String status, String createdBy,
+			Date createdOn, String updatedBy, Date updatedOn) {
 		super();
 		this.email = email;
 		this.name = name;
 		this.role = role;
-		this.department = department;
+		this.customerDepartments = customerDepartments;
 		this.functionality = functionality;
 		this.access = access;
 		this.cId = cId;
@@ -37,11 +45,6 @@ public class CustomerRegisterResponse {
 		this.createdOn = createdOn;
 		this.updatedBy = updatedBy;
 		this.updatedOn = updatedOn;
-	}
-
-	public CustomerRegisterResponse() {
-		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getEmail() {
@@ -67,20 +70,20 @@ public class CustomerRegisterResponse {
 	public void setRole(String role) {
 		this.role = role;
 	}
-	
-	public String getDepartment() {
-		return department;
+
+	public List<CustomerDepartments> getCustomerDepartments() {
+		return customerDepartments;
 	}
 
-	public void setDepartment(String department) {
-		this.department = department;
+	public void setCustomerDepartments(List<CustomerDepartments> customerDepartments) {
+		this.customerDepartments = customerDepartments;
 	}
 
-	public String getFunctionalityy() {
+	public List<CustomerFunctionalitiesMaster> getFunctionality() {
 		return functionality;
 	}
 
-	public void setFunctionality(String functionality) {
+	public void setFunctionality(List<CustomerFunctionalitiesMaster> functionality) {
 		this.functionality = functionality;
 	}
 
@@ -163,16 +166,6 @@ public class CustomerRegisterResponse {
 	public void setUpdatedOn(Date updatedOn) {
 		this.updatedOn = updatedOn;
 	}
-
-	@Override
-	public String toString() {
-		return "CustomerRegisterResponse [email=" + email + ", name=" + name + ", role=" + role + ", department="
-				+ department + ", functionally=" + functionality + ", access=" + access + ", cId=" + cId + ", userId="
-				+ userId + ", username=" + username + ", password=" + password + ", status=" + status + ", createdBy="
-				+ createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn
-				+ "]";
-	}
-
 	
 	
 	

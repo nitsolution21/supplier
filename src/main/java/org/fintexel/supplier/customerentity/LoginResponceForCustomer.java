@@ -1,30 +1,34 @@
 package org.fintexel.supplier.customerentity;
 
+import java.util.List;
+
 public class LoginResponceForCustomer {
 	private long userId;
 	private String token;
 	private String role;
-	private String department;
-	private String 	functionality;
+	private  List<CustomerDepartments> customerDepartments;
+	private List<CustomerFunctionalitiesMaster> functionality;
 	private String access;
 	private long cId;
 	private String username;
 	
-	public LoginResponceForCustomer(long userId, String token, String role, String department, String functionality, String access, long cId, String username) {
+	public LoginResponceForCustomer() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public LoginResponceForCustomer(long userId, String token, String role,
+			List<CustomerDepartments> customerDepartments, List<CustomerFunctionalitiesMaster> functionality,
+			String access, long cId, String username) {
 		super();
 		this.userId = userId;
 		this.token = token;
 		this.role = role;
-		this.department = department;
+		this.customerDepartments = customerDepartments;
 		this.functionality = functionality;
 		this.access = access;
 		this.cId = cId;
 		this.username = username;
-	}
-
-	public LoginResponceForCustomer() {
-		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public long getUserId() {
@@ -51,27 +55,19 @@ public class LoginResponceForCustomer {
 		this.role = role;
 	}
 
-	public long getcId() {
-		return cId;
+	public List<CustomerDepartments> getCustomerDepartments() {
+		return customerDepartments;
 	}
 
-	public void setcId(long cId) {
-		this.cId = cId;
+	public void setCustomerDepartments(List<CustomerDepartments> customerDepartments) {
+		this.customerDepartments = customerDepartments;
 	}
 
-	public String getDepartment() {
-		return department;
-	}
-
-	public void setDepartment(String department) {
-		this.department = department;
-	}
-
-	public String getFunctionality() {
+	public List<CustomerFunctionalitiesMaster> getFunctionality() {
 		return functionality;
 	}
 
-	public void setFunctionality(String functionality) {
+	public void setFunctionality(List<CustomerFunctionalitiesMaster> functionality) {
 		this.functionality = functionality;
 	}
 
@@ -83,6 +79,14 @@ public class LoginResponceForCustomer {
 		this.access = access;
 	}
 
+	public long getcId() {
+		return cId;
+	}
+
+	public void setcId(long cId) {
+		this.cId = cId;
+	}
+
 	public String getUsername() {
 		return username;
 	}
@@ -90,6 +94,8 @@ public class LoginResponceForCustomer {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+	
+	
 	
 	
 	

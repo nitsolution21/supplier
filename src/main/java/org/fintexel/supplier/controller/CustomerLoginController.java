@@ -1,5 +1,6 @@
 package org.fintexel.supplier.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -118,20 +119,26 @@ public class CustomerLoginController {
 				Optional<RolesMaster> findById = rolesMasterRepo.findById(findByUserId.get().getRoleId());
 				if (findById.isPresent()) {
 					if (findById.get().getRole().equals("SADMIN")) {
-						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), "All", "All", "All", findByUsername.get().getcId(), findByUsername.get().getUsername()));
+						
+						List<CustomerDepartments> departmentForSAdmin = getCustomerDetails.getDepartmentForSAdmin();
+						
+						List<CustomerFunctionalitiesMaster> functionalitieForSAdmin = getCustomerDetails.getFunctionalitieForSAdmin();
+						
+						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), departmentForSAdmin, functionalitieForSAdmin, "Both", findByUsername.get().getcId(), findByUsername.get().getUsername()));
 					}
 					else if(findById.get().getRole().equals("ADMIN")) {
 						
-						String departments = getCustomerDetails.getDepartments(findByUsername.get().getUserId());
+						List<CustomerDepartments> departments = getCustomerDetails.getDepartments(findByUsername.get().getUserId());
 						
-						String functionaliti = getCustomerDetails.getFunctionaliti(findByUsername.get().getUserId());
+						List<CustomerFunctionalitiesMaster> functionaliti = getCustomerDetails.getFunctionaliti(findByUsername.get().getUserId());
 						
 						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), departments, functionaliti, "Both", findByUsername.get().getcId(), findByUsername.get().getUsername()));
 					}
 					else if(findById.get().getRole().equals("USER")) {
-						String departments = getCustomerDetails.getDepartments(findByUsername.get().getUserId());
+						List<CustomerDepartments> departments = getCustomerDetails.getDepartments(findByUsername.get().getUserId());
 						
-						String functionaliti = getCustomerDetails.getFunctionaliti(findByUsername.get().getUserId());
+						List<CustomerFunctionalitiesMaster> functionaliti = getCustomerDetails.getFunctionaliti(findByUsername.get().getUserId());
+						
 						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), departments, functionaliti, "Read", findByUsername.get().getcId(), findByUsername.get().getUsername()));
 					}
 					else {
@@ -197,35 +204,40 @@ public class CustomerLoginController {
 								customerRegisterResponse.setUpdatedOn(registerCustomer.getUpdatedOn());
 								
 								if (findByMasterTable.get().getRole().equals("SADMIN")) {
-									customerRegisterResponse.setAccess("All");
+									customerRegisterResponse.setAccess("Both");
 									
-									customerRegisterResponse.setDepartment("All");
+									List<CustomerDepartments> departmentForSAdmin = getCustomerDetails.getDepartmentForSAdmin();
 									
-									customerRegisterResponse.setFunctionality("All");
+									customerRegisterResponse.setCustomerDepartments(departmentForSAdmin);
+									
+									List<CustomerFunctionalitiesMaster> functionalitieForSAdmin = getCustomerDetails.getFunctionalitieForSAdmin();
+									
+									customerRegisterResponse.setFunctionality(functionalitieForSAdmin);
 								}
 								
 								if (findByMasterTable.get().getRole().equals("ADMIN")) {
 									
-									String departments = getCustomerDetails.getDepartments(registerCustomer.getUserId());
+									List<CustomerDepartments> departments = getCustomerDetails.getDepartments(registerCustomer.getUserId());
 									
-									customerRegisterResponse.setDepartment(departments);
+									customerRegisterResponse.setCustomerDepartments(departments);
 									
 									customerRegisterResponse.setAccess("Both");
 									
-									String functionaliti = getCustomerDetails.getFunctionaliti(registerCustomer.getUserId());
+									List<CustomerFunctionalitiesMaster> functionaliti = getCustomerDetails.getFunctionaliti(registerCustomer.getUserId());
 									
 									customerRegisterResponse.setFunctionality(functionaliti);
 									
 								}
 								
 								if(findByMasterTable.get().getRole().equals("USER")) {
-									String departments = getCustomerDetails.getDepartments(registerCustomer.getUserId());
 									
-									customerRegisterResponse.setDepartment(departments);
+									List<CustomerDepartments> departments = getCustomerDetails.getDepartments(registerCustomer.getUserId());
+									
+									customerRegisterResponse.setCustomerDepartments(departments);
 									
 									customerRegisterResponse.setAccess("Read");
 									
-									String functionaliti = getCustomerDetails.getFunctionaliti(registerCustomer.getUserId());
+									List<CustomerFunctionalitiesMaster> functionaliti = getCustomerDetails.getFunctionaliti(registerCustomer.getUserId());
 									
 									customerRegisterResponse.setFunctionality(functionaliti);
 								}

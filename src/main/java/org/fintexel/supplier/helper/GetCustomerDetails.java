@@ -17,11 +17,16 @@ import org.fintexel.supplier.customerrepository.CustomerUserDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserFunctionalitiRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserRolesRepo;
 import org.fintexel.supplier.customerrepository.RolesMasterRepo;
+import org.fintexel.supplier.exceptions.VendorNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GetCustomerDetails {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(GetCustomerDetails.class);
 
 	@Autowired
 	private CustomerUserDepartmentsRepo customerUserDepartmentsRepo;
@@ -47,7 +52,11 @@ public class GetCustomerDetails {
 	@Autowired
 	private RolesMasterRepo rolesMasterRepo;
 	
-	String departmentName = null, UserFunctionalitiName = null;
+//	String departmentName = null, UserFunctionalitiName = null;
+	
+	private List<CustomerDepartments> customerDepartments;
+	
+	private List<CustomerFunctionalitiesMaster> customerFunctionalitiesMasters;
 	
 	public long getCustomerIdFromToken(String token) {
 		String username = jwtUtil.extractUsername(token);
@@ -61,22 +70,24 @@ public class GetCustomerDetails {
 		}
 	}
 	
-	public String getDepartments(long userId) {
+	public List<CustomerDepartments> getDepartments(long userId) {
 		
 		List<CustomerUserDepartments> findDepartmentIdByUserId = customerUserDepartmentsRepo.findByUserId(userId);
 		if (findDepartmentIdByUserId.size() > 0)  {
 			for(CustomerUserDepartments department : findDepartmentIdByUserId ) {
 				Optional<CustomerDepartments> findDepartmentById = customerDepartmentsRepo.findById(department.getDepartmentId());
-				this.departmentName = this.departmentName + findDepartmentById.get().getDepartmentName() +",";
+				//this.departmentName = this.departmentName + findDepartmentById.get().getDepartmentName() +",";
+				this.customerDepartments.add(findDepartmentById.get());
 			}
-			return this.departmentName; 
+			return this.customerDepartments; 
 		}
 		else {
-			return this.departmentName = "Department not found for this user";
+//			return this.departmentName = "Department not found for this user";
+			throw new VendorNotFoundException("Department not found for this user");
 		}
 	}
 	
-	public String getFunctionaliti(long userId) {
+	public List<CustomerFunctionalitiesMaster> getFunctionaliti(long userId) {
 		
 		List<CustomerUserFunctionaliti> findUserFunctionalitiIdByUserId = customerUserFunctionalitiRepo.findByUserId(userId);
 		
@@ -85,12 +96,15 @@ public class GetCustomerDetails {
 			for(CustomerUserFunctionaliti customerUserFunctionaliti : findUserFunctionalitiIdByUserId) {
 				Optional<CustomerFunctionalitiesMaster> findFunctionalitiById = customerFunctionalitiesMasterRepo.findById(customerUserFunctionaliti.getfId());
 				
-				this.UserFunctionalitiName = this.UserFunctionalitiName + findFunctionalitiById.get().getfName() + ",";
+				//his.UserFunctionalitiName = this.UserFunctionalitiName + findFunctionalitiById.get().getfName() + ",";
+				this.customerFunctionalitiesMasters.add(findFunctionalitiById.get());
 			}
-			return this.UserFunctionalitiName;
+			return this.customerFunctionalitiesMasters;
 		}
 		else {
-			return this.UserFunctionalitiName= "Functionaliti not found for this user";
+//			return this.UserFunctionalitiName= "Functionaliti not found for this user";
+			throw new VendorNotFoundException("Functionality not found for this user");
+			
 		}
 	}
 	
@@ -105,5 +119,33 @@ public class GetCustomerDetails {
 			}
 		} else {
 			return "Customer role not define";		}
+	}
+	
+	public List<CustomerDepartments> getDepartmentForSAdmin() {
+		try {
+			List<CustomerDepartments> findAll = customerDepartmentsRepo.findAll();
+			
+			if (findAll.size() > 0) {
+				return findAll;
+			} else {
+				throw new VendorNotFoundException("Department not found");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	public List<CustomerFunctionalitiesMaster> getFunctionalitieForSAdmin() {
+		try {
+			List<CustomerFunctionalitiesMaster> findAll = customerFunctionalitiesMasterRepo.findAll();
+			if (findAll.size() > 0) {
+				return findAll;
+			} else {
+				throw new VendorNotFoundException("Functionality not found");
+			}
+		} catch (Exception e) {
+			LOGGER.info("in Catch " + e.getMessage());
+			throw new VendorNotFoundException(e.getMessage());
+		}
 	}
 }

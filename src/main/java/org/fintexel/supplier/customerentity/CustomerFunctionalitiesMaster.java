@@ -21,32 +21,19 @@ public class CustomerFunctionalitiesMaster {
 	@Column(name = "F_NAME")
 	private String fName;
 	
-	@Column(name = "CREATED_BY") 
-	private String createdBy;
-	
-	@Column(name = "CREATED_ON") 
-	private Date createdOn;
-	
-	@Column(name = "UPDATED_BY")
-	private String updatedBy;
-	
-	@Column(name = "UPDATED_ON") 
-	private Date updatedOn;
+	@Column(name = "F_DESC")
+	private String fDesc;
 
 	public CustomerFunctionalitiesMaster() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public CustomerFunctionalitiesMaster(long fId, String fName, String createdBy, Date createdOn, String updatedBy,
-			Date updatedOn) {
+	public CustomerFunctionalitiesMaster(long fId, String fName, String fDesc) {
 		super();
 		this.fId = fId;
 		this.fName = fName;
-		this.createdBy = createdBy;
-		this.createdOn = createdOn;
-		this.updatedBy = updatedBy;
-		this.updatedOn = updatedOn;
+		this.fDesc = fDesc;
 	}
 
 	public long getfId() {
@@ -65,37 +52,15 @@ public class CustomerFunctionalitiesMaster {
 		this.fName = fName;
 	}
 
-	public String getCreatedBy() {
-		return createdBy;
+	public String getfDesc() {
+		return fDesc;
 	}
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
+	public void setfDesc(String fDesc) {
+		this.fDesc = fDesc;
 	}
 
-	public Date getCreatedOn() {
-		return createdOn;
-	}
-
-	public void setCreatedOn(Date createdOn) {
-		this.createdOn = createdOn;
-	}
-
-	public String getUpdatedBy() {
-		return updatedBy;
-	}
-
-	public void setUpdatedBy(String updatedBy) {
-		this.updatedBy = updatedBy;
-	}
-
-	public Date getUpdatedOn() {
-		return updatedOn;
-	}
-
-	public void setUpdatedOn(Date updatedOn) {
-		this.updatedOn = updatedOn;
-	}
+	
 	
 	
 }
