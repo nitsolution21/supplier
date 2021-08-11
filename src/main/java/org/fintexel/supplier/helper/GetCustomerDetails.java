@@ -59,66 +59,89 @@ public class GetCustomerDetails {
 	private List<CustomerFunctionalitiesMaster> customerFunctionalitiesMasters;
 	
 	public long getCustomerIdFromToken(String token) {
-		String username = jwtUtil.extractUsername(token);
-		Optional<CustomerRegister> findByUsername = customerRegisterRepo.findByUsername(username);
-		if (findByUsername.isPresent()) {
-			return findByUsername.get().getUserId();
-		}
-		else {
-			// return -1 for customer not found
-			return -1;
+		try {
+			String username = jwtUtil.extractUsername(token);
+			Optional<CustomerRegister> findByUsername = customerRegisterRepo.findByUsername(username);
+			if (findByUsername.isPresent()) {
+				return findByUsername.get().getUserId();
+			}
+			else {
+				// return -1 for customer not found
+				return -1;
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
 	
 	public List<CustomerDepartments> getDepartments(long userId) {
-		
-		List<CustomerUserDepartments> findDepartmentIdByUserId = customerUserDepartmentsRepo.findByUserId(userId);
-		if (findDepartmentIdByUserId.size() > 0)  {
-			for(CustomerUserDepartments department : findDepartmentIdByUserId ) {
-				Optional<CustomerDepartments> findDepartmentById = customerDepartmentsRepo.findById(department.getDepartmentId());
-				//this.departmentName = this.departmentName + findDepartmentById.get().getDepartmentName() +",";
-				this.customerDepartments.add(findDepartmentById.get());
+		try {
+			List<CustomerUserDepartments> findDepartmentIdByUserId = customerUserDepartmentsRepo.findByUserId(userId);
+			if (findDepartmentIdByUserId.size() > 0)  {
+				for(CustomerUserDepartments department : findDepartmentIdByUserId ) {
+					Optional<CustomerDepartments> findDepartmentById = customerDepartmentsRepo.findById(department.getDepartmentId());
+					//this.departmentName = this.departmentName + findDepartmentById.get().getDepartmentName() +",";
+					this.customerDepartments.add(findDepartmentById.get());
+				}
+				return this.customerDepartments; 
 			}
-			return this.customerDepartments; 
-		}
-		else {
-//			return this.departmentName = "Department not found for this user";
-			throw new VendorNotFoundException("Department not found for this user");
+			else {
+//				return this.departmentName = "Department not found for this user";
+				throw new VendorNotFoundException("Department not found for this user");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
 	
 	public List<CustomerFunctionalitiesMaster> getFunctionaliti(long userId) {
 		
-		List<CustomerUserFunctionaliti> findUserFunctionalitiIdByUserId = customerUserFunctionalitiRepo.findByUserId(userId);
-		
-		if (findUserFunctionalitiIdByUserId.size() > 0) {
+		try {
 			
-			for(CustomerUserFunctionaliti customerUserFunctionaliti : findUserFunctionalitiIdByUserId) {
-				Optional<CustomerFunctionalitiesMaster> findFunctionalitiById = customerFunctionalitiesMasterRepo.findById(customerUserFunctionaliti.getfId());
+			List<CustomerUserFunctionaliti> findUserFunctionalitiIdByUserId = customerUserFunctionalitiRepo.findByUserId(userId);
+			
+			if (findUserFunctionalitiIdByUserId.size() > 0) {
 				
-				//his.UserFunctionalitiName = this.UserFunctionalitiName + findFunctionalitiById.get().getfName() + ",";
-				this.customerFunctionalitiesMasters.add(findFunctionalitiById.get());
+				for(CustomerUserFunctionaliti customerUserFunctionaliti : findUserFunctionalitiIdByUserId) {
+					Optional<CustomerFunctionalitiesMaster> findFunctionalitiById = customerFunctionalitiesMasterRepo.findById(customerUserFunctionaliti.getfId());
+					
+					//his.UserFunctionalitiName = this.UserFunctionalitiName + findFunctionalitiById.get().getfName() + ",";
+					this.customerFunctionalitiesMasters.add(findFunctionalitiById.get());
+				}
+				return this.customerFunctionalitiesMasters;
 			}
-			return this.customerFunctionalitiesMasters;
-		}
-		else {
-//			return this.UserFunctionalitiName= "Functionaliti not found for this user";
-			throw new VendorNotFoundException("Functionality not found for this user");
+			else {
+//				return this.UserFunctionalitiName= "Functionaliti not found for this user";
+				throw new VendorNotFoundException("Functionality not found for this user");
+				
+			}
 			
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
 		}
+		
+		
 	}
 	
 	public String getRoleByUserId(long userId) {
-		Optional<CustomerUserRoles> findByUserId = customerUserRolesRepo.findByUserId(userId);
-		if (findByUserId.isPresent()) {
-			Optional<RolesMaster> findById = rolesMasterRepo.findById(findByUserId.get().getRoleId());
-			if (findById.isPresent()) {
-				return findById.get().getRole();
+		try {
+			
+			Optional<CustomerUserRoles> findByUserId = customerUserRolesRepo.findByUserId(userId);
+			if (findByUserId.isPresent()) {
+				Optional<RolesMaster> findById = rolesMasterRepo.findById(findByUserId.get().getRoleId());
+				if (findById.isPresent()) {
+					return findById.get().getRole();
+				} else {
+					return "Role is not presen";
+				}
 			} else {
-				return "Role is not presen";
+				return "Customer role not define";	
 			}
-		} else {
-			return "Customer role not define";		}
+			
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
 	}
 	
 	public List<CustomerDepartments> getDepartmentForSAdmin() {
@@ -145,6 +168,19 @@ public class GetCustomerDetails {
 			}
 		} catch (Exception e) {
 			LOGGER.info("in Catch " + e.getMessage());
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	public long getCompanyProfileIdByCustomerId(long userId) {
+		try {
+			Optional<CustomerRegister> findById = customerRegisterRepo.findById(userId);
+			if (findById.isPresent()) {
+				return findById.get().getcId();
+			} else {
+				throw new VendorNotFoundException("Can't find any company profile whith the login user");
+			}
+		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}

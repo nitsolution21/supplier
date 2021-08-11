@@ -5,9 +5,12 @@ import java.util.Optional;
 import org.fintexel.supplier.customerentity.CustomerAddress;
 import org.fintexel.supplier.customerentity.CustomerContact;
 import org.fintexel.supplier.customerentity.CustomerProfile;
+import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.CustomerProfileRepo;
+import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
+import org.fintexel.supplier.customerrepository.CustomerUserRolesRepo;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.helper.GetCustomerDetails;
 import org.fintexel.supplier.validation.FieldValidation;
@@ -46,6 +49,10 @@ public class CustomerController {
 	
 	@Autowired
 	private GetCustomerDetails getCustomerDetails; 
+	
+	@Autowired
+	private CustomerRegisterRepo customerRegisterRepo; 
+	
 	
 	@PostMapping("/address")
 	public CustomerAddress createCustomerAddress(@RequestBody CustomerAddress customerAddress) {
@@ -291,8 +298,9 @@ public class CustomerController {
 		
 	}
 	
-	@PostMapping("/addProfile")
+	@PostMapping("/profile")
 	public CustomerProfile addCustomerProfile(@RequestBody CustomerProfile customerProfile, @RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - CustomerController.addCustomerProfile()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 			if (customerIdFromToken == -1) {
@@ -328,6 +336,89 @@ public class CustomerController {
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
+	}
+	
+	@PutMapping("/profile/{profileId}")
+	public CustomerProfile updateCustomerProfile(@PathVariable long profileId, @RequestBody CustomerProfile customerProfile, @RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - CustomerController.updateCustomerProfile()");
+		try {
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			if (customerIdFromToken == -1) {
+				throw new VendorNotFoundException("Customer not found");
+			} else {
+				String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
+				if (roleByUserId.equals("SADMIN")) {
+					Optional<CustomerRegister> findById = customerRegisterRepo.findById(customerIdFromToken);
+					if (findById.isPresent()) {
+						if (findById.get().getcId() == profileId) {
+							
+							CustomerProfile customerProfile2 = new CustomerProfile();
+							
+							if (fieldValidation.isEmpty(customerProfile.getCustomerName()) && fieldValidation.isEmpty(customerProfile.getCustomerContact1()) && fieldValidation.isEmpty(customerProfile.getRegistrationType()) && fieldValidation.isEmpty(customerProfile.getRegistrationNo()) ) {
+								customerProfile2.setCustomerName(customerProfile.getCustomerName());
+								customerProfile2.setCustomerContact1(customerProfile.getCustomerContact1());
+								customerProfile2.setRegistrationType(customerProfile.getRegistrationType());
+								customerProfile2.setRegistrationNo(customerProfile.getRegistrationNo());
+								customerProfile2.setStatus("COMPLEATE");
+								customerProfile2.setcId(profileId);
+								try {
+									if (fieldValidation.isEmpty(customerProfile.getCustomerContact2())) {
+										customerProfile2.setCustomerContact2(customerProfile.getCustomerContact2());
+									} 
+								} catch (Exception e) {
+									// TODO: handle exception
+								}
+								return customerProfileRepo.save(customerProfile2);
+							} else {
+								throw new VendorNotFoundException("Validation error");
+							}
+							
+						} else {
+							throw new VendorNotFoundException("You don't have permission to update profile");
+						}
+					} else {
+						throw new VendorNotFoundException("Your Details is not present in register table");
+					}
+				} else {
+					throw new VendorNotFoundException("You don't have permission to update profile");
+				}
+			}
+			
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/profile")
+	public CustomerProfile getCustomerProfile(@RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - CustomerController.getCustomerProfile()");
+		try {
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			if (customerIdFromToken == -1) {
+				throw new VendorNotFoundException("Customer not found");
+			} else {
+				String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
+				if (roleByUserId.equals("SADMIN")) {
+					Optional<CustomerRegister> findById = customerRegisterRepo.findById(customerIdFromToken);
+					if (findById.isPresent()) {
+						Optional<CustomerProfile> findById2 = customerProfileRepo.findById(findById.get().getcId());
+						if (findById2.isPresent()) {
+							return findById2.get();
+						} else {
+							throw new VendorNotFoundException("Customer profile not found");
+							
+						}
+					} else {
+						throw new VendorNotFoundException("Your Details is not present in register table");
+					}
+				} else {
+					throw new VendorNotFoundException("You don't have permission to get profile");
+				}
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
 	}
 	
 	
