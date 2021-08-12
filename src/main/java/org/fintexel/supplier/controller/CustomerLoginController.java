@@ -405,4 +405,15 @@ public class CustomerLoginController {
 			throw new VendorNotFoundException("");
 		}
 	}
+	
+	@GetMapping("/getAllDepartments")
+	public List<CustomerDepartments> getAllDepartments() {
+		return getCustomerDetails.getDepartmentForSAdmin();
+		
+	}
+	
+	@GetMapping("/getAllFunctionality")
+	public List<CustomerFunctionalitiesMaster> getAllFunctionality() {
+		return getCustomerDetails.getFunctionalitieForSAdmin();
+	}
 }
