@@ -68,7 +68,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			try {
 				username = this.jwtUtil.extractUsername(jwtToken);
 			} catch (Exception e) {
-				// TODO: handle exception
 				throw new VendorNotFoundException("token is not validated");
 			}
 			

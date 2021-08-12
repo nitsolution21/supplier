@@ -1,5 +1,7 @@
 package org.fintexel.supplier.config;
 
+import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
+import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.fintexel.supplier.services.CustomerDetailsServices;
 import org.fintexel.supplier.services.VendorDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +33,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private CustomerDetailsServices customerDetailsServices;
-	
-	@Autowired
-	private YMLConfig myConfig;
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		
-			auth.userDetailsService(vendorDetailsService);
+//			auth.userDetailsService(vendorDetailsService);
 			auth.userDetailsService(customerDetailsServices);
+			
 	}
 
 
