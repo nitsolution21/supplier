@@ -20,6 +20,7 @@ import javax.validation.Valid;
 
 import org.fintexel.supplier.entity.ApproveMap;
 import org.fintexel.supplier.entity.CurrencyMaster;
+import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.RegType;
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupContract;
@@ -1712,7 +1713,7 @@ public class VendorController {
 	}
 
 	@PostMapping("vendor/approved")
-	public void vendorApproved(@RequestBody() ArrayList<ApproveMap> approveMap) {
+	public CustomeResponseEntity vendorApproved(@RequestBody() ArrayList<ApproveMap> approveMap) {
 		LOGGER.info("Inside - VendorController.vendorApproved()");
 		try {
 //			String tableName;
@@ -1807,6 +1808,8 @@ public class VendorController {
 				}
 
 			}
+			
+			return new CustomeResponseEntity("SUCCESS", "DATA IS UPDATE");
 
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
