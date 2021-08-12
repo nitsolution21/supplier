@@ -94,6 +94,12 @@ public class CustomerLoginController {
 	FlowableRegistrationRepo flowableRegistrationRepo;
 	
 	@Autowired
+	private CustomerFunctionalitiesMasterRepo customerFunctionalitiesMasterRepo;
+	
+	@Autowired
+	private CustomerDepartmentsRepo customerDepartmentsRepo;
+	
+	@Autowired
 	private FlowableFormRepo flowableFormRepo;
 	
 	@Autowired
@@ -408,12 +414,32 @@ public class CustomerLoginController {
 	
 	@GetMapping("/getAllDepartments")
 	public List<CustomerDepartments> getAllDepartments() {
-		return getCustomerDetails.getDepartmentForSAdmin();
+		try {
+			List<CustomerDepartments> findAll = customerDepartmentsRepo.findAll();
+			
+			if (findAll.size() > 0) {
+				return findAll;
+			} else {
+				throw new VendorNotFoundException("Department not found");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
 		
 	}
 	
 	@GetMapping("/getAllFunctionality")
 	public List<CustomerFunctionalitiesMaster> getAllFunctionality() {
-		return getCustomerDetails.getFunctionalitieForSAdmin();
+		try {
+			List<CustomerFunctionalitiesMaster> findAll = customerFunctionalitiesMasterRepo.findAll();
+			if (findAll.size() > 0) {
+				return findAll;
+			} else {
+				throw new VendorNotFoundException("Functionality not found");
+			}
+		} catch (Exception e) {
+			LOGGER.info("in Catch " + e.getMessage());
+			throw new VendorNotFoundException(e.getMessage());
+		}
 	}
 }
