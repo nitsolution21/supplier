@@ -1,5 +1,8 @@
 package org.fintexel.supplier.config;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.catalina.filters.CorsFilter;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.fintexel.supplier.services.CustomerDetailsServices;
@@ -14,10 +17,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -34,13 +39,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private CustomerDetailsServices customerDetailsServices;
 
+	
+	@Autowired
+	private YMLConfig myConfig;
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		
-//			auth.userDetailsService(vendorDetailsService);
-			auth.userDetailsService(customerDetailsServices);
+
+			
+//				auth.userDetailsService(customerDetailsServices);
+			
+				auth.userDetailsService(vendorDetailsService);
+				
+
 			
 	}
+	
 
 
 	@Override
@@ -66,7 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST,"/upload").permitAll()
 				.antMatchers(HttpMethod.POST,"/customer/login").permitAll()
 //				.antMatchers(HttpMethod.POST,"/customer/registration").permitAll()
-				.antMatchers(HttpMethod.POST,"/customerlogin").permitAll()
+				.antMatchers(HttpMethod.POST,"/customer/login").permitAll()
 				.antMatchers(HttpMethod.GET,"/vendor/pending/request/{code}").permitAll()
 				.antMatchers(HttpMethod.POST,"/vendor/approved").permitAll()
 				.antMatchers(HttpMethod.GET,"/vendor/pending").permitAll()

@@ -35,6 +35,7 @@ import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.repository.flowablerepo.FlowableFormRepo;
 import org.fintexel.supplier.repository.flowablerepo.FlowableRegistrationRepo;
 import org.fintexel.supplier.services.CustomerDetailsServices;
+import org.fintexel.supplier.services.VendorDetailsService;
 import org.fintexel.supplier.validation.FieldValidation;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -48,6 +49,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.LinkedMultiValueMap;
@@ -105,17 +107,24 @@ public class CustomerLoginController {
 	@Autowired
 	private GetCustomerDetails getCustomerDetails;
 	
+	@Autowired
+	private VendorDetailsService vendorDetailsService;
+	
 	@PostMapping("/login")
 	private ResponseEntity<?> customerLogin(@RequestBody VendorLogin vendorLogin) {
 		LOGGER.info("Inside - CustomerLoginController.customerLogin()");
 		try {
-			this.authenticationManager.authenticate(
+			Authentication authenticate = this.authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(vendorLogin.getUsername(), vendorLogin.getPassword()));
+			LOGGER.info(authenticate.toString());
 		} catch (Exception e) {
+			LOGGER.info("in catch");
 			throw new VendorNotFoundException(e.getMessage());
 		}
 		
-		UserDetails customer = this.customerDetailsServices.loadUserByUsername(vendorLogin.getUsername());
+		LOGGER.info("After try catch");
+		
+		UserDetails customer = this.vendorDetailsService.loadUserByUsername(vendorLogin.getUsername());
 		String token = jwtUtil.generateToken(customer);
 		
 		Optional<CustomerRegister> findByUsername = customerRegisterRepo.findByUsername(vendorLogin.getUsername());
@@ -131,6 +140,7 @@ public class CustomerLoginController {
 						List<CustomerFunctionalitiesMaster> functionalitieForSAdmin = getCustomerDetails.getFunctionalitieForSAdmin();
 						
 						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), departmentForSAdmin, functionalitieForSAdmin, "Both", findByUsername.get().getcId(), findByUsername.get().getUsername()));
+//						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), "", findById.get().getRole(), departmentForSAdmin, functionalitieForSAdmin, "Both", findByUsername.get().getcId(), findByUsername.get().getUsername()));
 					}
 					else if(findById.get().getRole().equals("ADMIN")) {
 						
@@ -139,6 +149,7 @@ public class CustomerLoginController {
 						List<CustomerFunctionalitiesMaster> functionaliti = getCustomerDetails.getFunctionaliti(findByUsername.get().getUserId());
 						
 						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), departments, functionaliti, "Both", findByUsername.get().getcId(), findByUsername.get().getUsername()));
+//						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), "", findById.get().getRole(), departments, functionaliti, "Both", findByUsername.get().getcId(), findByUsername.get().getUsername()));
 					}
 					else if(findById.get().getRole().equals("USER")) {
 						List<CustomerDepartments> departments = getCustomerDetails.getDepartments(findByUsername.get().getUserId());
@@ -146,6 +157,7 @@ public class CustomerLoginController {
 						List<CustomerFunctionalitiesMaster> functionaliti = getCustomerDetails.getFunctionaliti(findByUsername.get().getUserId());
 						
 						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), token, findById.get().getRole(), departments, functionaliti, "Read", findByUsername.get().getcId(), findByUsername.get().getUsername()));
+//						return ResponseEntity.ok(new LoginResponceForCustomer(findByUsername.get().getUserId(), "", findById.get().getRole(), departments, functionaliti, "Read", findByUsername.get().getcId(), findByUsername.get().getUsername()));
 					}
 					else {
 						throw new VendorNotFoundException("Role is incorrect!!");

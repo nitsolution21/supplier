@@ -5,6 +5,7 @@ public class CustomerRegisterRequest {
 	private String name;
 	private long role;
 	private long cId;
+//	private long de
 	
 	public CustomerRegisterRequest(String email, String name, long role, long cId) {
 		super();

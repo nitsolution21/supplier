@@ -20,11 +20,25 @@ public class VendorDetailsService implements UserDetailsService {
 	
 	@Autowired
 	private VendorRegisterRepo vendorRegisterRepo;
+	
+	@Autowired
+	private CustomerRegisterRepo customerRegisterRepo;
+	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Optional<VendorRegister> vendor = vendorRegisterRepo.findByUsername(username);
-		vendor.orElseThrow(() -> new VendorNotFoundException("Not found "+username));
-		return vendor.map(VendorDetails :: new).get();
+		if (vendor.isPresent()) {
+			vendor.orElseThrow(() -> new VendorNotFoundException("Not found "+username));
+			return vendor.map(VendorDetails :: new).get();
+		} else {
+			Optional<CustomerRegister> customer = customerRegisterRepo.findByUsername(username);
+			if (customer.isPresent()) {
+				customer.orElseThrow(() -> new UsernameNotFoundException("Not found"+username));
+				return customer.map(CustomerDetails :: new).get();
+			} else {
+				throw new VendorNotFoundException("Username not found");
+			}
+		}
 	}
 	
 
