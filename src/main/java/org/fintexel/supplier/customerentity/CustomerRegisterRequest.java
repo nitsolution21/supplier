@@ -5,19 +5,23 @@ public class CustomerRegisterRequest {
 	private String name;
 	private long role;
 	private long cId;
-//	private long de
+	private long funcationality;
+	private long department;
 	
-	public CustomerRegisterRequest(String email, String name, long role, long cId) {
+	public CustomerRegisterRequest() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public CustomerRegisterRequest(String email, String name, long role, long cId, long funcationality,
+			long department) {
 		super();
 		this.email = email;
 		this.name = name;
 		this.role = role;
 		this.cId = cId;
-	}
-
-	public CustomerRegisterRequest() {
-		super();
-		// TODO Auto-generated constructor stub
+		this.funcationality = funcationality;
+		this.department = department;
 	}
 
 	public String getEmail() {
@@ -51,6 +55,24 @@ public class CustomerRegisterRequest {
 	public void setcId(long cId) {
 		this.cId = cId;
 	}
+
+	public long getFuncationality() {
+		return funcationality;
+	}
+
+	public void setFuncationality(long funcationality) {
+		this.funcationality = funcationality;
+	}
+
+	public long getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(long department) {
+		this.department = department;
+	}
+	
+	
 	
 	
 }

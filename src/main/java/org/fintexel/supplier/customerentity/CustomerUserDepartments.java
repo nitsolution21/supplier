@@ -94,8 +94,13 @@ public class CustomerUserDepartments {
 		this.updatedOn = updatedOn;
 	}
 
-	
-	
+	@Override
+	public String toString() {
+		return "CustomerUserDepartments [userId=" + userId + ", departmentId=" + departmentId + ", createdBy="
+				+ createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn
+				+ "]";
+	}
+
 	
 	
 }

@@ -14,7 +14,7 @@ import javax.persistence.Table;
 public class CustomerProfile {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+//	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "CID") private Long cId;
 	@Column(name = "CUSTOMER_NAME") private String customerName;
 	@Column(name = "CUSTOMER_CONTACT1") private String customerContact1;
@@ -135,6 +135,14 @@ public class CustomerProfile {
 
 	public void setUpdatedOn(Date updatedOn) {
 		this.updatedOn = updatedOn;
+	}
+
+	@Override
+	public String toString() {
+		return "CustomerProfile [cId=" + cId + ", customerName=" + customerName + ", customerContact1="
+				+ customerContact1 + ", customerContact2=" + customerContact2 + ", registrationType=" + registrationType
+				+ ", registrationNo=" + registrationNo + ", status=" + status + ", createdBy=" + createdBy
+				+ ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + "]";
 	}
 	
 	

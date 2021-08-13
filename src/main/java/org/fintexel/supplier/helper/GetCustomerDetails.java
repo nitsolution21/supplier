@@ -52,6 +52,8 @@ public class GetCustomerDetails {
 	@Autowired
 	private RolesMasterRepo rolesMasterRepo;
 	
+	private String jwtToken;
+	
 //	String departmentName = null, UserFunctionalitiName = null;
 	
 	private List<CustomerDepartments> customerDepartments;
@@ -59,15 +61,23 @@ public class GetCustomerDetails {
 	private List<CustomerFunctionalitiesMaster> customerFunctionalitiesMasters;
 	
 	public long getCustomerIdFromToken(String token) {
+		LOGGER.info("Token is >>>> "+token);
 		try {
-			String username = jwtUtil.extractUsername(token);
-			Optional<CustomerRegister> findByUsername = customerRegisterRepo.findByUsername(username);
-			if (findByUsername.isPresent()) {
-				return findByUsername.get().getUserId();
-			}
-			else {
-				// return -1 for customer not found
-				return -1;
+			if (token != null && token.startsWith("Bearer ")) {
+				jwtToken = token.substring(7);
+				LOGGER.info("actual token is >>>> "+jwtToken);
+				String username = jwtUtil.extractUsername(jwtToken);
+				LOGGER.info("User name from token >>>>> "+username);
+				Optional<CustomerRegister> findByUsername = customerRegisterRepo.findByUsername(username);
+				if (findByUsername.isPresent()) {
+					return findByUsername.get().getUserId();
+				}
+				else {
+					// return -1 for customer not found
+					return -1;
+				}
+			} else {
+				throw new VendorNotFoundException("Token not valid");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());

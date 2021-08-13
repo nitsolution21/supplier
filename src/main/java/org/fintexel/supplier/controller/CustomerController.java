@@ -303,11 +303,13 @@ public class CustomerController {
 		LOGGER.info("Inside - CustomerController.addCustomerProfile()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			LOGGER.info("customerIdFromToken >>> " + customerIdFromToken);
 			if (customerIdFromToken == -1) {
 				throw new VendorNotFoundException("Customer not found");
 			} 
 			else {
 				String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
+				LOGGER.info("Role is >>> "+roleByUserId);
 				if (roleByUserId.equals("SADMIN")) {
 					
 					CustomerProfile customerProfile2 = new CustomerProfile();
@@ -318,6 +320,7 @@ public class CustomerController {
 						customerProfile2.setRegistrationType(customerProfile.getRegistrationType());
 						customerProfile2.setRegistrationNo(customerProfile.getRegistrationNo());
 						customerProfile2.setStatus("COMPLEATE");
+						customerProfile2.setcId(customerProfile.getcId());
 						try {
 							if (fieldValidation.isEmpty(customerProfile.getCustomerContact2())) {
 								customerProfile2.setCustomerContact2(customerProfile.getCustomerContact2());
@@ -325,6 +328,7 @@ public class CustomerController {
 						} catch (Exception e) {
 							// TODO: handle exception
 						}
+						LOGGER.info(customerProfile2.toString());
 						return customerProfileRepo.save(customerProfile2);
 					} else {
 						throw new VendorNotFoundException("Validation error");

@@ -110,6 +110,12 @@ public class CustomerLoginController {
 	@Autowired
 	private VendorDetailsService vendorDetailsService;
 	
+	@Autowired
+	private CustomerUserDepartmentsRepo customerUserDepartmentsRepo;
+	
+	@Autowired
+	private CustomerUserFunctionalitiRepo customerUserFunctionalitiRepo;
+	
 	@PostMapping("/login")
 	private ResponseEntity<?> customerLogin(@RequestBody VendorLogin vendorLogin) {
 		LOGGER.info("Inside - CustomerLoginController.customerLogin()");
@@ -183,10 +189,14 @@ public class CustomerLoginController {
 				&& fieldValidation.isEmpty(customerRegisterRequest.getEmail())
 				&& fieldValidation.isEmpty(customerRegisterRequest.getRole())
 				&& fieldValidation.isEmpty(customerRegisterRequest.getcId())
+				&& fieldValidation.isEmpty(customerRegisterRequest.getDepartment())
+				&& fieldValidation.isEmpty(customerRegisterRequest.getFuncationality())
 				) {
 				if (fieldValidation.isEmail(customerRegisterRequest.getEmail())) {
 					CustomerRegister customerRegister = new CustomerRegister();
 					CustomerUserRoles userRoles = new CustomerUserRoles();
+					CustomerUserFunctionaliti functionality = new CustomerUserFunctionaliti();
+					CustomerUserDepartments department = new CustomerUserDepartments();
 					customerRegister.setEmail(customerRegisterRequest.getEmail());
 					customerRegister.setName(customerRegisterRequest.getName());
 					customerRegister.setUsername(customerRegisterRequest.getEmail());
@@ -201,14 +211,53 @@ public class CustomerLoginController {
 					String rowPassword = java.util.UUID.randomUUID().toString();
 					customerRegister.setPassword(passwordEncoder.encode(rowPassword));
 					CustomerRegister registerCustomer = customerRegisterRepo.save(customerRegister);
+					LOGGER.info("After save data in customer register table >>>>> "+registerCustomer);
 					userRoles.setRoleId(customerRegisterRequest.getRole());
 					userRoles.setUserId(registerCustomer.getUserId());
 					Optional<CustomerUserRoles> findRoleByUserId = customerUserRolesRepo.findByUserId(registerCustomer.getUserId());
 					if (!findRoleByUserId.isPresent()) {
 						CustomerUserRoles saveUserRoles = customerUserRolesRepo.save(userRoles);
+						LOGGER.info("After Save data in customer role table >>>>  "+saveUserRoles);
 						if (!saveUserRoles.equals(null)) {
 							Optional<RolesMaster> findByMasterTable = rolesMasterRepo.findById(saveUserRoles.getRoleId());
+							LOGGER.info("After gating data from master table >>>>>>  "+findByMasterTable.get());
 							if (findByMasterTable.isPresent()) {
+								List<CustomerUserDepartments> findUserDepartmentsByUserId = customerUserDepartmentsRepo.findByUserId(registerCustomer.getUserId());
+								if (findUserDepartmentsByUserId.size() < 1) {
+									department.setDepartmentId(customerRegisterRequest.getDepartment());
+									department.setUserId(registerCustomer.getUserId());
+									CustomerUserDepartments customerUserDepartments = customerUserDepartmentsRepo.save(department);
+									LOGGER.info("After save customer Departments if user is not present in customer department table >>>>>>> "+customerUserDepartments);
+								} else {
+									findUserDepartmentsByUserId.forEach(presentDepartment -> {
+										if (presentDepartment.getDepartmentId() == customerRegisterRequest.getDepartment()) {
+											throw new VendorNotFoundException("The department all ready present for the particular user");
+										}
+									});
+									department.setDepartmentId(customerRegisterRequest.getDepartment());
+									department.setUserId(registerCustomer.getUserId());
+									CustomerUserDepartments customerUserDepartments = customerUserDepartmentsRepo.save(department);
+									LOGGER.info("After save customer Departments if the department is not present for the particular user in customer department table >>>>>>>  "+customerUserDepartments);
+								}
+								List<CustomerUserFunctionaliti> findFunctionalityByUserId = customerUserFunctionalitiRepo.findByUserId(registerCustomer.getUserId());
+								/* start code from here */
+								if (findFunctionalityByUserId.size() < 1) {
+									functionality.setUserId(registerCustomer.getUserId());
+									functionality.setfId(customerRegisterRequest.getFuncationality());
+									CustomerUserFunctionaliti save = customerUserFunctionalitiRepo.save(functionality);
+									LOGGER.info("After save customer Departments if user is not present in customer functionality table >>>>>>> " + save);
+									
+								} else {
+									findFunctionalityByUserId.forEach(presentFunctionality -> {
+										if (presentFunctionality.getfId() == registerCustomer.getUserId()) {
+											throw new VendorNotFoundException("The functionality all ready present for the particular user");
+										}
+									});
+									functionality.setUserId(registerCustomer.getUserId());
+									functionality.setfId(customerRegisterRequest.getFuncationality());
+									CustomerUserFunctionaliti save = customerUserFunctionalitiRepo.save(functionality);
+									LOGGER.info("After save customer funcationality if the funcationality is not present for the particular user in customer funcationality table >>>>>>>  "+save);
+								}
 								CustomerRegisterResponse customerRegisterResponse = new CustomerRegisterResponse();
 								customerRegisterResponse.setcId(registerCustomer.getcId());
 								customerRegisterResponse.setCreatedBy(registerCustomer.getCreatedBy());
