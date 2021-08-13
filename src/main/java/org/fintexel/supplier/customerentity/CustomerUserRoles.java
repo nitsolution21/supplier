@@ -14,7 +14,7 @@ import javax.persistence.Table;
 public class CustomerUserRoles {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+//	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "USER_ID")
 	private long userId;
 

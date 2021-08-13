@@ -339,17 +339,20 @@ public class CustomerLoginController {
 								HttpEntity<Map<String, Object>> baseAuthEntity = new HttpEntity<>(queryMap, BaseAuthHeader);
 								ResponseEntity<String> queryRequest_1 = restTemplate.exchange( "http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, baseAuthEntity, String.class, 1);
 								
+								
 								/*-------------------------------------------POST From value ----------------------------------------------*/
 								JSONObject jsonObject1 = new JSONObject(queryRequest_1.getBody());
 
+								
 								JSONArray array = new JSONArray(jsonObject1.get("data").toString());
+//								System.out.println("queryRequest_1  2nd internal api"+array.getJSONObject(0).get("id"));
 								JSONArray formReqBody = new JSONArray();
 								
 								JSONObject registrationId = new JSONObject();
 								registrationId.put("name", "registrationid");
 								registrationId.put("scope", "local");
 								registrationId.put("type", "string");
-								registrationId.put("value", registerCustomer.getUserId());
+								registrationId.put("value", registerCustomer.getUserId()+"");
 								formReqBody.put(registrationId);
 								
 								JSONObject customerName = new JSONObject();
@@ -380,9 +383,12 @@ public class CustomerLoginController {
 								customerPassword.put("value", rowPassword);
 								formReqBody.put(customerPassword);
 
+								
 								HttpEntity<String> formReqEntity = new HttpEntity<String>(formReqBody.toString(), BaseAuthHeader);
 								
 								ResponseEntity<String> formResponse = restTemplate.exchange( "http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/" + array.getJSONObject(0).get("id") + "/variables", HttpMethod.POST, formReqEntity, String.class, 1);
+								
+								
 								taskID1_ = (String)array.getJSONObject(0).get("id");
 								
 								/*  ----------- 	GET COOKIE FROM DB-idm	 ------------------------------------------------------- */
@@ -419,14 +425,15 @@ public class CustomerLoginController {
 								header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 								JSONObject autoCompleate = new JSONObject();
 								autoCompleate.put("taskIdActual", taskID1_);
-								autoCompleate.put("registrationid", registerCustomer.getUserId());
+								autoCompleate.put("registrationid", registerCustomer.getUserId()+"");
 								autoCompleate.put("customername", registerCustomer.getName());
 								autoCompleate.put("customeremail", registerCustomer.getEmail());
 								autoCompleate.put("customerusername", registerCustomer.getUsername());
 								autoCompleate.put("customerpassword", rowPassword);
 								JSONObject mapp = new JSONObject();
-								Optional<FlowableForm> findByFromId = flowableFormRepo.findByFromId("'customerReg' ");
+								Optional<FlowableForm> findByFromId = flowableFormRepo.findByFromId("customerReg");
 								mapp.put("formId", findByFromId.get().getId());
+//								mapp.put("formId", "f11a2725-f6ad-11eb-ba6c-0a5bf303a9fe");
 								mapp.put("values", autoCompleate);
 								System.out.println("Body  " + mapp);
 								System.out.println("headers  " + header);
