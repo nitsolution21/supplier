@@ -5,14 +5,17 @@ import java.util.Optional;
 import org.fintexel.supplier.customerentity.CustomerAddress;
 import org.fintexel.supplier.customerentity.CustomerContact;
 import org.fintexel.supplier.customerentity.CustomerProfile;
+import org.fintexel.supplier.customerentity.CustomerProfileResponce;
 import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.CustomerProfileRepo;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserRolesRepo;
+import org.fintexel.supplier.entity.RegType;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.helper.GetCustomerDetails;
+import org.fintexel.supplier.repository.RegTypeRepo;
 import org.fintexel.supplier.validation.FieldValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +55,9 @@ public class CustomerController {
 	
 	@Autowired
 	private CustomerRegisterRepo customerRegisterRepo; 
+	
+	@Autowired
+	RegTypeRepo regTypeRepo;
 	
 	
 	@PostMapping("/address")
@@ -299,7 +305,7 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/profile")
-	public CustomerProfile addCustomerProfile(@RequestBody CustomerProfile customerProfile, @RequestHeader(name = "Authorization") String token) {
+	public CustomerProfileResponce addCustomerProfile(@RequestBody CustomerProfile customerProfile, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.addCustomerProfile()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
@@ -329,7 +335,24 @@ public class CustomerController {
 							// TODO: handle exception
 						}
 						LOGGER.info(customerProfile2.toString());
-						return customerProfileRepo.save(customerProfile2);
+						CustomerProfileResponce customerProfileResponce = new CustomerProfileResponce();
+						CustomerProfile save = customerProfileRepo.save(customerProfile2);
+						Optional<RegType> findRegistrationNameById = regTypeRepo.findById((long) customerProfile2.getRegistrationType());
+						customerProfileResponce.setcId(save.getcId());
+						customerProfileResponce.setCreatedBy(save.getCreatedBy());
+						customerProfileResponce.setCreatedOn(save.getCreatedOn());
+						customerProfileResponce.setCustomerContact1(save.getCustomerContact1());
+						customerProfileResponce.setCustomerContact2(save.getCustomerContact2());
+						customerProfileResponce.setCustomerName(save.getCustomerName());
+						customerProfileResponce.setRegistrationNo(save.getRegistrationNo());
+						customerProfileResponce.setRegistrationType(save.getRegistrationType());
+						customerProfileResponce.setRegistrationTypeName(findRegistrationNameById.get().getName());
+						customerProfileResponce.setStatus(save.getStatus());
+						customerProfileResponce.setUpdatedBy(save.getUpdatedBy());
+						customerProfileResponce.setUpdatedOn(save.getUpdatedOn());
+						
+						return customerProfileResponce; 
+						
 					} else {
 						throw new VendorNotFoundException("Validation error");
 					}
@@ -394,7 +417,7 @@ public class CustomerController {
 	}
 	
 	@GetMapping("/profile")
-	public CustomerProfile getCustomerProfile(@RequestHeader(name = "Authorization") String token) {
+	public CustomerProfileResponce getCustomerProfile(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.getCustomerProfile()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
@@ -407,7 +430,23 @@ public class CustomerController {
 					if (findById.isPresent()) {
 						Optional<CustomerProfile> findById2 = customerProfileRepo.findById(findById.get().getcId());
 						if (findById2.isPresent()) {
-							return findById2.get();
+							CustomerProfileResponce customerProfileResponce = new CustomerProfileResponce();
+							
+							Optional<RegType> findRegistrationTypeById = regTypeRepo.findById((long) findById2.get().getRegistrationType());
+							
+							customerProfileResponce.setcId(findById2.get().getcId());
+							customerProfileResponce.setCreatedBy(findById2.get().getCreatedBy());
+							customerProfileResponce.setCreatedOn(findById2.get().getCreatedOn());
+							customerProfileResponce.setCustomerContact1(findById2.get().getCustomerContact1());
+							customerProfileResponce.setCustomerContact2(findById2.get().getCustomerContact2());
+							customerProfileResponce.setCustomerName(findById2.get().getCustomerName());
+							customerProfileResponce.setRegistrationNo(findById2.get().getRegistrationNo());
+							customerProfileResponce.setRegistrationType(findById2.get().getRegistrationType());
+							customerProfileResponce.setRegistrationTypeName(findRegistrationTypeById.get().getName());
+							customerProfileResponce.setStatus(findById2.get().getStatus());
+							customerProfileResponce.setUpdatedBy(findById2.get().getUpdatedBy());
+							customerProfileResponce.setUpdatedOn(findById2.get().getUpdatedOn());
+							return customerProfileResponce;
 						} else {
 							throw new VendorNotFoundException("Customer profile not found");
 							
