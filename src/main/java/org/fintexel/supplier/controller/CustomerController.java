@@ -1,14 +1,19 @@
 package org.fintexel.supplier.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.fintexel.supplier.customerentity.CustomerAddress;
 import org.fintexel.supplier.customerentity.CustomerContact;
+import org.fintexel.supplier.customerentity.CustomerDepartment;
+import org.fintexel.supplier.customerentity.CustomerDepartments;
 import org.fintexel.supplier.customerentity.CustomerProfile;
 import org.fintexel.supplier.customerentity.CustomerProfileResponce;
 import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
+import org.fintexel.supplier.customerrepository.CustomerDepartmentRepo;
+import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerProfileRepo;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserRolesRepo;
@@ -36,191 +41,292 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/customer")
 public class CustomerController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerController.class);
-	
-	
+
 	@Autowired
 	CustomerAddressRepo customerAddressRepo;
-	
+
 	@Autowired
 	private FieldValidation fieldValidation;
-	
+
 	@Autowired
 	private CustomerContactRepo customerContactRepo;
-	
+
 	@Autowired
 	private CustomerProfileRepo customerProfileRepo;
-	
+
 	@Autowired
-	private GetCustomerDetails getCustomerDetails; 
-	
+	private GetCustomerDetails getCustomerDetails;
+
 	@Autowired
-	private CustomerRegisterRepo customerRegisterRepo; 
-	
+	private CustomerRegisterRepo customerRegisterRepo;
+
+	@Autowired
+	private CustomerDepartmentsRepo customerDepartmentsRepo;
+
+	@Autowired
+	private CustomerDepartmentRepo customerDepartmentRepo;
+
 	@Autowired
 	RegTypeRepo regTypeRepo;
-	
-	
+
 	@PostMapping("/address")
-	public CustomerAddress createCustomerAddress(@RequestBody CustomerAddress customerAddress) {
-		
+	public CustomerAddress createCustomerAddress(@RequestBody CustomerAddress customerAddress, @RequestHeader(name = "Authorization") String token) {
+
 		LOGGER.info("Inside - CustomerController.createCustomerAddress()");
-		
+
 		try {
-			CustomerAddress filterCustomerAddress = new CustomerAddress();
-			if(
-				(fieldValidation.isEmpty(customerAddress.getcId())) && (fieldValidation.isEmpty(customerAddress.getAddressType())) &&
-				(fieldValidation.isEmpty(customerAddress.getAddress1())) && (fieldValidation.isEmpty(customerAddress.getAddress2())) &&
-				(fieldValidation.isEmpty(customerAddress.getCity())) && (fieldValidation.isEmpty(customerAddress.getPostalCode())) &&
-				(fieldValidation.isEmpty(customerAddress.getCountry())) && (fieldValidation.isEmpty(customerAddress.getRegion())) &&
-				(fieldValidation.isEmpty(customerAddress.getAddressProof())) && (fieldValidation.isEmpty(customerAddress.getAddressProofPath())) &&
-				(fieldValidation.isEmpty(customerAddress.getStatus()))
-			  ){
-				
-				
-					filterCustomerAddress.setcId(customerAddress.getcId());
-					filterCustomerAddress.setAddressType(customerAddress.getAddressType());
-					filterCustomerAddress.setAddress1(customerAddress.getAddress1());
-					filterCustomerAddress.setAddress2(customerAddress.getAddress2());
-					filterCustomerAddress.setCity(customerAddress.getCity());
-					filterCustomerAddress.setPostalCode(customerAddress.getPostalCode());
-					filterCustomerAddress.setCountry(customerAddress.getCountry());
-					filterCustomerAddress.setRegion(customerAddress.getRegion());
-					filterCustomerAddress.setAddressProof(customerAddress.getAddressProof());
-					filterCustomerAddress.setAddressProofPath(customerAddress.getAddressProofPath());
-					filterCustomerAddress.setStatus("COMPLEATE");
-//					filterCustomerAddress.setCreatedBy(customerAddress.getCreatedBy());
-//					filterCustomerAddress.setCreatedOn(customerAddress.getCreatedOn());
-//					filterCustomerAddress.setUpdatedBy(customerAddress.getUpdatedBy());
-//					filterCustomerAddress.setUpdatedOn(customerAddress.getUpdatedOn());
-					return customerAddressRepo.save(filterCustomerAddress);
-				
-			}else {
-				throw new VendorNotFoundException("Validation error");
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
+			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+			if (customerIdFromToken == -1) {
+				throw new VendorNotFoundException("Customer not found");
 			}
-		}catch(Exception e) {
-			throw new VendorNotFoundException(e.getMessage());
-		}
-		
-	}
-	
-	
-	
-	@GetMapping("/address/{id}")
-	public CustomerAddress getCustomerAddress(@PathVariable Long id) {
-		
-		LOGGER.info("Inside - CustomerController.getCustomerAddress()");
-		
-		try {
-			
-			Optional<CustomerAddress> findById = customerAddressRepo.findById(id);
-			if(findById.isPresent()) {
-				
-				return findById.get();
-				
-			}else {
-				
-				throw new VendorNotFoundException("No Data Found");
-				
-			}
-			
-		}catch(Exception e) {
-			throw new VendorNotFoundException(e.getMessage());
-		}
-	}
-	
-	
-	@PutMapping("/address/{id}")
-	public CustomerAddress putCustomerAddress(@PathVariable Long id , @RequestBody CustomerAddress customerAddress) {
-		
-		LOGGER.info("Inside - CustomerController.putCustomerAddress()");
-		
-		try {
-			CustomerAddress filterCustomerAddress = new CustomerAddress();
-			if(
-				(fieldValidation.isEmpty(customerAddress.getcId())) && (fieldValidation.isEmpty(customerAddress.getAddressType())) &&
-				(fieldValidation.isEmpty(customerAddress.getAddress1())) && (fieldValidation.isEmpty(customerAddress.getAddress2())) &&
-				(fieldValidation.isEmpty(customerAddress.getCity())) && (fieldValidation.isEmpty(customerAddress.getPostalCode())) &&
-				(fieldValidation.isEmpty(customerAddress.getCountry())) && (fieldValidation.isEmpty(customerAddress.getRegion())) &&
-				(fieldValidation.isEmpty(customerAddress.getAddressProof())) && (fieldValidation.isEmpty(customerAddress.getAddressProofPath())) &&
-				(fieldValidation.isEmpty(customerAddress.getStatus()))
-			  ){
+			else {
+				CustomerAddress filterCustomerAddress = new CustomerAddress();
+				switch (roleByUserId) {
+				case "SADMIN":
+					if ((fieldValidation.isEmpty(customerAddress.getAddressType()))
+							&& (fieldValidation.isEmpty(customerAddress.getAddress1()))
+							&& (fieldValidation.isEmpty(customerAddress.getCity()))
+							&& (fieldValidation.isEmpty(customerAddress.getPostalCode()))
+							&& (fieldValidation.isEmpty(customerAddress.getCountry()))
+							&& (fieldValidation.isEmpty(customerAddress.getRegion()))
+							&& (fieldValidation.isEmpty(customerAddress.getAddressProof()))
+							&& (fieldValidation.isEmpty(customerAddress.getAddressProofPath()))
+							&& (fieldValidation.isEmpty(customerAddress.getStatus()))) {
 						
-				Optional<CustomerAddress> findById = customerAddressRepo.findById(id);
-				if(findById.isPresent()) {
+						filterCustomerAddress.setcId(companyProfileIdByCustomerId);
+						filterCustomerAddress.setAddressType(customerAddress.getAddressType());
+						filterCustomerAddress.setAddress1(customerAddress.getAddress1());
+						filterCustomerAddress.setCity(customerAddress.getCity());
+						filterCustomerAddress.setPostalCode(customerAddress.getPostalCode());
+						filterCustomerAddress.setCountry(customerAddress.getCountry());
+						filterCustomerAddress.setRegion(customerAddress.getRegion());
+						filterCustomerAddress.setAddressProof(customerAddress.getAddressProof());
+						filterCustomerAddress.setAddressProofPath(customerAddress.getAddressProofPath());
+						filterCustomerAddress.setStatus("COMPLEATE");
+						try {
+							if (fieldValidation.isEmpty(customerAddress.getAddress2())) {
+								filterCustomerAddress.setAddress2(customerAddress.getAddress2());
+							}
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+
+						 CustomerAddress saveCustomerAddress = customerAddressRepo.save(filterCustomerAddress);
+						 
+
+						return saveCustomerAddress;
+
+					} else {
+						throw new VendorNotFoundException("Validation error");
+					}
 					
-					filterCustomerAddress.setAddressId(findById.get().getAddressId());
-					filterCustomerAddress.setcId(customerAddress.getcId());
-					filterCustomerAddress.setAddressType(customerAddress.getAddressType());
-					filterCustomerAddress.setAddress1(customerAddress.getAddress1());
-					filterCustomerAddress.setAddress2(customerAddress.getAddress2());
-					filterCustomerAddress.setCity(customerAddress.getCity());
-					filterCustomerAddress.setPostalCode(customerAddress.getPostalCode());
-					filterCustomerAddress.setCountry(customerAddress.getCountry());
-					filterCustomerAddress.setRegion(customerAddress.getRegion());
-					filterCustomerAddress.setAddressProof(customerAddress.getAddressProof());
-					filterCustomerAddress.setAddressProofPath(customerAddress.getAddressProofPath());
-//					filterCustomerAddress.setStatus(customerAddress.getStatus());
-//					filterCustomerAddress.setCreatedBy(customerAddress.getCreatedBy());
-//					filterCustomerAddress.setCreatedOn(customerAddress.getCreatedOn());
-//					filterCustomerAddress.setUpdatedBy(customerAddress.getUpdatedBy());
-//					filterCustomerAddress.setUpdatedOn(customerAddress.getUpdatedOn());
-					return customerAddressRepo.save(filterCustomerAddress);
-					
-				}else {
-					
-					throw new VendorNotFoundException("No Data Found");
-					
+				case "ADMIN":
+					if ((fieldValidation.isEmpty(customerAddress.getAddressType()))
+							&& (fieldValidation.isEmpty(customerAddress.getAddress1()))
+							&& (fieldValidation.isEmpty(customerAddress.getCity()))
+							&& (fieldValidation.isEmpty(customerAddress.getPostalCode()))
+							&& (fieldValidation.isEmpty(customerAddress.getCountry()))
+							&& (fieldValidation.isEmpty(customerAddress.getRegion()))
+							&& (fieldValidation.isEmpty(customerAddress.getAddressProof()))
+							&& (fieldValidation.isEmpty(customerAddress.getAddressProofPath()))
+							&& (fieldValidation.isEmpty(customerAddress.getStatus()))) {
+						
+						filterCustomerAddress.setcId(companyProfileIdByCustomerId);
+						filterCustomerAddress.setAddressType(customerAddress.getAddressType());
+						filterCustomerAddress.setAddress1(customerAddress.getAddress1());
+						filterCustomerAddress.setCity(customerAddress.getCity());
+						filterCustomerAddress.setPostalCode(customerAddress.getPostalCode());
+						filterCustomerAddress.setCountry(customerAddress.getCountry());
+						filterCustomerAddress.setRegion(customerAddress.getRegion());
+						filterCustomerAddress.setAddressProof(customerAddress.getAddressProof());
+						filterCustomerAddress.setAddressProofPath(customerAddress.getAddressProofPath());
+						filterCustomerAddress.setStatus("COMPLEATE");
+						try {
+							if (fieldValidation.isEmpty(customerAddress.getAddress2())) {
+								filterCustomerAddress.setAddress2(customerAddress.getAddress2());
+							}
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+
+						 CustomerAddress saveCustomerAddress = customerAddressRepo.save(filterCustomerAddress);
+						 
+
+						return saveCustomerAddress;
+
+					} else {
+						throw new VendorNotFoundException("Validation error");
+					}
+				case "USER":
+					throw new VendorNotFoundException("You don't have access to add address");
+
+				default:
+					throw new VendorNotFoundException("The role is not present");
 				}
-				
-			}else {
-				throw new VendorNotFoundException("Validation error");
 			}
-		}catch(Exception e) {
+			
+		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
-		
-		
+
 	}
 	
-	
-	
+	@GetMapping("/address")
+	public List<CustomerAddress> getAddress(@RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - CustomerController.getAddress()");
+		try {
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			if (customerIdFromToken == -1) {
+				throw new VendorNotFoundException("Customer not found");
+			}
+			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+			List<CustomerAddress> findByCId = customerAddressRepo.findActiveAddress(companyProfileIdByCustomerId);
+			if (findByCId.size() > 0) {
+				return findByCId;
+			} else {
+				throw new VendorNotFoundException("No address found for this company!! Please add first");
+			}
+			
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+
+//	@GetMapping("/address/{id}")
+//	public CustomerAddress getCustomerAddress(@PathVariable Long id) {
+//
+//		LOGGER.info("Inside - CustomerController.getCustomerAddress()");
+//
+//		try {
+//
+//			Optional<CustomerAddress> findById = customerAddressRepo.findById(id);
+//			if (findById.isPresent()) {
+//
+//				return findById.get();
+//
+//			} else {
+//
+//				throw new VendorNotFoundException("No Data Found");
+//
+//			}
+//
+//		} catch (Exception e) {
+//			throw new VendorNotFoundException(e.getMessage());
+//		}
+//	}
+
+//	@PutMapping("/address/{id}")
+//	public CustomerAddress putCustomerAddress(@PathVariable Long id, @RequestBody CustomerAddress customerAddress, @RequestHeader(name = "Authorization") String token) {
+//
+//		LOGGER.info("Inside - CustomerController.putCustomerAddress()");
+//
+//		try {
+//			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+//			String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
+//			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+//			Optional<CustomerAddress> findCustomerAddressById = customerAddressRepo.findById(id);
+//			if (findCustomerAddressById.isPresent()) {
+//				if (findCustomerAddressById.get().getcId() == companyProfileIdByCustomerId) {
+//					CustomerAddress filterCustomerAddress = new CustomerAddress();
+//					switch (roleByUserId) {
+//					case "SADMIN":
+//						if ((fieldValidation.isEmpty(customerAddress.getAddressType()))
+//								&& (fieldValidation.isEmpty(customerAddress.getAddress1()))
+//								&& (fieldValidation.isEmpty(customerAddress.getCity()))
+//								&& (fieldValidation.isEmpty(customerAddress.getPostalCode()))
+//								&& (fieldValidation.isEmpty(customerAddress.getCountry()))
+//								&& (fieldValidation.isEmpty(customerAddress.getRegion()))
+//								&& (fieldValidation.isEmpty(customerAddress.getAddressProof()))
+//								&& (fieldValidation.isEmpty(customerAddress.getAddressProofPath()))
+//								&& (fieldValidation.isEmpty(customerAddress.getStatus()))) {
+//							
+//							filterCustomerAddress.setcId(companyProfileIdByCustomerId);
+//							filterCustomerAddress.setAddressType(customerAddress.getAddressType());
+//							filterCustomerAddress.setAddress1(customerAddress.getAddress1());
+//							filterCustomerAddress.setCity(customerAddress.getCity());
+//							filterCustomerAddress.setPostalCode(customerAddress.getPostalCode());
+//							filterCustomerAddress.setCountry(customerAddress.getCountry());
+//							filterCustomerAddress.setRegion(customerAddress.getRegion());
+//							filterCustomerAddress.setAddressProof(customerAddress.getAddressProof());
+//							filterCustomerAddress.setAddressProofPath(customerAddress.getAddressProofPath());
+//							filterCustomerAddress.setStatus("COMPLEATE");
+//							filterCustomerAddress.setAddressId(id);
+//							try {
+//								if (fieldValidation.isEmpty(customerAddress.getAddress2())) {
+//									filterCustomerAddress.setAddress2(customerAddress.getAddress2());
+//								}
+//							} catch (Exception e) {
+//								// TODO: handle exception
+//							}
+//
+//							 CustomerAddress saveCustomerAddress = customerAddressRepo.save(filterCustomerAddress);
+//							 
+//
+//							return saveCustomerAddress;
+//
+//						} else {
+//							throw new VendorNotFoundException("Validation error");
+//						}
+//					case "ADMIN":
+//						
+//						break;
+//					case "USER":
+//						throw new VendorNotFoundException("You don't have access to update address");
+//						
+//					default:
+//						break;
+//					}
+//				} else {
+//					throw new VendorNotFoundException("You don't have permission to change another company address");
+//				}
+//			} else {
+//				throw new VendorNotFoundException("Address not found");
+//			}
+//			
+//		} catch (Exception e) {
+//			throw new VendorNotFoundException(e.getMessage());
+//		}
+//
+//	}
+
 	@DeleteMapping("/address/{id}")
 	public CustomerAddress deleteCustomerAddress(@PathVariable Long id) {
 		LOGGER.info("Inside - CustomerController.deleteCustomerAddress()");
-		
+
 		try {
-			
+
 			Optional<CustomerAddress> findById = customerAddressRepo.findById(id);
-			if(findById.isPresent()) {
-				
+			if (findById.isPresent()) {
+
 				CustomerAddress customerAddress = findById.get();
-				if(customerAddress.getStatus().equals("deleted")) {
+				if (customerAddress.getStatus().equals("deleted")) {
 					throw new VendorNotFoundException("Data Already Deleted");
-				}else {
+				} else {
 					customerAddress.setStatus("DELETED");
 					return customerAddressRepo.save(customerAddress);
 				}
-			}else {
-				
+			} else {
+
 				throw new VendorNotFoundException("No Data Found");
-				
+
 			}
-			
-		}catch(Exception e) {
+
+		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
-	
-	
 	@PostMapping("/contact")
 	public CustomerContact createCustomerContact(@RequestBody CustomerContact customerContact) {
 		LOGGER.info("Inside - CustomerController.createCustomerContact()");
 		try {
-			if(
-				(fieldValidation.isEmpty(customerContact.getcId()))  && (fieldValidation.isEmpty(customerContact.getSupplierCode())) &&
-				(fieldValidation.isEmpty(customerContact.getContractType()))  && (fieldValidation.isEmpty(customerContact.getContractTerms())) &&
-				(fieldValidation.isEmpty(customerContact.getContractProof()))  && (fieldValidation.isEmpty(customerContact.getContractLocation())) 
-			) {
+			if ((fieldValidation.isEmpty(customerContact.getcId()))
+					&& (fieldValidation.isEmpty(customerContact.getSupplierCode()))
+					&& (fieldValidation.isEmpty(customerContact.getContractType()))
+					&& (fieldValidation.isEmpty(customerContact.getContractTerms()))
+					&& (fieldValidation.isEmpty(customerContact.getContractProof()))
+					&& (fieldValidation.isEmpty(customerContact.getContractLocation()))) {
 				CustomerContact filterCustomerContact = new CustomerContact();
 				filterCustomerContact.setcId(customerContact.getcId());
 				filterCustomerContact.setSupplierCode(customerContact.getSupplierCode());
@@ -228,99 +334,91 @@ public class CustomerController {
 				filterCustomerContact.setContractTerms(customerContact.getContractTerms());
 				filterCustomerContact.setContractProof(customerContact.getContractProof());
 				filterCustomerContact.setContractLocation(customerContact.getContractLocation());
-				
-				
+
 				return customerContactRepo.save(filterCustomerContact);
-				
-				
-				
-			}else {
+
+			} else {
 				throw new VendorNotFoundException("Validation error");
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
-	
-	
-	
 	@GetMapping("/contact/{id}")
 	public CustomerContact getCustomerContact(@PathVariable Long id) {
 		LOGGER.info("Inside - CustomerController.getCustomerContact()");
 		try {
-			
+
 			Optional<CustomerContact> findById = customerContactRepo.findById(id);
-			if(findById.isPresent()) {
+			if (findById.isPresent()) {
 				return findById.get();
-			}else {
+			} else {
 				throw new VendorNotFoundException("Data not exist");
 			}
-			
-		}catch(Exception e) {
+
+		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
-	
-	
-	
-	
+
 	@PutMapping("/contact/{id}")
-	public CustomerContact putCustomerContact(@PathVariable Long id , @RequestBody CustomerContact customerContact) {
+	public CustomerContact putCustomerContact(@PathVariable Long id, @RequestBody CustomerContact customerContact) {
 		LOGGER.info("Inside - CustomerController.putCustomerContact()");
-		
+
 		try {
-			
+
 			Optional<CustomerContact> findById = customerContactRepo.findById(id);
-			if(findById.isPresent()) {
-				if(
-						(fieldValidation.isEmpty(customerContact.getcId()))  && (fieldValidation.isEmpty(customerContact.getSupplierCode())) &&
-						(fieldValidation.isEmpty(customerContact.getContractType()))  && (fieldValidation.isEmpty(customerContact.getContractTerms())) &&
-						(fieldValidation.isEmpty(customerContact.getContractProof()))  && (fieldValidation.isEmpty(customerContact.getContractLocation())) 
-					) {
-						CustomerContact filterCustomerContact = new CustomerContact();
-						filterCustomerContact.setContractId(findById.get().getContractId());
-						filterCustomerContact.setcId(customerContact.getcId());
-						filterCustomerContact.setSupplierCode(customerContact.getSupplierCode());
-						filterCustomerContact.setContractType(customerContact.getContractType());
-						filterCustomerContact.setContractTerms(customerContact.getContractTerms());
-						filterCustomerContact.setContractProof(customerContact.getContractProof());
-						filterCustomerContact.setContractLocation(customerContact.getContractLocation());
-						
-						
-						return customerContactRepo.save(filterCustomerContact);
-						
-						
-						
-					}else {
-						throw new VendorNotFoundException("Validation error");
-					}
-			}else {
+			if (findById.isPresent()) {
+				if ((fieldValidation.isEmpty(customerContact.getcId()))
+						&& (fieldValidation.isEmpty(customerContact.getSupplierCode()))
+						&& (fieldValidation.isEmpty(customerContact.getContractType()))
+						&& (fieldValidation.isEmpty(customerContact.getContractTerms()))
+						&& (fieldValidation.isEmpty(customerContact.getContractProof()))
+						&& (fieldValidation.isEmpty(customerContact.getContractLocation()))) {
+					CustomerContact filterCustomerContact = new CustomerContact();
+					filterCustomerContact.setContractId(findById.get().getContractId());
+					filterCustomerContact.setcId(customerContact.getcId());
+					filterCustomerContact.setSupplierCode(customerContact.getSupplierCode());
+					filterCustomerContact.setContractType(customerContact.getContractType());
+					filterCustomerContact.setContractTerms(customerContact.getContractTerms());
+					filterCustomerContact.setContractProof(customerContact.getContractProof());
+					filterCustomerContact.setContractLocation(customerContact.getContractLocation());
+
+					return customerContactRepo.save(filterCustomerContact);
+
+				} else {
+					throw new VendorNotFoundException("Validation error");
+				}
+			} else {
 				throw new VendorNotFoundException("Data not exist");
 			}
-			
-		}catch(Exception e) {
+
+		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
-		
+
 	}
-	
+
 	@PostMapping("/profile")
-	public CustomerProfileResponce addCustomerProfile(@RequestBody CustomerProfile customerProfile, @RequestHeader(name = "Authorization") String token) {
+	public CustomerProfileResponce addCustomerProfile(@RequestBody CustomerProfile customerProfile,
+			@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.addCustomerProfile()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 			LOGGER.info("customerIdFromToken >>> " + customerIdFromToken);
 			if (customerIdFromToken == -1) {
 				throw new VendorNotFoundException("Customer not found");
-			} 
-			else {
+			} else {
 				String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
-				LOGGER.info("Role is >>> "+roleByUserId);
+				LOGGER.info("Role is >>> " + roleByUserId);
 				if (roleByUserId.equals("SADMIN")) {
-					
+
 					CustomerProfile customerProfile2 = new CustomerProfile();
-					
-					if (fieldValidation.isEmpty(customerProfile.getCustomerName()) && fieldValidation.isEmpty(customerProfile.getCustomerContact1()) && fieldValidation.isEmpty(customerProfile.getRegistrationType()) && fieldValidation.isEmpty(customerProfile.getRegistrationNo()) ) {
+
+					if (fieldValidation.isEmpty(customerProfile.getCustomerName())
+							&& fieldValidation.isEmpty(customerProfile.getCustomerContact1())
+							&& fieldValidation.isEmpty(customerProfile.getRegistrationType())
+							&& fieldValidation.isEmpty(customerProfile.getRegistrationNo())) {
 						customerProfile2.setCustomerName(customerProfile.getCustomerName());
 						customerProfile2.setCustomerContact1(customerProfile.getCustomerContact1());
 						customerProfile2.setRegistrationType(customerProfile.getRegistrationType());
@@ -330,14 +428,15 @@ public class CustomerController {
 						try {
 							if (fieldValidation.isEmpty(customerProfile.getCustomerContact2())) {
 								customerProfile2.setCustomerContact2(customerProfile.getCustomerContact2());
-							} 
+							}
 						} catch (Exception e) {
 							// TODO: handle exception
 						}
 						LOGGER.info(customerProfile2.toString());
 						CustomerProfileResponce customerProfileResponce = new CustomerProfileResponce();
 						CustomerProfile save = customerProfileRepo.save(customerProfile2);
-						Optional<RegType> findRegistrationNameById = regTypeRepo.findById((long) customerProfile2.getRegistrationType());
+						Optional<RegType> findRegistrationNameById = regTypeRepo
+								.findById((long) customerProfile2.getRegistrationType());
 						customerProfileResponce.setcId(save.getcId());
 						customerProfileResponce.setCreatedBy(save.getCreatedBy());
 						customerProfileResponce.setCreatedOn(save.getCreatedOn());
@@ -350,9 +449,9 @@ public class CustomerController {
 						customerProfileResponce.setStatus(save.getStatus());
 						customerProfileResponce.setUpdatedBy(save.getUpdatedBy());
 						customerProfileResponce.setUpdatedOn(save.getUpdatedOn());
-						
-						return customerProfileResponce; 
-						
+
+						return customerProfileResponce;
+
 					} else {
 						throw new VendorNotFoundException("Validation error");
 					}
@@ -364,9 +463,10 @@ public class CustomerController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
-	
+
 	@PutMapping("/profile/{profileId}")
-	public CustomerProfile updateCustomerProfile(@PathVariable long profileId, @RequestBody CustomerProfile customerProfile, @RequestHeader(name = "Authorization") String token) {
+	public CustomerProfile updateCustomerProfile(@PathVariable long profileId,
+			@RequestBody CustomerProfile customerProfile, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.updateCustomerProfile()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
@@ -378,10 +478,13 @@ public class CustomerController {
 					Optional<CustomerRegister> findById = customerRegisterRepo.findById(customerIdFromToken);
 					if (findById.isPresent()) {
 						if (findById.get().getcId() == profileId) {
-							
+
 							CustomerProfile customerProfile2 = new CustomerProfile();
-							
-							if (fieldValidation.isEmpty(customerProfile.getCustomerName()) && fieldValidation.isEmpty(customerProfile.getCustomerContact1()) && fieldValidation.isEmpty(customerProfile.getRegistrationType()) && fieldValidation.isEmpty(customerProfile.getRegistrationNo()) ) {
+
+							if (fieldValidation.isEmpty(customerProfile.getCustomerName())
+									&& fieldValidation.isEmpty(customerProfile.getCustomerContact1())
+									&& fieldValidation.isEmpty(customerProfile.getRegistrationType())
+									&& fieldValidation.isEmpty(customerProfile.getRegistrationNo())) {
 								customerProfile2.setCustomerName(customerProfile.getCustomerName());
 								customerProfile2.setCustomerContact1(customerProfile.getCustomerContact1());
 								customerProfile2.setRegistrationType(customerProfile.getRegistrationType());
@@ -391,7 +494,7 @@ public class CustomerController {
 								try {
 									if (fieldValidation.isEmpty(customerProfile.getCustomerContact2())) {
 										customerProfile2.setCustomerContact2(customerProfile.getCustomerContact2());
-									} 
+									}
 								} catch (Exception e) {
 									// TODO: handle exception
 								}
@@ -399,7 +502,7 @@ public class CustomerController {
 							} else {
 								throw new VendorNotFoundException("Validation error");
 							}
-							
+
 						} else {
 							throw new VendorNotFoundException("You don't have permission to update profile");
 						}
@@ -410,12 +513,12 @@ public class CustomerController {
 					throw new VendorNotFoundException("You don't have permission to update profile");
 				}
 			}
-			
+
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("/profile")
 	public CustomerProfileResponce getCustomerProfile(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.getCustomerProfile()");
@@ -462,7 +565,197 @@ public class CustomerController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 		
+		//Test push
+		
+	}
+
+	@PostMapping("/department")
+	public CustomerDepartments addCustomerDepartment(@RequestBody CustomerDepartments customerDepartments, @RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - CustomerController.addCustomerDepartment()");
+		try {
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			
+			if (customerIdFromToken == -1) {
+				throw new VendorNotFoundException("Customer not found");
+			}
+			else {
+				String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
+				long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+				CustomerDepartments departments = new CustomerDepartments();
+				CustomerDepartment userCustomerDepartment = new CustomerDepartment();
+				
+				switch (roleByUserId) {
+				case "SADMIN":
+					if (fieldValidation.isEmpty(customerDepartments.getDepartmentName()) && fieldValidation.isEmpty(customerDepartments.getEmail()) && fieldValidation.isEmpty(customerDepartments.getPhoneNo()) && fieldValidation.isEmpty(customerDepartments.getCostCode())) {
+						if (fieldValidation.isEmail(customerDepartments.getEmail())) {
+							departments.setDepartmentName(customerDepartments.getDepartmentName());
+							departments.setEmail(customerDepartments.getEmail());
+							departments.setPhoneNo(customerDepartments.getPhoneNo());
+							departments.setCostCode(customerDepartments.getCostCode());
+							departments.setcId(companyProfileIdByCustomerId);
+							try {
+								if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo())) {
+									departments.setAlternatePhoneNo(customerDepartments.getAlternatePhoneNo());
+								}
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+							departments.setStatus("COMPLEATE");
+							CustomerDepartments saveCustomerDepartments = customerDepartmentsRepo.save(departments);
+							
+							userCustomerDepartment.setcId(saveCustomerDepartments.getcId());
+							userCustomerDepartment.setDepartmentId(saveCustomerDepartments.getDepartmentId());
+							
+							CustomerDepartment saveCustomerDepartment = customerDepartmentRepo.save(userCustomerDepartment);
+							return saveCustomerDepartments;
+						} else {
+							throw new VendorNotFoundException("Email id not valid");
+						}
+					} else {
+						throw new VendorNotFoundException("All field required");
+					}
+				case "ADMIN":
+					if (fieldValidation.isEmpty(customerDepartments.getDepartmentName()) && fieldValidation.isEmpty(customerDepartments.getEmail()) && fieldValidation.isEmpty(customerDepartments.getPhoneNo()) && fieldValidation.isEmpty(customerDepartments.getCostCode())) {
+						if (fieldValidation.isEmail(customerDepartments.getEmail())) {
+							departments.setDepartmentName(customerDepartments.getDepartmentName());
+							departments.setEmail(customerDepartments.getEmail());
+							departments.setPhoneNo(customerDepartments.getPhoneNo());
+							departments.setCostCode(customerDepartments.getCostCode());
+							departments.setcId(companyProfileIdByCustomerId);
+							try {
+								if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo())) {
+									departments.setAlternatePhoneNo(customerDepartments.getAlternatePhoneNo());
+								}
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+							departments.setStatus("COMPLEATE");
+							CustomerDepartments saveCustomerDepartments = customerDepartmentsRepo.save(departments);
+							
+							List<CustomerRegister> findByCId = customerRegisterRepo.findBycId(companyProfileIdByCustomerId);
+							
+							for(CustomerRegister customer : findByCId) {
+								String getRoleByUserId = getCustomerDetails.getRoleByUserId(customer.getUserId());
+								if (getRoleByUserId.equals("SADMIN")) {
+									userCustomerDepartment.setcId(saveCustomerDepartments.getcId());
+									userCustomerDepartment.setDepartmentId(saveCustomerDepartments.getDepartmentId());
+									customerDepartmentRepo.save(userCustomerDepartment);
+								}
+							}
+							
+							return saveCustomerDepartments;
+						} else {
+							throw new VendorNotFoundException("Email not valid");
+						}
+					} else {
+						throw new VendorNotFoundException("All field required");
+					}
+				case "USER":
+					throw new VendorNotFoundException("You don't have access to add department");
+				default:
+					throw new VendorNotFoundException("The role is not present");
+				}
+			}
+			
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
 	}
 	
+	@GetMapping("/department")
+	public List<CustomerDepartments> getDepartments(@RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - CustomerController.getDepartments()");
+		try {
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			if (customerIdFromToken == -1) {
+				throw new VendorNotFoundException("Customer not found");
+			}
+			else {
+				return getCustomerDetails.getDepartments(customerIdFromToken);
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	@PutMapping("/department/{departmentId}")
+	public CustomerDepartments updateDepartments(@PathVariable long departmentId, @RequestBody CustomerDepartments customerDepartments, @RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - CustomerController.updateDepartments()");
+		try {
+			Optional<CustomerDepartments> findDepartmentsById = customerDepartmentsRepo.findById(departmentId);
+			if (findDepartmentsById.isPresent()) {
+				long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+				String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
+				if (customerIdFromToken == -1) {
+					throw new VendorNotFoundException("Customer not found");
+				}
+				else {
+					CustomerDepartments departments = new CustomerDepartments();
+					switch (roleByUserId) {
+					case "SADMIN":
+						if (fieldValidation.isEmpty(customerDepartments.getDepartmentName()) && fieldValidation.isEmpty(customerDepartments.getEmail()) && fieldValidation.isEmpty(customerDepartments.getPhoneNo()) && fieldValidation.isEmpty(customerDepartments.getCostCode())) {
+							if (fieldValidation.isEmail(customerDepartments.getEmail())) {
+								departments.setDepartmentName(customerDepartments.getDepartmentName());
+								departments.setEmail(customerDepartments.getEmail());
+								departments.setPhoneNo(customerDepartments.getPhoneNo());
+								departments.setCostCode(customerDepartments.getCostCode());
+								departments.setDepartmentId(departmentId);
+								departments.setcId(customerIdFromToken);
+								try {
+									if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo())) {
+										departments.setAlternatePhoneNo(customerDepartments.getAlternatePhoneNo());
+									}
+								} catch (Exception e) {
+									// TODO: handle exception
+								}
+								departments.setStatus("COMPLEATE");
+								CustomerDepartments saveCustomerDepartments = customerDepartmentsRepo.save(departments);
+								
+								return saveCustomerDepartments;
+							} else {
+								throw new VendorNotFoundException("Email id not valid");
+							}
+						} else {
+							throw new VendorNotFoundException("All field required");
+						}
+					case "ADMIN":
+						if (fieldValidation.isEmpty(customerDepartments.getDepartmentName()) && fieldValidation.isEmpty(customerDepartments.getEmail()) && fieldValidation.isEmpty(customerDepartments.getPhoneNo()) && fieldValidation.isEmpty(customerDepartments.getCostCode())) {
+							if (fieldValidation.isEmail(customerDepartments.getEmail())) {
+								departments.setDepartmentName(customerDepartments.getDepartmentName());
+								departments.setEmail(customerDepartments.getEmail());
+								departments.setPhoneNo(customerDepartments.getPhoneNo());
+								departments.setCostCode(customerDepartments.getCostCode());
+								departments.setDepartmentId(departmentId);
+								departments.setcId(customerIdFromToken);
+								try {
+									if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo())) {
+										departments.setAlternatePhoneNo(customerDepartments.getAlternatePhoneNo());
+									}
+								} catch (Exception e) {
+									// TODO: handle exception
+								}
+								departments.setStatus("COMPLEATE");
+								CustomerDepartments saveCustomerDepartments = customerDepartmentsRepo.save(departments);
+								
+								return saveCustomerDepartments;
+							} else {
+								throw new VendorNotFoundException("Email id not valid");
+							}
+						} else {
+							throw new VendorNotFoundException("All field required");
+						}
+					case "USER": 
+						throw new VendorNotFoundException("You don't have access to add department");
+					default:
+						throw new VendorNotFoundException("The role is not present");
+					}
+				}
+			} else {
+				throw new VendorNotFoundException("Department not found");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
 	
 }
