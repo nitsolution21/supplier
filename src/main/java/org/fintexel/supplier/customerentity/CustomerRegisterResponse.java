@@ -7,6 +7,7 @@ public class CustomerRegisterResponse {
 	private String email;
 	private String name;
 	private String role;
+	private String deptName;
 	private  List<CustomerDepartments> customerDepartments;
 	private List<CustomerFunctionalitiesMaster> functionality;
 	private String access;
@@ -19,13 +20,103 @@ public class CustomerRegisterResponse {
 	private Date createdOn;
 	private String updatedBy;
 	private Date updatedOn;
-	
-	public CustomerRegisterResponse() {
-		super();
-		// TODO Auto-generated constructor stub
+	public String getEmail() {
+		return email;
 	}
-
-	public CustomerRegisterResponse(String email, String name, String role,
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getRole() {
+		return role;
+	}
+	public void setRole(String role) {
+		this.role = role;
+	}
+	public String getDeptName() {
+		return deptName;
+	}
+	public void setDeptName(String deptName) {
+		this.deptName = deptName;
+	}
+	public List<CustomerDepartments> getCustomerDepartments() {
+		return customerDepartments;
+	}
+	public void setCustomerDepartments(List<CustomerDepartments> customerDepartments) {
+		this.customerDepartments = customerDepartments;
+	}
+	public List<CustomerFunctionalitiesMaster> getFunctionality() {
+		return functionality;
+	}
+	public void setFunctionality(List<CustomerFunctionalitiesMaster> functionality) {
+		this.functionality = functionality;
+	}
+	public String getAccess() {
+		return access;
+	}
+	public void setAccess(String access) {
+		this.access = access;
+	}
+	public long getcId() {
+		return cId;
+	}
+	public void setcId(long cId) {
+		this.cId = cId;
+	}
+	public long getUserId() {
+		return userId;
+	}
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getCreatedBy() {
+		return createdBy;
+	}
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+	public String getUpdatedBy() {
+		return updatedBy;
+	}
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
+	public Date getUpdatedOn() {
+		return updatedOn;
+	}
+	public void setUpdatedOn(Date updatedOn) {
+		this.updatedOn = updatedOn;
+	}
+	public CustomerRegisterResponse(String email, String name, String role, String deptName,
 			List<CustomerDepartments> customerDepartments, List<CustomerFunctionalitiesMaster> functionality,
 			String access, long cId, long userId, String username, String password, String status, String createdBy,
 			Date createdOn, String updatedBy, Date updatedOn) {
@@ -33,6 +124,7 @@ public class CustomerRegisterResponse {
 		this.email = email;
 		this.name = name;
 		this.role = role;
+		this.deptName = deptName;
 		this.customerDepartments = customerDepartments;
 		this.functionality = functionality;
 		this.access = access;
@@ -46,125 +138,17 @@ public class CustomerRegisterResponse {
 		this.updatedBy = updatedBy;
 		this.updatedOn = updatedOn;
 	}
-
-	public String getEmail() {
-		return email;
+	public CustomerRegisterResponse() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
-
-	public List<CustomerDepartments> getCustomerDepartments() {
-		return customerDepartments;
-	}
-
-	public void setCustomerDepartments(List<CustomerDepartments> customerDepartments) {
-		this.customerDepartments = customerDepartments;
-	}
-
-	public List<CustomerFunctionalitiesMaster> getFunctionality() {
-		return functionality;
-	}
-
-	public void setFunctionality(List<CustomerFunctionalitiesMaster> functionality) {
-		this.functionality = functionality;
-	}
-
-	public String getAccess() {
-		return access;
-	}
-
-	public void setAccess(String access) {
-		this.access = access;
-	}
-
-	public long getcId() {
-		return cId;
-	}
-
-	public void setcId(long cId) {
-		this.cId = cId;
-	}
-
-	public long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(long userId) {
-		this.userId = userId;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public String getCreatedBy() {
-		return createdBy;
-	}
-
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
-
-	public Date getCreatedOn() {
-		return createdOn;
-	}
-
-	public void setCreatedOn(Date createdOn) {
-		this.createdOn = createdOn;
-	}
-
-	public String getUpdatedBy() {
-		return updatedBy;
-	}
-
-	public void setUpdatedBy(String updatedBy) {
-		this.updatedBy = updatedBy;
-	}
-
-	public Date getUpdatedOn() {
-		return updatedOn;
-	}
-
-	public void setUpdatedOn(Date updatedOn) {
-		this.updatedOn = updatedOn;
+	@Override
+	public String toString() {
+		return "CustomerRegisterResponse [email=" + email + ", name=" + name + ", role=" + role + ", deptName="
+				+ deptName + ", customerDepartments=" + customerDepartments + ", functionality=" + functionality
+				+ ", access=" + access + ", cId=" + cId + ", userId=" + userId + ", username=" + username
+				+ ", password=" + password + ", status=" + status + ", createdBy=" + createdBy + ", createdOn="
+				+ createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + "]";
 	}
 	
 	

@@ -505,9 +505,11 @@ public class CustomerLoginController {
 						LOGGER.info( "oo  " +rolesMaster.toString());
 						customerRegisterResponse.setRole(rolesMaster.getRole());
 						List<CustomerUserDepartments> findByUserIdDept = customerUserDepartmentsRepo.findByUserId(customerUserRoles.getUserId());
+						String deptTemp="";
 						for (CustomerUserDepartments dept : findByUserIdDept) {
 							CustomerDepartments tempCustomerDepartments = customerDepartmentsRepo.findById(dept.getDepartmentId()).get();
 							customerDepartments.add(tempCustomerDepartments);
+							deptTemp = deptTemp + customer.getUserId()+":"+ tempCustomerDepartments.getDepartmentName() + "," ;
 						}
 						
 						customerRegisterResponse.setCustomerDepartments(customerDepartments);
