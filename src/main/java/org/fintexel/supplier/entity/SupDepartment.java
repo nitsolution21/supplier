@@ -9,11 +9,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.fintexel.supplier.exceptions.VendorNotFoundException;
+import org.fintexel.supplier.validation.FieldValidation;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Entity
 @Table(name = "SUP_DEPARTMENT")
 public class SupDepartment {
+	
+	@Autowired
+	private static FieldValidation fieldValidation;
 	
 	@Id
 	@Column(name = "DEPARTMENT_ID")
@@ -195,16 +204,16 @@ public class SupDepartment {
 	
 	
 	public SupDepartment(long departmentId, String supplierCode, String departmentName, String supplierContact1,
-			String supplierContact2, String email, String phoneno, String alternatePhoneno, String status) {
+			 String email, String phoneno, String status) {
 		super();
 		this.departmentId = departmentId;
 		this.supplierCode = supplierCode;
 		this.departmentName = departmentName;
 		this.supplierContact1 = supplierContact1;
-		this.supplierContact2 = supplierContact2;
+//		this.supplierContact2 = supplierContact2;
 		this.email = email;
 		this.phoneno = phoneno;
-		this.alternatePhoneno = alternatePhoneno;
+//		this.alternatePhoneno = alternatePhoneno;
 		this.status = status;
 
 	}
@@ -215,12 +224,29 @@ public class SupDepartment {
 	
 	
 	public static SupDepartment fromJson(String value) {
-		JSONObject obj = new JSONObject(value);
-		    return new SupDepartment (Long.parseLong((String)obj.get("departmentId")) ,
-		    		(String) obj.get("supplierCode"), (String) obj.get("departmentName"),
-		    		(String) obj.get("supplierContact1"), (String) obj.get("supplierContact2"),
-		    		(String) obj.get("email"), (String) obj.get("phoneno"),
-		    		(String) obj.get("alternatePhoneno"), (String) obj.get("status"));
+		 JsonObject obj = (JsonObject) JsonParser.parseString(value);
+		 System.out.println(value);
+		 try {
+			 SupDepartment department =  new SupDepartment (Long.parseLong(obj.get("departmentId").toString()) ,
+		    		 obj.get("supplierCode").toString(), (String) obj.get("departmentName").toString(),
+		    		(String) obj.get("supplierContact1").toString(),// (String) obj.get("supplierContact2").toString(),
+		    		(String) obj.get("email").toString(), (String) obj.get("phoneno").toString(),
+//		    		(String) obj.get("alternatePhoneno").toString(),
+		    		(String) obj.get("status").toString());
+			 try {
+				if (fieldValidation.isEmpty((String) obj.get("supplierContact2").toString()) && fieldValidation.isEmpty((String) obj.get("alternatePhoneno").toString())) {
+					department.setAlternatePhoneno((String) obj.get("alternatePhoneno").toString());
+					department.setSupplierContact2((String) obj.get("supplierContact2").toString());
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			 
+			 return department;
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new VendorNotFoundException(e.getMessage());
+		}
 	}
 	
 	

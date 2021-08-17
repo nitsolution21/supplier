@@ -2,16 +2,23 @@ package org.fintexel.supplier.config;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Optional;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.fintexel.supplier.customerentity.CustomerRegister;
+import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
+import org.fintexel.supplier.entity.VendorDetails;
+import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.exceptions.VendorErrorResponse;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.exceptions.VendorRestExceptionHandler;
 import org.fintexel.supplier.helper.JwtUtil;
+import org.fintexel.supplier.repository.VendorRegisterRepo;
+import org.fintexel.supplier.services.CustomerDetailsServices;
 import org.fintexel.supplier.services.VendorDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,10 +35,24 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Autowired
-	private VendorDetailsService vendorDetailsService; 
+	private VendorDetailsService vendorDetailsService;
 	
 	@Autowired
-	private JwtUtil jwtUtil; 
+	private CustomerDetailsServices customerDetailsServices; 
+	
+	@Autowired
+	private YMLConfig myConfig;
+	
+	@Autowired
+	private JwtUtil jwtUtil;
+	
+	@Autowired
+	private CustomerRegisterRepo customerRegisterRepo;
+	
+	@Autowired
+	private VendorRegisterRepo vendorRegisterRepo;
+	
+	UserDetails userDetails;
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -47,11 +68,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			try {
 				username = this.jwtUtil.extractUsername(jwtToken);
 			} catch (Exception e) {
-				// TODO: handle exception
 				throw new VendorNotFoundException("token is not validated");
 			}
 			
-			UserDetails userDetails = vendorDetailsService.loadUserByUsername(username);
+			
+			 Optional<VendorRegister> findVendorByUsername = vendorRegisterRepo.findByUsername(username);
+			if (findVendorByUsername.isPresent()) {
+				this.userDetails = vendorDetailsService.loadUserByUsername(username);
+			} else {
+				Optional<CustomerRegister> findCustomerByUsername = customerRegisterRepo.findByUsername(username);
+				if (findCustomerByUsername.isPresent()) {
+					this.userDetails = customerDetailsServices.loadUserByUsername(username);
+				} else {
+					throw new VendorNotFoundException("Token not valid");
+				}
+				
+			}
 			
 			if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 				

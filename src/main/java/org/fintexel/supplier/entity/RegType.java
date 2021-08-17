@@ -15,7 +15,7 @@ public class RegType {
 	@Id
 	@Column(name = "ID")
 	@GeneratedValue(strategy = GenerationType.AUTO) private Long id;
-	@Column(name = "NAME") private String name;
+	@Column(name = "NAME", unique = true, nullable = false) private String name;
 	@Column(name = "CREATED_BY") private String createdBy;
 	@Column(name = "CREATED_ON") private Date createdOn;
 	@Column(name = "UPDATED_BY") private String updatedBy;

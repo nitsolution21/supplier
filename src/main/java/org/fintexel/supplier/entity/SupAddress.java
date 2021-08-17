@@ -1,7 +1,8 @@
 package org.fintexel.supplier.entity;
 
 import java.util.Date;
-
+import com.google.gson.JsonParser;
+import com.google.gson.JsonObject;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,15 +15,21 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+import org.fintexel.supplier.validation.FieldValidation;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.google.gson.JsonObject;
 
 @Component
 @Entity
 @Table(name = "SUP_ADDRESS")
 public class SupAddress {
+	
+	@Autowired
+	private static FieldValidation fieldValidation;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -249,7 +256,7 @@ public class SupAddress {
 	
 
 	
-	public SupAddress(Long addressId, String supplierCode, String addressType, String address1, String address2,
+	public SupAddress(long addressId, String supplierCode, String addressType, String address1,
 			String city, int postalCode, String country, String region, String addressProof,
 			String addressProofPath) {
 		super();
@@ -257,7 +264,7 @@ public class SupAddress {
 		this.supplierCode = supplierCode;
 		this.addressType = addressType;
 		this.address1 = address1;
-		this.address2 = address2;
+//		this.address2 = address2;
 		this.city = city;
 		this.postalCode = postalCode;
 		this.country = country;
@@ -267,13 +274,28 @@ public class SupAddress {
 	}
 
 	
-	public static SupAddress fromJson(String value) {
-		JSONObject obj = new JSONObject(value);
-		    return new SupAddress (Long.parseLong(obj.getString("addressId"))  , obj.getString("supplierCode") , obj.getString("addressType") ,
-		    		obj.getString("address1") , obj.getString("address2") ,
-		    		obj.getString("city") , Integer.parseInt(obj.getString("postalCode")) ,
-		    		obj.getString("country") , obj.getString("region") ,
-		    		obj.getString("addressProof") , obj.getString("addressProofPath"));
+	public static SupAddress fromJson(String value) throws Exception {
+		try {
+			  JsonObject obj = (JsonObject) JsonParser.parseString(value);
+		     SupAddress supAddress = new SupAddress (Long.parseLong(obj.get("addressId").toString()) , (String) obj.get("supplierCode").toString() , (String) obj.get("addressType").toString() ,
+		    		(String) obj.get("address1").toString() , 
+//		    		obj.get("address2").toString() ,
+		    		(String) obj.get("city").toString() ,Integer.parseInt( obj.get("postalCode").toString()) ,
+		    		(String) obj.get("country").toString() , (String) obj.get("region").toString() ,
+		    		(String) obj.get("addressProof").toString() , (String) obj.get("addressProofPath").toString());
+		     try {
+				if (fieldValidation.isEmpty((String) obj.get("address2").toString())) {
+					supAddress.setAddress2((String) obj.get("address2").toString());
+				}
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		     return supAddress;
+		}catch(Exception e) {
+			 System.out.print("Json "+ e.toString() );
+			throw new Exception();
+		}
+		
 	}
 	
 	

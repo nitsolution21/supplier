@@ -8,6 +8,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.fintexel.supplier.entity.FileUploadResponse;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ public class FileUploadHelper {
 	@Value("${file.upload-path}")
 	private String UPLOAD_DIR;
 
-	public boolean uploadFile(MultipartFile file) {
+	public FileUploadResponse uploadFile(MultipartFile file) {
 
 		try {
 			String[] parts = file.getContentType().split("/");
@@ -33,7 +34,14 @@ public class FileUploadHelper {
 					file.getInputStream(), Paths.get(UPLOAD_DIR + file.getOriginalFilename().split("\\.")[0] + date[0]
 							+ date[1] + date[2] + time[0] + time[1] + time[2] + "." + extension),
 					StandardCopyOption.REPLACE_EXISTING);
-			return true;
+			FileUploadResponse fileUploadResponse = new FileUploadResponse();
+			
+			fileUploadResponse.setFileName(file.getOriginalFilename().split("\\.")[0] + date[0]
+							+ date[1] + date[2] + time[0] + time[1] + time[2] + "." + extension);
+			
+			fileUploadResponse.setPath(UPLOAD_DIR);
+			
+			return fileUploadResponse;
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}

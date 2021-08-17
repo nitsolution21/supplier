@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.fintexel.supplier.customerentity.CustomerRegister;
+import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.entity.ChangePassword;
 import org.fintexel.supplier.entity.ForgotPassword;
 import org.fintexel.supplier.entity.ForgotPasswordRequestEntity;
@@ -29,6 +31,7 @@ import org.fintexel.supplier.repository.ForgotPasswordRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.fintexel.supplier.repository.flowablerepo.FlowableFormRepo;
 import org.fintexel.supplier.repository.flowablerepo.FlowableRegistrationRepo;
+import org.fintexel.supplier.services.CustomerDetailsServices;
 import org.fintexel.supplier.services.VendorDetailsService;
 import org.fintexel.supplier.validation.FieldValidation;
 import org.hibernate.hql.internal.ast.tree.IsNullLogicOperatorNode;
@@ -69,9 +72,15 @@ public class VendorLoginController {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private CustomerRegisterRepo customerRegisterRepo;
 
 	@Autowired
 	private VendorDetailsService vendorDetailsService;
+	
+	@Autowired
+	private CustomerDetailsServices customerDetailsServices;
 
 	@Autowired
 	private VendorRegisterRepo vendorRegisterRepo;
@@ -109,7 +118,7 @@ public class VendorLoginController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> venderLogin(@RequestBody VendorLogin vendorLogin) {
-
+		LOGGER.info("Inside - VendorLoginController.venderLogin()");
 		try {
 			this.authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(vendorLogin.getUsername(), vendorLogin.getPassword()));
@@ -347,19 +356,19 @@ public class VendorLoginController {
 					JSONObject autoCompleate = new JSONObject();
 					autoCompleate.put("taskIdActual", taskId);
 					autoCompleate.put("supplierforgotemailid", forgotPasswordRequestEntity.getEmail());
-					autoCompleate.put("forgotpwdlink", forgotPasswordRequestEntity.getUrl() + "/" + token + taskId);
+					autoCompleate.put("forgotpwdlink", forgotPasswordRequestEntity.getUrl() + "/" + token);
 					JSONObject mapp = new JSONObject();
 					Optional<FlowableForm> findByFromId = flowableFormRepo.findByFromId("frmforgotpwdsupplier");
 					mapp.put("formId", findByFromId.get().getId());
 					mapp.put("values", autoCompleate);
-					System.out.println("Body  " + mapp);
-					System.out.println("headers  " + header);
+//					System.out.println("Body  " + mapp);
+//					System.out.println("headers  " + header);
 					HttpEntity<Map<String, Object>> entity = new HttpEntity(mapp.toString(), header);
 					ResponseEntity rssResponsee = restTemplate.exchange(
 							"http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskId, HttpMethod.POST, entity,
 							String.class);
 //					System.out.print("Result  "+rssResponsee.getHeaders());
-					System.out.print("Result  " + rssResponsee.getHeaders());
+//					System.out.print("Result  " + rssResponsee.getHeaders());
 
 //					AUTO COMPLEATE END
 
@@ -368,8 +377,14 @@ public class VendorLoginController {
 					forgotPassword.setToken(token);
 					forgotPassword.setCreatedOn(date);
 					forgotPassword.setStatus("MAILSEND");
-					forgotPasswordRepo.save(forgotPassword);
-					return "Please check your mail";
+					ForgotPassword save = forgotPasswordRepo.save(forgotPassword);
+					LOGGER.info("after add data "+save);
+					if (save.equals(null)) {
+						return "Not save in database";
+					}
+					else {
+						return "Please check your mail";
+					}
 
 				} else {
 					throw new VendorNotFoundException("Provide correct email id");
@@ -396,8 +411,9 @@ public class VendorLoginController {
 								&& date.getDate() == findByToken.get().getCreatedOn().getDate()
 								&& date.getHours() == findByToken.get().getCreatedOn().getHours()) {
 							int expireDate = date.getMinutes() - findByToken.get().getCreatedOn().getMinutes();
-
-							if (expireDate <= 5) {
+							LOGGER.info("cuttent date "+date);
+							LOGGER.info("DB date "+findByToken.get().getCreatedOn());
+							if (expireDate <= 30) {
 								Optional<VendorRegister> findByEmail = registerRepo
 										.findByEmail(findByToken.get().getEmail());
 								if (findByEmail.isPresent()) {

@@ -3,6 +3,8 @@ package org.fintexel.supplier.helper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +15,11 @@ import java.util.function.Function;
 
 @Service
 public class JwtUtil {
-	private String SECRET_KEY = "secret";
-	public static final long JWT_TOKEN_VALIDITY = 1000 * 60 * 60 * 10;
+	@Value("${jwt.secret.key}")
+	private String SECRET_KEY;
+	
+@Value("${jwt.token.validity}")
+	public long JWT_TOKEN_VALIDITY;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

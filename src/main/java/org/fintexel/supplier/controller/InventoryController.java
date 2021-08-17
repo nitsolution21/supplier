@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
+import org.fintexel.supplier.entity.FileUploadResponse;
 import org.fintexel.supplier.entity.InventoryDetails;
 import org.fintexel.supplier.entity.InventoryResponse;
 import org.fintexel.supplier.entity.ItemBrand;
@@ -56,9 +57,6 @@ public class InventoryController {
 	private FieldValidation fieldValidation;
 	@Autowired
 	private LoginUserDetails loginUserDetails;
-
-	@Autowired
-	private FileUploadHelper fileUploadHelper;
 
 	@PostMapping("/vendor/category")
 	public ItemCategory addCategory(@RequestBody ItemCategory itemCategory,
@@ -528,31 +526,6 @@ public class InventoryController {
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
-	}
-
-	@PostMapping("/uploadSupplierBankProof")
-	public Object uploadSupplierBankProof(@RequestParam("file") MultipartFile file,
-			@RequestHeader(name = "Authorization") String token) {
-		try {
-			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
-			if (!loginSupplierCode.equals(null)) {
-				if (file.getSize() < 1) {
-					throw new VendorNotFoundException("Request must contain file");
-				}
-
-				boolean uploadFile = fileUploadHelper.uploadFile(file);
-				if (uploadFile) {
-					return "File is successfully uploaded";
-				} else {
-					return "Something went wrong !! Please try again";
-				}
-			} else {
-				throw new VendorNotFoundException("Token not valid");
-			}
-		} catch (Exception e) {
-			throw new VendorNotFoundException(e.getMessage());
-		}
-
 	}
 
 	@PutMapping("/vendor/inventory/{inventoryId}")

@@ -90,6 +90,14 @@ public class ForgotPassword {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
+	@Override
+	public String toString() {
+		return "ForgotPassword [id=" + id + ", email=" + email + ", token=" + token + ", createdOn=" + createdOn
+				+ ", status=" + status + "]";
+	}
+	
+	
 	
 	
 }

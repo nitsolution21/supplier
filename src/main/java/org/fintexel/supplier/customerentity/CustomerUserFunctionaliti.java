@@ -4,47 +4,44 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "TBL_USER_ROLES")
-public class CustomerUserRoles {
-
+@Table(name = "TBL_USER_FUNC")
+public class CustomerUserFunctionaliti {
+	
 	@Id
-//	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "USER_ID")
 	private long userId;
-
-	@Column(name = "ROLE_ID")
-	private long roleId;
-
-	@Column(name = "CREATED_BY")
+	
+	@Column(name = "F_ID")
+	private long fId;
+	
+	@Column(name = "CREATED_BY") 
 	private String createdBy;
 	
-	@Column(name = "CREATED_ON")
+	@Column(name = "CREATED_ON") 
 	private Date createdOn;
 	
 	@Column(name = "UPDATED_BY")
 	private String updatedBy;
 	
-	@Column(name = "UPDATED_ON")
+	@Column(name = "UPDATED_ON") 
 	private Date updatedOn;
 
-	public CustomerUserRoles(long userId, long roleId, String createdBy, Date createdOn, String updatedBy,
+	public CustomerUserFunctionaliti(long userId, long fId, String createdBy, Date createdOn, String updatedBy,
 			Date updatedOn) {
 		super();
 		this.userId = userId;
-		this.roleId = roleId;
+		this.fId = fId;
 		this.createdBy = createdBy;
 		this.createdOn = createdOn;
 		this.updatedBy = updatedBy;
 		this.updatedOn = updatedOn;
 	}
 
-	public CustomerUserRoles() {
+	public CustomerUserFunctionaliti() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -57,12 +54,12 @@ public class CustomerUserRoles {
 		this.userId = userId;
 	}
 
-	public long getRoleId() {
-		return roleId;
+	public long getfId() {
+		return fId;
 	}
 
-	public void setRoleId(long roleId) {
-		this.roleId = roleId;
+	public void setfId(long fId) {
+		this.fId = fId;
 	}
 
 	public String getCreatedBy() {
@@ -96,11 +93,6 @@ public class CustomerUserRoles {
 	public void setUpdatedOn(Date updatedOn) {
 		this.updatedOn = updatedOn;
 	}
-
-	@Override
-	public String toString() {
-		return "CustomerUserRoles [userId=" + userId + ", roleId=" + roleId + ", createdBy=" + createdBy
-				+ ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + "]";
-	}
+	
 	
 }
