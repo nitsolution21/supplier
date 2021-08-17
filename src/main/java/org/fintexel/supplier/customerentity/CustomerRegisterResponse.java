@@ -7,7 +7,7 @@ public class CustomerRegisterResponse {
 	private String email;
 	private String name;
 	private String role;
-	private String deptName;
+	private String department;
 	private  List<CustomerDepartments> customerDepartments;
 	private List<CustomerFunctionalitiesMaster> functionality;
 	private String access;
@@ -38,11 +38,11 @@ public class CustomerRegisterResponse {
 	public void setRole(String role) {
 		this.role = role;
 	}
-	public String getDeptName() {
-		return deptName;
+	public String getDepartment() {
+		return department;
 	}
-	public void setDeptName(String deptName) {
-		this.deptName = deptName;
+	public void setDepartment(String department) {
+		this.department = department;
 	}
 	public List<CustomerDepartments> getCustomerDepartments() {
 		return customerDepartments;
@@ -116,7 +116,7 @@ public class CustomerRegisterResponse {
 	public void setUpdatedOn(Date updatedOn) {
 		this.updatedOn = updatedOn;
 	}
-	public CustomerRegisterResponse(String email, String name, String role, String deptName,
+	public CustomerRegisterResponse(String email, String name, String role, String department,
 			List<CustomerDepartments> customerDepartments, List<CustomerFunctionalitiesMaster> functionality,
 			String access, long cId, long userId, String username, String password, String status, String createdBy,
 			Date createdOn, String updatedBy, Date updatedOn) {
@@ -124,7 +124,7 @@ public class CustomerRegisterResponse {
 		this.email = email;
 		this.name = name;
 		this.role = role;
-		this.deptName = deptName;
+		this.department = department;
 		this.customerDepartments = customerDepartments;
 		this.functionality = functionality;
 		this.access = access;
@@ -144,8 +144,8 @@ public class CustomerRegisterResponse {
 	}
 	@Override
 	public String toString() {
-		return "CustomerRegisterResponse [email=" + email + ", name=" + name + ", role=" + role + ", deptName="
-				+ deptName + ", customerDepartments=" + customerDepartments + ", functionality=" + functionality
+		return "CustomerRegisterResponse [email=" + email + ", name=" + name + ", role=" + role + ", department="
+				+ department + ", customerDepartments=" + customerDepartments + ", functionality=" + functionality
 				+ ", access=" + access + ", cId=" + cId + ", userId=" + userId + ", username=" + username
 				+ ", password=" + password + ", status=" + status + ", createdBy=" + createdBy + ", createdOn="
 				+ createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + "]";

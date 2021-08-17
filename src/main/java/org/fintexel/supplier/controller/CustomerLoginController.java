@@ -511,7 +511,7 @@ public class CustomerLoginController {
 							customerDepartments.add(tempCustomerDepartments);
 							deptTemp = deptTemp + customer.getUserId()+":"+ tempCustomerDepartments.getDepartmentName() + "," ;
 						}
-						
+						customerRegisterResponse.setDepartment(deptTemp);
 						customerRegisterResponse.setCustomerDepartments(customerDepartments);
 						List<CustomerUserFunctionaliti> findByUserIdFunctionality = customerUserFunctionalitiRepo.findByUserId(customerUserRoles.getUserId());
 						for (CustomerUserFunctionaliti func : findByUserIdFunctionality) {
