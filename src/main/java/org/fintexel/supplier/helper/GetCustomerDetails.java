@@ -1,5 +1,6 @@
 package org.fintexel.supplier.helper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,9 +57,9 @@ public class GetCustomerDetails {
 	
 //	String departmentName = null, UserFunctionalitiName = null;
 	
-	private List<CustomerDepartments> customerDepartments;
+	private List<CustomerDepartments> customerDepartments = new  ArrayList<>();
 	
-	private List<CustomerFunctionalitiesMaster> customerFunctionalitiesMasters;
+	private List<CustomerFunctionalitiesMaster> customerFunctionalitiesMasters  = new  ArrayList<>();
 	
 	public long getCustomerIdFromToken(String token) {
 		LOGGER.info("Token is >>>> "+token);

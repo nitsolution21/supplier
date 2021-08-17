@@ -467,6 +467,7 @@ public class CustomerLoginController {
 				throw new VendorNotFoundException("All field are requard");
 			}
 		} catch (Exception e) {
+			LOGGER.info(e.getMessage());
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}

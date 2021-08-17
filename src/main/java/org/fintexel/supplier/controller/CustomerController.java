@@ -217,79 +217,114 @@ public class CustomerController {
 //		}
 //	}
 
-//	@PutMapping("/address/{id}")
-//	public CustomerAddress putCustomerAddress(@PathVariable Long id, @RequestBody CustomerAddress customerAddress, @RequestHeader(name = "Authorization") String token) {
-//
-//		LOGGER.info("Inside - CustomerController.putCustomerAddress()");
-//
-//		try {
-//			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
-//			String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
-//			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
-//			Optional<CustomerAddress> findCustomerAddressById = customerAddressRepo.findById(id);
-//			if (findCustomerAddressById.isPresent()) {
-//				if (findCustomerAddressById.get().getcId() == companyProfileIdByCustomerId) {
-//					CustomerAddress filterCustomerAddress = new CustomerAddress();
-//					switch (roleByUserId) {
-//					case "SADMIN":
-//						if ((fieldValidation.isEmpty(customerAddress.getAddressType()))
-//								&& (fieldValidation.isEmpty(customerAddress.getAddress1()))
-//								&& (fieldValidation.isEmpty(customerAddress.getCity()))
-//								&& (fieldValidation.isEmpty(customerAddress.getPostalCode()))
-//								&& (fieldValidation.isEmpty(customerAddress.getCountry()))
-//								&& (fieldValidation.isEmpty(customerAddress.getRegion()))
-//								&& (fieldValidation.isEmpty(customerAddress.getAddressProof()))
-//								&& (fieldValidation.isEmpty(customerAddress.getAddressProofPath()))
-//								&& (fieldValidation.isEmpty(customerAddress.getStatus()))) {
-//							
-//							filterCustomerAddress.setcId(companyProfileIdByCustomerId);
-//							filterCustomerAddress.setAddressType(customerAddress.getAddressType());
-//							filterCustomerAddress.setAddress1(customerAddress.getAddress1());
-//							filterCustomerAddress.setCity(customerAddress.getCity());
-//							filterCustomerAddress.setPostalCode(customerAddress.getPostalCode());
-//							filterCustomerAddress.setCountry(customerAddress.getCountry());
-//							filterCustomerAddress.setRegion(customerAddress.getRegion());
-//							filterCustomerAddress.setAddressProof(customerAddress.getAddressProof());
-//							filterCustomerAddress.setAddressProofPath(customerAddress.getAddressProofPath());
-//							filterCustomerAddress.setStatus("COMPLEATE");
-//							filterCustomerAddress.setAddressId(id);
-//							try {
-//								if (fieldValidation.isEmpty(customerAddress.getAddress2())) {
-//									filterCustomerAddress.setAddress2(customerAddress.getAddress2());
-//								}
-//							} catch (Exception e) {
-//								// TODO: handle exception
-//							}
-//
-//							 CustomerAddress saveCustomerAddress = customerAddressRepo.save(filterCustomerAddress);
-//							 
-//
-//							return saveCustomerAddress;
-//
-//						} else {
-//							throw new VendorNotFoundException("Validation error");
-//						}
-//					case "ADMIN":
-//						
-//						break;
-//					case "USER":
-//						throw new VendorNotFoundException("You don't have access to update address");
-//						
-//					default:
-//						break;
-//					}
-//				} else {
-//					throw new VendorNotFoundException("You don't have permission to change another company address");
-//				}
-//			} else {
-//				throw new VendorNotFoundException("Address not found");
-//			}
-//			
-//		} catch (Exception e) {
-//			throw new VendorNotFoundException(e.getMessage());
-//		}
-//
-//	}
+	@PutMapping("/address/{id}")
+	public CustomerAddress putCustomerAddress(@PathVariable Long id, @RequestBody CustomerAddress customerAddress, @RequestHeader(name = "Authorization") String token) {
+
+		LOGGER.info("Inside - CustomerController.putCustomerAddress()");
+
+		try {
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
+			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+			Optional<CustomerAddress> findCustomerAddressById = customerAddressRepo.findById(id);
+			if (findCustomerAddressById.isPresent()) {
+				if (findCustomerAddressById.get().getcId() == companyProfileIdByCustomerId) {
+					CustomerAddress filterCustomerAddress = new CustomerAddress();
+					switch (roleByUserId) {
+					case "SADMIN":
+						if ((fieldValidation.isEmpty(customerAddress.getAddressType()))
+								&& (fieldValidation.isEmpty(customerAddress.getAddress1()))
+								&& (fieldValidation.isEmpty(customerAddress.getCity()))
+								&& (fieldValidation.isEmpty(customerAddress.getPostalCode()))
+								&& (fieldValidation.isEmpty(customerAddress.getCountry()))
+								&& (fieldValidation.isEmpty(customerAddress.getRegion()))
+								&& (fieldValidation.isEmpty(customerAddress.getAddressProof()))
+								&& (fieldValidation.isEmpty(customerAddress.getAddressProofPath()))
+								&& (fieldValidation.isEmpty(customerAddress.getStatus()))) {
+							
+							filterCustomerAddress.setcId(companyProfileIdByCustomerId);
+							filterCustomerAddress.setAddressType(customerAddress.getAddressType());
+							filterCustomerAddress.setAddress1(customerAddress.getAddress1());
+							filterCustomerAddress.setCity(customerAddress.getCity());
+							filterCustomerAddress.setPostalCode(customerAddress.getPostalCode());
+							filterCustomerAddress.setCountry(customerAddress.getCountry());
+							filterCustomerAddress.setRegion(customerAddress.getRegion());
+							filterCustomerAddress.setAddressProof(customerAddress.getAddressProof());
+							filterCustomerAddress.setAddressProofPath(customerAddress.getAddressProofPath());
+							filterCustomerAddress.setStatus("COMPLEATE");
+							filterCustomerAddress.setAddressId(id);
+							try {
+								if (fieldValidation.isEmpty(customerAddress.getAddress2())) {
+									filterCustomerAddress.setAddress2(customerAddress.getAddress2());
+								}
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+
+							 CustomerAddress saveCustomerAddress = customerAddressRepo.save(filterCustomerAddress);
+							 
+
+							return saveCustomerAddress;
+
+						} else {
+							throw new VendorNotFoundException("Validation error");
+						}
+					case "ADMIN":
+						if ((fieldValidation.isEmpty(customerAddress.getAddressType()))
+								&& (fieldValidation.isEmpty(customerAddress.getAddress1()))
+								&& (fieldValidation.isEmpty(customerAddress.getCity()))
+								&& (fieldValidation.isEmpty(customerAddress.getPostalCode()))
+								&& (fieldValidation.isEmpty(customerAddress.getCountry()))
+								&& (fieldValidation.isEmpty(customerAddress.getRegion()))
+								&& (fieldValidation.isEmpty(customerAddress.getAddressProof()))
+								&& (fieldValidation.isEmpty(customerAddress.getAddressProofPath()))
+								&& (fieldValidation.isEmpty(customerAddress.getStatus()))) {
+							
+							filterCustomerAddress.setcId(companyProfileIdByCustomerId);
+							filterCustomerAddress.setAddressType(customerAddress.getAddressType());
+							filterCustomerAddress.setAddress1(customerAddress.getAddress1());
+							filterCustomerAddress.setCity(customerAddress.getCity());
+							filterCustomerAddress.setPostalCode(customerAddress.getPostalCode());
+							filterCustomerAddress.setCountry(customerAddress.getCountry());
+							filterCustomerAddress.setRegion(customerAddress.getRegion());
+							filterCustomerAddress.setAddressProof(customerAddress.getAddressProof());
+							filterCustomerAddress.setAddressProofPath(customerAddress.getAddressProofPath());
+							filterCustomerAddress.setStatus("COMPLEATE");
+							filterCustomerAddress.setAddressId(id);
+							try {
+								if (fieldValidation.isEmpty(customerAddress.getAddress2())) {
+									filterCustomerAddress.setAddress2(customerAddress.getAddress2());
+								}
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+
+							 CustomerAddress saveCustomerAddress = customerAddressRepo.save(filterCustomerAddress);
+							 
+
+							return saveCustomerAddress;
+
+						} else {
+							throw new VendorNotFoundException("Validation error");
+						}
+					case "USER":
+						throw new VendorNotFoundException("You don't have access to update address");
+						
+					default:
+						throw new VendorNotFoundException("The role is not present");
+					}
+				} else {
+					throw new VendorNotFoundException("You don't have permission to change another company address");
+				}
+			} else {
+				throw new VendorNotFoundException("Address not found");
+			}
+			
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+
+	}
 
 	@DeleteMapping("/address/{id}")
 	public CustomerAddress deleteCustomerAddress(@PathVariable Long id) {
