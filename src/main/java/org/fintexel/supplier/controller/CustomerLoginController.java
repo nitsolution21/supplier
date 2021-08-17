@@ -493,6 +493,7 @@ public class CustomerLoginController {
 						List<CustomerDepartments> customerDepartments = new ArrayList<>();
 						List<CustomerFunctionalitiesMaster> customerFunctionalitiesMaster = new ArrayList<>();
 						CustomerRegisterResponse customerRegisterResponse = new CustomerRegisterResponse();
+						customerRegisterResponse.setEmail(findById.get().getEmail());
 						customerRegisterResponse.setUserId(findById.get().getUserId());
 						customerRegisterResponse.setcId(findById.get().getcId());
 						customerRegisterResponse.setName(findById.get().getName());
