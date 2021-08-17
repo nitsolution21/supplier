@@ -473,42 +473,89 @@ public class CustomerLoginController {
 	}
 	
 	@GetMapping("/registration")
-	public CustomerRegisterResponse getRegistration(@RequestHeader(name = "Authorization") String token) {
+	public List<CustomerRegisterResponse> getRegistration(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerLoginController.getRegistration()");
 		try {
 			if(getCustomerDetails.getCustomerIdFromToken(token) != (-1)) {
 				long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
-				CustomerRegisterResponse customerRegisterResponse = new CustomerRegisterResponse();
-				CustomerUserRoles userRoles = new CustomerUserRoles();
-				CustomerUserDepartments department = new CustomerUserDepartments();
-				CustomerUserFunctionaliti functionality = new CustomerUserFunctionaliti();
-				List<CustomerDepartments> customerDepartments = new ArrayList<>();
-				List<CustomerFunctionalitiesMaster> customerFunctionalitiesMaster = new ArrayList<>();
-				Optional<CustomerRegister> findById = customerRegisterRepo.findById(customerIdFromToken);
-				CustomerRegister customerRegister = findById.get();
-				customerRegisterResponse.setUserId(customerRegister.getUserId());
-				customerRegisterResponse.setcId(customerRegister.getcId());   
-				customerRegisterResponse.setName(customerRegister.getName());
-				customerRegisterResponse.setUsername(customerRegister.getUsername());
-				Optional<CustomerUserRoles> findByUserIdRole = customerUserRolesRepo.findByUserId(customerRegister.getUserId());
-				CustomerUserRoles customerUserRoles = findByUserIdRole.get();
-				RolesMaster rolesMaster = rolesMasterRepo.findById(customerUserRoles.getRoleId()).get();
-				customerRegisterResponse.setRole(rolesMaster.getRole());
-				List<CustomerUserDepartments> findByUserIdDept = customerUserDepartmentsRepo.findByUserId(customerUserRoles.getUserId());
-				for (CustomerUserDepartments dept : findByUserIdDept) {
-					CustomerDepartments tempCustomerDepartments = customerDepartmentsRepo.findById(dept.getDepartmentId()).get();
-					customerDepartments.add(tempCustomerDepartments);
-				}
+				long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
 				
-				customerRegisterResponse.setCustomerDepartments(customerDepartments);
-				List<CustomerUserFunctionaliti> findByUserIdFunctionality = customerUserFunctionalitiRepo.findByUserId(customerUserRoles.getUserId());
-				for (CustomerUserFunctionaliti func : findByUserIdFunctionality) {
-					CustomerFunctionalitiesMaster tempCustomerFunctionalitiesMaster = customerFunctionalitiesMasterRepo.findById(func.getfId()).get();
-					customerFunctionalitiesMaster.add(tempCustomerFunctionalitiesMaster);
-				}
-				customerRegisterResponse.setFunctionality(customerFunctionalitiesMaster);
+				LOGGER.info("Profile id is:  >>>"+companyProfileIdByCustomerId);
+				List<CustomerRegister> finAllCustomerdBycId = customerRegisterRepo.findBycId(companyProfileIdByCustomerId);
+				List<CustomerRegisterResponse> customerRegisterResponseList = new ArrayList<>();
 				
-				return customerRegisterResponse;
+				LOGGER.info("finAllCustomerdBycId>>>>>> "+finAllCustomerdBycId.toString());
+				
+				finAllCustomerdBycId.forEach(customer -> {
+					try {
+						Optional<CustomerRegister> findById = customerRegisterRepo.findById(customer.getUserId());
+						LOGGER.info(findById.get().toString());
+						List<CustomerDepartments> customerDepartments = new ArrayList<>();
+						List<CustomerFunctionalitiesMaster> customerFunctionalitiesMaster = new ArrayList<>();
+						CustomerRegisterResponse customerRegisterResponse = new CustomerRegisterResponse();
+						customerRegisterResponse.setUserId(findById.get().getUserId());
+						customerRegisterResponse.setcId(findById.get().getcId());
+						customerRegisterResponse.setName(findById.get().getName());
+						customerRegisterResponse.setUsername(findById.get().getUsername());
+						Optional<CustomerUserRoles> findByUserIdRole = customerUserRolesRepo.findByUserId(findById.get().getUserId());
+						LOGGER.info(findByUserIdRole.get().toString());
+						CustomerUserRoles customerUserRoles = findByUserIdRole.get();
+						RolesMaster rolesMaster = rolesMasterRepo.findById(customerUserRoles.getRoleId()).get();
+						LOGGER.info( "oo  " +rolesMaster.toString());
+						customerRegisterResponse.setRole(rolesMaster.getRole());
+						List<CustomerUserDepartments> findByUserIdDept = customerUserDepartmentsRepo.findByUserId(customerUserRoles.getUserId());
+						for (CustomerUserDepartments dept : findByUserIdDept) {
+							CustomerDepartments tempCustomerDepartments = customerDepartmentsRepo.findById(dept.getDepartmentId()).get();
+							customerDepartments.add(tempCustomerDepartments);
+						}
+						
+						customerRegisterResponse.setCustomerDepartments(customerDepartments);
+						List<CustomerUserFunctionaliti> findByUserIdFunctionality = customerUserFunctionalitiRepo.findByUserId(customerUserRoles.getUserId());
+						for (CustomerUserFunctionaliti func : findByUserIdFunctionality) {
+							CustomerFunctionalitiesMaster tempCustomerFunctionalitiesMaster = customerFunctionalitiesMasterRepo.findById(func.getfId()).get();
+							customerFunctionalitiesMaster.add(tempCustomerFunctionalitiesMaster);
+						}
+						customerRegisterResponse.setFunctionality(customerFunctionalitiesMaster);
+						
+						LOGGER.info( "oo p " +customerRegisterResponse.toString());
+						
+						customerRegisterResponseList.add(customerRegisterResponse);
+					}catch(Exception e) {
+						System.out.println("error  " + customer.getUserId());					}
+					
+				});
+				
+//				CustomerUserRoles userRoles = new CustomerUserRoles();
+//				CustomerUserDepartments department = new CustomerUserDepartments();
+//				CustomerUserFunctionaliti functionality = new CustomerUserFunctionaliti();
+//				List<CustomerDepartments> customerDepartments = new ArrayList<>();
+//				List<CustomerFunctionalitiesMaster> customerFunctionalitiesMaster = new ArrayList<>();
+//				
+//				CustomerRegister customerRegister = findById.get();
+//				customerRegisterResponse.setUserId(customerRegister.getUserId());
+//				customerRegisterResponse.setcId(customerRegister.getcId());   
+//				customerRegisterResponse.setName(customerRegister.getName());
+//				customerRegisterResponse.setUsername(customerRegister.getUsername());
+//				Optional<CustomerUserRoles> findByUserIdRole = customerUserRolesRepo.findByUserId(customerRegister.getUserId());
+//				CustomerUserRoles customerUserRoles = findByUserIdRole.get();
+//				RolesMaster rolesMaster = rolesMasterRepo.findById(customerUserRoles.getRoleId()).get();
+//				customerRegisterResponse.setRole(rolesMaster.getRole());
+//				List<CustomerUserDepartments> findByUserIdDept = customerUserDepartmentsRepo.findByUserId(customerUserRoles.getUserId());
+//				for (CustomerUserDepartments dept : findByUserIdDept) {
+//					CustomerDepartments tempCustomerDepartments = customerDepartmentsRepo.findById(dept.getDepartmentId()).get();
+//					customerDepartments.add(tempCustomerDepartments);
+//				}
+//				
+//				customerRegisterResponse.setCustomerDepartments(customerDepartments);
+//				List<CustomerUserFunctionaliti> findByUserIdFunctionality = customerUserFunctionalitiRepo.findByUserId(customerUserRoles.getUserId());
+//				for (CustomerUserFunctionaliti func : findByUserIdFunctionality) {
+//					CustomerFunctionalitiesMaster tempCustomerFunctionalitiesMaster = customerFunctionalitiesMasterRepo.findById(func.getfId()).get();
+//					customerFunctionalitiesMaster.add(tempCustomerFunctionalitiesMaster);
+//				}
+//				customerRegisterResponse.setFunctionality(customerFunctionalitiesMaster);
+				
+				LOGGER.info( "final " +customerRegisterResponseList.toString());
+				return customerRegisterResponseList;
 				
 			}else {
 				throw new VendorNotFoundException("No Data Found");
