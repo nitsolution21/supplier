@@ -481,8 +481,8 @@ public class CustomerLoginController {
 				CustomerUserRoles userRoles = new CustomerUserRoles();
 				CustomerUserDepartments department = new CustomerUserDepartments();
 				CustomerUserFunctionaliti functionality = new CustomerUserFunctionaliti();
-				List<CustomerDepartments> customerDepartments = null;
-				List<CustomerFunctionalitiesMaster> customerFunctionalitiesMaster = null;
+				List<CustomerDepartments> customerDepartments = new ArrayList<>();
+				List<CustomerFunctionalitiesMaster> customerFunctionalitiesMaster = new ArrayList<>();
 				Optional<CustomerRegister> findById = customerRegisterRepo.findById(customerIdFromToken);
 				CustomerRegister customerRegister = findById.get();
 				customerRegisterResponse.setUserId(customerRegister.getUserId());
