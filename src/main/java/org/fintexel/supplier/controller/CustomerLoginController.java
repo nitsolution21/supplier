@@ -509,22 +509,27 @@ public class CustomerLoginController {
 						for (CustomerUserDepartments dept : findByUserIdDept) {
 							CustomerDepartments tempCustomerDepartments = customerDepartmentsRepo.findById(dept.getDepartmentId()).get();
 							customerDepartments.add(tempCustomerDepartments);
-							deptTemp = deptTemp + customer.getUserId()+":"+ tempCustomerDepartments.getDepartmentName() + "," ;
+							deptTemp = deptTemp + tempCustomerDepartments.getDepartmentName() + "," ;
 						}
+						deptTemp = deptTemp.substring(0,deptTemp.lastIndexOf(","));
 						customerRegisterResponse.setDepartment(deptTemp);
 						customerRegisterResponse.setCustomerDepartments(customerDepartments);
 						List<CustomerUserFunctionaliti> findByUserIdFunctionality = customerUserFunctionalitiRepo.findByUserId(customerUserRoles.getUserId());
+						String funTemp = "";
 						for (CustomerUserFunctionaliti func : findByUserIdFunctionality) {
 							CustomerFunctionalitiesMaster tempCustomerFunctionalitiesMaster = customerFunctionalitiesMasterRepo.findById(func.getfId()).get();
 							customerFunctionalitiesMaster.add(tempCustomerFunctionalitiesMaster);
+							funTemp = funTemp + tempCustomerFunctionalitiesMaster.getfName() + ",";
 						}
+						funTemp = funTemp.substring(0,funTemp.lastIndexOf(","));
 						customerRegisterResponse.setFunctionality(customerFunctionalitiesMaster);
+						customerRegisterResponse.setCustomerFunctionality(funTemp);
 						
 						LOGGER.info( "oo p " +customerRegisterResponse.toString());
 						
 						customerRegisterResponseList.add(customerRegisterResponse);
 					}catch(Exception e) {
-						System.out.println("error  " + customer.getUserId());					}
+						LOGGER.info("error  " + customer.getUserId());				}
 					
 				});
 				
