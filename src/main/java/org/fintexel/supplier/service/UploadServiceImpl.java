@@ -113,7 +113,7 @@ public class UploadServiceImpl implements UploadService {
 
 	Map<String, String> errorMap = new HashMap<>();
 
-	/* ===================== BULK UPLOAD START ========================= */
+	
 
 	@Override
 	public boolean upload(MultipartFile uploadFile) {
@@ -126,7 +126,7 @@ public class UploadServiceImpl implements UploadService {
 
 		File fileName = new File(uploadFile.getOriginalFilename());
 
-		Sheet sheet = loadTemplate(fileName, sheetName);
+		Sheet sheet = loadTemplate(uploadFile, sheetName);
 
 		int minRow = sheet.getFirstRowNum() + 1;
 		int maxRow = sheet.getLastRowNum();
@@ -142,6 +142,8 @@ public class UploadServiceImpl implements UploadService {
 				Cell cells = rows.getCell(c);
 				String cellValue = dataFormatter.formatCellValue(cells);
 
+				System.out.println("Value is ==========  "+cellValue);
+				
 				if (cellValue.equals(null) || cellValue.equals("")) {
 					returnFlag = true;
 					UploadErrorEntity.setRowNumber(i);
@@ -731,7 +733,7 @@ public class UploadServiceImpl implements UploadService {
 	@Override
 	public boolean validateSupplierBank(UploadEntity supBank, String type) {
 
-		LOGGER.info("Inside validateSupplierBank()");
+		LOGGER.info("Inside validateSupplierBank()--");
 		try {
 
 			if (fieldValidation.isEmpty(supBank.getAccountHolder())
@@ -747,7 +749,7 @@ public class UploadServiceImpl implements UploadService {
 //					&& fieldValidation.isEmpty(supBank.getSwiftCode())
 //					&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())
 			) {
-
+				
 				if (type.equals("UPLOAD")) {
 
 					Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
@@ -769,11 +771,13 @@ public class UploadServiceImpl implements UploadService {
 					}
 
 				} else if (type.equals("UPDATE")) {
-
+					
 					if (fieldValidation.isEmpty(supBank.getBankId())) {
 						Optional<SupBank> findById = supBankRepo.findById(supBank.getBankId());
+						LOGGER.info("Inside validateSupplierBank()-- if");
 						if (findById.isPresent()) {
-							if (findById.get().getStatus().equals("DELETE")) {
+							
+							if (!findById.get().getStatus().equals("DELETE")) {
 								Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
 								List<SupDetails> findByRegisterId = supDetailsRepo
 										.findByRegisterId(findByEmail.get().getRegisterId());
@@ -782,11 +786,14 @@ public class UploadServiceImpl implements UploadService {
 											"In Supplier Bank , Supplier Details is Not Created");
 									return false;
 								} else {
+									
 									uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
 									Optional<SupBank> findBySwiftCode = supBankRepo
 											.findBySwiftCode(supBank.getSwiftCode());
-									if (!findBySwiftCode.isPresent()) {
-										uploadService.bulkUploadSupplierBank(supBank, "UPLOAD");
+									LOGGER.info("Inside validateSupplierBank()-- present " +findBySwiftCode.toString());
+									if (findBySwiftCode.isPresent()) {
+									
+										uploadService.bulkUploadSupplierBank(supBank, "UPDATE");
 										return true;
 									} else {
 										errorMap.put(uploadEntity.getEmail(), "In Supplier bank Swift Code is Present");
@@ -871,7 +878,7 @@ public class UploadServiceImpl implements UploadService {
 							} else {
 								supDepartment.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
 								supDepartment.setDepartmentId(findById.get().getDepartmentId());
-								uploadService.bulkUploadSupplierDepartment(supDepartment, "UPLOAD");
+								uploadService.bulkUploadSupplierDepartment(supDepartment, "UPDATE");
 								return true;
 							}
 						} else {
@@ -917,12 +924,15 @@ public class UploadServiceImpl implements UploadService {
 							uploadService.bulkUploadSupplierContact(contact , "UPLOAD");
 							return true;
 						}else if(type.equals("UPDATE")) {
-							Optional<SupContract> findById = supContractRepo.findById(contact.getAddressId());
+							
+							Optional<SupContract> findById = supContractRepo.findById(contact.getContractId());
+							LOGGER.info("Inside - validateSupplierContact() --");
 							if(findById.isPresent()) {
-								
+							
 								if(findById.get().getStatus().equals("DELETE")) {
 									return false;
 								}else {
+									
 									contact.setContractId(findById.get().getContractId());
 									uploadService.bulkUploadSupplierContact(contact , "UPDATE");
 									return true;
@@ -1041,7 +1051,7 @@ public class UploadServiceImpl implements UploadService {
 	@Override
 	public void bulkUploadSupplierBank(UploadEntity supBank, String type) {
 
-		LOGGER.info("Inside bulkUploadSupplierBank()");
+		LOGGER.info("Inside bulkUploadSupplierBank()--");
 		try {
 			SupBank bank = new SupBank();
 			bank.setSupplierCode(supBank.getSupplierCode());
@@ -1077,10 +1087,10 @@ public class UploadServiceImpl implements UploadService {
 			}
 
 			bank.setStatus("APPROVED");
-
+			LOGGER.info("Inside bulkUploadSupplierBank()-- ststus");
 			if (type.equals("UPLOAD")) {
 				SupBank postData = this.supBankRepo.save(bank);
-			} else if (type.equals("UPLOAD")) {
+			} else if (type.equals("UPDATE")) {
 				bank.setBankId(supBank.getBankId());
 				SupBank postData = this.supBankRepo.save(bank);
 			}
@@ -1112,10 +1122,11 @@ public class UploadServiceImpl implements UploadService {
 				errorMap.put(uploadEntity.getEmail(), e.getMessage());
 			}
 			department.setPhoneno(supDepartment.getPhoneno());
-
+			LOGGER.info("Inside bulkUploadSupplierDepartment() -- UPDATE" + type);
 			if(type.equals("UPLOAD")) {
 				supDepartmentRepo.save(department);
 			}else if(type.equals("UPDATE")) {
+				
 				department.setDepartmentId(supDepartment.getDepartmentId());
 				supDepartmentRepo.save(department);
 			}
@@ -1143,9 +1154,9 @@ public class UploadServiceImpl implements UploadService {
 			filterSupContract.setContractLocation(contact.getContractLocation());
 			filterSupContract.setStatus("APPROVED");
 			
-			if(type.equals("UPDATE")) {
+			if(type.equals("UPLOAD")) {
 				supContractRepo.save(filterSupContract);
-			}else if(type.equals("UPLOAD")) {
+			}else if(type.equals("UPDATE")) {
 				filterSupContract.setContractId(contact.getContractId());
 				supContractRepo.save(filterSupContract);
 			}
@@ -1156,10 +1167,11 @@ public class UploadServiceImpl implements UploadService {
 
 	}
 
-	/* ===================== BULK UPLOAD END ========================= */
+	
 
-	private Sheet loadTemplate(File fileName, String sheetName) {
+	private Sheet loadTemplate(MultipartFile uploadFile, String sheetName) {
 
+		 File fileName = new File(uploadFile.getOriginalFilename());
 		XSSFWorkbook workbook = null;
 		OPCPackage pkg;
 		Sheet sheet = null;
@@ -1170,7 +1182,8 @@ public class UploadServiceImpl implements UploadService {
 			if (fileName != null) {
 
 				pkg = OPCPackage.open("/home/soumen/Downloads/dboxupdate.xlsx");
-				workbook = new XSSFWorkbook(pkg);
+//				workbook = new XSSFWorkbook(pkg);
+				workbook = new XSSFWorkbook(uploadFile.getInputStream());
 				count = workbook.getNumberOfSheets();
 				if (count < 0) {
 
@@ -1189,7 +1202,7 @@ public class UploadServiceImpl implements UploadService {
 		return sheet;
 	}
 
-	/* ========================= BULK UPDATE START ============================ */
+	
 
 	@Override
 	public boolean update(MultipartFile uploadFile) {
@@ -1200,7 +1213,7 @@ public class UploadServiceImpl implements UploadService {
 		boolean returnFlag = true;
 
 		File fileName = new File(uploadFile.getOriginalFilename());
-		Sheet sheet = loadTemplate(fileName, sheetName);
+		Sheet sheet = loadTemplate(uploadFile, sheetName);
 
 		int minRow = sheet.getFirstRowNum() + 1;
 		int maxRow = sheet.getLastRowNum();
@@ -1215,6 +1228,9 @@ public class UploadServiceImpl implements UploadService {
 				returnFlag = false;
 				Cell cells = rows.getCell(c);
 				String cellValue = dataFormatter.formatCellValue(cells);
+				
+				System.out.println("Cell Value " + cellValue);
+				
 				if (cellValue.equals(null) || cellValue.equals("")) {
 					returnFlag = true;
 					UploadErrorEntity.setRowNumber(i);
@@ -1224,6 +1240,7 @@ public class UploadServiceImpl implements UploadService {
 				}
 
 			}
+			
 
 			try {
 				uploadEntity.setEmail(rows.getCell(0).toString());
@@ -1355,18 +1372,23 @@ public class UploadServiceImpl implements UploadService {
 
 				try {
 
-					uploadEntity.setContractId((long) Float.parseFloat(rows.getCell(35).toString()));
-					uploadEntity.setContractType(rows.getCell(36).toString());
-
-					uploadEntity.setContractTerms((int) Float.parseFloat(rows.getCell(37).toString()));
-					uploadEntity.setContractProof(rows.getCell(38).toString());
-					uploadEntity.setContractLocation(rows.getCell(39).toString());
-
+					uploadEntity.setContractId((long) Float.parseFloat(rows.getCell(36).toString()));
+					System.out.println("try "+ uploadEntity.getContractId());
+					uploadEntity.setContractType(rows.getCell(37).toString());
+					System.out.println("try "+ uploadEntity.getContractType());
+					uploadEntity.setContractTerms((int) Float.parseFloat(rows.getCell(38).toString()));
+					System.out.println("try "+ uploadEntity.getContractTerms());
+					uploadEntity.setContractProof(rows.getCell(39).toString());
+					System.out.println("try "+ uploadEntity.getContractProof());
+					uploadEntity.setContractLocation(rows.getCell(40).toString());
+					System.out.println("try "+ uploadEntity.getContractLocation());
 					uploadService.validateSupplierContact(uploadEntity , "UPDATE");
+					
 
 					/* ------------------- BULK CONTACT END ----------------------------------- */
 
 				} catch (Exception e) {
+					System.out.println("catch  " + e.getMessage());
 					errorMap.put(uploadEntity.getEmail(), "In Upload(contact)  " + e.getMessage());
 				}
 			} catch (Exception e) {
@@ -1378,6 +1400,5 @@ public class UploadServiceImpl implements UploadService {
 		return false;
 	}
 
-	/* ========================= BULK UPDATE END ============================ */
 
 }

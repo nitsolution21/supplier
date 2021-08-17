@@ -1,5 +1,6 @@
 package org.fintexel.supplier.controller;
 
+import java.io.File;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,8 +48,22 @@ public class UploadController {
 		byte[] bytes;
 		if(uploadFile.isEmpty()) {
 			LOGGER.info("File is Empty");
+			throw new VendorNotFoundException("File is Empty");
+			
 		}else {
-			LOGGER.info("File name is - "+uploadFile.getName());
+			String originalFilename = uploadFile.getOriginalFilename();
+			String substring = originalFilename.substring(uploadFile.getOriginalFilename().lastIndexOf(".")+1, uploadFile.getOriginalFilename().length());
+			if(substring.toLowerCase().equals("xls") || (substring.toLowerCase().equals("xlsb")) || substring.toLowerCase().equals("xlsm") || substring.toLowerCase().equals("xlsx") || substring.toLowerCase().equals("ods"))  {
+
+				
+			}else {
+				
+				
+				throw new VendorNotFoundException("File Type Should be xls/xlsb/xlsm/xlsx/ods");
+			}
+			
+			
+//			LOGGER.info("File name is - "+uploadFile.getName());
 		}
 		
 		

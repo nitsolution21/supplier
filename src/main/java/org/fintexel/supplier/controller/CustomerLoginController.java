@@ -58,6 +58,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -67,6 +68,7 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/customer")
 public class CustomerLoginController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerLoginController.class);
+	
 	
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -467,6 +469,41 @@ public class CustomerLoginController {
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
+	}
+	
+	@GetMapping("/registration")
+	public CustomerRegisterResponse getRegistration(@RequestHeader String token) {
+		LOGGER.info("Inside - CustomerLoginController.getRegistration()");
+		try {
+			if(getCustomerDetails.getCustomerIdFromToken(token) != (-1)) {
+				long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+				CustomerRegisterResponse customerRegisterResponse = new CustomerRegisterResponse();
+				CustomerUserRoles userRoles = new CustomerUserRoles();
+				Optional<CustomerRegister> findById = customerRegisterRepo.findById(customerIdFromToken);
+				CustomerRegister customerRegister = findById.get();
+				customerRegisterResponse.setUserId(customerRegister.getUserId());
+				customerRegisterResponse.setcId(customerRegister.getcId());   
+				customerRegisterResponse.setName(customerRegister.getName());
+				customerRegisterResponse.setUsername(customerRegister.getUsername());
+				Optional<CustomerUserRoles> findByUserId = customerUserRolesRepo.findByUserId(customerRegister.getUserId());
+				CustomerUserRoles customerUserRoles = findByUserId.get();
+				RolesMaster rolesMaster = rolesMasterRepo.findById(customerUserRoles.getRoleId()).get();
+				customerRegisterResponse.setRole(rolesMaster.getRole());
+//				customerRegisterResponse.setUserId(customerRegister.getUserId());
+//				customerRegisterResponse.setUserId(customerRegister.getUserId());
+//				customerRegisterResponse.setUserId(customerRegister.getUserId());
+//				customerRegisterResponse.setUserId(customerRegister.getUserId());
+				return customerRegisterResponse;
+				
+			}else {
+				throw new VendorNotFoundException("No Data Found");
+			}
+			
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
 	}
 	
 	@GetMapping("/getRoles")
