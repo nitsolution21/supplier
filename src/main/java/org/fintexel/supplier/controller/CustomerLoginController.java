@@ -472,7 +472,7 @@ public class CustomerLoginController {
 	}
 	
 	@GetMapping("/registration")
-	public CustomerRegisterResponse getRegistration(@RequestHeader String token) {
+	public CustomerRegisterResponse getRegistration(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerLoginController.getRegistration()");
 		try {
 			if(getCustomerDetails.getCustomerIdFromToken(token) != (-1)) {
