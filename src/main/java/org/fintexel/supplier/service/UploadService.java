@@ -47,5 +47,14 @@ public interface UploadService {
 	
 	boolean update(MultipartFile uploadFile);
 	
+	boolean uploadCurrencyType(MultipartFile uploadFile);
+	
+	boolean uploadRegType(MultipartFile uploadFile);
+	
+	boolean uploadRole(MultipartFile uploadFile);
+	
+	boolean uploadDept(MultipartFile uploadFile);
+	
+	boolean uploadFunc(MultipartFile uploadFile);
 
 }

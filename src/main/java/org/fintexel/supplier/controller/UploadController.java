@@ -151,5 +151,161 @@ public class UploadController {
 		}
 
 	}
+	
+	
+	
+	
+	@PostMapping("/uploadCurrencyType")
+	public String uploadCurrencyType(@RequestParam("file") MultipartFile file) {
+		
+		LOGGER.info("Inside - UploadController.uploadRegType()");
+		try {
+			
+			if(file.isEmpty()) {
+				LOGGER.info("File is Empty");
+			}else {
+				LOGGER.info("File name is - "+file.getName());
+			}
+			
+			Date date = new Date();
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			String strDate= formatter.format(date);		
+			String uploadRefID = file.getOriginalFilename()+"_"+strDate.toString();
+			LOGGER.info("Ref ID  - "+uploadRefID);
+
+			
+			boolean flag = uploadService.uploadCurrencyType(file);
+			LOGGER.info("return Flag  - "+flag);
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+		
+		return null;
+	}
+	
+	@PostMapping("/uploadRegType")
+	public String uploadRegType(@RequestParam("file") MultipartFile file) {
+		
+		LOGGER.info("Inside - UploadController.uploadRegType()");
+		try {
+			
+			if(file.isEmpty()) {
+				LOGGER.info("File is Empty");
+			}else {
+				LOGGER.info("File name is - "+file.getName());
+			}
+			
+			Date date = new Date();
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			String strDate= formatter.format(date);		
+			String uploadRefID = file.getOriginalFilename()+"_"+strDate.toString();
+			LOGGER.info("Ref ID  - "+uploadRefID);
+
+			
+			boolean flag = uploadService.uploadRegType(file);
+			LOGGER.info("return Flag  - "+flag);
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+		
+		return null;
+	}
+	
+	
+	@PostMapping("/uploadDept")
+	public String uploadDept(@RequestParam("file") MultipartFile file) {
+		
+		LOGGER.info("Inside - UploadController.uploadRegType()");
+		try {
+			
+			if(file.isEmpty()) {
+				LOGGER.info("File is Empty");
+			}else {
+				LOGGER.info("File name is - "+file.getName());
+			}
+			
+			Date date = new Date();
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			String strDate= formatter.format(date);		
+			String uploadRefID = file.getOriginalFilename()+"_"+strDate.toString();
+			LOGGER.info("Ref ID  - "+uploadRefID);
+
+			
+			boolean flag = uploadService.uploadDept(file);
+			LOGGER.info("return Flag  - "+flag);
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+		
+		return null;
+	}
+
+	
+	@PostMapping("/uploadRole")
+	public String uploadRole(@RequestParam("file") MultipartFile file) {
+		
+		LOGGER.info("Inside - UploadController.uploadRegType()");
+		try {
+			
+			if(file.isEmpty()) {
+				LOGGER.info("File is Empty");
+			}else {
+				LOGGER.info("File name is - "+file.getName());
+			}
+			
+			Date date = new Date();
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			String strDate= formatter.format(date);		
+			String uploadRefID = file.getOriginalFilename()+"_"+strDate.toString();
+			LOGGER.info("Ref ID  - "+uploadRefID);
+
+			
+			boolean flag = uploadService.uploadRole(file);
+			LOGGER.info("return Flag  - "+flag);
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+		
+		return null;
+	}
+	
+	@PostMapping("/uploadFunc")
+	public String uploadFunc(@RequestParam("file") MultipartFile file) {
+		
+		LOGGER.info("Inside - UploadController.uploadRegType()");
+		try {
+			
+			if(file.isEmpty()) {
+				LOGGER.info("File is Empty");
+			}else {
+				LOGGER.info("File name is - "+file.getName());
+			}
+			
+			Date date = new Date();
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			String strDate= formatter.format(date);		
+			String uploadRefID = file.getOriginalFilename()+"_"+strDate.toString();
+			LOGGER.info("Ref ID  - "+uploadRefID);
+
+			
+			boolean flag = uploadService.uploadFunc(file);
+			LOGGER.info("return Flag  - "+flag);
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+		
+		return null;
+	}
+
 
 }
