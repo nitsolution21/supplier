@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CustomerUserDepartmentsRepo extends JpaRepository<CustomerUserDepartments, Long> {
 	
 	public List<CustomerUserDepartments> findByUserId(long userId);
+	
+	public void deleteByUserId(long userId);
 }

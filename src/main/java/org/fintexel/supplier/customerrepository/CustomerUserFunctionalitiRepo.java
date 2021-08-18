@@ -7,5 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CustomerUserFunctionalitiRepo extends JpaRepository<CustomerUserFunctionaliti, Long> {
 	
-	List<CustomerUserFunctionaliti> findByUserId(long userId);
+	public List<CustomerUserFunctionaliti> findByUserId(long userId);
+	
+	public void deleteByUserId(long userId);
 }

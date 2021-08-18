@@ -7,6 +7,8 @@ public class CustomerRegisterResponse {
 	private String email;
 	private String name;
 	private String role;
+	private String department;
+	private String customerFunctionality;
 	private  List<CustomerDepartments> customerDepartments;
 	private List<CustomerFunctionalitiesMaster> functionality;
 	private String access;
@@ -25,14 +27,16 @@ public class CustomerRegisterResponse {
 		// TODO Auto-generated constructor stub
 	}
 
-	public CustomerRegisterResponse(String email, String name, String role,
-			List<CustomerDepartments> customerDepartments, List<CustomerFunctionalitiesMaster> functionality,
-			String access, long cId, long userId, String username, String password, String status, String createdBy,
-			Date createdOn, String updatedBy, Date updatedOn) {
+	public CustomerRegisterResponse(String email, String name, String role, String department,
+			String customerFunctionality, List<CustomerDepartments> customerDepartments,
+			List<CustomerFunctionalitiesMaster> functionality, String access, long cId, long userId, String username,
+			String password, String status, String createdBy, Date createdOn, String updatedBy, Date updatedOn) {
 		super();
 		this.email = email;
 		this.name = name;
 		this.role = role;
+		this.department = department;
+		this.customerFunctionality = customerFunctionality;
 		this.customerDepartments = customerDepartments;
 		this.functionality = functionality;
 		this.access = access;
@@ -69,6 +73,22 @@ public class CustomerRegisterResponse {
 
 	public void setRole(String role) {
 		this.role = role;
+	}
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	public String getCustomerFunctionality() {
+		return customerFunctionality;
+	}
+
+	public void setCustomerFunctionality(String customerFunctionality) {
+		this.customerFunctionality = customerFunctionality;
 	}
 
 	public List<CustomerDepartments> getCustomerDepartments() {
@@ -166,6 +186,18 @@ public class CustomerRegisterResponse {
 	public void setUpdatedOn(Date updatedOn) {
 		this.updatedOn = updatedOn;
 	}
+
+	@Override
+	public String toString() {
+		return "CustomerRegisterResponse [email=" + email + ", name=" + name + ", role=" + role + ", department="
+				+ department + ", customerFunctionality=" + customerFunctionality + ", customerDepartments="
+				+ customerDepartments + ", functionality=" + functionality + ", access=" + access + ", cId=" + cId
+				+ ", userId=" + userId + ", username=" + username + ", password=" + password + ", status=" + status
+				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn="
+				+ updatedOn + "]";
+	}
+
+	
 	
 	
 	
