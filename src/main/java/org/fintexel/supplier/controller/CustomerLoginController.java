@@ -608,98 +608,240 @@ public class CustomerLoginController {
 
 	}
 
-//	@PutMapping("/registration/{regId}")
-//	public CustomerRegisterResponse updateRegistration(@PathVariable long regId,
-//			@RequestBody() CustomerRegisterRequest customerRegisterRequest,
-//			@RequestHeader(name = "Authorization") String token) {
-//		LOGGER.info("Inside - CustomerLoginController.getRegistration()");
-//		try {
-//			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
-//			String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
-//			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
-//			CustomerRegister customerRegister = new CustomerRegister();
-//			CustomerUserRoles userRoles = new CustomerUserRoles();
-//			CustomerUserFunctionaliti functionality = new CustomerUserFunctionaliti();
-//			CustomerUserDepartments department = new CustomerUserDepartments();
-//			switch (roleByUserId) {
-//			case "SADMIN":
-//				Optional<CustomerRegister> findCustomerRegistrationById = customerRegisterRepo.findById(regId);
-//				if (findCustomerRegistrationById.isPresent()) {
-//					if (findCustomerRegistrationById.get().getcId() == companyProfileIdByCustomerId) {
-//						if (fieldValidation.isEmpty(customerRegisterRequest.getName())
-//								&& fieldValidation.isEmpty(customerRegisterRequest.getEmail())
-//								&& fieldValidation.isEmpty(customerRegisterRequest.getRole())
-//								&& fieldValidation.isEmpty(customerRegisterRequest.getDepartment())
-//								&& fieldValidation.isEmpty(customerRegisterRequest.getFuncationality())) {
-//							if (fieldValidation.isEmail(customerRegisterRequest.getEmail())) {
-//								customerRegister.setcId(companyProfileIdByCustomerId);
-//								customerRegister.setCreatedBy(findCustomerRegistrationById.get().getCreatedBy());
-//								customerRegister.setCreatedOn(findCustomerRegistrationById.get().getCreatedOn());
-//								customerRegister.setEmail(customerRegisterRequest.getEmail());
-//								customerRegister.setName(customerRegisterRequest.getName());
-//								customerRegister.setPassword(findCustomerRegistrationById.get().getPassword());
-//								customerRegister.setStatus(findCustomerRegistrationById.get().getStatus());
-//								customerRegister.setUserId(regId);
-//								customerRegister.setUsername(findCustomerRegistrationById.get().getUsername());
-//
-//								customerRegisterRepo.save(customerRegister);
-//
-//								Optional<CustomerUserRoles> findUserroleByUserId = customerUserRolesRepo
-//										.findByUserId(regId);
-//								if (findUserroleByUserId.isPresent()) {
-//									userRoles.setCreatedBy(findUserroleByUserId.get().getCreatedBy());
-//									userRoles.setCreatedOn(findUserroleByUserId.get().getCreatedOn());
-//									userRoles.setRoleId(customerRegisterRequest.getRole());
-//									userRoles.setUserId(regId);
-//									customerUserRolesRepo.save(userRoles);
-//
-//								} else {
+	@PutMapping("/registration/{regId}")
+	public CustomerRegisterResponse updateRegistration(@PathVariable long regId,
+			@RequestBody() CustomerRegisterRequest customerRegisterRequest,
+			@RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - CustomerLoginController.getRegistration()");
+		try {
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
+			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+			CustomerRegister customerRegister = new CustomerRegister();
+			CustomerUserRoles userRoles = new CustomerUserRoles();
+			CustomerUserFunctionaliti functionality = new CustomerUserFunctionaliti();
+			CustomerUserDepartments department = new CustomerUserDepartments();
+			CustomerRegisterResponse customerRegisterResponse = new CustomerRegisterResponse();
+			Optional<CustomerRegister> findCustomerRegistrationById = customerRegisterRepo.findById(regId);
+			
+			switch (roleByUserId) {
+			case "SADMIN":
+				if (findCustomerRegistrationById.isPresent()) {
+					if (findCustomerRegistrationById.get().getcId() == companyProfileIdByCustomerId) {
+						if (fieldValidation.isEmpty(customerRegisterRequest.getName())
+								&& fieldValidation.isEmpty(customerRegisterRequest.getEmail())
+								&& fieldValidation.isEmpty(customerRegisterRequest.getRole())
+								&& fieldValidation.isEmpty(customerRegisterRequest.getDepartment())
+								&& fieldValidation.isEmpty(customerRegisterRequest.getFuncationality())) {
+							if (fieldValidation.isEmail(customerRegisterRequest.getEmail())) {
+								customerRegister.setcId(companyProfileIdByCustomerId);
+								customerRegister.setCreatedBy(findCustomerRegistrationById.get().getCreatedBy());
+								customerRegister.setCreatedOn(findCustomerRegistrationById.get().getCreatedOn());
+								customerRegister.setEmail(customerRegisterRequest.getEmail());
+								customerRegister.setName(customerRegisterRequest.getName());
+								customerRegister.setPassword(findCustomerRegistrationById.get().getPassword());
+								customerRegister.setStatus(findCustomerRegistrationById.get().getStatus());
+								customerRegister.setUserId(regId);
+								customerRegister.setUsername(findCustomerRegistrationById.get().getUsername());
+
+								CustomerRegister updateCustomer = customerRegisterRepo.save(customerRegister);
+								
+								customerRegisterResponse.setcId(updateCustomer.getcId());
+								customerRegisterResponse.setCreatedBy(updateCustomer.getCreatedBy());
+								customerRegisterResponse.setCreatedOn(updateCustomer.getCreatedOn());
+								customerRegisterResponse.setEmail(updateCustomer.getEmail());
+								customerRegisterResponse.setName(updateCustomer.getName());
+								customerRegisterResponse.setStatus(updateCustomer.getStatus());
+								customerRegisterResponse.setUpdatedBy(updateCustomer.getUpdatedBy());
+								customerRegisterResponse.setUpdatedOn(updateCustomer.getUpdatedOn());
+
+								Optional<CustomerUserRoles> findUserroleByUserId = customerUserRolesRepo
+										.findByUserId(regId);
+								if (findUserroleByUserId.isPresent()) {
+									customerUserDepartmentsRepo.deleteById(regId);
+									userRoles.setRoleId(customerRegisterRequest.getRole());
+									userRoles.setUserId(regId);
+									CustomerUserRoles updateCustomerUserRoles = customerUserRolesRepo.save(userRoles);
+									
+									Optional<RolesMaster> findRoleFromMasterTableById = rolesMasterRepo.findById(updateCustomerUserRoles.getRoleId());
+									
+									customerRegisterResponse.setRole(findRoleFromMasterTableById.get().getRole());
+
+								} else {
 //									throw new VendorNotFoundException("Your role is not asign");
-//								}
-//
-//								List<CustomerUserFunctionaliti> findFunctionalityByUserId = customerUserFunctionalitiRepo.findByUserId(regId);
-//								if (findFunctionalityByUserId.size() > 1) {
-//									
-//									findFunctionalityByUserId.forEach(userFunctionality -> {
-//										if (userFunctionality.getfId() == customerRegisterRequest.getFuncationality()) {
-//											customerUserFunctionalitiRepo.deleteById(regId);
-//											functionality.setfId(customerRegisterRequest.getFuncationality());
-//											functionality.setUserId(regId);
-//											customerUserFunctionalitiRepo.save(functionality);
-//										}
-//									});
-//									
-//								} else {
-//									throw new VendorNotFoundException("Your functionality is not asign");
-//								}
-//								
-//							} else {
-//								throw new VendorNotFoundException("Email not valid");
-//							}
-//
-//						} else {
-//							throw new VendorNotFoundException("All field required");
-//						}
-//					} else {
-//						throw new VendorNotFoundException("You don't update another company user Details");
-//					}
-//				} else {
-//					throw new VendorNotFoundException("Your Requested id is not present!!");
-//				}
-//				break;
-//			case "ADMIN":
-//
-//				break;
-//
-//			case "USER":
-//				throw new VendorNotFoundException("You don't have access to update user");
-//			default:
-//				throw new VendorNotFoundException("The role is not present");
-//			}
-//		} catch (Exception e) {
-//			throw new VendorNotFoundException(e.getMessage());
-//		}
-//	}
+									customerRegisterResponse.setRole("Your role is not asign");
+								}
+
+								List<CustomerUserFunctionaliti> findFunctionalityByUserId = customerUserFunctionalitiRepo.findByUserId(regId);
+								if (findFunctionalityByUserId.size() > 0) {
+									
+									findFunctionalityByUserId.forEach(userFunctionality -> {
+										if (userFunctionality.getfId() == customerRegisterRequest.getFuncationality()) {
+											customerUserFunctionalitiRepo.deleteById(regId);
+											functionality.setfId(customerRegisterRequest.getFuncationality());
+											functionality.setUserId(regId);
+											customerUserFunctionalitiRepo.save(functionality);
+										}
+									});
+									
+									List<CustomerFunctionalitiesMaster> listOfFunctionality = getCustomerDetails.getFunctionaliti(updateCustomer.getUserId());
+									customerRegisterResponse.setFunctionality(listOfFunctionality);
+									
+								} else {
+									throw new VendorNotFoundException("Functionality is not assign");
+								}
+								
+								List<CustomerUserDepartments> findDepartmentByUserId = customerUserDepartmentsRepo.findByUserId(regId);
+								if (findDepartmentByUserId.size() > 0) {
+									findDepartmentByUserId.forEach(userDepartment -> {
+										if (userDepartment.getUserId() == customerRegisterRequest.getDepartment()) {
+											
+											customerUserDepartmentsRepo.deleteById(customerRegisterRequest.getDepartment());
+											
+											department.setDepartmentId(customerRegisterRequest.getDepartment());
+											department.setUserId(regId);
+											
+											CustomerUserDepartments saveCustomerUserDepartments = customerUserDepartmentsRepo.save(department);
+										}
+									});
+									
+									List<CustomerDepartments> listOfDepartments = getCustomerDetails.getDepartments(regId);
+									
+									customerRegisterResponse.setCustomerDepartments(listOfDepartments);
+									
+								} else {
+									throw new VendorNotFoundException("Department is not assign");
+								}
+																
+								return customerRegisterResponse;
+								
+							} else {
+								throw new VendorNotFoundException("Email not valid");
+							}
+
+						} else {
+							throw new VendorNotFoundException("All field required");
+						}
+					} else {
+						throw new VendorNotFoundException("You don't update another company user Details");
+					}
+				} else {
+					throw new VendorNotFoundException("Your Requested id is not present!!");
+				}
+			case "ADMIN":
+				
+				if (findCustomerRegistrationById.isPresent()) {
+					if (findCustomerRegistrationById.get().getcId() == companyProfileIdByCustomerId) {
+						if (fieldValidation.isEmpty(customerRegisterRequest.getName())
+								&& fieldValidation.isEmpty(customerRegisterRequest.getEmail())
+								&& fieldValidation.isEmpty(customerRegisterRequest.getRole())
+								&& fieldValidation.isEmpty(customerRegisterRequest.getDepartment())
+								&& fieldValidation.isEmpty(customerRegisterRequest.getFuncationality())) {
+							if (fieldValidation.isEmail(customerRegisterRequest.getEmail())) {
+								customerRegister.setcId(companyProfileIdByCustomerId);
+								customerRegister.setCreatedBy(findCustomerRegistrationById.get().getCreatedBy());
+								customerRegister.setCreatedOn(findCustomerRegistrationById.get().getCreatedOn());
+								customerRegister.setEmail(customerRegisterRequest.getEmail());
+								customerRegister.setName(customerRegisterRequest.getName());
+								customerRegister.setPassword(findCustomerRegistrationById.get().getPassword());
+								customerRegister.setStatus(findCustomerRegistrationById.get().getStatus());
+								customerRegister.setUserId(regId);
+								customerRegister.setUsername(findCustomerRegistrationById.get().getUsername());
+
+								CustomerRegister updateCustomer = customerRegisterRepo.save(customerRegister);
+								
+								customerRegisterResponse.setcId(updateCustomer.getcId());
+								customerRegisterResponse.setCreatedBy(updateCustomer.getCreatedBy());
+								customerRegisterResponse.setCreatedOn(updateCustomer.getCreatedOn());
+								customerRegisterResponse.setEmail(updateCustomer.getEmail());
+								customerRegisterResponse.setName(updateCustomer.getName());
+								customerRegisterResponse.setStatus(updateCustomer.getStatus());
+								customerRegisterResponse.setUpdatedBy(updateCustomer.getUpdatedBy());
+								customerRegisterResponse.setUpdatedOn(updateCustomer.getUpdatedOn());
+
+								Optional<CustomerUserRoles> findUserroleByUserId = customerUserRolesRepo
+										.findByUserId(regId);
+								if (findUserroleByUserId.isPresent()) {
+									customerUserDepartmentsRepo.deleteById(regId);
+									userRoles.setRoleId(customerRegisterRequest.getRole());
+									userRoles.setUserId(regId);
+									CustomerUserRoles updateCustomerUserRoles = customerUserRolesRepo.save(userRoles);
+									
+									Optional<RolesMaster> findRoleFromMasterTableById = rolesMasterRepo.findById(updateCustomerUserRoles.getRoleId());
+									
+									customerRegisterResponse.setRole(findRoleFromMasterTableById.get().getRole());
+
+								} else {
+//									throw new VendorNotFoundException("Your role is not asign");
+									customerRegisterResponse.setRole("Your role is not asign");
+								}
+
+								List<CustomerUserFunctionaliti> findFunctionalityByUserId = customerUserFunctionalitiRepo.findByUserId(regId);
+								if (findFunctionalityByUserId.size() > 0) {
+									
+									findFunctionalityByUserId.forEach(userFunctionality -> {
+										if (userFunctionality.getfId() == customerRegisterRequest.getFuncationality()) {
+											customerUserFunctionalitiRepo.deleteById(regId);
+											functionality.setfId(customerRegisterRequest.getFuncationality());
+											functionality.setUserId(regId);
+											customerUserFunctionalitiRepo.save(functionality);
+										}
+									});
+									
+									List<CustomerFunctionalitiesMaster> listOfFunctionality = getCustomerDetails.getFunctionaliti(updateCustomer.getUserId());
+									customerRegisterResponse.setFunctionality(listOfFunctionality);
+									
+								} else {
+									throw new VendorNotFoundException("Functionality is not assign");
+								}
+								
+								List<CustomerUserDepartments> findDepartmentByUserId = customerUserDepartmentsRepo.findByUserId(regId);
+								if (findDepartmentByUserId.size() > 0) {
+									findDepartmentByUserId.forEach(userDepartment -> {
+										if (userDepartment.getUserId() == customerRegisterRequest.getDepartment()) {
+											
+											customerUserDepartmentsRepo.deleteById(customerRegisterRequest.getDepartment());
+											
+											department.setDepartmentId(customerRegisterRequest.getDepartment());
+											department.setUserId(regId);
+											
+											CustomerUserDepartments saveCustomerUserDepartments = customerUserDepartmentsRepo.save(department);
+										}
+									});
+									
+									List<CustomerDepartments> listOfDepartments = getCustomerDetails.getDepartments(regId);
+									
+									customerRegisterResponse.setCustomerDepartments(listOfDepartments);
+									
+								} else {
+									throw new VendorNotFoundException("Department is not assign");
+								}
+																
+								return customerRegisterResponse;
+								
+							} else {
+								throw new VendorNotFoundException("Email not valid");
+							}
+
+						} else {
+							throw new VendorNotFoundException("All field required");
+						}
+					} else {
+						throw new VendorNotFoundException("You don't update another company user Details");
+					}
+				} else {
+					throw new VendorNotFoundException("Your Requested id is not present!!");
+				}
+
+			case "USER":
+				throw new VendorNotFoundException("You don't have access to update user");
+			default:
+				throw new VendorNotFoundException("The role is not present");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
 
 	@GetMapping("/getRoles")
 	public List<RolesMaster> getRoles() {
