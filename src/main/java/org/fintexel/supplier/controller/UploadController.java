@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -42,46 +43,55 @@ public class UploadController {
 	
 	@PostMapping("/upload")
 	@ResponseBody
-	public String upload(@RequestPart("file") final MultipartFile uploadFile) throws ParseException {
-		LOGGER.info("Inside - UploadController.upload()");
+	public String upload(@RequestParam("file") MultipartFile uploadFile) {
+		LOGGER.info(uploadFile.getContentType());
+		LOGGER.info(uploadFile.getName());
+		LOGGER.info(uploadFile.getOriginalFilename());
 		
-		byte[] bytes;
-		if(uploadFile.isEmpty()) {
-			LOGGER.info("File is Empty");
-			throw new VendorNotFoundException("File is Empty");
-			
-		}else {
-			String originalFilename = uploadFile.getOriginalFilename();
-			String substring = originalFilename.substring(uploadFile.getOriginalFilename().lastIndexOf(".")+1, uploadFile.getOriginalFilename().length());
-			if(substring.toLowerCase().equals("xls") || (substring.toLowerCase().equals("xlsb")) || substring.toLowerCase().equals("xlsm") || substring.toLowerCase().equals("xlsx") || substring.toLowerCase().equals("ods"))  {
-
+		LOGGER.info("Inside - UploadController.upload()");
+		try {
+			byte[] bytes;
+			if(uploadFile.isEmpty()) {
+				LOGGER.info("File is Empty");
+				throw new VendorNotFoundException("File is Empty");
 				
 			}else {
+				String originalFilename = uploadFile.getOriginalFilename();
+				String substring = originalFilename.substring(uploadFile.getOriginalFilename().lastIndexOf(".")+1, uploadFile.getOriginalFilename().length());
+				if(substring.toLowerCase().equals("xls") || (substring.toLowerCase().equals("xlsb")) || substring.toLowerCase().equals("xlsm") || substring.toLowerCase().equals("xlsx") || substring.toLowerCase().equals("ods"))  {
+
+					
+				}else {
+					
+					
+					throw new VendorNotFoundException("File Type Should be xls/xlsb/xlsm/xlsx/ods");
+				}
 				
 				
-				throw new VendorNotFoundException("File Type Should be xls/xlsb/xlsm/xlsx/ods");
+//				LOGGER.info("File name is - "+uploadFile.getName());
 			}
 			
 			
-//			LOGGER.info("File name is - "+uploadFile.getName());
+			Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			Date fetchNueva = format.parse(currentTimeStamp.toString());
+			format = new SimpleDateFormat("dd MMM YYY HH:mm");
+			
+			LOGGER.info("Time Stamp - "+fetchNueva);
+			
+			String uploadRefID = uploadFile.getOriginalFilename()+"_"+format.format(fetchNueva);
+			LOGGER.info("Ref ID  - "+uploadRefID);
+			
+			boolean flag = uploadService.upload(uploadFile);
+			LOGGER.info("return Flag  - "+flag);
+			
+			
+			return "";
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new VendorNotFoundException(e.getMessage());
 		}
 		
-		
-		Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-		Date fetchNueva = format.parse(currentTimeStamp.toString());
-		format = new SimpleDateFormat("dd MMM YYY HH:mm");
-		
-		LOGGER.info("Time Stamp - "+fetchNueva);
-		
-		String uploadRefID = uploadFile.getOriginalFilename()+"_"+format.format(fetchNueva);
-		LOGGER.info("Ref ID  - "+uploadRefID);
-		
-		boolean flag = uploadService.upload(uploadFile);
-		LOGGER.info("return Flag  - "+flag);
-		
-		
-		return "";
 		
 
 	}
