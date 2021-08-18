@@ -646,6 +646,8 @@ public class CustomerLoginController {
 
 								CustomerRegister updateCustomer = customerRegisterRepo.save(customerRegister);
 								
+								LOGGER.info("After update customer register table"+updateCustomer);
+								
 								customerRegisterResponse.setcId(updateCustomer.getcId());
 								customerRegisterResponse.setCreatedBy(updateCustomer.getCreatedBy());
 								customerRegisterResponse.setCreatedOn(updateCustomer.getCreatedOn());
@@ -657,8 +659,11 @@ public class CustomerLoginController {
 
 								Optional<CustomerUserRoles> findUserroleByUserId = customerUserRolesRepo
 										.findByUserId(regId);
+								LOGGER.info("Find user role by id  |_____<<<>>>>_____|  "+findUserroleByUserId.get());
 								if (findUserroleByUserId.isPresent()) {
-									customerUserDepartmentsRepo.deleteById(regId);
+									
+									customerUserRolesRepo.deleteById(regId);
+									
 									userRoles.setRoleId(customerRegisterRequest.getRole());
 									userRoles.setUserId(regId);
 									CustomerUserRoles updateCustomerUserRoles = customerUserRolesRepo.save(userRoles);
@@ -677,14 +682,17 @@ public class CustomerLoginController {
 									
 									findFunctionalityByUserId.forEach(userFunctionality -> {
 										if (userFunctionality.getfId() == customerRegisterRequest.getFuncationality()) {
+											
 											customerUserFunctionalitiRepo.deleteById(regId);
+											
 											functionality.setfId(customerRegisterRequest.getFuncationality());
 											functionality.setUserId(regId);
-											customerUserFunctionalitiRepo.save(functionality);
+											CustomerUserFunctionaliti customerUserFunctionaliti = customerUserFunctionalitiRepo.save(functionality);
+											LOGGER.info("Functionality final $$$ "+customerUserFunctionaliti);
 										}
 									});
 									
-									List<CustomerFunctionalitiesMaster> listOfFunctionality = getCustomerDetails.getFunctionaliti(updateCustomer.getUserId());
+									List<CustomerFunctionalitiesMaster> listOfFunctionality = getCustomerDetails.getFunctionaliti(regId);
 									customerRegisterResponse.setFunctionality(listOfFunctionality);
 									
 								} else {
@@ -692,16 +700,19 @@ public class CustomerLoginController {
 								}
 								
 								List<CustomerUserDepartments> findDepartmentByUserId = customerUserDepartmentsRepo.findByUserId(regId);
+								
+								LOGGER.info("Department is >>> "+findDepartmentByUserId);
 								if (findDepartmentByUserId.size() > 0) {
 									findDepartmentByUserId.forEach(userDepartment -> {
 										if (userDepartment.getUserId() == customerRegisterRequest.getDepartment()) {
 											
-											customerUserDepartmentsRepo.deleteById(customerRegisterRequest.getDepartment());
+											customerUserDepartmentsRepo.deleteById(regId);
 											
 											department.setDepartmentId(customerRegisterRequest.getDepartment());
 											department.setUserId(regId);
 											
 											CustomerUserDepartments saveCustomerUserDepartments = customerUserDepartmentsRepo.save(department);
+											LOGGER.info("Final Department >>> "+saveCustomerUserDepartments);
 										}
 									});
 									
