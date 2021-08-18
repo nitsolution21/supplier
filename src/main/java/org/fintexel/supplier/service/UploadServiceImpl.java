@@ -18,6 +18,14 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.fintexel.supplier.customerentity.CustomerDepartments;
+import org.fintexel.supplier.customerentity.CustomerFunctionalitiesMaster;
+import org.fintexel.supplier.customerentity.RolesMaster;
+import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
+import org.fintexel.supplier.customerrepository.CustomerFunctionalitiesMasterRepo;
+import org.fintexel.supplier.customerrepository.RolesMasterRepo;
+import org.fintexel.supplier.entity.MasterCurrencyType;
+import org.fintexel.supplier.entity.MasterRegType;
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupBank;
 import org.fintexel.supplier.entity.SupContract;
@@ -29,6 +37,8 @@ import org.fintexel.supplier.entity.UploadErrorEntity;
 import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.entity.flowableentity.FlowableRegistration;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
+import org.fintexel.supplier.repository.MasterCurrencyTypeRepo;
+import org.fintexel.supplier.repository.MasterRegTypeRepo;
 import org.fintexel.supplier.repository.SupAddressRepo;
 import org.fintexel.supplier.repository.SupBankRepo;
 import org.fintexel.supplier.repository.SupContractRepo;
@@ -98,6 +108,7 @@ public class UploadServiceImpl implements UploadService {
 
 	@Autowired
 	private VendorRegisterRepo vendorRepo;
+	
 
 	@Autowired
 	UploadErrorEntity UploadErrorEntity;
@@ -110,6 +121,23 @@ public class UploadServiceImpl implements UploadService {
 
 	@Autowired
 	private FieldValidation fieldValidation;
+	
+	@Autowired
+	private MasterCurrencyTypeRepo masterCurrencyTypeRepo;
+	
+	@Autowired
+	private MasterRegTypeRepo masterRegTypeRepo;
+	
+	
+	@Autowired
+	CustomerDepartmentsRepo customerDepartmentsRepo;
+	
+	
+	@Autowired
+	RolesMasterRepo rolesMasterRepo;
+	
+	@Autowired
+	CustomerFunctionalitiesMasterRepo customerFunctionalitiesMasterRepo;
 
 	Map<String, String> errorMap = new HashMap<>();
 
@@ -1399,6 +1427,313 @@ public class UploadServiceImpl implements UploadService {
 
 		return false;
 	}
+	
+	
+	
+	@Override
+	public boolean uploadCurrencyType(MultipartFile uploadFile) {
+
+		LOGGER.info("Inside  - UploadServiceImpl.upload()");
+
+		DataFormatter dataFormatter = new DataFormatter();
+		String sheetName = "Sheet1";
+		boolean returnFlag = true;
+
+		File fileName = new File(uploadFile.getOriginalFilename());
+
+		Sheet sheet = loadTemplate(uploadFile, sheetName);
+
+		int minRow = sheet.getFirstRowNum() + 1;
+		int maxRow = sheet.getLastRowNum();
+		Row row = sheet.getRow(sheet.getFirstRowNum());
+		int minCell = row.getFirstCellNum();
+		int maxCell = row.getLastCellNum() - 1;
+
+		for (int i = minRow; i <= maxRow; i++) {
+			Row rows = sheet.getRow(i);
+
+			for (int c = minCell; c <= maxCell; c++) {
+				returnFlag = false;
+				Cell cells = rows.getCell(c);
+				String cellValue = dataFormatter.formatCellValue(cells);
+
+				System.out.println("Value is ==========  "+cellValue);
+				
+				if (cellValue.equals(null) || cellValue.equals("")) {
+					returnFlag = true;
+					UploadErrorEntity.setRowNumber(i);
+					UploadErrorEntity.setCellNumber(c);
+					UploadErrorEntity.setErrorDescription("Blank Value");
+
+				}
+
+			}
+
+				try {
+					if(fieldValidation.isEmpty(rows.getCell(0).toString()) && fieldValidation.isEmpty(rows.getCell(1).toString()) && fieldValidation.isEmpty(rows.getCell(2).toString())) {
+						MasterCurrencyType masterCurrencyType =new MasterCurrencyType();
+						masterCurrencyType.setCode(rows.getCell(0).toString());
+						masterCurrencyType.setCurrency(rows.getCell(1).toString());
+						masterCurrencyType.setCountry(rows.getCell(2).toString());
+						masterCurrencyTypeRepo.save(masterCurrencyType);
+						
+					}
+				}catch(Exception e) {
+						
+				}
+				
+
+		}
+
+		return returnFlag;
+	}
+	
+	@Override
+	public boolean uploadRegType(MultipartFile uploadFile) {
+
+		LOGGER.info("Inside  - UploadServiceImpl.upload()");
+
+		DataFormatter dataFormatter = new DataFormatter();
+		String sheetName = "Sheet1";
+		boolean returnFlag = true;
+
+		File fileName = new File(uploadFile.getOriginalFilename());
+
+		Sheet sheet = loadTemplate(uploadFile, sheetName);
+
+		int minRow = sheet.getFirstRowNum() + 1;
+		int maxRow = sheet.getLastRowNum();
+		Row row = sheet.getRow(sheet.getFirstRowNum());
+		int minCell = row.getFirstCellNum();
+		int maxCell = row.getLastCellNum() - 1;
+
+		for (int i = minRow; i <= maxRow; i++) {
+			Row rows = sheet.getRow(i);
+
+			for (int c = minCell; c <= maxCell; c++) {
+				returnFlag = false;
+				Cell cells = rows.getCell(c);
+				String cellValue = dataFormatter.formatCellValue(cells);
+
+				System.out.println("Value is ==========  "+cellValue);
+				
+				if (cellValue.equals(null) || cellValue.equals("")) {
+					returnFlag = true;
+					UploadErrorEntity.setRowNumber(i);
+					UploadErrorEntity.setCellNumber(c);
+					UploadErrorEntity.setErrorDescription("Blank Value");
+
+				}
+
+			}
+
+				try {
+					if(fieldValidation.isEmpty(rows.getCell(0).toString()) ) {
+						MasterRegType masterRegType =new MasterRegType();
+						masterRegType.setName(rows.getCell(0).toString());
+						masterRegTypeRepo.save(masterRegType);
+						
+					}
+				}catch(Exception e) {
+						
+				}
+				
+
+		}
+
+		return returnFlag;
+	}
+
+	
+	
+	@Override
+	public boolean uploadDept(MultipartFile uploadFile) {
+
+		LOGGER.info("Inside  - UploadServiceImpl.upload()");
+
+		DataFormatter dataFormatter = new DataFormatter();
+		String sheetName = "Sheet1";
+		boolean returnFlag = true;
+
+		File fileName = new File(uploadFile.getOriginalFilename());
+
+		Sheet sheet = loadTemplate(uploadFile, sheetName);
+
+		int minRow = sheet.getFirstRowNum() + 1;
+		int maxRow = sheet.getLastRowNum();
+		Row row = sheet.getRow(sheet.getFirstRowNum());
+		int minCell = row.getFirstCellNum();
+		int maxCell = row.getLastCellNum() - 1;
+
+		for (int i = minRow; i <= maxRow; i++) {
+			Row rows = sheet.getRow(i);
+
+			for (int c = minCell; c <= maxCell; c++) {
+				returnFlag = false;
+				Cell cells = rows.getCell(c);
+				String cellValue = dataFormatter.formatCellValue(cells);
+
+				System.out.println("Value is ==========  "+cellValue);
+				
+				if (cellValue.equals(null) || cellValue.equals("")) {
+					returnFlag = true;
+					UploadErrorEntity.setRowNumber(i);
+					UploadErrorEntity.setCellNumber(c);
+					UploadErrorEntity.setErrorDescription("Blank Value");
+
+				}
+
+			}
+
+				try {
+					if(fieldValidation.isEmpty(rows.getCell(0).toString()) && fieldValidation.isEmpty(rows.getCell(1).toString()) 
+						&& fieldValidation.isEmpty(rows.getCell(2).toString()) && fieldValidation.isEmpty(rows.getCell(3).toString())
+						&& fieldValidation.isEmpty(rows.getCell(4).toString())) {
+						CustomerDepartments customerDepartments = new CustomerDepartments();
+						customerDepartments.setcId((long)Math.round(Float.parseFloat((rows.getCell(0).toString()))));
+						customerDepartments.setDepartmentName(rows.getCell(1).toString());
+						customerDepartments.setEmail(rows.getCell(2).toString());
+						customerDepartments.setPhoneNo(rows.getCell(3).toString());
+						customerDepartments.setCostCode(rows.getCell(4).toString());
+						customerDepartments.setStatus("APPROVED");
+//						try {
+//							customerDepartments.setAlternatePhoneNo(rows.getCell(5).toString());
+//						}catch(Exception e) {
+//							throw new VendorNotFoundException(e.getMessage());
+//						}
+						CustomerDepartments save = customerDepartmentsRepo.save(customerDepartments);
+						System.out.println("save     %%%%%%  "+save);
+						
+					}
+				}catch(Exception e) {
+						throw new VendorNotFoundException(e.getMessage());
+				}
+				
+
+		}
+
+		return returnFlag;
+	}
+
+	@Override
+	public boolean uploadRole(MultipartFile uploadFile) {
+
+		LOGGER.info("Inside  - UploadServiceImpl.upload()");
+
+		DataFormatter dataFormatter = new DataFormatter();
+		String sheetName = "Sheet1";
+		boolean returnFlag = true;
+
+		File fileName = new File(uploadFile.getOriginalFilename());
+
+		Sheet sheet = loadTemplate(uploadFile, sheetName);
+
+		int minRow = sheet.getFirstRowNum() + 1;
+		int maxRow = sheet.getLastRowNum();
+		Row row = sheet.getRow(sheet.getFirstRowNum());
+		int minCell = row.getFirstCellNum();
+		int maxCell = row.getLastCellNum() - 1;
+
+		for (int i = minRow; i <= maxRow; i++) {
+			Row rows = sheet.getRow(i);
+
+			for (int c = minCell; c <= maxCell; c++) {
+				returnFlag = false;
+				Cell cells = rows.getCell(c);
+				String cellValue = dataFormatter.formatCellValue(cells);
+
+				System.out.println("Value is ==========  "+cellValue);
+				
+				if (cellValue.equals(null) || cellValue.equals("")) {
+					returnFlag = true;
+					UploadErrorEntity.setRowNumber(i);
+					UploadErrorEntity.setCellNumber(c);
+					UploadErrorEntity.setErrorDescription("Blank Value");
+
+				}
+
+			}
+
+				try {
+					if(fieldValidation.isEmpty(rows.getCell(0).toString()) 
+							&& fieldValidation.isEmpty(rows.getCell(1).toString()) 
+						) {
+						RolesMaster rolesMaster = new RolesMaster();
+						rolesMaster.setRoleId((long)Math.round(Float.parseFloat(rows.getCell(0).toString())));
+						rolesMaster.setRole(rows.getCell(1).toString());
+						RolesMaster save = rolesMasterRepo.save(rolesMaster);
+					}
+				}catch(Exception e) {
+						
+				}
+				
+
+		}
+
+		return returnFlag;
+	}
+	
+	@Override
+	public boolean uploadFunc(MultipartFile uploadFile) {
+
+		LOGGER.info("Inside  - UploadServiceImpl.upload()");
+
+		DataFormatter dataFormatter = new DataFormatter();
+		String sheetName = "Sheet1";
+		boolean returnFlag = true;
+
+		File fileName = new File(uploadFile.getOriginalFilename());
+
+		Sheet sheet = loadTemplate(uploadFile, sheetName);
+
+		int minRow = sheet.getFirstRowNum() + 1;
+		int maxRow = sheet.getLastRowNum();
+		Row row = sheet.getRow(sheet.getFirstRowNum());
+		int minCell = row.getFirstCellNum();
+		int maxCell = row.getLastCellNum() - 1;
+
+		for (int i = minRow; i <= maxRow; i++) {
+			Row rows = sheet.getRow(i);
+
+			for (int c = minCell; c <= maxCell; c++) {
+				returnFlag = false;
+				Cell cells = rows.getCell(c);
+				String cellValue = dataFormatter.formatCellValue(cells);
+
+				System.out.println("Value is ==========  "+cellValue);
+				
+				if (cellValue.equals(null) || cellValue.equals("")) {
+					returnFlag = true;
+					UploadErrorEntity.setRowNumber(i);
+					UploadErrorEntity.setCellNumber(c);
+					UploadErrorEntity.setErrorDescription("Blank Value");
+
+				}
+
+			}
+
+				try {
+					if(fieldValidation.isEmpty(rows.getCell(0).toString()) 
+							&& fieldValidation.isEmpty(rows.getCell(1).toString()) 
+						) {
+						CustomerFunctionalitiesMaster customerFunctionalitiesMaster = new CustomerFunctionalitiesMaster();
+						customerFunctionalitiesMaster.setfName(rows.getCell(0).toString());
+						customerFunctionalitiesMaster.setfDesc(rows.getCell(1).toString());
+						CustomerFunctionalitiesMaster save = customerFunctionalitiesMasterRepo.save(customerFunctionalitiesMaster);
+						System.out.print("save " + save.toString());
+					}
+				}catch(Exception e) {
+						
+				}
+				
+
+		}
+
+		return returnFlag;
+	}
+	
+	
+
 
 
 }
