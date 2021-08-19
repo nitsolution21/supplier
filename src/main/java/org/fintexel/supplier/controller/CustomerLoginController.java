@@ -634,6 +634,9 @@ public class CustomerLoginController {
 								&& fieldValidation.isEmpty(customerRegisterRequest.getDepartment())
 								&& fieldValidation.isEmpty(customerRegisterRequest.getFuncationality())) {
 							if (fieldValidation.isEmail(customerRegisterRequest.getEmail())) {
+								
+								LOGGER.info("Id is <1> "+regId);
+								
 								customerRegister.setcId(companyProfileIdByCustomerId);
 								customerRegister.setCreatedBy(findCustomerRegistrationById.get().getCreatedBy());
 								customerRegister.setCreatedOn(findCustomerRegistrationById.get().getCreatedOn());
@@ -656,13 +659,16 @@ public class CustomerLoginController {
 								customerRegisterResponse.setStatus(updateCustomer.getStatus());
 								customerRegisterResponse.setUpdatedBy(updateCustomer.getUpdatedBy());
 								customerRegisterResponse.setUpdatedOn(updateCustomer.getUpdatedOn());
-								
+								customerRegisterResponse.setUserId(updateCustomer.getUserId());
+								customerRegisterResponse.setUsername(updateCustomer.getUsername());
 								
 
 								Optional<CustomerUserRoles> findUserroleByUserId = customerUserRolesRepo
 										.findByUserId(regId);
 								LOGGER.info("Find user role by id  |_____<<<>>>>_____|  "+findUserroleByUserId.get());
 								if (findUserroleByUserId.isPresent()) {
+									
+									LOGGER.info("Id is from delete<2> "+regId);
 									
 									customerUserRolesRepo.deleteById(regId);
 									
@@ -681,19 +687,50 @@ public class CustomerLoginController {
 								}
 
 								List<CustomerUserFunctionaliti> findFunctionalityByUserId = customerUserFunctionalitiRepo.findByUserId(regId);
+								
+								LOGGER.info("findFunctionalityByUserId |________<<>>>_____|",findFunctionalityByUserId.toString());
+								LOGGER.info("findFunctionalityByUserId |________<<>>>_____| SIZE   ",findFunctionalityByUserId.size());
+								
 								if (findFunctionalityByUserId.size() > 0) {
 									
-									findFunctionalityByUserId.forEach(userFunctionality -> {
+//									findFunctionalityByUserId.forEach(userFunctionality -> {
+//										if (userFunctionality.getfId() == customerRegisterRequest.getFuncationality()) {
+//											
+//											customerUserFunctionalitiRepo.deleteById(regId);
+//											
+//											LOGGER.info("in Functionality user id <3>"+regId);
+//											
+//											functionality.setfId(customerRegisterRequest.getFuncationality());
+//											functionality.setUserId(regId);
+//											
+//											CustomerUserFunctionaliti customerUserFunctionaliti = customerUserFunctionalitiRepo.save(functionality);
+//											LOGGER.info("Functionality final $$$ "+customerUserFunctionaliti);
+//										}
+//									});
+									for(CustomerUserFunctionaliti userFunctionality : findFunctionalityByUserId) {
 										if (userFunctionality.getfId() == customerRegisterRequest.getFuncationality()) {
-											
-											customerUserFunctionalitiRepo.deleteById(regId);
+
+											customerUserFunctionalitiRepo.deleteById(userFunctionality.getUserId());
+
+											LOGGER.info("in Functionality user id <3>" + regId);
+
+											functionality.setfId(customerRegisterRequest.getFuncationality());
+											functionality.setUserId(regId);
+
+											CustomerUserFunctionaliti customerUserFunctionaliti = customerUserFunctionalitiRepo
+													.save(functionality);
+											LOGGER.info("Functionality final $$$ " + customerUserFunctionaliti);
+										}
+										else {
+											customerUserFunctionalitiRepo.deleteById(userFunctionality.getUserId());
 											
 											functionality.setfId(customerRegisterRequest.getFuncationality());
 											functionality.setUserId(regId);
-											CustomerUserFunctionaliti customerUserFunctionaliti = customerUserFunctionalitiRepo.save(functionality);
-											LOGGER.info("Functionality final $$$ "+customerUserFunctionaliti);
+
+											CustomerUserFunctionaliti customerUserFunctionaliti = customerUserFunctionalitiRepo
+													.save(functionality);
 										}
-									});
+									}
 									
 									List<CustomerFunctionalitiesMaster> listOfFunctionality = getCustomerDetails.getFunctionaliti(regId);
 									customerRegisterResponse.setFunctionality(listOfFunctionality);
@@ -710,7 +747,18 @@ public class CustomerLoginController {
 									findDepartmentByUserId.forEach(userDepartment -> {
 										if (userDepartment.getUserId() == customerRegisterRequest.getDepartment()) {
 											
-											customerUserDepartmentsRepo.deleteById(regId);
+											LOGGER.info("in Functionality user id <4>"+regId);
+											
+											customerUserDepartmentsRepo.deleteById(userDepartment.getUserId());
+											
+											department.setDepartmentId(customerRegisterRequest.getDepartment());
+											department.setUserId(regId);
+											
+											CustomerUserDepartments saveCustomerUserDepartments = customerUserDepartmentsRepo.save(department);
+											LOGGER.info("Department final >>> "+saveCustomerUserDepartments);
+										}
+										else {
+											customerUserDepartmentsRepo.deleteById(userDepartment.getUserId());
 											
 											department.setDepartmentId(customerRegisterRequest.getDepartment());
 											department.setUserId(regId);
