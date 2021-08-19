@@ -5,13 +5,19 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
+import org.fintexel.supplier.customerentity.CustomerRegister;
+import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.FileUploadResponse;
+import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.exceptions.VendorErrorResponse;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.helper.FileUploadHelper;
+import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.helper.LoginUserDetails;
+import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.fintexel.supplier.service.UploadService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +46,15 @@ public class UploadController {
 	
 	@Autowired
 	private FileUploadHelper fileUploadHelper;
+	
+	@Autowired
+	private VendorRegisterRepo registerRepo;
+	
+	@Autowired
+	private JwtUtil jwtUtil;
+	
+	@Autowired
+	private CustomerRegisterRepo customerRegisterRepo;
 
 	
 	
@@ -132,21 +147,58 @@ public class UploadController {
 			@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - UploadController.uploadSupplierProof()");
 		try {
-			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
-			if (!loginSupplierCode.equals(null)) {
-				if (file.getSize() < 1) {
-					throw new VendorNotFoundException("File is Empty");
-				}
+			if (token != null && token.startsWith("Bearer ")) {
+				String jwtToken = token.substring(7);
+				String userName = jwtUtil.extractUsername(jwtToken);
+				Optional<VendorRegister> findByUsername = registerRepo.findByUsername(userName);
+				if (findByUsername.isPresent()) {
+					if (file.getSize() < 1) {
+						throw new VendorNotFoundException("File is Empty");
+					}
 
-				FileUploadResponse uploadFile = fileUploadHelper.uploadFile(file);
-				if (!uploadFile.equals(null)) {
-					return uploadFile;
+					FileUploadResponse uploadFile = fileUploadHelper.uploadFile(file);
+					if (!uploadFile.equals(null)) {
+						return uploadFile;
+					} else {
+						throw new VendorNotFoundException("Something went wrong !! Please try again");
+					}
 				} else {
-					throw new VendorNotFoundException("Something went wrong !! Please try again");
+					Optional<CustomerRegister> findByCustomerUsername = customerRegisterRepo.findByUsername(userName);
+					if (findByCustomerUsername.isPresent()) {
+						if (file.getSize() < 1) {
+							throw new VendorNotFoundException("File is Empty");
+						}
+
+						FileUploadResponse uploadFile = fileUploadHelper.uploadFile(file);
+						if (!uploadFile.equals(null)) {
+							return uploadFile;
+						} else {
+							throw new VendorNotFoundException("Something went wrong !! Please try again");
+						}
+					} else {
+						throw new VendorNotFoundException("We can't find your details");
+					}
 				}
-			} else {
-				throw new VendorNotFoundException("Token not valid");
 			}
+			else {
+				throw new VendorNotFoundException("Token note found");
+			}
+//			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+//			if (!loginSupplierCode.equals(null)) {
+//				if (file.getSize() < 1) {
+//					throw new VendorNotFoundException("File is Empty");
+//				}
+//
+//				FileUploadResponse uploadFile = fileUploadHelper.uploadFile(file);
+//				if (!uploadFile.equals(null)) {
+//					return uploadFile;
+//				} else {
+//					throw new VendorNotFoundException("Something went wrong !! Please try again");
+//				}
+//			} else {
+//				throw new VendorNotFoundException("Token not valid");
+//			}
+			
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
 			throw new VendorNotFoundException(e.getMessage());
