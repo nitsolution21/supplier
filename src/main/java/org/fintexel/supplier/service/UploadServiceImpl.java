@@ -1606,12 +1606,12 @@ public class UploadServiceImpl implements UploadService {
 						
 					}
 				}catch(Exception e) {
-						throw new VendorNotFoundException(e.getMessage());
+						
 				}
 				
 
 		}
-
+System.out.println("returnFlag " +returnFlag);
 		return returnFlag;
 	}
 
