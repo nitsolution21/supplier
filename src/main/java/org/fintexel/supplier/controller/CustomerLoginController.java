@@ -656,6 +656,8 @@ public class CustomerLoginController {
 								customerRegisterResponse.setStatus(updateCustomer.getStatus());
 								customerRegisterResponse.setUpdatedBy(updateCustomer.getUpdatedBy());
 								customerRegisterResponse.setUpdatedOn(updateCustomer.getUpdatedOn());
+								
+								
 
 								Optional<CustomerUserRoles> findUserroleByUserId = customerUserRolesRepo
 										.findByUserId(regId);
@@ -666,6 +668,7 @@ public class CustomerLoginController {
 									
 									userRoles.setRoleId(customerRegisterRequest.getRole());
 									userRoles.setUserId(regId);
+									
 									CustomerUserRoles updateCustomerUserRoles = customerUserRolesRepo.save(userRoles);
 									
 									Optional<RolesMaster> findRoleFromMasterTableById = rolesMasterRepo.findById(updateCustomerUserRoles.getRoleId());
@@ -701,8 +704,9 @@ public class CustomerLoginController {
 								
 								List<CustomerUserDepartments> findDepartmentByUserId = customerUserDepartmentsRepo.findByUserId(regId);
 								
-								LOGGER.info("Department is >>> "+findDepartmentByUserId);
+								LOGGER.info("Department is >>> "+findDepartmentByUserId.size());
 								if (findDepartmentByUserId.size() > 0) {
+									LOGGER.info("After find The Department Details:  |________<<>>>________|"+findDepartmentByUserId);
 									findDepartmentByUserId.forEach(userDepartment -> {
 										if (userDepartment.getUserId() == customerRegisterRequest.getDepartment()) {
 											
