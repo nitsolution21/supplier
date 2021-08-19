@@ -122,6 +122,16 @@ public class UploadController {
 			if(file.isEmpty()) {
 				LOGGER.info("File is Empty");
 			}else {
+				String originalFilename = file.getOriginalFilename();
+				String substring = originalFilename.substring(file.getOriginalFilename().lastIndexOf(".")+1, file.getOriginalFilename().length());
+				if(substring.toLowerCase().equals("xls") || (substring.toLowerCase().equals("xlsb")) || substring.toLowerCase().equals("xlsm") || substring.toLowerCase().equals("xlsx") || substring.toLowerCase().equals("ods"))  {
+
+					
+				}else {
+					
+					
+					throw new VendorNotFoundException("File Type Should be xls/xlsb/xlsm/xlsx/ods");
+				}
 				LOGGER.info("File name is - "+file.getName());
 			}
 			
@@ -218,6 +228,16 @@ public class UploadController {
 			if(file.isEmpty()) {
 				LOGGER.info("File is Empty");
 			}else {
+				String originalFilename = file.getOriginalFilename();
+				String substring = originalFilename.substring(file.getOriginalFilename().lastIndexOf(".")+1, file.getOriginalFilename().length());
+				if(substring.toLowerCase().equals("xls") || (substring.toLowerCase().equals("xlsb")) || substring.toLowerCase().equals("xlsm") || substring.toLowerCase().equals("xlsx") || substring.toLowerCase().equals("ods"))  {
+
+					
+				}else {
+					
+					
+					throw new VendorNotFoundException("File Type Should be xls/xlsb/xlsm/xlsx/ods");
+				}
 				LOGGER.info("File name is - "+file.getName());
 			}
 			
@@ -247,6 +267,16 @@ public class UploadController {
 			if(file.isEmpty()) {
 				LOGGER.info("File is Empty");
 			}else {
+				String originalFilename = file.getOriginalFilename();
+				String substring = originalFilename.substring(file.getOriginalFilename().lastIndexOf(".")+1, file.getOriginalFilename().length());
+				if(substring.toLowerCase().equals("xls") || (substring.toLowerCase().equals("xlsb")) || substring.toLowerCase().equals("xlsm") || substring.toLowerCase().equals("xlsx") || substring.toLowerCase().equals("ods"))  {
+
+					
+				}else {
+					
+					
+					throw new VendorNotFoundException("File Type Should be xls/xlsb/xlsm/xlsx/ods");
+				}
 				LOGGER.info("File name is - "+file.getName());
 			}
 			
@@ -278,6 +308,16 @@ public class UploadController {
 			if(file.isEmpty()) {
 				LOGGER.info("File is Empty");
 			}else {
+				String originalFilename = file.getOriginalFilename();
+				String substring = originalFilename.substring(file.getOriginalFilename().lastIndexOf(".")+1, file.getOriginalFilename().length());
+				if(substring.toLowerCase().equals("xls") || (substring.toLowerCase().equals("xlsb")) || substring.toLowerCase().equals("xlsm") || substring.toLowerCase().equals("xlsx") || substring.toLowerCase().equals("ods"))  {
+
+					
+				}else {
+					
+					
+					throw new VendorNotFoundException("File Type Should be xls/xlsb/xlsm/xlsx/ods");
+				}
 				LOGGER.info("File name is - "+file.getName());
 			}
 			
@@ -309,6 +349,16 @@ public class UploadController {
 			if(file.isEmpty()) {
 				LOGGER.info("File is Empty");
 			}else {
+				String originalFilename = file.getOriginalFilename();
+				String substring = originalFilename.substring(file.getOriginalFilename().lastIndexOf(".")+1, file.getOriginalFilename().length());
+				if(substring.toLowerCase().equals("xls") || (substring.toLowerCase().equals("xlsb")) || substring.toLowerCase().equals("xlsm") || substring.toLowerCase().equals("xlsx") || substring.toLowerCase().equals("ods"))  {
+
+					
+				}else {
+					
+					
+					throw new VendorNotFoundException("File Type Should be xls/xlsb/xlsm/xlsx/ods");
+				}
 				LOGGER.info("File name is - "+file.getName());
 			}
 			
@@ -339,6 +389,15 @@ public class UploadController {
 			if(file.isEmpty()) {
 				LOGGER.info("File is Empty");
 			}else {
+				String originalFilename = file.getOriginalFilename();
+				String substring = originalFilename.substring(file.getOriginalFilename().lastIndexOf(".")+1, file.getOriginalFilename().length());
+				if(substring.toLowerCase().equals("xls") || (substring.toLowerCase().equals("xlsb")) || substring.toLowerCase().equals("xlsm") || substring.toLowerCase().equals("xlsx") || substring.toLowerCase().equals("ods"))  {
+
+					
+				}else {
+					System.out.println("file type  _____---------  " + substring);
+					throw new VendorNotFoundException("File Type Should be xls/xlsb/xlsm/xlsx/ods");
+				}
 				LOGGER.info("File name is - "+file.getName());
 			}
 			
