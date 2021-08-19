@@ -612,7 +612,7 @@ public class CustomerLoginController {
 	public CustomerRegisterResponse updateRegistration(@PathVariable long regId,
 			@RequestBody() CustomerRegisterRequest customerRegisterRequest,
 			@RequestHeader(name = "Authorization") String token) {
-		LOGGER.info("Inside - CustomerLoginController.getRegistration()");
+		LOGGER.info("Inside - CustomerLoginController.updateRegistration()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 			String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
@@ -712,7 +712,7 @@ public class CustomerLoginController {
 											department.setUserId(regId);
 											
 											CustomerUserDepartments saveCustomerUserDepartments = customerUserDepartmentsRepo.save(department);
-											LOGGER.info("Final Department >>> "+saveCustomerUserDepartments);
+											LOGGER.info("Department final >>> "+saveCustomerUserDepartments);
 										}
 									});
 									
