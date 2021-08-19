@@ -92,8 +92,7 @@ public class CustomerController {
 							&& (fieldValidation.isEmpty(customerAddress.getCountry()))
 							&& (fieldValidation.isEmpty(customerAddress.getRegion()))
 							&& (fieldValidation.isEmpty(customerAddress.getAddressProof()))
-							&& (fieldValidation.isEmpty(customerAddress.getAddressProofPath()))
-							&& (fieldValidation.isEmpty(customerAddress.getStatus()))) {
+							&& (fieldValidation.isEmpty(customerAddress.getAddressProofPath()))) {
 						
 						filterCustomerAddress.setcId(companyProfileIdByCustomerId);
 						filterCustomerAddress.setAddressType(customerAddress.getAddressType());
@@ -239,8 +238,7 @@ public class CustomerController {
 								&& (fieldValidation.isEmpty(customerAddress.getCountry()))
 								&& (fieldValidation.isEmpty(customerAddress.getRegion()))
 								&& (fieldValidation.isEmpty(customerAddress.getAddressProof()))
-								&& (fieldValidation.isEmpty(customerAddress.getAddressProofPath()))
-								&& (fieldValidation.isEmpty(customerAddress.getStatus()))) {
+								&& (fieldValidation.isEmpty(customerAddress.getAddressProofPath()))) {
 							
 							filterCustomerAddress.setcId(companyProfileIdByCustomerId);
 							filterCustomerAddress.setAddressType(customerAddress.getAddressType());
