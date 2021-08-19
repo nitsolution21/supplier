@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.FileUploadResponse;
 import org.fintexel.supplier.exceptions.VendorErrorResponse;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
@@ -39,11 +40,12 @@ public class UploadController {
 	
 	@Autowired
 	private FileUploadHelper fileUploadHelper;
+
 	
 	
 	@PostMapping("/upload")
 	@ResponseBody
-	public String upload(@RequestParam("file") MultipartFile uploadFile) {
+	public CustomeResponseEntity upload(@RequestParam("file") MultipartFile uploadFile) {
 		LOGGER.info(uploadFile.getContentType());
 		LOGGER.info(uploadFile.getName());
 		LOGGER.info(uploadFile.getOriginalFilename());
@@ -86,7 +88,7 @@ public class UploadController {
 			LOGGER.info("return Flag  - "+flag);
 			
 			
-			return "";
+			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
 		} catch (Exception e) {
 			// TODO: handle exception
 			throw new VendorNotFoundException(e.getMessage());
@@ -98,7 +100,7 @@ public class UploadController {
 	
 	
 	@PostMapping("/update")
-	public String update(@RequestPart("file") final MultipartFile file) {
+	public CustomeResponseEntity update(@RequestPart("file") final MultipartFile file) {
 		LOGGER.info("Inside - UploadController.update()");
 		try {
 			
@@ -117,12 +119,12 @@ public class UploadController {
 			
 			boolean flag = uploadService.update(file);
 			LOGGER.info("return Flag  - "+flag);
+			return new CustomeResponseEntity("SUCCESS", "Valid Data are Updated");
 			
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 		
-		return null;
 	}
 	
 	@PostMapping("/uploadSupplierProof")
@@ -156,7 +158,7 @@ public class UploadController {
 	
 	
 	@PostMapping("/uploadCurrencyType")
-	public String uploadCurrencyType(@RequestParam("file") MultipartFile file) {
+	public CustomeResponseEntity uploadCurrencyType(@RequestParam("file") MultipartFile file) {
 		
 		LOGGER.info("Inside - UploadController.uploadRegType()");
 		try {
@@ -176,17 +178,16 @@ public class UploadController {
 			
 			boolean flag = uploadService.uploadCurrencyType(file);
 			LOGGER.info("return Flag  - "+flag);
-			
+			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 		
 		
-		return null;
 	}
 	
 	@PostMapping("/uploadRegType")
-	public String uploadRegType(@RequestParam("file") MultipartFile file) {
+	public CustomeResponseEntity uploadRegType(@RequestParam("file") MultipartFile file) {
 		
 		LOGGER.info("Inside - UploadController.uploadRegType()");
 		try {
@@ -206,18 +207,18 @@ public class UploadController {
 			
 			boolean flag = uploadService.uploadRegType(file);
 			LOGGER.info("return Flag  - "+flag);
-			
+			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 		
 		
-		return null;
+		
 	}
 	
 	
 	@PostMapping("/uploadDept")
-	public String uploadDept(@RequestParam("file") MultipartFile file) {
+	public CustomeResponseEntity uploadDept(@RequestParam("file") MultipartFile file) {
 		
 		LOGGER.info("Inside - UploadController.uploadRegType()");
 		try {
@@ -237,18 +238,18 @@ public class UploadController {
 			
 			boolean flag = uploadService.uploadDept(file);
 			LOGGER.info("return Flag  - "+flag);
-			
+			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 		
 		
-		return null;
+		
 	}
 
 	
 	@PostMapping("/uploadRole")
-	public String uploadRole(@RequestParam("file") MultipartFile file) {
+	public CustomeResponseEntity uploadRole(@RequestParam("file") MultipartFile file) {
 		
 		LOGGER.info("Inside - UploadController.uploadRegType()");
 		try {
@@ -268,17 +269,17 @@ public class UploadController {
 			
 			boolean flag = uploadService.uploadRole(file);
 			LOGGER.info("return Flag  - "+flag);
-			
+			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 		
 		
-		return null;
+		
 	}
 	
 	@PostMapping("/uploadFunc")
-	public String uploadFunc(@RequestParam("file") MultipartFile file) {
+	public CustomeResponseEntity uploadFunc(@RequestParam("file") MultipartFile file) {
 		
 		LOGGER.info("Inside - UploadController.uploadRegType()");
 		try {
@@ -298,13 +299,13 @@ public class UploadController {
 			
 			boolean flag = uploadService.uploadFunc(file);
 			LOGGER.info("return Flag  - "+flag);
-			
+			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 		
 		
-		return null;
+	
 	}
 
 
