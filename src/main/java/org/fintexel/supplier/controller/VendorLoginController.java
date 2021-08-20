@@ -15,6 +15,7 @@ import java.util.Optional;
 import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.entity.ChangePassword;
+import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.ForgotPassword;
 import org.fintexel.supplier.entity.ForgotPasswordRequestEntity;
 import org.fintexel.supplier.entity.LoginResponce;
@@ -200,7 +201,7 @@ public class VendorLoginController {
 	}
 
 	@PostMapping("/changePassword")
-	public Object changePassword(@RequestBody ChangePassword changePassword,
+	public CustomeResponseEntity changePassword(@RequestBody ChangePassword changePassword,
 			@RequestHeader(name = "Authorization") String token) {
 		try {
 			if (token != null && token.startsWith("Bearer ")) {
@@ -228,7 +229,7 @@ public class VendorLoginController {
 									
 									customerRegisterRepo.save(customerRegister);
 									
-									return "Password changed!!!";
+									return new CustomeResponseEntity("SUCCESS","Password changed!!!");
 								}
 								else {
 									throw new VendorNotFoundException("Old password not match");
@@ -251,7 +252,8 @@ public class VendorLoginController {
 								register.setTaskId(findByUsername.get().getTaskId());
 								VendorRegister save = registerRepo.save(register);
 								save.setPassword(changePassword.getNewPassword());
-								return "Password changed!!!";
+								
+								return new CustomeResponseEntity("SUCCESS","Password changed!!!");
 
 							} else {
 								throw new VendorNotFoundException("Old password not match");
@@ -273,7 +275,7 @@ public class VendorLoginController {
 	}
 
 	@PostMapping("/forgotPassword")
-	public Object forgotPassword(@RequestBody ForgotPasswordRequestEntity forgotPasswordRequestEntity) {
+	public CustomeResponseEntity forgotPassword(@RequestBody ForgotPasswordRequestEntity forgotPasswordRequestEntity) {
 		try {
 			if (fieldValidation.isEmpty(forgotPasswordRequestEntity.getEmail())
 					&& fieldValidation.isEmpty(forgotPasswordRequestEntity.getUrl())) {
@@ -410,10 +412,10 @@ public class VendorLoginController {
 							ForgotPassword save = forgotPasswordRepo.save(forgotPassword);
 							LOGGER.info("after add data "+save);
 							if (save.equals(null)) {
-								return "Not save in database";
+								throw new VendorNotFoundException("Not save in database");
 							}
 							else {
-								return "Please check your mail";
+								return new CustomeResponseEntity("SUCCESS","Please check your mail");
 							}
 							
 							
@@ -553,10 +555,11 @@ public class VendorLoginController {
 						ForgotPassword save = forgotPasswordRepo.save(forgotPassword);
 						LOGGER.info("after add data "+save);
 						if (save.equals(null)) {
-							return "Not save in database";
+							throw new VendorNotFoundException("Not save in database");
 						}
 						else {
-							return "Please check your mail";
+//							return "Please check your mail";
+							return new CustomeResponseEntity("SUCCESS","Please check your mail");
 						}
 					}
 				} else {
@@ -571,7 +574,7 @@ public class VendorLoginController {
 	}
 
 	@PostMapping("/recoverPassword")
-	public Object recoverPassword(@RequestBody RecoverPassword recoverPassword) {
+	public CustomeResponseEntity recoverPassword(@RequestBody RecoverPassword recoverPassword) {
 		try {
 			if (fieldValidation.isEmpty(recoverPassword.getNewPasswoed())
 					&& fieldValidation.isEmpty(recoverPassword.getToken())) {
@@ -608,10 +611,37 @@ public class VendorLoginController {
 									forgotPassword.setId(findByToken.get().getId());
 									forgotPassword.setStatus("EXPIRE");
 									forgotPasswordRepo.save(forgotPassword);
-									return "password has been changed!! please remember your password";
+//									return "password has been changed!! please remember your password";
+									return new CustomeResponseEntity("SUCCESS","password has been changed!! please remember your password");
 
 								} else {
-									throw new VendorNotFoundException("Can't Find your emai id");
+									Optional<CustomerRegister> findCustomerByEmail = customerRegisterRepo.findByEmail(findByToken.get().getEmail());
+									if (findCustomerByEmail.isPresent()) {
+										CustomerRegister customerRegister = new CustomerRegister();
+										customerRegister.setcId(findCustomerByEmail.get().getcId());
+										customerRegister.setEmail(findCustomerByEmail.get().getEmail());
+										customerRegister.setName(findCustomerByEmail.get().getName());
+										customerRegister.setPassword(passwordEncoder.encode(recoverPassword.getNewPasswoed()));
+										customerRegister.setStatus(findCustomerByEmail.get().getStatus());
+										customerRegister.setUserId(findCustomerByEmail.get().getUserId());
+										customerRegister.setUsername(findCustomerByEmail.get().getUsername());
+										
+										customerRegisterRepo.save(customerRegister);
+										
+										ForgotPassword forgotPassword = new ForgotPassword();
+										forgotPassword.setCreatedOn(findByToken.get().getCreatedOn());
+										forgotPassword.setEmail(findByToken.get().getEmail());
+										forgotPassword.setToken(recoverPassword.getToken());
+										forgotPassword.setId(findByToken.get().getId());
+										forgotPassword.setStatus("EXPIRE");
+										forgotPasswordRepo.save(forgotPassword);
+										
+										return new CustomeResponseEntity("SUCCESS","password has been changed!! please remember your password");
+										
+									} else {
+										throw new VendorNotFoundException("Can't Find your emai");
+									}
+									//throw new VendorNotFoundException("Can't Find your emai id");
 								}
 							} else {
 								throw new VendorNotFoundException("Time expire");
