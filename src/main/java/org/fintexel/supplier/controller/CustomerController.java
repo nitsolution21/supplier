@@ -1,6 +1,13 @@
 package org.fintexel.supplier.controller;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.fintexel.supplier.customerentity.CustomerAddress;
@@ -19,13 +26,39 @@ import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserRolesRepo;
 import org.fintexel.supplier.entity.RegType;
+import org.fintexel.supplier.entity.SupAddress;
+import org.fintexel.supplier.entity.SupBank;
+import org.fintexel.supplier.entity.SupContract;
+import org.fintexel.supplier.entity.SupDepartment;
+import org.fintexel.supplier.entity.SupDetails;
+import org.fintexel.supplier.entity.SupRequest;
+import org.fintexel.supplier.entity.VendorRegister;
+import org.fintexel.supplier.entity.flowableentity.FlowableRegistration;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.helper.GetCustomerDetails;
 import org.fintexel.supplier.repository.RegTypeRepo;
+import org.fintexel.supplier.repository.SupAddressRepo;
+import org.fintexel.supplier.repository.SupBankRepo;
+import org.fintexel.supplier.repository.SupContractRepo;
+import org.fintexel.supplier.repository.SupDepartmentRepo;
+import org.fintexel.supplier.repository.SupDetailsRepo;
+import org.fintexel.supplier.repository.SupRequestRepo;
+import org.fintexel.supplier.repository.VendorRegisterRepo;
+import org.fintexel.supplier.repository.flowablerepo.FlowableRegistrationRepo;
 import org.fintexel.supplier.validation.FieldValidation;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +69,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -43,6 +77,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class CustomerController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerController.class);
 
+	
+	@Autowired
+	private SupAddressRepo supAddRepo;
+	
+	@Autowired
+	private SupDetailsRepo supDetailsRepo;
+	
+	@Autowired
+	private VendorRegisterRepo vendorRepo;
+	
+	@Autowired
+	FlowableRegistrationRepo flowableRegistrationRepo;
+	
 	@Autowired
 	CustomerAddressRepo customerAddressRepo;
 
@@ -52,6 +99,9 @@ public class CustomerController {
 	@Autowired
 	private CustomerContactRepo customerContactRepo;
 
+	@Autowired
+	private SupDepartmentRepo supDepartmentRepo;
+	
 	@Autowired
 	private CustomerProfileRepo customerProfileRepo;
 
@@ -69,6 +119,16 @@ public class CustomerController {
 
 	@Autowired
 	RegTypeRepo regTypeRepo;
+	
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private SupContractRepo supContractRepo;
+	
+	@Autowired
+	private SupBankRepo supBankRepo;
 
 	@PostMapping("/address")
 	public CustomerAddress createCustomerAddress(@RequestBody CustomerAddress customerAddress, @RequestHeader(name = "Authorization") String token) {
@@ -801,5 +861,524 @@ public class CustomerController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
+	
+	
+	
+	
+	
+	@PostMapping("/vendor/registration")
+	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
+		LOGGER.info("Inside - VendorController.registerVendor()");
+		String taskID1_ = "", taskID2_ = "", processInstID_ = "";
+		try {
+			if ((fieldValidation.isEmail(vendorReg.getEmail())
+					& (fieldValidation.isEmpty(vendorReg.getSupplierCompName())))) {
+				VendorRegister filterVendorReg = new VendorRegister();
+				filterVendorReg.setEmail(vendorReg.getEmail());
+				filterVendorReg.setSupplierCompName(vendorReg.getSupplierCompName());
+				filterVendorReg.setStatus("APPROVED");
+				List<VendorRegister> findAll = vendorRepo.findAll();
+				for (VendorRegister find : findAll) {
+					if (find.getEmail().equals(vendorReg.getEmail())) {
+						throw new VendorNotFoundException("Email already exist");
+					}
+				}
+
+				filterVendorReg.setUsername(vendorReg.getEmail());
+				String rowPassword = java.util.UUID.randomUUID().toString();
+				filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
+
+				VendorRegister save = this.vendorRepo.save(filterVendorReg);
+				filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
+				filterVendorReg.setEmail(save.getEmail());
+				filterVendorReg.setRegisterId(save.getRegisterId());
+				filterVendorReg.setCreatedBy(save.getCreatedBy());
+				filterVendorReg.setCreatedOn(save.getCreatedOn());
+				filterVendorReg.setStatus(save.getStatus());
+				filterVendorReg.setSupplierCompName(save.getSupplierCompName());
+				filterVendorReg.setUsername(save.getUsername());
+				filterVendorReg.setUpdatedBy(save.getUpdatedBy());
+				filterVendorReg.setUpdatedOn(save.getUpdatedOn());
+
+				/*
+				 * ----------- REQUEST PROCESS ID with PROCESS DEFINITION KEY
+				 * -------------------------------------------------------
+				 */
+
+				Optional<FlowableRegistration> findByAuthorAndTitle = flowableRegistrationRepo
+						.findByAuthorAndTitle("supplier_reg");
+				RestTemplate restTemplate = new RestTemplate();
+
+				HttpHeaders BaseAuthHeader = new HttpHeaders();
+				BaseAuthHeader.setContentType(MediaType.APPLICATION_JSON);
+				BaseAuthHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+				BaseAuthHeader.setBasicAuth("admin", "test");
+
+				/*
+				 * ============================== ProcessInstance Request
+				 * ================================================
+				 */
+				Map<String, Object> pDMap = new HashMap<>();
+				pDMap.put("processDefinitionId", findByAuthorAndTitle.get().getId());
+				HttpEntity<Map<String, Object>> pDEntity = new HttpEntity<>(pDMap, BaseAuthHeader);
+				ResponseEntity<String> response = restTemplate.postForEntity(
+						"http://65.2.162.230:8080/flowable-rest/service/runtime/process-instances", pDEntity,
+						String.class);
+
+				/*
+				 * ============================== Query Task 1
+				 * ================================================
+				 */
+
+				Map<String, Object> queryMap = new HashMap<>();
+				JSONObject jsonObject = new JSONObject(response.getBody());
+				processInstID_ = (String) jsonObject.get("id");
+				queryMap.put("processInstanceId", processInstID_);
+
+				filterVendorReg.setProcessId(processInstID_);
+				LOGGER.info("ProcessInstanceID : " + processInstID_);
+
+				HttpEntity<Map<String, Object>> baseAuthEntity = new HttpEntity<>(queryMap, BaseAuthHeader);
+				ResponseEntity<String> queryRequest_1 = restTemplate.exchange(
+						"http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, baseAuthEntity,
+						String.class, 1);
+
+				/*
+				 * ----------- POST FORM VARIABLES
+				 * -------------------------------------------------------
+				 */
+
+				JSONArray taskJA = new JSONArray(new JSONObject(queryRequest_1.getBody()).get("data").toString());
+				JSONArray formReqBody = new JSONArray();
+
+				taskID1_ = (String) taskJA.getJSONObject(0).get("id");
+
+				LOGGER.info("Registration TaskID_1 : " + taskID1_);
+
+				JSONObject suppliername = new JSONObject();
+				suppliername.put("name", "suppliername");
+				suppliername.put("scope", "local");
+				suppliername.put("type", "string");
+				suppliername.put("value", vendorReg.getSupplierCompName());
+				formReqBody.put(suppliername);
+
+				JSONObject supplieremail = new JSONObject();
+				supplieremail.put("name", "supplieremail");
+				supplieremail.put("scope", "local");
+				supplieremail.put("type", "string");
+				supplieremail.put("value", vendorReg.getEmail());
+				formReqBody.put(supplieremail);
+
+				JSONObject username = new JSONObject();
+				username.put("name", "username");
+				username.put("scope", "local");
+				username.put("type", "string");
+				username.put("value", vendorReg.getEmail());
+				formReqBody.put(username);
+
+				JSONObject password = new JSONObject();
+				password.put("name", "password");
+				password.put("scope", "local");
+				password.put("type", "string");
+				password.put("value", rowPassword);
+				formReqBody.put(password);
+
+				JSONObject registrationid = new JSONObject();
+				registrationid.put("name", "registrationid");
+				registrationid.put("scope", "local");
+				registrationid.put("type", "string");
+				registrationid.put("value", "SR " + filterVendorReg.getRegisterId());
+				formReqBody.put(registrationid);
+
+				HttpEntity<String> formReqEntity = new HttpEntity<String>(formReqBody.toString(), BaseAuthHeader);
+
+				filterVendorReg.setTaskId(taskID1_);
+
+				ResponseEntity<String> formResponse = restTemplate.exchange(
+						"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/" + taskID1_ + "/variables",
+						HttpMethod.POST, formReqEntity, String.class, 1);
+
+				/*
+				 * ----------- GET COOKIE FROM DB-idm
+				 * -------------------------------------------------------
+				 */
+
+				HttpHeaders loginHeader = new HttpHeaders();
+				loginHeader.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+				MultiValueMap<String, String> loginMap = new LinkedMultiValueMap<String, String>();
+
+				loginMap.add("j_username", "indexer");
+				loginMap.add("j_password", "123");
+				loginMap.add("submit", "Login");
+				loginMap.add("_spring_security_remember_me", "true");
+
+				HttpEntity<MultiValueMap<String, String>> loginReq = new HttpEntity<MultiValueMap<String, String>>(
+						loginMap, loginHeader);
+				ResponseEntity<String> loginResponse = restTemplate
+						.postForEntity("http://65.2.162.230:8080/DB-idm/app/authentication", loginReq, String.class);
+				JSONObject cookieJO = new JSONObject(loginResponse.getHeaders());
+				String coockie_ = cookieJO.get("Set-Cookie").toString().replace("[", "").replace("]", "").replace("\"",
+						"");
+
+				LOGGER.info("Coockie : " + coockie_);
+
+				/*
+				 * ----------- AUTO CLAIMING Registration
+				 * -------------------------------------------------------
+				 */
+
+				HttpHeaders autoCliamHeader = new HttpHeaders();
+				autoCliamHeader.add("Cookie", coockie_);
+				HttpEntity autoClaimEntity = new HttpEntity(null, autoCliamHeader);
+				ResponseEntity autoClaimResponse = restTemplate.exchange(
+						"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskID1_ + "/action/claim", HttpMethod.PUT,
+						autoClaimEntity, String.class);
+				System.out.println("auto complite froom shantanu:    " + autoClaimResponse);
+
+				/*
+				 * ----------- AUTO COMPLETE Registration
+				 * -------------------------------------------------------
+				 */
+
+				HttpHeaders autoCompleteHeader = new HttpHeaders();
+				autoCompleteHeader.add("Cookie", coockie_);
+				autoCompleteHeader.setContentType(MediaType.APPLICATION_JSON);
+
+				JSONObject autoCompleate = new JSONObject();
+				autoCompleate.put("taskIdActual", taskID1_);
+				autoCompleate.put("suppliername", filterVendorReg.getSupplierCompName());
+				autoCompleate.put("supplieremail", filterVendorReg.getEmail());
+				autoCompleate.put("username", filterVendorReg.getUsername());
+				autoCompleate.put("password", rowPassword);
+				autoCompleate.put("registrationid", "SR " + filterVendorReg.getRegisterId());
+
+				JSONObject autoCompleate_ = new JSONObject();
+				autoCompleate_.put("formId", "56d9e9ee-ed45-11eb-ba6c-0a5bf303a9fe");
+				autoCompleate_.put("values", autoCompleate);
+
+				LOGGER.info("Body  " + autoCompleate_);
+				LOGGER.info("headers  " + autoCompleteHeader);
+
+				HttpEntity<String> autoCompeleteEntity = new HttpEntity<String>(autoCompleate_.toString(),
+						autoCompleteHeader);
+				ResponseEntity autoCompleteResponse = restTemplate.exchange(
+						"http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskID1_, HttpMethod.POST,
+						autoCompeleteEntity, String.class);
+				LOGGER.info("Result  " + autoCompleteResponse.getHeaders());
+
+				/*
+				 * ----------- QUERY TO FETCH TASKID_2
+				 * -------------------------------------------------------
+				 */
+
+				queryRequest_1 = restTemplate.exchange("http://65.2.162.230:8080/flowable-rest/service/query/tasks",
+						HttpMethod.POST, baseAuthEntity, String.class, 1);
+				taskJA = new JSONArray(new JSONObject(queryRequest_1.getBody()).get("data").toString());
+
+				taskID2_ = (String) taskJA.getJSONObject(0).get("id");
+				LOGGER.info("Registration TaskID_2 : " + taskID2_);
+
+				// ----------- AUTO CLAIMING REGISTRATION APPROVAL
+				// -------------------------------------------------------
+				autoClaimResponse = restTemplate.exchange(
+						"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskID2_ + "/action/claim", HttpMethod.PUT,
+						autoClaimEntity, String.class);
+
+				// ----------- AUTO COMPLETE REGISTRATION APPROVAL
+				// --------------------------------------------------------
+
+				JSONObject autoComp2 = new JSONObject();
+				autoComp2.put("taskIdActual", taskID2_);
+				autoComp2.put("suppliername", filterVendorReg.getSupplierCompName());
+				autoComp2.put("supplieremail", filterVendorReg.getEmail());
+				autoComp2.put("approvesupplier", "Yes");
+				autoComp2.put("approverremarkssupregistration", "");
+				
+				
+				autoCompleate_ = new JSONObject();
+				autoCompleate_.put("formId", "56d9e9ef-ed45-11eb-ba6c-0a5bf303a9fe");
+				autoCompleate_.put("values", autoComp2);
+				
+				LOGGER.info("autoCompleate_  "+autoCompleate_);
+				LOGGER.info("autoCompleteHeader  "+autoCompleteHeader);
+				
+				
+				HttpEntity<String> autoCompeleteEntity2 = new HttpEntity<String>(autoCompleate_.toString(), autoCompleteHeader);			
+				autoCompleteResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+taskID2_, HttpMethod.POST, autoCompeleteEntity2, String.class);
+				LOGGER.info("Result  "+autoCompleteResponse.getHeaders());
+				
+				
+				VendorRegister save1 = this.vendorRepo.save(filterVendorReg);
+				save1.setPassword(rowPassword);
+//				save1.setRegisterId("SR "+save1.getRegisterId());
+				return save1;
+
+			} else {
+				throw new VendorNotFoundException("Validation error");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+
+	@PostMapping("/vendor")
+	public SupDetails postSupplierDetails(@RequestBody SupDetails supDetails) {
+		LOGGER.info("Inside - VendorController.postSupplierDetails()");
+
+		try {
+
+			if ((fieldValidation.isEmpty(supDetails.getSupplierCompName()))
+					& (fieldValidation.isEmpty(supDetails.getRegistrationType()))
+					& (fieldValidation.isEmpty(supDetails.getRegisterId()))
+					& (fieldValidation.isEmpty(supDetails.getRegistrationNo()))) {
+
+				List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(supDetails.getRegisterId());
+				List<SupDetails> findAll = supDetailsRepo.findAll();
+
+				if (findByRegisterId.size() < 1) {
+
+					SupDetails filterSupDetails = new SupDetails();
+					SupRequest supRequest = new SupRequest();
+					DateTimeFormatter supCodeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+					LocalDateTime supCodeNow = LocalDateTime.now();
+
+					filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
+					filterSupDetails.setRegisterId(supDetails.getRegisterId());
+					filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
+					filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
+
+					DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+					LocalDateTime lastLoginNow = LocalDateTime.now();
+					Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+							.parse(lastLoginNow.format(lastLogingFormat));
+
+					filterSupDetails.setLastlogin(lastLogin);
+
+					try {
+
+						if (fieldValidation.isEmpty(supDetails.getRemarks())) {
+							filterSupDetails.setRemarks(supDetails.getRemarks());
+						}
+
+					} catch (Exception e) {
+
+					}
+
+					filterSupDetails.setLastlogin(supDetails.getLastlogin());
+					filterSupDetails.setSupplierCode("SU:" + supCodeNow.format(supCodeFormat) + ":" + findAll.size());
+					filterSupDetails.setStatus("APPROVED");
+					SupDetails save = supDetailsRepo.save(filterSupDetails);
+					return save;
+				} else {
+
+						throw new VendorNotFoundException("Vendor Already Exist");
+				}
+
+			} else {
+				throw new VendorNotFoundException("Validation Error");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+
+	}
+	
+	
+	@PostMapping("/vendor/address")
+	public SupAddress postAddressVendor(@RequestBody SupAddress address) {
+
+		try {
+			String loginSupplierCode = address.getSupplierCode();
+			if ((fieldValidation.isEmpty(address.getAddressType())) & (fieldValidation.isEmpty(address.getAddress1()))
+					& (fieldValidation.isEmpty(address.getPostalCode())) & (fieldValidation.isEmpty(address.getCity()))
+					& (fieldValidation.isEmpty(address.getCountry())) & (fieldValidation.isEmpty(address.getRegion()))
+					& (fieldValidation.isEmpty(address.getAddressProof()))
+					& (fieldValidation.isEmpty(address.getAddressProofPath()))) {
+
+				if (!loginSupplierCode.equals(null)) {
+
+
+					SupAddress filterAddressUp = new SupAddress();
+					filterAddressUp.setSupplierCode(loginSupplierCode);
+					filterAddressUp.setAddressType(address.getAddressType());
+					filterAddressUp.setAddress1(address.getAddress1());
+					try {
+						if (fieldValidation.isEmpty(address.getAddress2())) {
+							filterAddressUp.setAddress2(address.getAddress2());
+						}
+					} catch (Exception e) {
+
+					}
+					filterAddressUp.setPostalCode(address.getPostalCode());
+					filterAddressUp.setCity(address.getCity());
+					filterAddressUp.setCountry(address.getCountry());
+					filterAddressUp.setRegion(address.getRegion());
+					filterAddressUp.setStatus("APPROVED");
+					filterAddressUp.setAddressProof(address.getAddressProof());
+					filterAddressUp.setAddressProofPath(address.getAddressProofPath());
+					SupAddress save = this.supAddRepo.save(filterAddressUp);
+					return save;
+				} else {
+					throw new VendorNotFoundException("Token not valid");
+				}
+			} else {
+				throw new VendorNotFoundException("Validation error");
+			}
+
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+
+	}
+	
+	
+	
+	@PostMapping("/vendor/contact")
+	public SupContract postVendorContact(@RequestBody() SupContract contact) {
+		LOGGER.info("Inside - VendorController.postVendorContact()");
+		try {
+			String loginSupplierCode = contact.getSupplierCode();
+			if ((fieldValidation.isEmpty(contact.getContractType()))
+					& (fieldValidation.isEmpty(contact.getContractTerms()))
+					& (fieldValidation.isEmpty(contact.getContractProof()))
+					& (fieldValidation.isEmpty(contact.getContractLocation()))) {
+				if (!loginSupplierCode.equals(null)) {
+					SupContract filterSupContract = new SupContract();
+					List<SupBank> findBySupplierCode = supBankRepo.findBySupplierCode(loginSupplierCode);
+					if (findBySupplierCode.size() > 0) {
+						filterSupContract.setSupplierCode(loginSupplierCode);
+						filterSupContract.setBankId((int) findBySupplierCode.get(0).getBankId());
+						filterSupContract.setContractType(contact.getContractType());
+						filterSupContract.setContractTerms(contact.getContractTerms());
+						filterSupContract.setContractProof(contact.getContractProof());
+						filterSupContract.setContractLocation(contact.getContractLocation());
+						filterSupContract.setStatus("APPROVED");
+						SupRequest supRequest = new SupRequest();
+						SupContract save = supContractRepo.save(filterSupContract);
+
+						return save;
+					} else {
+						throw new VendorNotFoundException("Please add bank first after that add contact");
+					}
+
+				} else {
+					throw new VendorNotFoundException("Token Expir");
+				}
+			} else {
+				throw new VendorNotFoundException("Valitation Error");
+			}
+
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+
+
+	
+	@PostMapping("/vendor/bank")
+	public SupBank postBank(@RequestBody SupBank supBank) {
+		LOGGER.info("Inside - VendorController.postBank()");
+		try {
+			String loginSupplierCode = supBank.getSupplierCode();
+			if (fieldValidation.isEmpty(supBank.getAccountHolder())
+					&& fieldValidation.isEmpty(supBank.getBankAccountNo())
+//					&& fieldValidation.isEmpty(supBank.getBankBic())
+					&& fieldValidation.isEmpty(supBank.getBankBranch())
+					&& fieldValidation.isEmpty(supBank.getBankEvidence())
+					&& fieldValidation.isEmpty(supBank.getBankName())
+//					&& fieldValidation.isEmpty(supBank.getChequeNo())
+					&& fieldValidation.isEmpty(supBank.getCountry()) && fieldValidation.isEmpty(supBank.getCurrency())
+					&& fieldValidation.isEmpty(supBank.getEvidencePath())
+					&& fieldValidation.isEmpty(supBank.getIfscCode())
+//					&& fieldValidation.isEmpty(supBank.getSwiftCode())
+//					&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())
+			) {
+				if (!loginSupplierCode.equals(null)) {
+
+					SupBank bank = new SupBank();
+					bank.setAccountHolder(supBank.getAccountHolder());
+					bank.setBankAccountNo(supBank.getBankAccountNo());
+					bank.setBankBic(supBank.getBankBic());
+					bank.setBankBranch(supBank.getBankBranch());
+					bank.setBankEvidence(supBank.getBankEvidence());
+					bank.setBankName(supBank.getBankName());
+					bank.setChequeNo(supBank.getChequeNo());
+					bank.setCountry(supBank.getCountry());
+					bank.setCurrency(supBank.getCurrency());
+					bank.setEvidencePath(supBank.getEvidencePath());
+					bank.setIfscCode(supBank.getIfscCode());
+					bank.setSupplierCode(loginSupplierCode);
+					bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
+					bank.setSwiftCode(supBank.getSwiftCode());
+					bank.setStatus("APPROVED");
+					Optional<SupBank> findBySwiftCode = supBankRepo.findBySwiftCode(supBank.getSwiftCode());
+					if (!findBySwiftCode.isPresent()) {
+						SupBank postData = this.supBankRepo.save(bank);
+						return postData;
+					} else {
+						throw new VendorNotFoundException("The Swift code all ready present");
+					}
+				} else {
+					throw new VendorNotFoundException("Token Expir");
+				}
+			} else {
+				throw new VendorNotFoundException("Some field are messing");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+
+	}
+
+	
+	@PostMapping("/vendor/department")
+	public SupDepartment addSupDepartment(@RequestBody SupDepartment supDepartment) {
+		try {
+			String loginSupplierCode = supDepartment.getSupplierCode();
+			if (fieldValidation.isEmpty(supDepartment.getDepartmentName())
+					&& fieldValidation.isEmpty(supDepartment.getSupplierContact1())
+					&& fieldValidation.isEmpty(supDepartment.getEmail())
+					&& fieldValidation.isEmpty(supDepartment.getPhoneno())) {
+
+				if (fieldValidation.isEmail(supDepartment.getEmail())) {
+					if (!loginSupplierCode.equals(null)) {
+
+						SupDepartment department = new SupDepartment();
+						department.setDepartmentName(supDepartment.getDepartmentName());
+						department.setSupplierCode(loginSupplierCode);
+						department.setSupplierContact1(supDepartment.getSupplierContact1());
+						department.setEmail(supDepartment.getEmail());
+						department.setStatus("APPROVED");
+						try {
+							if (fieldValidation.isEmpty(supDepartment.getSupplierContact2())
+									&& fieldValidation.isEmpty(supDepartment.getAlternatePhoneno())) {
+								department.setSupplierContact2(supDepartment.getSupplierContact2());
+								department.setAlternatePhoneno(supDepartment.getAlternatePhoneno());
+							}
+						} catch (Exception e) {
+
+						}
+						department.setPhoneno(supDepartment.getPhoneno());
+						SupDepartment save = supDepartmentRepo.save(department);
+						return save;
+					} else {
+						throw new VendorNotFoundException("Token Expir");
+					}
+				} else {
+					throw new VendorNotFoundException("Email Format Not Match");
+				}
+			} else {
+				throw new VendorNotFoundException("Validation Error");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	
+	
+	
+	
+
 	
 }
