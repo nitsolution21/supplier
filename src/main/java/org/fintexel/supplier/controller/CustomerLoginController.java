@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.fintexel.supplier.customerentity.CustomerDepartment;
 import org.fintexel.supplier.customerentity.CustomerDepartments;
 import org.fintexel.supplier.customerentity.CustomerFunctionalitiesMaster;
 import org.fintexel.supplier.customerentity.CustomerRegister;
@@ -18,7 +17,6 @@ import org.fintexel.supplier.customerentity.CustomerUserFunctionaliti;
 import org.fintexel.supplier.customerentity.CustomerUserRoles;
 import org.fintexel.supplier.customerentity.LoginResponceForCustomer;
 import org.fintexel.supplier.customerentity.RolesMaster;
-import org.fintexel.supplier.customerrepository.CustomerDepartmentRepo;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerFunctionalitiesMasterRepo;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
