@@ -429,7 +429,7 @@ public class VendorLoginController {
 							
 							
 						} else {
-							throw new VendorNotFoundException("We could't foumd your email id");
+							throw new VendorNotFoundException("We could't found your email id");
 						}
 						
 					}
@@ -563,7 +563,7 @@ public class VendorLoginController {
 						}
 					}
 				} else {
-					throw new VendorNotFoundException("Provide correct email id");
+					throw new VendorNotFoundException("Provide correct email");
 				}
 			} else {
 				throw new VendorNotFoundException("Email id and URL required");
