@@ -727,6 +727,9 @@ public class CustomerController {
 			if (findDepartmentsById.isPresent()) {
 				long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 				String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
+				
+				long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+				
 				if (customerIdFromToken == -1) {
 					throw new VendorNotFoundException("Customer not found");
 				}
@@ -741,7 +744,7 @@ public class CustomerController {
 								departments.setPhoneNo(customerDepartments.getPhoneNo());
 								departments.setCostCode(customerDepartments.getCostCode());
 								departments.setDepartmentId(departmentId);
-								departments.setcId(customerIdFromToken);
+								departments.setcId(companyProfileIdByCustomerId);
 								try {
 									if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo())) {
 										departments.setAlternatePhoneNo(customerDepartments.getAlternatePhoneNo());
@@ -767,7 +770,7 @@ public class CustomerController {
 								departments.setPhoneNo(customerDepartments.getPhoneNo());
 								departments.setCostCode(customerDepartments.getCostCode());
 								departments.setDepartmentId(departmentId);
-								departments.setcId(customerIdFromToken);
+								departments.setcId(companyProfileIdByCustomerId);
 								try {
 									if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo())) {
 										departments.setAlternatePhoneNo(customerDepartments.getAlternatePhoneNo());
