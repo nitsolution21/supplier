@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.fintexel.supplier.customerentity.CustomerDepartment;
 import org.fintexel.supplier.customerentity.CustomerDepartments;
 import org.fintexel.supplier.customerentity.CustomerFunctionalitiesMaster;
 import org.fintexel.supplier.customerentity.CustomerRegister;
@@ -18,7 +17,6 @@ import org.fintexel.supplier.customerentity.CustomerUserFunctionaliti;
 import org.fintexel.supplier.customerentity.CustomerUserRoles;
 import org.fintexel.supplier.customerentity.LoginResponceForCustomer;
 import org.fintexel.supplier.customerentity.RolesMaster;
-import org.fintexel.supplier.customerrepository.CustomerDepartmentRepo;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerFunctionalitiesMasterRepo;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
@@ -612,7 +610,7 @@ public class CustomerLoginController {
 	public CustomerRegisterResponse updateRegistration(@PathVariable long regId,
 			@RequestBody() CustomerRegisterRequest customerRegisterRequest,
 			@RequestHeader(name = "Authorization") String token) {
-		LOGGER.info("Inside - CustomerLoginController.getRegistration()");
+		LOGGER.info("Inside - CustomerLoginController.updateRegistration()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 			String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
@@ -634,6 +632,9 @@ public class CustomerLoginController {
 								&& fieldValidation.isEmpty(customerRegisterRequest.getDepartment())
 								&& fieldValidation.isEmpty(customerRegisterRequest.getFuncationality())) {
 							if (fieldValidation.isEmail(customerRegisterRequest.getEmail())) {
+								
+								LOGGER.info("Id is <1> "+regId);
+								
 								customerRegister.setcId(companyProfileIdByCustomerId);
 								customerRegister.setCreatedBy(findCustomerRegistrationById.get().getCreatedBy());
 								customerRegister.setCreatedOn(findCustomerRegistrationById.get().getCreatedOn());
@@ -656,16 +657,22 @@ public class CustomerLoginController {
 								customerRegisterResponse.setStatus(updateCustomer.getStatus());
 								customerRegisterResponse.setUpdatedBy(updateCustomer.getUpdatedBy());
 								customerRegisterResponse.setUpdatedOn(updateCustomer.getUpdatedOn());
+								customerRegisterResponse.setUserId(updateCustomer.getUserId());
+								customerRegisterResponse.setUsername(updateCustomer.getUsername());
+								
 
 								Optional<CustomerUserRoles> findUserroleByUserId = customerUserRolesRepo
 										.findByUserId(regId);
 								LOGGER.info("Find user role by id  |_____<<<>>>>_____|  "+findUserroleByUserId.get());
 								if (findUserroleByUserId.isPresent()) {
 									
+									LOGGER.info("Id is from delete<2> "+regId);
+									
 									customerUserRolesRepo.deleteById(regId);
 									
 									userRoles.setRoleId(customerRegisterRequest.getRole());
 									userRoles.setUserId(regId);
+									
 									CustomerUserRoles updateCustomerUserRoles = customerUserRolesRepo.save(userRoles);
 									
 									Optional<RolesMaster> findRoleFromMasterTableById = rolesMasterRepo.findById(updateCustomerUserRoles.getRoleId());
@@ -678,19 +685,50 @@ public class CustomerLoginController {
 								}
 
 								List<CustomerUserFunctionaliti> findFunctionalityByUserId = customerUserFunctionalitiRepo.findByUserId(regId);
+								
+								LOGGER.info("findFunctionalityByUserId |________<<>>>_____|",findFunctionalityByUserId.toString());
+								LOGGER.info("findFunctionalityByUserId |________<<>>>_____| SIZE   ",findFunctionalityByUserId.size());
+								
 								if (findFunctionalityByUserId.size() > 0) {
 									
-									findFunctionalityByUserId.forEach(userFunctionality -> {
+//									findFunctionalityByUserId.forEach(userFunctionality -> {
+//										if (userFunctionality.getfId() == customerRegisterRequest.getFuncationality()) {
+//											
+//											customerUserFunctionalitiRepo.deleteById(regId);
+//											
+//											LOGGER.info("in Functionality user id <3>"+regId);
+//											
+//											functionality.setfId(customerRegisterRequest.getFuncationality());
+//											functionality.setUserId(regId);
+//											
+//											CustomerUserFunctionaliti customerUserFunctionaliti = customerUserFunctionalitiRepo.save(functionality);
+//											LOGGER.info("Functionality final $$$ "+customerUserFunctionaliti);
+//										}
+//									});
+									for(CustomerUserFunctionaliti userFunctionality : findFunctionalityByUserId) {
 										if (userFunctionality.getfId() == customerRegisterRequest.getFuncationality()) {
-											
-											customerUserFunctionalitiRepo.deleteById(regId);
+
+											customerUserFunctionalitiRepo.deleteById(userFunctionality.getUserId());
+
+											LOGGER.info("in Functionality user id <3>" + regId);
+
+											functionality.setfId(customerRegisterRequest.getFuncationality());
+											functionality.setUserId(regId);
+
+											CustomerUserFunctionaliti customerUserFunctionaliti = customerUserFunctionalitiRepo
+													.save(functionality);
+											LOGGER.info("Functionality final $$$ " + customerUserFunctionaliti);
+										}
+										else {
+											customerUserFunctionalitiRepo.deleteById(userFunctionality.getUserId());
 											
 											functionality.setfId(customerRegisterRequest.getFuncationality());
 											functionality.setUserId(regId);
-											CustomerUserFunctionaliti customerUserFunctionaliti = customerUserFunctionalitiRepo.save(functionality);
-											LOGGER.info("Functionality final $$$ "+customerUserFunctionaliti);
+
+											CustomerUserFunctionaliti customerUserFunctionaliti = customerUserFunctionalitiRepo
+													.save(functionality);
 										}
-									});
+									}
 									
 									List<CustomerFunctionalitiesMaster> listOfFunctionality = getCustomerDetails.getFunctionaliti(regId);
 									customerRegisterResponse.setFunctionality(listOfFunctionality);
@@ -701,18 +739,30 @@ public class CustomerLoginController {
 								
 								List<CustomerUserDepartments> findDepartmentByUserId = customerUserDepartmentsRepo.findByUserId(regId);
 								
-								LOGGER.info("Department is >>> "+findDepartmentByUserId);
+								LOGGER.info("Department is >>> "+findDepartmentByUserId.size());
 								if (findDepartmentByUserId.size() > 0) {
+									LOGGER.info("After find The Department Details:  |________<<>>>________|"+findDepartmentByUserId);
 									findDepartmentByUserId.forEach(userDepartment -> {
 										if (userDepartment.getUserId() == customerRegisterRequest.getDepartment()) {
 											
-											customerUserDepartmentsRepo.deleteById(regId);
+											LOGGER.info("in Functionality user id <4>"+regId);
+											
+											customerUserDepartmentsRepo.deleteById(userDepartment.getUserId());
 											
 											department.setDepartmentId(customerRegisterRequest.getDepartment());
 											department.setUserId(regId);
 											
 											CustomerUserDepartments saveCustomerUserDepartments = customerUserDepartmentsRepo.save(department);
-											LOGGER.info("Final Department >>> "+saveCustomerUserDepartments);
+											LOGGER.info("Department final >>> "+saveCustomerUserDepartments);
+										}
+										else {
+											customerUserDepartmentsRepo.deleteById(userDepartment.getUserId());
+											
+											department.setDepartmentId(customerRegisterRequest.getDepartment());
+											department.setUserId(regId);
+											
+											CustomerUserDepartments saveCustomerUserDepartments = customerUserDepartmentsRepo.save(department);
+											LOGGER.info("Department final >>> "+saveCustomerUserDepartments);
 										}
 									});
 									

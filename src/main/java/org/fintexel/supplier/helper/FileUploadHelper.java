@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class FileUploadHelper {
-
 	@Value("${file.upload-path}")
 	private String UPLOAD_DIR;
 

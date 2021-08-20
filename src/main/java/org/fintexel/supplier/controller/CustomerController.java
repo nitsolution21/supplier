@@ -12,17 +12,18 @@ import java.util.Optional;
 
 import org.fintexel.supplier.customerentity.CustomerAddress;
 import org.fintexel.supplier.customerentity.CustomerContact;
-import org.fintexel.supplier.customerentity.CustomerDepartment;
+
 import org.fintexel.supplier.customerentity.CustomerDepartments;
 import org.fintexel.supplier.customerentity.CustomerProfile;
 import org.fintexel.supplier.customerentity.CustomerProfileResponce;
 import org.fintexel.supplier.customerentity.CustomerRegister;
+import org.fintexel.supplier.customerentity.CustomerUserDepartments;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
-import org.fintexel.supplier.customerrepository.CustomerDepartmentRepo;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerProfileRepo;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
+import org.fintexel.supplier.customerrepository.CustomerUserDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserRolesRepo;
 import org.fintexel.supplier.entity.RegType;
 import org.fintexel.supplier.entity.SupAddress;
@@ -112,9 +113,9 @@ public class CustomerController {
 
 	@Autowired
 	private CustomerDepartmentsRepo customerDepartmentsRepo;
-
+	
 	@Autowired
-	private CustomerDepartmentRepo customerDepartmentRepo;
+	CustomerUserDepartmentsRepo customerUserDepartmentsRepo;
 
 	@Autowired
 	RegTypeRepo regTypeRepo;
@@ -675,7 +676,7 @@ public class CustomerController {
 				String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
 				long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
 				CustomerDepartments departments = new CustomerDepartments();
-				CustomerDepartment userCustomerDepartment = new CustomerDepartment();
+				CustomerUserDepartments userCustomerDepartment = new CustomerUserDepartments();
 				
 				switch (roleByUserId) {
 				case "SADMIN":
@@ -696,10 +697,17 @@ public class CustomerController {
 							departments.setStatus("COMPLEATE");
 							CustomerDepartments saveCustomerDepartments = customerDepartmentsRepo.save(departments);
 							
-							userCustomerDepartment.setcId(saveCustomerDepartments.getcId());
+							LOGGER.info("Save department is:   "+departments);
+							
+							userCustomerDepartment.setUserId(customerIdFromToken);
 							userCustomerDepartment.setDepartmentId(saveCustomerDepartments.getDepartmentId());
 							
-							CustomerDepartment saveCustomerDepartment = customerDepartmentRepo.save(userCustomerDepartment);
+							LOGGER.info("Save department user is:   "+userCustomerDepartment);
+							
+							CustomerUserDepartments customerUserDepartments = customerUserDepartmentsRepo.save(userCustomerDepartment);
+							
+							LOGGER.info("After Save department user is:   "+customerUserDepartments);
+							
 							return saveCustomerDepartments;
 						} else {
 							throw new VendorNotFoundException("Email id not valid");
@@ -730,9 +738,9 @@ public class CustomerController {
 							for(CustomerRegister customer : findByCId) {
 								String getRoleByUserId = getCustomerDetails.getRoleByUserId(customer.getUserId());
 								if (getRoleByUserId.equals("SADMIN")) {
-									userCustomerDepartment.setcId(saveCustomerDepartments.getcId());
+									userCustomerDepartment.setUserId(customer.getUserId());
 									userCustomerDepartment.setDepartmentId(saveCustomerDepartments.getDepartmentId());
-									customerDepartmentRepo.save(userCustomerDepartment);
+									customerUserDepartmentsRepo.save(userCustomerDepartment);
 								}
 							}
 							
@@ -779,6 +787,9 @@ public class CustomerController {
 			if (findDepartmentsById.isPresent()) {
 				long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 				String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
+				
+				long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+				
 				if (customerIdFromToken == -1) {
 					throw new VendorNotFoundException("Customer not found");
 				}
@@ -793,7 +804,7 @@ public class CustomerController {
 								departments.setPhoneNo(customerDepartments.getPhoneNo());
 								departments.setCostCode(customerDepartments.getCostCode());
 								departments.setDepartmentId(departmentId);
-								departments.setcId(customerIdFromToken);
+								departments.setcId(companyProfileIdByCustomerId);
 								try {
 									if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo())) {
 										departments.setAlternatePhoneNo(customerDepartments.getAlternatePhoneNo());
@@ -819,7 +830,7 @@ public class CustomerController {
 								departments.setPhoneNo(customerDepartments.getPhoneNo());
 								departments.setCostCode(customerDepartments.getCostCode());
 								departments.setDepartmentId(departmentId);
-								departments.setcId(customerIdFromToken);
+								departments.setcId(companyProfileIdByCustomerId);
 								try {
 									if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo())) {
 										departments.setAlternatePhoneNo(customerDepartments.getAlternatePhoneNo());
