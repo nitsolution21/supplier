@@ -768,11 +768,17 @@ public class CustomerController {
 		LOGGER.info("Inside - CustomerController.getDepartments()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
 			if (customerIdFromToken == -1) {
 				throw new VendorNotFoundException("Customer not found");
 			}
 			else {
-				return getCustomerDetails.getDepartments(customerIdFromToken);
+				List<CustomerDepartments> findByCId = customerDepartmentsRepo.findBycId(companyProfileIdByCustomerId);
+				if (findByCId.size() > 0) {
+					return findByCId;
+				} else {
+					throw new VendorNotFoundException("Department not found for this user");
+				}
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
