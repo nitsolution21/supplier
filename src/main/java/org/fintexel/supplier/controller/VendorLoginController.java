@@ -212,7 +212,31 @@ public class VendorLoginController {
 					if (userName.equals(changePassword.getUsername())) {
 						Optional<VendorRegister> findByUsername = registerRepo.findByUsername(userName);
 						if (!findByUsername.isPresent()) {
-							throw new VendorNotFoundException("Vendor not found");
+							Optional<CustomerRegister> findCustomerByUsername = customerRegisterRepo.findByUsername(userName);
+							if (findCustomerByUsername.isPresent()) {
+								if (passwordEncoder.matches(changePassword.getOldPassword(), findByUsername.get().getPassword())) {
+									CustomerRegister customerRegister = new CustomerRegister();
+									customerRegister.setcId(findCustomerByUsername.get().getcId());
+									customerRegister.setCreatedBy(findCustomerByUsername.get().getCreatedBy());
+									customerRegister.setCreatedOn(findCustomerByUsername.get().getCreatedOn());
+									customerRegister.setEmail(findCustomerByUsername.get().getEmail());
+									customerRegister.setName(findCustomerByUsername.get().getName());
+									customerRegister.setPassword(passwordEncoder.encode(changePassword.getNewPassword()));
+									customerRegister.setStatus(findCustomerByUsername.get().getStatus());
+									customerRegister.setUserId(findCustomerByUsername.get().getUserId());
+									customerRegister.setUsername(findCustomerByUsername.get().getUsername());
+									
+									customerRegisterRepo.save(customerRegister);
+									
+									return "Password changed!!!";
+								}
+								else {
+									throw new VendorNotFoundException("Old password not match");
+								}
+							} else {
+								throw new VendorNotFoundException("Vendor not found");
+							}
+							//throw new VendorNotFoundException("Vendor not found");
 						} else {
 							if (passwordEncoder.matches(changePassword.getOldPassword(),
 									findByUsername.get().getPassword())) {
@@ -230,7 +254,7 @@ public class VendorLoginController {
 								return "Password changed!!!";
 
 							} else {
-								throw new VendorNotFoundException("Old password not natch");
+								throw new VendorNotFoundException("Old password not match");
 							}
 						}
 					} else {
@@ -257,135 +281,284 @@ public class VendorLoginController {
 					Optional<VendorRegister> findByEmail = registerRepo
 							.findByEmail(forgotPasswordRequestEntity.getEmail());
 					if (!findByEmail.isPresent()) {
-						throw new VendorNotFoundException("We could't foumd your email id");
-					}
-					String token = java.util.UUID.randomUUID().toString();
-//					DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-//					LocalDateTime now = LocalDateTime.now();
-//					
-//					SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");  
-					Date date = new Date();
-					try {
-						Optional<FlowableRegistration> findByAuthorAndTitle = flowableRegistrationRepo
-								.findByAuthorAndTitle("forgot_supplier_pwd");
+						Optional<CustomerRegister> findCustomerByEmail = customerRegisterRepo.findByEmail(forgotPasswordRequestEntity.getEmail());
+						if (findCustomerByEmail.isPresent()) {
+							
+							/*--------------------------------------Start Customer------------------------------------------------*/
+							
+							
+							
+							
+							String token = java.util.UUID.randomUUID().toString();
+//							DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+//							LocalDateTime now = LocalDateTime.now();
+//							
+//							SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");  
+							Date date = new Date();
+							try {
+								Optional<FlowableRegistration> findByAuthorAndTitle = flowableRegistrationRepo
+										.findByAuthorAndTitle("forgot_supplier_pwd");
 
-						RestTemplate restTemplate = new RestTemplate();
-						HttpHeaders headers = new HttpHeaders();
-						headers.setContentType(MediaType.APPLICATION_JSON);
-						headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-						headers.setBasicAuth("admin", "test");
-						Map<String, Object> map = new HashMap<>();
-						map.put("processDefinitionId", findByAuthorAndTitle.get().getId());
-						HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
-						ResponseEntity<String> response = restTemplate.postForEntity(
-								"http://65.2.162.230:8080/flowable-rest/service/runtime/process-instances", entity,
-								String.class);
-						JSONObject jsonObject = new JSONObject(response.getBody());
-						Map<String, Object> mapp = new HashMap<>();
-						map.put("processInstanceId", (String) jsonObject.get("id"));
+								RestTemplate restTemplate = new RestTemplate();
+								HttpHeaders headers = new HttpHeaders();
+								headers.setContentType(MediaType.APPLICATION_JSON);
+								headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+								headers.setBasicAuth("admin", "test");
+								Map<String, Object> map = new HashMap<>();
+								map.put("processDefinitionId", findByAuthorAndTitle.get().getId());
+								HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+								ResponseEntity<String> response = restTemplate.postForEntity(
+										"http://65.2.162.230:8080/flowable-rest/service/runtime/process-instances", entity,
+										String.class);
+								JSONObject jsonObject = new JSONObject(response.getBody());
+								Map<String, Object> mapp = new HashMap<>();
+								map.put("processInstanceId", (String) jsonObject.get("id"));
 
-						// LOGGER.info("Task ID for forgot password - "+(String) jsonObject.get("id"));
+								// LOGGER.info("Task ID for forgot password - "+(String) jsonObject.get("id"));
 
-						HttpEntity<Map<String, Object>> request = new HttpEntity<>(map, headers);
-						ResponseEntity<String> exchange = restTemplate.exchange(
-								"http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, request,
-								String.class, 1);
-						JSONObject jsonObject1 = new JSONObject(exchange.getBody());
+								HttpEntity<Map<String, Object>> request = new HttpEntity<>(map, headers);
+								ResponseEntity<String> exchange = restTemplate.exchange(
+										"http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, request,
+										String.class, 1);
+								JSONObject jsonObject1 = new JSONObject(exchange.getBody());
 
-						JSONArray array = new JSONArray(jsonObject1.get("data").toString());
-						JSONArray arrayy = new JSONArray();
+								JSONArray array = new JSONArray(jsonObject1.get("data").toString());
+								JSONArray arrayy = new JSONArray();
 
-						JSONObject forgotPwdEmail = new JSONObject();
-						forgotPwdEmail.put("name", "supplierforgotemailid");
-						forgotPwdEmail.put("scope", "local");
-						forgotPwdEmail.put("type", "string");
-						forgotPwdEmail.put("value", forgotPasswordRequestEntity.getEmail());
-						arrayy.put(forgotPwdEmail);
+								JSONObject forgotPwdEmail = new JSONObject();
+								forgotPwdEmail.put("name", "supplierforgotemailid");
+								forgotPwdEmail.put("scope", "local");
+								forgotPwdEmail.put("type", "string");
+								forgotPwdEmail.put("value", forgotPasswordRequestEntity.getEmail());
+								arrayy.put(forgotPwdEmail);
 
-						JSONObject forgotPwdLink = new JSONObject();
-						forgotPwdLink.put("name", "forgotpwdlink");
-						forgotPwdLink.put("scope", "local");
-						forgotPwdLink.put("type", "string");
-						forgotPwdLink.put("value", forgotPasswordRequestEntity.getUrl() + "/" + token);
-						arrayy.put(forgotPwdLink);
+								JSONObject forgotPwdLink = new JSONObject();
+								forgotPwdLink.put("name", "forgotpwdlink");
+								forgotPwdLink.put("scope", "local");
+								forgotPwdLink.put("type", "string");
+								forgotPwdLink.put("value", forgotPasswordRequestEntity.getUrl() + "/" + token);
+								arrayy.put(forgotPwdLink);
 
-						HttpEntity<String> entityy = new HttpEntity<String>(arrayy.toString(), headers);
-						ResponseEntity<String> response2 = restTemplate.exchange(
-								"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/"
-										+ array.getJSONObject(0).get("id") + "/variables",
-								HttpMethod.POST, entityy, String.class, 1);
+								HttpEntity<String> entityy = new HttpEntity<String>(arrayy.toString(), headers);
+								ResponseEntity<String> response2 = restTemplate.exchange(
+										"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/"
+												+ array.getJSONObject(0).get("id") + "/variables",
+										HttpMethod.POST, entityy, String.class, 1);
 
-						taskId = (String) array.getJSONObject(0).get("id");
+								taskId = (String) array.getJSONObject(0).get("id");
 
-						LOGGER.info("Taks ID for forgot password " + array.getJSONObject(0).get("id"));
+								LOGGER.info("Taks ID for forgot password " + array.getJSONObject(0).get("id"));
 
-					} catch (Exception e) {
-					}
+							} catch (Exception e) {
+							}
 
-//					AUTO CLAIM  START
+//							AUTO CLAIM  START
 
-					HttpHeaders headers = new HttpHeaders();
-					headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-					MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-					map.add("j_username", "indexer");
-					map.add("j_password", "123");
-					map.add("submit", "Login");
-					map.add("_spring_security_remember_me", "true");
-					HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(
-							map, headers);
-					ResponseEntity<String> response = restTemplate
-							.postForEntity("http://65.2.162.230:8080/DB-idm/app/authentication", request, String.class);
-					JSONObject claimcookie = new JSONObject(response.getHeaders());
-					String replace = claimcookie.get("Set-Cookie").toString().replace("[", "").replace("]", "")
-							.replace("\"", "");
-					HttpHeaders requestHeaders = new HttpHeaders();
-					requestHeaders.add("Cookie", replace);
-					HttpEntity requestEntity = new HttpEntity(null, requestHeaders);
-					ResponseEntity rssResponse = restTemplate.exchange(
-							"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskId + "/action/claim",
-							HttpMethod.PUT, requestEntity, String.class);
+							HttpHeaders headers = new HttpHeaders();
+							headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+							MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+							map.add("j_username", "indexer");
+							map.add("j_password", "123");
+							map.add("submit", "Login");
+							map.add("_spring_security_remember_me", "true");
+							HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(
+									map, headers);
+							ResponseEntity<String> response = restTemplate
+									.postForEntity("http://65.2.162.230:8080/DB-idm/app/authentication", request, String.class);
+							JSONObject claimcookie = new JSONObject(response.getHeaders());
+							String replace = claimcookie.get("Set-Cookie").toString().replace("[", "").replace("]", "")
+									.replace("\"", "");
+							HttpHeaders requestHeaders = new HttpHeaders();
+							requestHeaders.add("Cookie", replace);
+							HttpEntity requestEntity = new HttpEntity(null, requestHeaders);
+							ResponseEntity rssResponse = restTemplate.exchange(
+									"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskId + "/action/claim",
+									HttpMethod.PUT, requestEntity, String.class);
 
-//					AUTO CLAIM  END
+//							AUTO CLAIM  END
 
-//					AUTO COMPLEATE START
+//							AUTO COMPLEATE START
 
-					HttpHeaders header = new HttpHeaders();
-					header.add("Cookie", replace);
-					header.setContentType(MediaType.APPLICATION_JSON);
-					header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-					JSONObject autoCompleate = new JSONObject();
-					autoCompleate.put("taskIdActual", taskId);
-					autoCompleate.put("supplierforgotemailid", forgotPasswordRequestEntity.getEmail());
-					autoCompleate.put("forgotpwdlink", forgotPasswordRequestEntity.getUrl() + "/" + token);
-					JSONObject mapp = new JSONObject();
-					Optional<FlowableForm> findByFromId = flowableFormRepo.findByFromId("frmforgotpwdsupplier");
-					mapp.put("formId", findByFromId.get().getId());
-					mapp.put("values", autoCompleate);
-//					System.out.println("Body  " + mapp);
-//					System.out.println("headers  " + header);
-					HttpEntity<Map<String, Object>> entity = new HttpEntity(mapp.toString(), header);
-					ResponseEntity rssResponsee = restTemplate.exchange(
-							"http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskId, HttpMethod.POST, entity,
-							String.class);
-//					System.out.print("Result  "+rssResponsee.getHeaders());
-//					System.out.print("Result  " + rssResponsee.getHeaders());
+							HttpHeaders header = new HttpHeaders();
+							header.add("Cookie", replace);
+							header.setContentType(MediaType.APPLICATION_JSON);
+							header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+							JSONObject autoCompleate = new JSONObject();
+							autoCompleate.put("taskIdActual", taskId);
+							autoCompleate.put("supplierforgotemailid", forgotPasswordRequestEntity.getEmail());
+							autoCompleate.put("forgotpwdlink", forgotPasswordRequestEntity.getUrl() + "/" + token);
+							JSONObject mapp = new JSONObject();
+							Optional<FlowableForm> findByFromId = flowableFormRepo.findByFromId("frmforgotpwdsupplier");
+							mapp.put("formId", findByFromId.get().getId());
+							mapp.put("values", autoCompleate);
+//							System.out.println("Body  " + mapp);
+//							System.out.println("headers  " + header);
+							HttpEntity<Map<String, Object>> entity = new HttpEntity(mapp.toString(), header);
+							ResponseEntity rssResponsee = restTemplate.exchange(
+									"http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskId, HttpMethod.POST, entity,
+									String.class);
+//							System.out.print("Result  "+rssResponsee.getHeaders());
+//							System.out.print("Result  " + rssResponsee.getHeaders());
 
-//					AUTO COMPLEATE END
+//							AUTO COMPLEATE END
 
-					ForgotPassword forgotPassword = new ForgotPassword();
-					forgotPassword.setEmail(forgotPasswordRequestEntity.getEmail());
-					forgotPassword.setToken(token);
-					forgotPassword.setCreatedOn(date);
-					forgotPassword.setStatus("MAILSEND");
-					ForgotPassword save = forgotPasswordRepo.save(forgotPassword);
-					LOGGER.info("after add data "+save);
-					if (save.equals(null)) {
-						return "Not save in database";
+							ForgotPassword forgotPassword = new ForgotPassword();
+							forgotPassword.setEmail(forgotPasswordRequestEntity.getEmail());
+							forgotPassword.setToken(token);
+							forgotPassword.setCreatedOn(date);
+							forgotPassword.setStatus("MAILSEND");
+							ForgotPassword save = forgotPasswordRepo.save(forgotPassword);
+							LOGGER.info("after add data "+save);
+							if (save.equals(null)) {
+								return "Not save in database";
+							}
+							else {
+								return "Please check your mail";
+							}
+							
+							
+							
+							
+							
+							/*-----------------------------------------End CUStomer------------------------------------------------*/
+							
+							
+							
+							
+							
+						} else {
+							throw new VendorNotFoundException("We could't foumd your email id");
+						}
+						
 					}
 					else {
-						return "Please check your mail";
-					}
+						String token = java.util.UUID.randomUUID().toString();
+//						DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+//						LocalDateTime now = LocalDateTime.now();
+//						
+//						SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");  
+						Date date = new Date();
+						try {
+							Optional<FlowableRegistration> findByAuthorAndTitle = flowableRegistrationRepo
+									.findByAuthorAndTitle("forgot_supplier_pwd");
 
+							RestTemplate restTemplate = new RestTemplate();
+							HttpHeaders headers = new HttpHeaders();
+							headers.setContentType(MediaType.APPLICATION_JSON);
+							headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+							headers.setBasicAuth("admin", "test");
+							Map<String, Object> map = new HashMap<>();
+							map.put("processDefinitionId", findByAuthorAndTitle.get().getId());
+							HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+							ResponseEntity<String> response = restTemplate.postForEntity(
+									"http://65.2.162.230:8080/flowable-rest/service/runtime/process-instances", entity,
+									String.class);
+							JSONObject jsonObject = new JSONObject(response.getBody());
+							Map<String, Object> mapp = new HashMap<>();
+							map.put("processInstanceId", (String) jsonObject.get("id"));
+
+							// LOGGER.info("Task ID for forgot password - "+(String) jsonObject.get("id"));
+
+							HttpEntity<Map<String, Object>> request = new HttpEntity<>(map, headers);
+							ResponseEntity<String> exchange = restTemplate.exchange(
+									"http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, request,
+									String.class, 1);
+							JSONObject jsonObject1 = new JSONObject(exchange.getBody());
+
+							JSONArray array = new JSONArray(jsonObject1.get("data").toString());
+							JSONArray arrayy = new JSONArray();
+
+							JSONObject forgotPwdEmail = new JSONObject();
+							forgotPwdEmail.put("name", "supplierforgotemailid");
+							forgotPwdEmail.put("scope", "local");
+							forgotPwdEmail.put("type", "string");
+							forgotPwdEmail.put("value", forgotPasswordRequestEntity.getEmail());
+							arrayy.put(forgotPwdEmail);
+
+							JSONObject forgotPwdLink = new JSONObject();
+							forgotPwdLink.put("name", "forgotpwdlink");
+							forgotPwdLink.put("scope", "local");
+							forgotPwdLink.put("type", "string");
+							forgotPwdLink.put("value", forgotPasswordRequestEntity.getUrl() + "/" + token);
+							arrayy.put(forgotPwdLink);
+
+							HttpEntity<String> entityy = new HttpEntity<String>(arrayy.toString(), headers);
+							ResponseEntity<String> response2 = restTemplate.exchange(
+									"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/"
+											+ array.getJSONObject(0).get("id") + "/variables",
+									HttpMethod.POST, entityy, String.class, 1);
+
+							taskId = (String) array.getJSONObject(0).get("id");
+
+							LOGGER.info("Taks ID for forgot password " + array.getJSONObject(0).get("id"));
+
+						} catch (Exception e) {
+						}
+
+//						AUTO CLAIM  START
+
+						HttpHeaders headers = new HttpHeaders();
+						headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+						MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+						map.add("j_username", "indexer");
+						map.add("j_password", "123");
+						map.add("submit", "Login");
+						map.add("_spring_security_remember_me", "true");
+						HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(
+								map, headers);
+						ResponseEntity<String> response = restTemplate
+								.postForEntity("http://65.2.162.230:8080/DB-idm/app/authentication", request, String.class);
+						JSONObject claimcookie = new JSONObject(response.getHeaders());
+						String replace = claimcookie.get("Set-Cookie").toString().replace("[", "").replace("]", "")
+								.replace("\"", "");
+						HttpHeaders requestHeaders = new HttpHeaders();
+						requestHeaders.add("Cookie", replace);
+						HttpEntity requestEntity = new HttpEntity(null, requestHeaders);
+						ResponseEntity rssResponse = restTemplate.exchange(
+								"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskId + "/action/claim",
+								HttpMethod.PUT, requestEntity, String.class);
+
+//						AUTO CLAIM  END
+
+//						AUTO COMPLEATE START
+
+						HttpHeaders header = new HttpHeaders();
+						header.add("Cookie", replace);
+						header.setContentType(MediaType.APPLICATION_JSON);
+						header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+						JSONObject autoCompleate = new JSONObject();
+						autoCompleate.put("taskIdActual", taskId);
+						autoCompleate.put("supplierforgotemailid", forgotPasswordRequestEntity.getEmail());
+						autoCompleate.put("forgotpwdlink", forgotPasswordRequestEntity.getUrl() + "/" + token);
+						JSONObject mapp = new JSONObject();
+						Optional<FlowableForm> findByFromId = flowableFormRepo.findByFromId("frmforgotpwdsupplier");
+						mapp.put("formId", findByFromId.get().getId());
+						mapp.put("values", autoCompleate);
+//						System.out.println("Body  " + mapp);
+//						System.out.println("headers  " + header);
+						HttpEntity<Map<String, Object>> entity = new HttpEntity(mapp.toString(), header);
+						ResponseEntity rssResponsee = restTemplate.exchange(
+								"http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskId, HttpMethod.POST, entity,
+								String.class);
+//						System.out.print("Result  "+rssResponsee.getHeaders());
+//						System.out.print("Result  " + rssResponsee.getHeaders());
+
+//						AUTO COMPLEATE END
+
+						ForgotPassword forgotPassword = new ForgotPassword();
+						forgotPassword.setEmail(forgotPasswordRequestEntity.getEmail());
+						forgotPassword.setToken(token);
+						forgotPassword.setCreatedOn(date);
+						forgotPassword.setStatus("MAILSEND");
+						ForgotPassword save = forgotPasswordRepo.save(forgotPassword);
+						LOGGER.info("after add data "+save);
+						if (save.equals(null)) {
+							return "Not save in database";
+						}
+						else {
+							return "Please check your mail";
+						}
+					}
 				} else {
 					throw new VendorNotFoundException("Provide correct email id");
 				}

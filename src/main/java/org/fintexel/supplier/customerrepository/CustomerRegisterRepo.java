@@ -11,4 +11,6 @@ public interface CustomerRegisterRepo extends JpaRepository<CustomerRegister, Lo
 	public Optional<CustomerRegister> findByUsername(String username);
 
 	public List<CustomerRegister> findBycId(long cId);
+	
+	public Optional<CustomerRegister> findByEmail(String email);
 }
