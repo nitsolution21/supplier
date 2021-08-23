@@ -215,7 +215,7 @@ public class VendorLoginController {
 						if (!findByUsername.isPresent()) {
 							Optional<CustomerRegister> findCustomerByUsername = customerRegisterRepo.findByUsername(userName);
 							if (findCustomerByUsername.isPresent()) {
-								if (passwordEncoder.matches(changePassword.getOldPassword(), findByUsername.get().getPassword())) {
+								if (passwordEncoder.matches(changePassword.getOldPassword(), findCustomerByUsername.get().getPassword())) {
 									CustomerRegister customerRegister = new CustomerRegister();
 									customerRegister.setcId(findCustomerByUsername.get().getcId());
 									customerRegister.setCreatedBy(findCustomerByUsername.get().getCreatedBy());
