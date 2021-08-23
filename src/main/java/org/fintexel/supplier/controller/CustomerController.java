@@ -422,7 +422,7 @@ public class CustomerController {
 			if (customerIdFromToken == -1) {
 				throw new VendorNotFoundException("Customer not found");
 			} else {
-				if (fieldValidation.isEmpty(customerContact.getContractLocation()) && fieldValidation.isEmpty(customerContact.getContractProof()) && fieldValidation.isEmpty(customerContact.getContractTerms()) && fieldValidation.isEmpty(customerContact.getContractType()) && fieldValidation.isEmpty(customerContact.getSupplierCode())) {
+				if (fieldValidation.isEmpty(customerContact.getContractLocation()) && fieldValidation.isEmpty(customerContact.getContractProof()) && fieldValidation.isEmpty(customerContact.getContractTerms()) && fieldValidation.isEmpty(customerContact.getContractType()) && fieldValidation.isEmpty(customerContact.getSupplierCode()) && fieldValidation.isEmpty(customerContact.getContractEndDate())) {
 					CustomerContact contact = new CustomerContact();
 					contact.setcId(companyProfileIdByCustomerId);
 					contact.setContractLocation(customerContact.getContractLocation());
@@ -430,6 +430,7 @@ public class CustomerController {
 					contact.setContractTerms(customerContact.getContractTerms());
 					contact.setContractType(customerContact.getContractType());
 					contact.setSupplierCode(customerContact.getSupplierCode());
+					contact.setContractEndDate(customerContact.getContractEndDate());
 					contact.setCreatedOn(new Date());
 					return customerContactRepo.save(contact);
 				} else {
@@ -494,7 +495,8 @@ public class CustomerController {
 							&& (fieldValidation.isEmpty(customerContact.getContractType()))
 							&& (fieldValidation.isEmpty(customerContact.getContractTerms()))
 							&& (fieldValidation.isEmpty(customerContact.getContractProof()))
-							&& (fieldValidation.isEmpty(customerContact.getContractLocation()))) {
+							&& (fieldValidation.isEmpty(customerContact.getContractLocation()))
+							&& (fieldValidation.isEmpty(customerContact.getContractEndDate()))) {
 						CustomerContact filterCustomerContact = new CustomerContact();
 						filterCustomerContact.setContractId(findContractById.get().getContractId());
 						filterCustomerContact.setcId(companyProfileIdByCustomerId);
@@ -503,6 +505,7 @@ public class CustomerController {
 						filterCustomerContact.setContractTerms(customerContact.getContractTerms());
 						filterCustomerContact.setContractProof(customerContact.getContractProof());
 						filterCustomerContact.setContractLocation(customerContact.getContractLocation());
+						filterCustomerContact.setContractEndDate(customerContact.getContractEndDate());
 						filterCustomerContact.setUpdatedOn(new Date());
 
 						return customerContactRepo.save(filterCustomerContact);
