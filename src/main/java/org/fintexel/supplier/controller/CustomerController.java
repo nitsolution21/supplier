@@ -411,81 +411,111 @@ public class CustomerController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
+	
 	@PostMapping("/contact")
-	public CustomerContact createCustomerContact(@RequestBody CustomerContact customerContact) {
+	public CustomerContact createCustomerContact(@RequestBody CustomerContact customerContact,  @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.createCustomerContact()");
 		try {
-			if ((fieldValidation.isEmpty(customerContact.getcId()))
-					&& (fieldValidation.isEmpty(customerContact.getSupplierCode()))
-					&& (fieldValidation.isEmpty(customerContact.getContractType()))
-					&& (fieldValidation.isEmpty(customerContact.getContractTerms()))
-					&& (fieldValidation.isEmpty(customerContact.getContractProof()))
-					&& (fieldValidation.isEmpty(customerContact.getContractLocation()))) {
-				CustomerContact filterCustomerContact = new CustomerContact();
-				filterCustomerContact.setcId(customerContact.getcId());
-				filterCustomerContact.setSupplierCode(customerContact.getSupplierCode());
-				filterCustomerContact.setContractType(customerContact.getContractType());
-				filterCustomerContact.setContractTerms(customerContact.getContractTerms());
-				filterCustomerContact.setContractProof(customerContact.getContractProof());
-				filterCustomerContact.setContractLocation(customerContact.getContractLocation());
-
-				return customerContactRepo.save(filterCustomerContact);
-
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
+			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+			if (customerIdFromToken == -1) {
+				throw new VendorNotFoundException("Customer not found");
 			} else {
-				throw new VendorNotFoundException("Validation error");
+				if (fieldValidation.isEmpty(customerContact.getContractLocation()) && fieldValidation.isEmpty(customerContact.getContractProof()) && fieldValidation.isEmpty(customerContact.getContractTerms()) && fieldValidation.isEmpty(customerContact.getContractType()) && fieldValidation.isEmpty(customerContact.getSupplierCode())) {
+					CustomerContact contact = new CustomerContact();
+					contact.setcId(companyProfileIdByCustomerId);
+					contact.setContractLocation(customerContact.getContractLocation());
+					contact.setContractProof(customerContact.getContractProof());
+					contact.setContractTerms(customerContact.getContractTerms());
+					contact.setContractType(customerContact.getContractType());
+					contact.setSupplierCode(customerContact.getSupplierCode());
+					contact.setCreatedOn(new Date());
+					return customerContactRepo.save(contact);
+				} else {
+					throw new VendorNotFoundException("Validation error");
+				}
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
-	@GetMapping("/contact/{id}")
-	public CustomerContact getCustomerContact(@PathVariable Long id) {
+	@GetMapping("/contact")
+	public List<CustomerContact> getCustomerContact(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.getCustomerContact()");
 		try {
-
-			Optional<CustomerContact> findById = customerContactRepo.findById(id);
-			if (findById.isPresent()) {
-				return findById.get();
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+			if (customerIdFromToken == -1) {
+				throw new VendorNotFoundException("Customer not found");
 			} else {
-				throw new VendorNotFoundException("Data not exist");
+				Optional<CustomerRegister> findCustomerById = customerRegisterRepo.findById(customerIdFromToken);
+				if (findCustomerById.isPresent()) {
+					if (findCustomerById.get().getcId() == companyProfileIdByCustomerId) {
+						List<CustomerContact> findContactBycId = customerContactRepo.findBycId(companyProfileIdByCustomerId);
+						if (findContactBycId.size() > 0) {
+							return findContactBycId;
+						} else {
+							throw new VendorNotFoundException("Contact not found!!");
+						}
+					} else {
+						throw new VendorNotFoundException("You don't have permission to get contact");
+					}
+				} else {
+					throw new VendorNotFoundException("We can't find your details");
+				}
 			}
-
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
 
 	@PutMapping("/contact/{id}")
-	public CustomerContact putCustomerContact(@PathVariable Long id, @RequestBody CustomerContact customerContact) {
+	public CustomerContact putCustomerContact(@PathVariable Long id, @RequestBody CustomerContact customerContact, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.putCustomerContact()");
 
 		try {
-
-			Optional<CustomerContact> findById = customerContactRepo.findById(id);
-			if (findById.isPresent()) {
-				if ((fieldValidation.isEmpty(customerContact.getcId()))
-						&& (fieldValidation.isEmpty(customerContact.getSupplierCode()))
-						&& (fieldValidation.isEmpty(customerContact.getContractType()))
-						&& (fieldValidation.isEmpty(customerContact.getContractTerms()))
-						&& (fieldValidation.isEmpty(customerContact.getContractProof()))
-						&& (fieldValidation.isEmpty(customerContact.getContractLocation()))) {
-					CustomerContact filterCustomerContact = new CustomerContact();
-					filterCustomerContact.setContractId(findById.get().getContractId());
-					filterCustomerContact.setcId(customerContact.getcId());
-					filterCustomerContact.setSupplierCode(customerContact.getSupplierCode());
-					filterCustomerContact.setContractType(customerContact.getContractType());
-					filterCustomerContact.setContractTerms(customerContact.getContractTerms());
-					filterCustomerContact.setContractProof(customerContact.getContractProof());
-					filterCustomerContact.setContractLocation(customerContact.getContractLocation());
-
-					return customerContactRepo.save(filterCustomerContact);
-
-				} else {
-					throw new VendorNotFoundException("Validation error");
-				}
+			
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+			Optional<CustomerContact> findContractById = customerContactRepo.findById(id);
+			if (customerIdFromToken == -1) {
+				throw new VendorNotFoundException("Customer not found");
 			} else {
-				throw new VendorNotFoundException("Data not exist");
+				
+				if (findContractById.isPresent()) {
+					List<CustomerContact> findContactBycId = customerContactRepo.findBycId(companyProfileIdByCustomerId);
+					findContactBycId.forEach(contact -> {
+						if (contact.getcId() != findContractById.get().getcId()) {
+							throw new VendorNotFoundException("You don't have permission to updare contact");
+						}
+					});
+					if ((fieldValidation.isEmpty(customerContact.getSupplierCode()))
+							&& (fieldValidation.isEmpty(customerContact.getContractType()))
+							&& (fieldValidation.isEmpty(customerContact.getContractTerms()))
+							&& (fieldValidation.isEmpty(customerContact.getContractProof()))
+							&& (fieldValidation.isEmpty(customerContact.getContractLocation()))) {
+						CustomerContact filterCustomerContact = new CustomerContact();
+						filterCustomerContact.setContractId(findContractById.get().getContractId());
+						filterCustomerContact.setcId(companyProfileIdByCustomerId);
+						filterCustomerContact.setSupplierCode(customerContact.getSupplierCode());
+						filterCustomerContact.setContractType(customerContact.getContractType());
+						filterCustomerContact.setContractTerms(customerContact.getContractTerms());
+						filterCustomerContact.setContractProof(customerContact.getContractProof());
+						filterCustomerContact.setContractLocation(customerContact.getContractLocation());
+						filterCustomerContact.setUpdatedOn(new Date());
+
+						return customerContactRepo.save(filterCustomerContact);
+
+					} else {
+						throw new VendorNotFoundException("Validation error");
+					}
+				} else {
+					throw new VendorNotFoundException("Contact not found!!");
+				}
+				
 			}
+			
 
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
