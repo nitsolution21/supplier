@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.fintexel.supplier.customerentity.AddVendorWithContract;
 import org.fintexel.supplier.customerentity.CustomerAddress;
 import org.fintexel.supplier.customerentity.CustomerContact;
 
@@ -906,24 +907,24 @@ public class CustomerController {
 	
 	
 	@PostMapping("/vendor/registration")
-	public VendorRegister postRegisterVendor(@RequestBody VendorRegister vendorReg) {
+	public void postRegisterVendor(@RequestBody AddVendorWithContract addVendorWithContract  , @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - VendorController.registerVendor()");
 		String taskID1_ = "", taskID2_ = "", processInstID_ = "";
 		try {
-			if ((fieldValidation.isEmail(vendorReg.getEmail())
-					& (fieldValidation.isEmpty(vendorReg.getSupplierCompName())))) {
+			if ((fieldValidation.isEmail(addVendorWithContract.getEmail())
+					& (fieldValidation.isEmpty(addVendorWithContract.getSupplierCompName())))) {
 				VendorRegister filterVendorReg = new VendorRegister();
-				filterVendorReg.setEmail(vendorReg.getEmail());
-				filterVendorReg.setSupplierCompName(vendorReg.getSupplierCompName());
+				filterVendorReg.setEmail(addVendorWithContract.getEmail());
+				filterVendorReg.setSupplierCompName(addVendorWithContract.getSupplierCompName());
 				filterVendorReg.setStatus("APPROVED");
 				List<VendorRegister> findAll = vendorRepo.findAll();
 				for (VendorRegister find : findAll) {
-					if (find.getEmail().equals(vendorReg.getEmail())) {
+					if (find.getEmail().equals(addVendorWithContract.getEmail())) {
 						throw new VendorNotFoundException("Email already exist");
 					}
 				}
 
-				filterVendorReg.setUsername(vendorReg.getEmail());
+				filterVendorReg.setUsername(addVendorWithContract.getEmail());
 				String rowPassword = java.util.UUID.randomUUID().toString();
 				filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
 
@@ -998,21 +999,21 @@ public class CustomerController {
 				suppliername.put("name", "suppliername");
 				suppliername.put("scope", "local");
 				suppliername.put("type", "string");
-				suppliername.put("value", vendorReg.getSupplierCompName());
+				suppliername.put("value", addVendorWithContract.getSupplierCompName());
 				formReqBody.put(suppliername);
 
 				JSONObject supplieremail = new JSONObject();
 				supplieremail.put("name", "supplieremail");
 				supplieremail.put("scope", "local");
 				supplieremail.put("type", "string");
-				supplieremail.put("value", vendorReg.getEmail());
+				supplieremail.put("value", addVendorWithContract.getEmail());
 				formReqBody.put(supplieremail);
 
 				JSONObject username = new JSONObject();
 				username.put("name", "username");
 				username.put("scope", "local");
 				username.put("type", "string");
-				username.put("value", vendorReg.getEmail());
+				username.put("value", addVendorWithContract.getEmail());
 				formReqBody.put(username);
 
 				JSONObject password = new JSONObject();
@@ -1150,14 +1151,122 @@ public class CustomerController {
 				VendorRegister save1 = this.vendorRepo.save(filterVendorReg);
 				save1.setPassword(rowPassword);
 //				save1.setRegisterId("SR "+save1.getRegisterId());
-				return save1;
+//				return save1;
 
+				
+				
+				try {
+
+					if ((fieldValidation.isEmpty(addVendorWithContract.getSupplierCompName()))
+							& (fieldValidation.isEmpty(addVendorWithContract.getRegistrationType()))
+							& (fieldValidation.isEmpty(addVendorWithContract.getRegisterId()))
+							& (fieldValidation.isEmpty(addVendorWithContract.getRegistrationNo()))) {
+
+						List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(addVendorWithContract.getRegisterId());
+						List<SupDetails> findAllVendorDetails = supDetailsRepo.findAll();
+
+						if (findByRegisterId.size() < 1) {
+
+							SupDetails filterSupDetails = new SupDetails();
+							SupRequest supRequest = new SupRequest();
+							DateTimeFormatter supCodeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+							LocalDateTime supCodeNow = LocalDateTime.now();
+
+							filterSupDetails.setSupplierCompName(addVendorWithContract.getSupplierCompName());
+							filterSupDetails.setRegisterId(addVendorWithContract.getRegisterId());
+							filterSupDetails.setRegistrationType(addVendorWithContract.getRegistrationType());
+							filterSupDetails.setRegistrationNo(addVendorWithContract.getRegistrationNo());
+
+							DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+							LocalDateTime lastLoginNow = LocalDateTime.now();
+							Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+									.parse(lastLoginNow.format(lastLogingFormat));
+
+							filterSupDetails.setLastlogin(lastLogin);
+
+							try {
+
+								if (fieldValidation.isEmpty(addVendorWithContract.getRemarks())) {
+									filterSupDetails.setRemarks(addVendorWithContract.getRemarks());
+								}
+
+							} catch (Exception e) {
+
+							}
+
+							filterSupDetails.setLastlogin(addVendorWithContract.getLastlogin());
+							filterSupDetails.setSupplierCode("SU:" + supCodeNow.format(supCodeFormat) + ":" + findAll.size());
+							filterSupDetails.setStatus("APPROVED");
+							SupDetails saveDetails = supDetailsRepo.save(filterSupDetails);
+//							return saveDetails;
+						} else {
+
+								throw new VendorNotFoundException("Vendor Already Exist");
+						}
+
+					} else {
+						throw new VendorNotFoundException("Validation Error");
+					}
+				} catch (Exception e) {
+					throw new VendorNotFoundException(e.getMessage());
+				}
+				
+				
+				
+				
+				try {
+					long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+					String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
+					long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+					if (customerIdFromToken == -1) {
+						throw new VendorNotFoundException("Customer not found");
+					} else {
+						if (fieldValidation.isEmpty(addVendorWithContract.getContractLocation()) && fieldValidation.isEmpty(addVendorWithContract.getContractProof()) && fieldValidation.isEmpty(addVendorWithContract.getContractTerms()) && fieldValidation.isEmpty(addVendorWithContract.getContractType()) && fieldValidation.isEmpty(addVendorWithContract.getSupplierCode())) {
+							CustomerContact contact = new CustomerContact();
+							contact.setcId(companyProfileIdByCustomerId);
+							contact.setContractLocation(addVendorWithContract.getContractLocation());
+							contact.setContractProof(addVendorWithContract.getContractProof());
+							contact.setContractTerms(addVendorWithContract.getContractTerms());
+							contact.setContractType(addVendorWithContract.getContractType());
+							contact.setSupplierCode(addVendorWithContract.getSupplierCode());
+							contact.setCreatedOn(new Date());
+							customerContactRepo.save(contact);
+						} else {
+							throw new VendorNotFoundException("Validation error");
+						}
+					}
+				} catch (Exception e) {
+					throw new VendorNotFoundException(e.getMessage());
+				}
+
+				
+				
 			} else {
 				throw new VendorNotFoundException("Validation error");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
+	}
+	
+	
+	@GetMapping("/vendors")
+	public List<CustomerContact> vendors(@RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - VendorController.postSupplierDetails()");
+		try {
+			
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			List<CustomerContact> findBycId = customerContactRepo.findBycId(customerIdFromToken);
+			if(findBycId.size()<1) {
+				throw new VendorNotFoundException("No Data Found in Database");
+			}
+			return findBycId;
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+		
 	}
 
 	@PostMapping("/vendor")
