@@ -3,6 +3,7 @@ package org.fintexel.supplier.controller;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -112,6 +113,7 @@ public class CustomerController {
 	@Autowired
 	private CustomerRegisterRepo customerRegisterRepo;
 
+	
 	@Autowired
 	private CustomerDepartmentsRepo customerDepartmentsRepo;
 	
@@ -1248,16 +1250,22 @@ public class CustomerController {
 	
 	
 	@GetMapping("/vendors")
-	public List<CustomerContact> vendors(@RequestHeader(name = "Authorization") String token) {
+	public List<SupDetails> vendors(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - VendorController.postSupplierDetails()");
 		try {
 			
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 			List<CustomerContact> findBycId = customerContactRepo.findBycId(customerIdFromToken);
+			List<SupDetails> supplierDetails = new ArrayList<>();
 			if(findBycId.size()<1) {
 				throw new VendorNotFoundException("No Data Found in Database");
+			}else {
+				for(CustomerContact obj : findBycId) {
+					supplierDetails.add(supDetailsRepo.findById(obj.getSupplierCode()).get());
+				}
+			
 			}
-			return findBycId;
+			return supplierDetails;
 			
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
