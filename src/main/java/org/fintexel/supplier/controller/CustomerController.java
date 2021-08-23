@@ -1254,6 +1254,9 @@ public class CustomerController {
 			
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 			List<CustomerContact> findBycId = customerContactRepo.findBycId(customerIdFromToken);
+			if(findBycId.size()<1) {
+				throw new VendorNotFoundException("No Data Found in Database");
+			}
 			return findBycId;
 			
 		}catch(Exception e) {
