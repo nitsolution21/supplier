@@ -1257,8 +1257,9 @@ public class CustomerController {
 		LOGGER.info("Inside - VendorController.postSupplierDetails()");
 		try {
 			
-			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			long customerIdFromToken = getCustomerDetails.getCIdFromToken(token);
 			List<CustomerContact> findBycId = customerContactRepo.findBycId(customerIdFromToken);
+			System.out.println("llllll  *****   " + customerIdFromToken);
 			List<SupDetails> supplierDetails = new ArrayList<>();
 			if(findBycId.size()<1) {
 				throw new VendorNotFoundException("No Data Found in Database");

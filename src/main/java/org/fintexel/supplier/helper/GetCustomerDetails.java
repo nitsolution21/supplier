@@ -85,6 +85,30 @@ public class GetCustomerDetails {
 		}
 	}
 	
+	public long getCIdFromToken(String token) {
+		LOGGER.info("Token is >>>> "+token);
+		try {
+			if (token != null && token.startsWith("Bearer ")) {
+				jwtToken = token.substring(7);
+				LOGGER.info("actual token is >>>> "+jwtToken);
+				String username = jwtUtil.extractUsername(jwtToken);
+				LOGGER.info("User name from token >>>>> "+username);
+				Optional<CustomerRegister> findByUsername = customerRegisterRepo.findByUsername(username);
+				if (findByUsername.isPresent()) {
+					return findByUsername.get().getcId();
+				}
+				else {
+					// return -1 for customer not found
+					return -1;
+				}
+			} else {
+				throw new VendorNotFoundException("Token not valid");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
 	public List<CustomerDepartments> getDepartments(long userId) {
 		try {
 			List<CustomerUserDepartments> findDepartmentIdByUserId = customerUserDepartmentsRepo.findByUserId(userId);
