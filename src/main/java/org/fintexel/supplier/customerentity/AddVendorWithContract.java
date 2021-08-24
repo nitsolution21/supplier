@@ -29,7 +29,7 @@ public class AddVendorWithContract {
 		private Long contractTerms;
 		private String contractProof;
 		private String contractLocation;
-		@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss") private Date contractEndDate;
+		@JsonFormat(pattern="yyyy-MM-dd") private Date contractEndDate;
 		
 		public AddVendorWithContract() {
 			super();
