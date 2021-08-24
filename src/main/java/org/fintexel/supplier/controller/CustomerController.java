@@ -1393,6 +1393,31 @@ public class CustomerController {
 
 	}
 	
+	
+	@GetMapping("/vendor/address/{code}")
+	public List<SupAddress> getVendorAddress(@PathVariable("code") String code) {
+		LOGGER.info("Inside - VendorController.getVendorAddress()");
+
+		try {
+			String loginSupplierCode = code;
+			if (!loginSupplierCode.equals(null)) {
+
+				List<SupAddress> vendorAddress = this.supAddRepo.findBySupplierCode(loginSupplierCode);
+
+				if (vendorAddress.size() < 1) {
+					throw new VendorNotFoundException("Vendor Not Exist");
+				} else {
+					return vendorAddress;
+				}
+			} else {
+				throw new VendorNotFoundException("Token Expir");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+
+	}
+	
 	@PutMapping("/vendor/address/{addressId}")
 	public SupAddress updateAddressVendor(@PathVariable long addressId, @RequestBody SupAddress address) {
 		LOGGER.info("Inside - CustomerController.updateAddressVendor()");
@@ -1486,6 +1511,28 @@ public class CustomerController {
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
+	}
+	
+	@GetMapping("/vendor/contact/{code}")
+	public List<SupContract> getSupContracts(@PathVariable("code") String code) {
+		LOGGER.info("Inside - VendorController.getSupContracts()");
+
+		try {
+			String loginSupplierCode = code;
+			if (!loginSupplierCode.equals(null)) {
+				List<SupContract> findBySupplierCode = supContractRepo.findBySupplierCode(loginSupplierCode);
+				if (findBySupplierCode.size() > 0) {
+					return findBySupplierCode;
+				} else {
+					throw new VendorNotFoundException("Vendor Contact Does not exist");
+				}
+			} else {
+				throw new VendorNotFoundException("Token Expir");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+
 	}
 	
 	
@@ -1593,6 +1640,31 @@ public class CustomerController {
 		}
 
 	}
+	
+	
+	@GetMapping("/vendor/bank/{code}")
+	public List<SupBank> getBank(@PathVariable("code") String code) {
+		LOGGER.info("Inside - VendorController.getBank()");
+
+		try {
+			String loginSupplierCode = code;
+			if (!loginSupplierCode.equals(null)) {
+				List<SupBank> supBankDetails = supBankRepo.findBySupplierCode(loginSupplierCode);
+				if (supBankDetails.size() < 1) {
+					throw new VendorNotFoundException("Bank details not found");
+				} else {
+					return supBankDetails;
+				}
+
+			} else {
+				throw new VendorNotFoundException("Token Expir");
+			}
+
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+
+	}
 
 	
 	@PutMapping("/vendor/bank/{bankId}")
@@ -1695,6 +1767,27 @@ public class CustomerController {
 				}
 			} else {
 				throw new VendorNotFoundException("Validation Error");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/vendor/department/{code}")
+	public List<SupDepartment> getSupDepartment(@PathVariable("code") String code) {
+		LOGGER.info("Inside - VendorController.getSupDepartment()");
+
+		try {
+			String loginSupplierCode = code;
+			if (!loginSupplierCode.equals(null)) {
+				List<SupDepartment> supDepartment = supDepartmentRepo.findBySupplierCode(loginSupplierCode);
+				if (supDepartment.size() > 0) {
+					return supDepartment;
+				} else {
+					throw new VendorNotFoundException("Vendor department not present");
+				}
+			} else {
+				throw new VendorNotFoundException("Token Expir");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
