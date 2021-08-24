@@ -1175,7 +1175,7 @@ public class CustomerController {
 							LocalDateTime supCodeNow = LocalDateTime.now();
 
 							filterSupDetails.setSupplierCompName(addVendorWithContract.getSupplierCompName());
-							filterSupDetails.setRegisterId(addVendorWithContract.getRegisterId());
+							filterSupDetails.setRegisterId(save.getRegisterId());
 							filterSupDetails.setRegistrationType(addVendorWithContract.getRegistrationType());
 							filterSupDetails.setRegistrationNo(addVendorWithContract.getRegistrationNo());
 
@@ -1223,7 +1223,7 @@ public class CustomerController {
 					if (customerIdFromToken == -1) {
 						throw new VendorNotFoundException("Customer not found");
 					} else {
-						if (fieldValidation.isEmpty(addVendorWithContract.getContractLocation()) && fieldValidation.isEmpty(addVendorWithContract.getContractProof()) && fieldValidation.isEmpty(addVendorWithContract.getContractTerms()) && fieldValidation.isEmpty(addVendorWithContract.getContractType())) {
+						if (fieldValidation.isEmpty(addVendorWithContract.getContractLocation()) && fieldValidation.isEmpty(addVendorWithContract.getContractProof()) && fieldValidation.isEmpty(addVendorWithContract.getContractTerms()) && fieldValidation.isEmpty(addVendorWithContract.getContractType()) && fieldValidation.isEmpty(addVendorWithContract.getContractEndDate())) {
 							CustomerContact contact = new CustomerContact();
 							contact.setcId(companyProfileIdByCustomerId);
 							contact.setContractLocation(addVendorWithContract.getContractLocation());
@@ -1231,6 +1231,7 @@ public class CustomerController {
 							contact.setContractTerms(addVendorWithContract.getContractTerms());
 							contact.setContractType(addVendorWithContract.getContractType());
 							contact.setSupplierCode(addVendorWithContract.getSupplierCode());
+							contact.setContractEndDate(addVendorWithContract.getContractEndDate());
 							contact.setCreatedOn(new Date());
 							customerContactRepo.save(contact);
 						} else {
