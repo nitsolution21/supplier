@@ -1705,6 +1705,7 @@ public class CustomerController {
 						bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
 						bank.setSwiftCode(supBank.getSwiftCode());
 						bank.setStatus("APPROVED");
+						bank.setBankId(bankId);
 						Optional<SupBank> findBySwiftCode = supBankRepo.findBySwiftCode(supBank.getSwiftCode());
 						if (!findBySwiftCode.isPresent()) {
 							SupBank postData = this.supBankRepo.save(bank);
@@ -1810,7 +1811,7 @@ public class CustomerController {
 					if (fieldValidation.isEmail(supDepartment.getEmail())) {
 						if (!loginSupplierCode.equals(null)) {
 
-							SupDepartment department = new SupDepartment();
+							SupDepartment department = findDepartmentById.get();
 							department.setDepartmentName(supDepartment.getDepartmentName());
 							department.setSupplierCode(loginSupplierCode);
 							department.setSupplierContact1(supDepartment.getSupplierContact1());
