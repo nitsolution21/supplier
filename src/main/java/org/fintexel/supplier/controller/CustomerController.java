@@ -1152,6 +1152,7 @@ public class CustomerController {
 				
 				VendorRegister save1 = this.vendorRepo.save(filterVendorReg);
 				save1.setPassword(rowPassword);
+				SupDetails saveDetails=new SupDetails();
 //				save1.setRegisterId("SR "+save1.getRegisterId());
 //				return save1;
 
@@ -1199,7 +1200,7 @@ public class CustomerController {
 							filterSupDetails.setLastlogin(addVendorWithContract.getLastlogin());
 							filterSupDetails.setSupplierCode("SU:" + supCodeNow.format(supCodeFormat) + ":" + findAll.size());
 							filterSupDetails.setStatus("APPROVED");
-							SupDetails saveDetails = supDetailsRepo.save(filterSupDetails);
+							saveDetails = supDetailsRepo.save(filterSupDetails);
 //							return saveDetails;
 						} else {
 
@@ -1230,10 +1231,13 @@ public class CustomerController {
 							contact.setContractProof(addVendorWithContract.getContractProof());
 							contact.setContractTerms(addVendorWithContract.getContractTerms());
 							contact.setContractType(addVendorWithContract.getContractType());
-							contact.setSupplierCode(addVendorWithContract.getSupplierCode());
+							contact.setSupplierCode(saveDetails.getSupplierCode());
 							contact.setContractEndDate(addVendorWithContract.getContractEndDate());
 							contact.setCreatedOn(new Date());
 							customerContactRepo.save(contact);
+							
+							
+							
 						} else {
 							throw new VendorNotFoundException("Validation error");
 						}
@@ -1279,67 +1283,67 @@ public class CustomerController {
 		
 	}
 
-	@PostMapping("/vendor")
-	public SupDetails postSupplierDetails(@RequestBody SupDetails supDetails) {
-		LOGGER.info("Inside - VendorController.postSupplierDetails()");
-
-		try {
-
-			if ((fieldValidation.isEmpty(supDetails.getSupplierCompName()))
-					& (fieldValidation.isEmpty(supDetails.getRegistrationType()))
-					& (fieldValidation.isEmpty(supDetails.getRegisterId()))
-					& (fieldValidation.isEmpty(supDetails.getRegistrationNo()))) {
-
-				List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(supDetails.getRegisterId());
-				List<SupDetails> findAll = supDetailsRepo.findAll();
-
-				if (findByRegisterId.size() < 1) {
-
-					SupDetails filterSupDetails = new SupDetails();
-					SupRequest supRequest = new SupRequest();
-					DateTimeFormatter supCodeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-					LocalDateTime supCodeNow = LocalDateTime.now();
-
-					filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
-					filterSupDetails.setRegisterId(supDetails.getRegisterId());
-					filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
-					filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
-
-					DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-					LocalDateTime lastLoginNow = LocalDateTime.now();
-					Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-							.parse(lastLoginNow.format(lastLogingFormat));
-
-					filterSupDetails.setLastlogin(lastLogin);
-
-					try {
-
-						if (fieldValidation.isEmpty(supDetails.getRemarks())) {
-							filterSupDetails.setRemarks(supDetails.getRemarks());
-						}
-
-					} catch (Exception e) {
-
-					}
-
-					filterSupDetails.setLastlogin(supDetails.getLastlogin());
-					filterSupDetails.setSupplierCode("SU:" + supCodeNow.format(supCodeFormat) + ":" + findAll.size());
-					filterSupDetails.setStatus("APPROVED");
-					SupDetails save = supDetailsRepo.save(filterSupDetails);
-					return save;
-				} else {
-
-						throw new VendorNotFoundException("Vendor Already Exist");
-				}
-
-			} else {
-				throw new VendorNotFoundException("Validation Error");
-			}
-		} catch (Exception e) {
-			throw new VendorNotFoundException(e.getMessage());
-		}
-
-	}
+//	@PostMapping("/vendor")
+//	public SupDetails postSupplierDetails(@RequestBody SupDetails supDetails) {
+//		LOGGER.info("Inside - VendorController.postSupplierDetails()");
+//
+//		try {
+//
+//			if ((fieldValidation.isEmpty(supDetails.getSupplierCompName()))
+//					& (fieldValidation.isEmpty(supDetails.getRegistrationType()))
+//					& (fieldValidation.isEmpty(supDetails.getRegisterId()))
+//					& (fieldValidation.isEmpty(supDetails.getRegistrationNo()))) {
+//
+//				List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(supDetails.getRegisterId());
+//				List<SupDetails> findAll = supDetailsRepo.findAll();
+//
+//				if (findByRegisterId.size() < 1) {
+//
+//					SupDetails filterSupDetails = new SupDetails();
+//					SupRequest supRequest = new SupRequest();
+//					DateTimeFormatter supCodeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//					LocalDateTime supCodeNow = LocalDateTime.now();
+//
+//					filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
+//					filterSupDetails.setRegisterId(supDetails.getRegisterId());
+//					filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
+//					filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
+//
+//					DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//					LocalDateTime lastLoginNow = LocalDateTime.now();
+//					Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+//							.parse(lastLoginNow.format(lastLogingFormat));
+//
+//					filterSupDetails.setLastlogin(lastLogin);
+//
+//					try {
+//
+//						if (fieldValidation.isEmpty(supDetails.getRemarks())) {
+//							filterSupDetails.setRemarks(supDetails.getRemarks());
+//						}
+//
+//					} catch (Exception e) {
+//
+//					}
+//
+//					filterSupDetails.setLastlogin(supDetails.getLastlogin());
+//					filterSupDetails.setSupplierCode("SU:" + supCodeNow.format(supCodeFormat) + ":" + findAll.size());
+//					filterSupDetails.setStatus("APPROVED");
+//					SupDetails save = supDetailsRepo.save(filterSupDetails);
+//					return save;
+//				} else {
+//
+//						throw new VendorNotFoundException("Vendor Already Exist");
+//				}
+//
+//			} else {
+//				throw new VendorNotFoundException("Validation Error");
+//			}
+//		} catch (Exception e) {
+//			throw new VendorNotFoundException(e.getMessage());
+//		}
+//
+//	}
 	
 	
 	@PostMapping("/vendor/address")
