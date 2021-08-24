@@ -1148,7 +1148,7 @@ public class CustomerController {
 				HttpEntity<String> autoCompeleteEntity2 = new HttpEntity<String>(autoCompleate_.toString(), autoCompleteHeader);			
 				autoCompleteResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+taskID2_, HttpMethod.POST, autoCompeleteEntity2, String.class);
 				LOGGER.info("Result  "+autoCompleteResponse.getHeaders());
-				
+				filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
 				
 				VendorRegister save1 = this.vendorRepo.save(filterVendorReg);
 				save1.setPassword(rowPassword);
