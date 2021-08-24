@@ -977,7 +977,7 @@ public class CustomerController {
 				processInstID_ = (String) jsonObject.get("id");
 				queryMap.put("processInstanceId", processInstID_);
 
-				filterVendorReg.setProcessId(processInstID_);
+				save.setProcessId(processInstID_);
 				LOGGER.info("ProcessInstanceID : " + processInstID_);
 
 				HttpEntity<Map<String, Object>> baseAuthEntity = new HttpEntity<>(queryMap, BaseAuthHeader);
@@ -1034,7 +1034,7 @@ public class CustomerController {
 
 				HttpEntity<String> formReqEntity = new HttpEntity<String>(formReqBody.toString(), BaseAuthHeader);
 
-				filterVendorReg.setTaskId(taskID1_);
+				save.setTaskId(taskID1_);
 
 				ResponseEntity<String> formResponse = restTemplate.exchange(
 						"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/" + taskID1_ + "/variables",
@@ -1148,10 +1148,10 @@ public class CustomerController {
 				HttpEntity<String> autoCompeleteEntity2 = new HttpEntity<String>(autoCompleate_.toString(), autoCompleteHeader);			
 				autoCompleteResponse = restTemplate.exchange( "http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+taskID2_, HttpMethod.POST, autoCompeleteEntity2, String.class);
 				LOGGER.info("Result  "+autoCompleteResponse.getHeaders());
-				filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
+//				filterVendorReg.setPassword(passwordEncoder.encode(rowPassword));
 				
-				VendorRegister save1 = this.vendorRepo.save(filterVendorReg);
-				save1.setPassword(rowPassword);
+				VendorRegister save1 = this.vendorRepo.save(save);
+//				save1.setPassword(rowPassword);
 				SupDetails saveDetails=new SupDetails();
 //				save1.setRegisterId("SR "+save1.getRegisterId());
 //				return save1;
@@ -1208,7 +1208,7 @@ public class CustomerController {
 						}
 
 					} else {
-						throw new VendorNotFoundException("Validation Error");
+						throw new VendorNotFoundException("Validation Error details");
 					}
 				} catch (Exception e) {
 					throw new VendorNotFoundException(e.getMessage());
@@ -1239,7 +1239,7 @@ public class CustomerController {
 							
 							
 						} else {
-							throw new VendorNotFoundException("Validation error");
+							throw new VendorNotFoundException("Validation error contract");
 						}
 					}
 				} catch (Exception e) {
