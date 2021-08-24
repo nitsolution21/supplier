@@ -1405,7 +1405,7 @@ public class CustomerController {
 				List<SupAddress> vendorAddress = this.supAddRepo.findBySupplierCode(loginSupplierCode);
 
 				if (vendorAddress.size() < 1) {
-					throw new VendorNotFoundException("Vendor Not Exist");
+					throw new VendorNotFoundException("Address not found");
 				} else {
 					return vendorAddress;
 				}
