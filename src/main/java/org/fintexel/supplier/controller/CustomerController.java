@@ -1159,7 +1159,7 @@ public class CustomerController {
 
 					if ((fieldValidation.isEmpty(addVendorWithContract.getSupplierCompName()))
 							& (fieldValidation.isEmpty(addVendorWithContract.getRegistrationType()))
-							& (fieldValidation.isEmpty(addVendorWithContract.getRegisterId()))
+//							& (fieldValidation.isEmpty(addVendorWithContract.getRegisterId()))
 							& (fieldValidation.isEmpty(addVendorWithContract.getRegistrationNo()))) {
 
 						List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(addVendorWithContract.getRegisterId());
@@ -1221,7 +1221,7 @@ public class CustomerController {
 					if (customerIdFromToken == -1) {
 						throw new VendorNotFoundException("Customer not found");
 					} else {
-						if (fieldValidation.isEmpty(addVendorWithContract.getContractLocation()) && fieldValidation.isEmpty(addVendorWithContract.getContractProof()) && fieldValidation.isEmpty(addVendorWithContract.getContractTerms()) && fieldValidation.isEmpty(addVendorWithContract.getContractType()) && fieldValidation.isEmpty(addVendorWithContract.getSupplierCode())) {
+						if (fieldValidation.isEmpty(addVendorWithContract.getContractLocation()) && fieldValidation.isEmpty(addVendorWithContract.getContractProof()) && fieldValidation.isEmpty(addVendorWithContract.getContractTerms()) && fieldValidation.isEmpty(addVendorWithContract.getContractType())) {
 							CustomerContact contact = new CustomerContact();
 							contact.setcId(companyProfileIdByCustomerId);
 							contact.setContractLocation(addVendorWithContract.getContractLocation());
