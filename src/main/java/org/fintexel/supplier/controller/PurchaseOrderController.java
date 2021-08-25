@@ -3,9 +3,15 @@ package org.fintexel.supplier.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.fintexel.supplier.customerentity.CustomerAddress;
 import org.fintexel.supplier.customerentity.CustomerContact;
+import org.fintexel.supplier.customerentity.CustomerDepartments;
+import org.fintexel.supplier.customerentity.PrsonceLoginCustomerDetails;
+import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
+import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
 import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.helper.GetCustomerDetails;
@@ -35,6 +41,12 @@ public class PurchaseOrderController {
 	
 	@Autowired
 	private SupDetailsRepo supDetailsRepo;
+	
+	@Autowired
+	private CustomerAddressRepo customerAddressRepo;
+	
+	@Autowired
+	private CustomerDepartmentsRepo customerDepartmentsRepo; 
 	
 	@PostMapping("/getContractSuppliers")
 	public void getContractSuppliers(@RequestHeader(name = "Authorization") String token) {
@@ -549,7 +561,30 @@ public class PurchaseOrderController {
 	
 	
 	@GetMapping("/getLoginDetails")
-	public void getLoginDetails(@RequestHeader(name = "Authorization") String token) {
-		
+	public PrsonceLoginCustomerDetails getLoginDetails(@RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - PurchaseOrderController.getLoginDetails()");
+		try {
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+			if (companyProfileIdByCustomerId == -1) {
+				throw new VendorNotFoundException("Customer not found");
+			} else {
+				PrsonceLoginCustomerDetails loginCustomerDetails = new PrsonceLoginCustomerDetails();
+				
+				Optional<CustomerAddress> findAddressByIsPrimary = customerAddressRepo.findByIsPrimary(1);
+				if (findAddressByIsPrimary.isPresent()) {
+					loginCustomerDetails.setCustomerAddress(findAddressByIsPrimary.get());
+				}
+				
+				List<CustomerDepartments> findDepartmentBycId = customerDepartmentsRepo.findBycId(companyProfileIdByCustomerId);
+				if (findDepartmentBycId.size() > 0) {
+					loginCustomerDetails.setCustomerDepartments(findDepartmentBycId);
+				}
+				
+				return loginCustomerDetails;
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
 	}
 }
