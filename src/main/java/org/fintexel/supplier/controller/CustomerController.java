@@ -1408,7 +1408,7 @@ System.out.println("Inside if2  "+address);
 				List<SupAddress> vendorAddress = this.supAddRepo.findBySupplierCode(loginSupplierCode);
 
 				if (vendorAddress.size() < 1) {
-					throw new VendorNotFoundException("Vendor Not Exist");
+					throw new VendorNotFoundException("Address not found");
 				} else {
 					return vendorAddress;
 				}
@@ -1674,59 +1674,62 @@ System.out.println("Inside if2  "+address);
 	public SupBank updateBank(@PathVariable long bankId, @RequestBody SupBank supBank) {
 		LOGGER.info("Inside - CustomerController.updateBank()");
 		try {
-			Optional<SupBank> findSupplierBankById = supBankRepo.findById(bankId);
-			if (findSupplierBankById.isPresent()) {
-				String loginSupplierCode = supBank.getSupplierCode();
-				if (fieldValidation.isEmpty(supBank.getAccountHolder())
-						&& fieldValidation.isEmpty(supBank.getBankAccountNo())
-//						&& fieldValidation.isEmpty(supBank.getBankBic())
-						&& fieldValidation.isEmpty(supBank.getBankBranch())
-						&& fieldValidation.isEmpty(supBank.getBankEvidence())
-						&& fieldValidation.isEmpty(supBank.getBankName())
-//						&& fieldValidation.isEmpty(supBank.getChequeNo())
-						&& fieldValidation.isEmpty(supBank.getCountry()) && fieldValidation.isEmpty(supBank.getCurrency())
-						&& fieldValidation.isEmpty(supBank.getEvidencePath())
-						&& fieldValidation.isEmpty(supBank.getIfscCode())
-//						&& fieldValidation.isEmpty(supBank.getSwiftCode())
-//						&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())
-				) {
-					if (!loginSupplierCode.equals(null)) {
-
-						SupBank bank = new SupBank();
-						bank.setAccountHolder(supBank.getAccountHolder());
-						bank.setBankAccountNo(supBank.getBankAccountNo());
-						bank.setBankBic(supBank.getBankBic());
-						bank.setBankBranch(supBank.getBankBranch());
-						bank.setBankEvidence(supBank.getBankEvidence());
-						bank.setBankName(supBank.getBankName());
-						bank.setChequeNo(supBank.getChequeNo());
-						bank.setCountry(supBank.getCountry());
-						bank.setCurrency(supBank.getCurrency());
-						bank.setEvidencePath(supBank.getEvidencePath());
-						bank.setIfscCode(supBank.getIfscCode());
-						bank.setSupplierCode(loginSupplierCode);
-						bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
-						bank.setSwiftCode(supBank.getSwiftCode());
-						bank.setStatus("APPROVED");
-						Optional<SupBank> findBySwiftCode = supBankRepo.findBySwiftCode(supBank.getSwiftCode());
-						if (!findBySwiftCode.isPresent()) {
-							SupBank postData = this.supBankRepo.save(bank);
-							return postData;
-						} else {
-							throw new VendorNotFoundException("The Swift code all ready present");
-						}
-					} else {
-						throw new VendorNotFoundException("Token Expir");
-					}
+			String loginSupplierCode = supBank.getSupplierCode();
+			Optional<SupBank> findById = this.supBankRepo.findById(bankId);
+			if (!loginSupplierCode.equals(null)) {
+				if (!findById.isPresent()) {
+					throw new VendorNotFoundException("This Bank id not found");
 				} else {
-					throw new VendorNotFoundException("Some field are messing");
+					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
+							if (fieldValidation.isEmpty(supBank.getAccountHolder())
+									&& fieldValidation.isEmpty(supBank.getBankAccountNo())
+									&& fieldValidation.isEmpty(supBank.getBankBic())
+									&& fieldValidation.isEmpty(supBank.getBankBranch())
+									&& fieldValidation.isEmpty(supBank.getBankEvidence())
+									&& fieldValidation.isEmpty(supBank.getBankName())
+									&& fieldValidation.isEmpty(supBank.getChequeNo())
+									&& fieldValidation.isEmpty(supBank.getCountry())
+									&& fieldValidation.isEmpty(supBank.getCurrency())
+									&& fieldValidation.isEmpty(supBank.getEvidencePath())
+									&& fieldValidation.isEmpty(supBank.getIfscCode())
+									&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())) {
+								SupBank bank = new SupBank();
+								bank.setBankId(bankId);
+								bank.setAccountHolder(supBank.getAccountHolder());
+								bank.setBankAccountNo(supBank.getBankAccountNo());
+								bank.setBankBic(supBank.getBankBic());
+								bank.setBankBranch(supBank.getBankBranch());
+								bank.setBankEvidence(supBank.getBankEvidence());
+								bank.setBankName(supBank.getBankName());
+								bank.setChequeNo(supBank.getChequeNo());
+								bank.setCountry(supBank.getCountry());
+								bank.setCurrency(supBank.getCurrency());
+								bank.setEvidencePath(supBank.getEvidencePath());
+								bank.setIfscCode(supBank.getIfscCode());
+								bank.setSupplierCode(loginSupplierCode);
+								bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
+								bank.setStatus("APPROVED");
+
+								SupBank sb = this.supBankRepo.save(bank);
+
+								return sb;
+							} else {
+								throw new VendorNotFoundException("Validation Error");
+							}
+						
+
+					} else {
+						throw new VendorNotFoundException("You don't have permission to update this vendor bank");
+					}
+
 				}
 			} else {
-				throw new VendorNotFoundException("Bank not found");
+				throw new VendorNotFoundException("Token Expir");
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
+
 
 	}
 	
@@ -1813,7 +1816,7 @@ System.out.println("Inside if2  "+address);
 					if (fieldValidation.isEmail(supDepartment.getEmail())) {
 						if (!loginSupplierCode.equals(null)) {
 
-							SupDepartment department = new SupDepartment();
+							SupDepartment department = findDepartmentById.get();
 							department.setDepartmentName(supDepartment.getDepartmentName());
 							department.setSupplierCode(loginSupplierCode);
 							department.setSupplierContact1(supDepartment.getSupplierContact1());
