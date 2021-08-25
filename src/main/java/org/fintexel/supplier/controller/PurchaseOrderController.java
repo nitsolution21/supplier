@@ -560,8 +560,8 @@ public class PurchaseOrderController {
 	
 	
 	
-	@GetMapping("/getLoginDetails")
-	public PrsonceLoginCustomerDetails getLoginDetails(@RequestHeader(name = "Authorization") String token) {
+	@GetMapping("/getLoginCustomerDetails")
+	public PrsonceLoginCustomerDetails getLoginCustomerDetails(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.getLoginDetails()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
