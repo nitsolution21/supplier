@@ -416,7 +416,7 @@ public class CustomerController {
 		}
 	}
 	
-	@PostMapping("/contact")
+	@PostMapping("/contract")
 	public CustomerContact createCustomerContact(@RequestBody CustomerContact customerContact,  @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.createCustomerContact()");
 		try {
@@ -445,7 +445,7 @@ public class CustomerController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
-	@GetMapping("/contact")
+	@GetMapping("/contract")
 	public List<CustomerContact> getCustomerContact(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.getCustomerContact()");
 		try {
@@ -475,7 +475,7 @@ public class CustomerController {
 		}
 	}
 
-	@PutMapping("/contact/{id}")
+	@PutMapping("/contract/{id}")
 	public CustomerContact putCustomerContact(@PathVariable Long id, @RequestBody CustomerContact customerContact, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.putCustomerContact()");
 
