@@ -12,4 +12,6 @@ public interface CustomerAddressRepo extends JpaRepository<CustomerAddress, Long
 	
 	@Query("SELECT address FROM CustomerAddress address WHERE address.cId = ?1 AND address.status = 'COMPLEATE'")
 	public List<CustomerAddress> findActiveAddress(Long cId);
+	
+	
 }

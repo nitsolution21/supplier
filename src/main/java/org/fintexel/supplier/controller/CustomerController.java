@@ -1623,15 +1623,15 @@ System.out.println("Inside if2  "+address);
 					bank.setIfscCode(supBank.getIfscCode());
 					bank.setSupplierCode(loginSupplierCode);
 					bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
-					bank.setSwiftCode(supBank.getSwiftCode());
+//					bank.setSwiftCode(supBank.getSwiftCode());
 					bank.setStatus("APPROVED");
-					Optional<SupBank> findBySwiftCode = supBankRepo.findBySwiftCode(supBank.getSwiftCode());
-					if (!findBySwiftCode.isPresent()) {
+//					Optional<SupBank> findBySwiftCode = supBankRepo.findBySwiftCode(supBank.getSwiftCode());
+//					if (!findBySwiftCode.isPresent()) {
 						SupBank postData = this.supBankRepo.save(bank);
 						return postData;
-					} else {
-						throw new VendorNotFoundException("The Swift code all ready present");
-					}
+//					} else {
+//						throw new VendorNotFoundException("The Swift code all ready present");
+//					}
 				} else {
 					throw new VendorNotFoundException("Token Expir");
 				}
