@@ -27,6 +27,7 @@ import org.fintexel.supplier.customerrepository.CustomerProfileRepo;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserRolesRepo;
+import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.RegType;
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupBank;
@@ -1347,8 +1348,10 @@ public class CustomerController {
 	
 	
 	@PostMapping("/vendor/address")
-	public SupAddress postAddressVendor(@RequestBody SupAddress address) {
-
+	public CustomeResponseEntity postAddressVendor(@RequestBody SupAddress address) {
+		LOGGER.info("Inside - CustomerController.postAddressVendor()");
+		
+		LOGGER.info("Inside - CustomerController.postAddressVendor()  " + address);
 		try {
 			String loginSupplierCode = address.getSupplierCode();
 			if ((fieldValidation.isEmpty(address.getAddressType())) & (fieldValidation.isEmpty(address.getAddress1()))
@@ -1359,7 +1362,7 @@ public class CustomerController {
 
 				if (!loginSupplierCode.equals(null)) {
 
-
+System.out.println("Inside if2  "+address);
 					SupAddress filterAddressUp = new SupAddress();
 					filterAddressUp.setSupplierCode(loginSupplierCode);
 					filterAddressUp.setAddressType(address.getAddressType());
@@ -1379,7 +1382,7 @@ public class CustomerController {
 					filterAddressUp.setAddressProof(address.getAddressProof());
 					filterAddressUp.setAddressProofPath(address.getAddressProofPath());
 					SupAddress save = this.supAddRepo.save(filterAddressUp);
-					return save;
+					return new CustomeResponseEntity("SUCCESS", "Data Added Successfully");
 				} else {
 					throw new VendorNotFoundException("Token not valid");
 				}
