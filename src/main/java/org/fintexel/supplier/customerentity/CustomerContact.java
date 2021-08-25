@@ -24,7 +24,7 @@ public class CustomerContact {
 	@Column(name = "CONTRACT_PROOF") private String contractProof;
 	@Column(name = "CONTRACT_LOCATION") private String contractLocation;
 	
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern="yyyy-MM-dd")
 	@Column(name = "CONTRACT_ENDDATE") private Date contractEndDate;
 	
 	@Column(name = "CREATED_BY") private String createdBy;
