@@ -421,7 +421,7 @@ public class CustomerController {
 		LOGGER.info("Inside - CustomerController.createCustomerContact()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
-			String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
+			//String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
 			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
 			if (customerIdFromToken == -1) {
 				throw new VendorNotFoundException("Customer not found");
