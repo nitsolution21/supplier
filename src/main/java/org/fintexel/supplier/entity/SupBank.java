@@ -310,7 +310,53 @@ public class SupBank {
 	}
 
 
+	public SupBank(long bankId, String supplierCode, String bankName, String bankBranch,
+			String bankAccountNo, String currency, String accountHolder,
+			 String ifscCode, String country, String status) {
+		super();
+		this.bankId = bankId;
+		this.supplierCode = supplierCode;
+		this.bankName = bankName;
+		this.bankBranch = bankBranch;
+		this.bankAccountNo = bankAccountNo;
+		this.currency = currency;
+		this.accountHolder = accountHolder;
+		this.ifscCode = ifscCode;
+		this.country = country;
+		this.status = status;
+	}
+
 	
+	
+	
+	public static SupBank fromJson(String value) throws Exception {
+		 JsonObject obj = (JsonObject) JsonParser.parseString(value);
+		 try {
+			 	SupBank bank = new SupBank (Long.parseLong((String) obj.get("bankId").toString()) , (String)obj.get("supplierCode").toString() ,
+			    		(String) obj.get("bankName").toString() ,(String) obj.get("bankBranch").toString() ,
+			    		(String) obj.get("bankAccountNo").toString() , (String) obj.get("currency").toString(),
+			    		(String) obj.get("accountHolder").toString() ,
+			    		(String) obj.get("ifscCode").toString() , (String) obj.get("country").toString(),
+			    		(String) obj.get("status").toString() );
+			 	try {
+					if (fieldValidation.isEmpty((String) obj.get("bankBic").toString()) && fieldValidation.isEmpty((String) obj.get("chequeNo").toString()) && fieldValidation.isEmpty((String) obj.get("transilRoutingNo").toString())  && fieldValidation.isEmpty((String) obj.get("swiftCode").toString()) && fieldValidation.isEmpty((String) obj.get("bankEvidence").toString()) && fieldValidation.isEmpty((String) obj.get("evidencePath").toString()) ) {
+						bank.setBankBic(obj.get("bankBic").toString());
+						bank.setChequeNo((String) obj.get("chequeNo").toString());
+						bank.setSwiftCode((String) obj.get("swiftCode").toString());
+						bank.setBankEvidence((String) obj.get("bankEvidence").toString());
+						bank.setEvidencePath((String) obj.get("evidencePath").toString());
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			 	
+			 	return bank;
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		    
+	}
 	
 	
 	
