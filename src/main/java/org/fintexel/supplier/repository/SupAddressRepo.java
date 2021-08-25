@@ -10,6 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface SupAddressRepo extends JpaRepository<SupAddress, Long> {
 	
 	List<SupAddress> findBySupplierCode(String code);
-	@Query("select s from SupBank where s.isPrimary = ?1")
-	List<SupAddress> findByIsPrimary(int key);
+//	@Query("select s from SupBank where s.isPrimary = ?1")
+//	List<SupAddress> findByIsPrimary(int key);
 }

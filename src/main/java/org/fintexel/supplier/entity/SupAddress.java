@@ -66,6 +66,9 @@ public class SupAddress {
 	@Column(name = "ADDRESS_PROOF")
 	private String addressProof;
 	
+	@Column(name = "IS_PRIMARY")
+	private int isPrimary;
+	
 	@Column(name = "ADDRESS_PROOF_PATH")
 	private String addressProofPath;
 	
@@ -85,13 +88,16 @@ public class SupAddress {
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updatedOn;
 
+	
+
 	@Override
 	public String toString() {
 		return "SupAddress [addressId=" + addressId + ", supplierCode=" + supplierCode + ", addressType=" + addressType
 				+ ", address1=" + address1 + ", address2=" + address2 + ", city=" + city + ", postalCode=" + postalCode
 				+ ", country=" + country + ", region=" + region + ", status=" + status + ", addressProof="
-				+ addressProof + ", addressProofPath=" + addressProofPath + ", createdBy=" + createdBy + ", createdOn="
-				+ createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + "]";
+				+ addressProof + ", isPrimary=" + isPrimary + ", addressProofPath=" + addressProofPath + ", createdBy="
+				+ createdBy + ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn
+				+ "]";
 	}
 
 	public Long getAddressId() {
@@ -104,6 +110,14 @@ public class SupAddress {
 
 	public String getSupplierCode() {
 		return supplierCode;
+	}
+
+	public int getIsPrimary() {
+		return isPrimary;
+	}
+
+	public void setIsPrimary(int isPrimary) {
+		this.isPrimary = isPrimary;
 	}
 
 	public void setSupplierCode(String supplierCode) {
@@ -222,9 +236,10 @@ public class SupAddress {
 		this.updatedOn = updatedOn;
 	}
 
+	
 	public SupAddress(Long addressId, String supplierCode, String addressType, String address1, String address2,
 			String city, int postalCode, String country, String region, String status, String addressProof,
-			String addressProofPath, int createdBy, Date createdOn, int updatedBy, Date updatedOn) {
+			int isPrimary, String addressProofPath, int createdBy, Date createdOn, int updatedBy, Date updatedOn) {
 		super();
 		this.addressId = addressId;
 		this.supplierCode = supplierCode;
@@ -237,6 +252,7 @@ public class SupAddress {
 		this.region = region;
 		this.status = status;
 		this.addressProof = addressProof;
+		this.isPrimary = isPrimary;
 		this.addressProofPath = addressProofPath;
 		this.createdBy = createdBy;
 		this.createdOn = createdOn;
