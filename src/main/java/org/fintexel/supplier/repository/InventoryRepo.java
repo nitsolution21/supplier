@@ -9,5 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface InventoryRepo extends JpaRepository<InventoryDetails,Long>{
 
 	List<InventoryDetails> findBySupplierCode(String supplierCode);
+	List<InventoryDetails> findByCategoryId(String categoryId);
 
 }

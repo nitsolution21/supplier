@@ -8,11 +8,13 @@ import java.util.Optional;
 import org.fintexel.supplier.customerentity.CustomerAddress;
 import org.fintexel.supplier.customerentity.CustomerContact;
 import org.fintexel.supplier.customerentity.PurchesOrder;
+import org.fintexel.supplier.customerentity.SelectedItem;
 import org.fintexel.supplier.customerentity.SupplierAllDetailsForPO;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.PurchesOrderRepo;
 import org.fintexel.supplier.entity.InventoryDetails;
 import org.fintexel.supplier.entity.ItemCategory;
+import org.fintexel.supplier.entity.ItemSubCategory;
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupBank;
 import org.fintexel.supplier.entity.SupDepartment;
@@ -26,6 +28,7 @@ import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.helper.GetCustomerDetails;
 import org.fintexel.supplier.repository.InventoryRepo;
 import org.fintexel.supplier.repository.ItemCategoryRepo;
+import org.fintexel.supplier.repository.ItemSubCategoryRepo;
 import org.fintexel.supplier.repository.SupAddressRepo;
 import org.fintexel.supplier.repository.SupBankRepo;
 import org.fintexel.supplier.repository.SupDepartmentRepo;
@@ -79,6 +82,10 @@ public class PurchaseOrderController {
 	
 	@Autowired
 	private CustomerAddressRepo customerAddressRepo;
+	
+	@Autowired
+	ItemSubCategoryRepo itemSubCategoryRepo;
+
 	
 	
 
@@ -171,21 +178,62 @@ public class PurchaseOrderController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 		
-		
-		
-		
 	}
 	
 	
 	
 	
-	@GetMapping("/categoryByInventory")
-	public void getCategoryByInventory() {
-		LOGGER.info("Inside - PurchaseOrderController.getContractSuppliers()");
+	
+	
+	
+	@GetMapping("/subCategoryByCategory/{id}")
+	public SelectedItem getSubCategoryByCategory(@PathVariable("id") String id , @RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - PurchaseOrderController.getSubCategoryByCategory()");
 		
 		try {
 			
-			
+			long cIdFromToken = getCustomerDetails.getCIdFromToken(token);
+			if(cIdFromToken == -1) {
+				throw new VendorNotFoundException("Customer Data Not Found");
+			}else {
+				
+				List<CustomerContact> customerContactList = customerContactRepo.findBycId(cIdFromToken);
+				
+				if(customerContactList.size()>0) {					
+						ItemCategory itemCategory = itemCategoryRepo.findById(Long.parseLong(id)).get();
+						
+//						List<InventoryDetails> findBySupplierCode = inventoryRepo.findBySupplierCode(itemCategory.getSupplierCode());
+						List<InventoryDetails> findByCategoryId = inventoryRepo.findByCategoryId(id);
+						
+//						if(findByCategoryId.get(0).getSupplierCode().equals(findBySupplierCode.get(0).getSupplierCode())) {
+//							
+//						}else {
+						
+						for(CustomerContact obj : customerContactList) {
+							SupDetails supDetails = supDetailsRepo.findById(obj.getSupplierCode()).get();
+							String supplierCode = supDetails.getSupplierCode();
+							if(supplierCode.equals(itemCategory.getSupplierCode())) {
+//								if(itemCategory.getSupplierCode().equals(supplierCode)) {
+									Optional<ItemSubCategory> findById = itemSubCategoryRepo.findById(findByCategoryId.get(0).getCategoryId());
+									SelectedItem selectedItem = new SelectedItem();
+									selectedItem.setFindByCategoryId(findByCategoryId);
+									selectedItem.setFindById(findById);
+									return selectedItem;
+//								}else {
+//									throw new VendorNotFoundException("No Contract Made With This Customer and Supplier");
+//								}
+								
+							}
+						}
+						
+							throw new VendorNotFoundException("No Contract Made With This Customer and Supplier");
+//						}
+					
+				}else {
+					throw new VendorNotFoundException("No Contract Found With This Customer");
+				}
+				
+			}
 			
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -200,11 +248,28 @@ public class PurchaseOrderController {
 		
 		try {
 			
-			List<PurchesOrder> findByStatus = purchesOrderRepo.findByStatus("YET TO SUBMIT");
+			List<PurchesOrder> findByStatus = purchesOrderRepo.findByStatus("WAITING FOR APPROVAL");
 			if(findByStatus.size()<0) {
 				throw new VendorNotFoundException("No Pending Data");
 			}else {
 				return findByStatus;
+			}
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/pendingCustomer/details/{id}")
+	public List<PurchesOrder> getPendingCustomerDetails(@PathVariable("id") int id) {
+	LOGGER.info("Inside - PurchaseOrderController.getPendingCustomerDetails()");
+		
+		try {
+			
+			List<PurchesOrder> findByCId = purchesOrderRepo.findByCId(id);
+			if(findByCId.size()<0) {
+				throw new VendorNotFoundException("No Pending Data");
+			}else {
+				return findByCId;
 			}
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
