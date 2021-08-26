@@ -15,6 +15,6 @@ public interface CustomerRegisterRepo extends JpaRepository<CustomerRegister, Lo
 	
 	public Optional<CustomerRegister> findByEmail(String email);
 	
-	@Query("select customer from CustomerRegister customer , CustomerUserDepartments dep where customer.userId = dep.userId and dep.departmentId = ?1")
-	public List<CustomerRegister> findUserByDepartment(long departmentId);
+	@Query("select customer from CustomerRegister customer , CustomerDepartments dep where customer.userId = dep.primaryContact and dep.departmentId = ?1")
+	public Optional<CustomerRegister> findUserByDepartment(long departmentId);
 }
