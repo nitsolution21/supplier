@@ -17,10 +17,12 @@ import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupBank;
 import org.fintexel.supplier.entity.SupDepartment;
 import org.fintexel.supplier.customerentity.CustomerDepartments;
+import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerentity.PrsonceLoginCustomerDetails;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
+import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.helper.GetCustomerDetails;
@@ -30,6 +32,7 @@ import org.fintexel.supplier.repository.SupAddressRepo;
 import org.fintexel.supplier.repository.SupBankRepo;
 import org.fintexel.supplier.repository.SupDepartmentRepo;
 import org.fintexel.supplier.repository.SupDetailsRepo;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +64,9 @@ public class PurchaseOrderController {
 	
 	@Autowired
 	private SupBankRepo supBankRepo;
+	
+	@Autowired
+	private CustomerRegisterRepo customerRegisterRepo;
 	
 	@Autowired
 	private SupDepartmentRepo supDepartmentRepo;
@@ -684,6 +690,91 @@ public class PurchaseOrderController {
 				}
 				
 				return loginCustomerDetails;
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/getLoginCustomerAllPO")
+	public List<PurchesOrder> getLoginCustomerAllPO(@RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - PurchaseOrderController.getLoginCustomerAllPO()");
+		try {
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+			
+			if (companyProfileIdByCustomerId == -1) {
+				throw new VendorNotFoundException("Customer not found");
+			}
+			else {
+				List<PurchesOrder> purchesOrders = new ArrayList<PurchesOrder>();
+				
+				List<PurchesOrder> findPOBycId = purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId);
+				if (findPOBycId.size() > 0) {
+					findPOBycId.forEach(po -> {
+						if (po.getStatus().equals("DRAFT")) {
+							try {
+								
+								PurchesOrder order = new PurchesOrder();
+				
+								order.setcId(po.getcId());
+								order.setPOId(po.getPOId());
+								order.setPoNumber(po.getPoNumber());
+								order.setUserId(po.getUserId());
+								order.setUserId(po.getUserId());
+								order.setSupplierCode(po.getSupplierCode());
+								order.setDepartmentId(po.getDepartmentId());
+								order.setCusAddrId(po.getCusAddrId());
+								
+								Optional<CustomerAddress> findCustomerAddressById = customerAddressRepo.findById(po.getCusAddrId());
+								JSONObject customerAddressJsonObject = new JSONObject(findCustomerAddressById.get());
+								order.setCusAddrText(customerAddressJsonObject.toString());
+								
+								order.setSupAddrId(po.getSupAddrId());
+								
+								Optional<SupAddress> findSuppAddressById = supAddressRepo.findById(po.getSupAddrId());
+								JSONObject suppAddressJsonObject = new JSONObject(findSuppAddressById.get());
+								order.setSupAddrText(suppAddressJsonObject.toString());
+								
+								order.setContractId(po.getContractId());
+								order.setContractTerms(po.getContractTerms());
+								order.setComment(po.getComment());
+								order.setShipToId(po.getShipToId());
+								
+								Optional<CustomerAddress> findShipToAddressById = customerAddressRepo.findById(po.getShipToId());
+								JSONObject shipToAddressJsonObject = new JSONObject(findShipToAddressById.get());
+								order.setShipToText(shipToAddressJsonObject.toString());
+								
+								order.setDeliveryToId(po.getDeliveryToId());
+								
+								Optional<CustomerRegister> finDeliveryDetailsdById = customerRegisterRepo.findById(po.getDeliveryToId());
+								JSONObject deliveryDetailsJsonObject = new JSONObject(finDeliveryDetailsdById.get());
+								order.setDeliveryToText(deliveryDetailsJsonObject.toString());
+								
+								order.setCurType(po.getCurType());
+								order.setAmount(po.getAmount());
+								order.setStatus(po.getStatus());
+								order.setStatusComment(po.getStatusComment());
+								order.setCreatedBy(po.getCreatedBy());
+								order.setCreatedOn(po.getCreatedOn());
+								
+								purchesOrders.add(order);
+								
+								
+							} catch (Exception e) {
+								throw new VendorNotFoundException(e.getMessage());
+							}
+						} else {
+							
+							purchesOrders.add(po);
+							
+						}
+					});
+					
+					return purchesOrders;
+				} else {
+					throw new VendorNotFoundException("PO not found for this company");
+				}
 			}
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
