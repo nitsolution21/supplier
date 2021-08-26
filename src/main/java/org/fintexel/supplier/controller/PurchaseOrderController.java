@@ -241,11 +241,11 @@ public class PurchaseOrderController {
 	
 	
 	@GetMapping("/subCategoryByCategory/{id}")
-	public SelectedItem getSubCategoryByCategory(@PathVariable("id") String id , @RequestHeader(name = "Authorization") String token) {
+	public SelectedItem getSubCategoryByCategory(@PathVariable("id") Long id , @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.getSubCategoryByCategory()");
 		
 		try {
-			
+			System.out.println("&&&&&   "+ id);
 			long cIdFromToken = getCustomerDetails.getCIdFromToken(token);
 			if(cIdFromToken == -1) {
 				throw new VendorNotFoundException("Customer Data Not Found");
@@ -254,10 +254,10 @@ public class PurchaseOrderController {
 				List<CustomerContact> customerContactList = customerContactRepo.findBycId(cIdFromToken);
 				
 				if(customerContactList.size()>0) {					
-						ItemCategory itemCategory = itemCategoryRepo.findById(Long.parseLong(id)).get();
-						
+						ItemCategory itemCategory = itemCategoryRepo.findById(id).get();
+						System.out.println("&&&&&   "+ itemCategory.toString());
 //						List<InventoryDetails> findBySupplierCode = inventoryRepo.findBySupplierCode(itemCategory.getSupplierCode());
-						List<InventoryDetails> findByCategoryId = inventoryRepo.findByCategoryId(id);
+						List<InventoryDetails> findByCategoryIdInventory = inventoryRepo.findByCategoryId(id);
 						
 //						if(findByCategoryId.get(0).getSupplierCode().equals(findBySupplierCode.get(0).getSupplierCode())) {
 //							
@@ -268,10 +268,10 @@ public class PurchaseOrderController {
 							String supplierCode = supDetails.getSupplierCode();
 							if(supplierCode.equals(itemCategory.getSupplierCode())) {
 //								if(itemCategory.getSupplierCode().equals(supplierCode)) {
-									Optional<ItemSubCategory> findById = itemSubCategoryRepo.findById(findByCategoryId.get(0).getCategoryId());
+									Optional<ItemSubCategory> findByIdSubCatagory = itemSubCategoryRepo.findById(findByCategoryIdInventory.get(0).getCategoryId());
 									SelectedItem selectedItem = new SelectedItem();
-									selectedItem.setFindByCategoryId(findByCategoryId);
-									selectedItem.setFindById(findById);
+									selectedItem.setFindByCategoryId(findByCategoryIdInventory);
+									selectedItem.setFindById(findByIdSubCatagory);
 									return selectedItem;
 //								}else {
 //									throw new VendorNotFoundException("No Contract Made With This Customer and Supplier");
