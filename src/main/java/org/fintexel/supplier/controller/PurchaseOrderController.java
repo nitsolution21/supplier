@@ -780,4 +780,21 @@ public class PurchaseOrderController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
+	
+	@GetMapping("/getCustomerByDepartmentId/{departmentId}")
+	public List<CustomerRegister> getCustomerByDepartmentId(@PathVariable long departmentId) {
+		LOGGER.info("Inside - PurchaseOrderController.getCustomerByDepartmentId()");
+		try {
+			
+			List<CustomerRegister> findUserByDepartment = customerRegisterRepo.findUserByDepartment(departmentId);
+			if (findUserByDepartment.size() > 0) {
+				return findUserByDepartment;
+			} else {
+				throw new VendorNotFoundException("Data note found");
+			}
+			
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
 }
