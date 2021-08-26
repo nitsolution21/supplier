@@ -1,6 +1,7 @@
 package org.fintexel.supplier.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupDetails;
@@ -11,5 +12,5 @@ public interface SupAddressRepo extends JpaRepository<SupAddress, Long> {
 	
 	List<SupAddress> findBySupplierCode(String code);
 	@Query("select s from SupBank s where s.isPrimary = ?1")
-	List<SupAddress> findByIsPrimary(int key);
+	Optional<SupAddress> findByIsPrimary(int key);
 }

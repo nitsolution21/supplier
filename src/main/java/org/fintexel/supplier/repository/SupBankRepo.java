@@ -14,6 +14,6 @@ public interface SupBankRepo extends JpaRepository<SupBank, Long> {
 	Optional<SupBank> findBySwiftCode(String swiftCode);
 	
 	@Query("select s from SupBank s where s.isPrimary = ?1")
-	List<SupBank> findByIsPrimary(int key);
+	Optional<SupBank> findByIsPrimary(int key);
 
 }

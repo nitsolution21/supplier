@@ -3,17 +3,32 @@ package org.fintexel.supplier.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.fintexel.supplier.customerentity.CustomerContact;
+import org.fintexel.supplier.customerentity.PurchesOrder;
+import org.fintexel.supplier.customerentity.SupplierAllDetailsForPO;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
+import org.fintexel.supplier.customerrepository.PurchesOrderRepo;
+import org.fintexel.supplier.entity.InventoryDetails;
+import org.fintexel.supplier.entity.ItemCategory;
+import org.fintexel.supplier.entity.SupAddress;
+import org.fintexel.supplier.entity.SupBank;
+import org.fintexel.supplier.entity.SupDepartment;
 import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.helper.GetCustomerDetails;
+import org.fintexel.supplier.repository.InventoryRepo;
+import org.fintexel.supplier.repository.ItemCategoryRepo;
+import org.fintexel.supplier.repository.SupAddressRepo;
+import org.fintexel.supplier.repository.SupBankRepo;
+import org.fintexel.supplier.repository.SupDepartmentRepo;
 import org.fintexel.supplier.repository.SupDetailsRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -35,8 +50,27 @@ public class PurchaseOrderController {
 	@Autowired
 	private SupDetailsRepo supDetailsRepo;
 	
-	@PostMapping("/getContractSuppliers")
-	public void getContractSuppliers(@RequestHeader(name = "Authorization") String token) {
+	@Autowired
+	private SupAddressRepo supAddressRepo;
+	
+	@Autowired
+	private SupBankRepo supBankRepo;
+	
+	@Autowired
+	private SupDepartmentRepo supDepartmentRepo;
+	
+	@Autowired
+	private InventoryRepo inventoryRepo;
+	
+	@Autowired
+	private PurchesOrderRepo purchesOrderRepo;
+	
+	@Autowired
+	private ItemCategoryRepo itemCategoryRepo;
+	
+	
+	@GetMapping("/contractSuppliers")
+	public List<SupDetails> getContractSuppliers(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.getContractSuppliers()");
 		
 		try {
@@ -56,6 +90,8 @@ public class PurchaseOrderController {
 						listSupplierDetails.add(supDetails);
 					}
 					
+					return listSupplierDetails;
+					
 				}else {
 					throw new VendorNotFoundException("No Contract Found With This Customer");
 				}
@@ -70,8 +106,8 @@ public class PurchaseOrderController {
 	}
 	
 	
-	@PostMapping("/getContractSupplierDetails/{code}")
-	public void getContractSupplierDetails(@PathVariable("code") String code , @RequestHeader(name = "Authorization") String token) {
+	@GetMapping("/contractSupplierDetails/{code}")
+	public SupplierAllDetailsForPO getContractSupplierDetails(@PathVariable("code") String code , @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.getContractSuppliers()");
 		
 		try {
@@ -84,7 +120,30 @@ public class PurchaseOrderController {
 				List<CustomerContact> customerContactList = customerContactRepo.findBycId(cIdFromToken);
 				
 				if(customerContactList.size()>0) {
-				
+					for(CustomerContact obj : customerContactList) {
+						SupDetails supDetails = supDetailsRepo.findById(obj.getSupplierCode()).get();
+						String supplierCode = supDetails.getSupplierCode();
+						if(supplierCode.equals(code)) {
+							
+							SupplierAllDetailsForPO supplierAllDetailsForPO = new SupplierAllDetailsForPO();
+							SupDetails supDetails2 = supDetailsRepo.findById(supplierCode).get();
+							SupAddress supAddress = supAddressRepo.findByIsPrimary(1).get();
+							SupBank supBank = supBankRepo.findByIsPrimary(1).get();
+							List<InventoryDetails> findBySupplierCodeInventory = inventoryRepo.findBySupplierCode(supplierCode);
+							List<SupDepartment> findBySupplierCodeDepertment = supDepartmentRepo.findBySupplierCode(supplierCode);
+							List<ItemCategory> findBySupplierCodeCategory = itemCategoryRepo.findBySupplierCode(supplierCode);
+							supplierAllDetailsForPO.setFindBySupplierCodeDepertment(findBySupplierCodeDepertment);
+							supplierAllDetailsForPO.setSupAddress(supAddress);
+							supplierAllDetailsForPO.setSupDetails(supDetails2);
+							supplierAllDetailsForPO.setSupBank(supBank);
+//							supplierAllDetailsForPO.setFindBySupplierCodeInventory(findBySupplierCodeInventory);
+							supplierAllDetailsForPO.setFindBySupplierCodeCategory(findBySupplierCodeCategory);
+							return supplierAllDetailsForPO;
+							
+						}
+					}
+					
+					throw new VendorNotFoundException("No Contract Made With This Customer and Supplier");
 					
 				}else {
 					throw new VendorNotFoundException("No Contract Found With This Customer");
@@ -95,7 +154,47 @@ public class PurchaseOrderController {
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
+		
+		
+		
+		
 	}
+	
+	
+	
+	
+	@GetMapping("/categoryByInventory")
+	public void getCategoryByInventory() {
+		LOGGER.info("Inside - PurchaseOrderController.getContractSuppliers()");
+		
+		try {
+			
+			
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+	}
+	
+	
+	@GetMapping("/pendingCustomer")
+	public List<PurchesOrder> getPendingCustomer() {
+	LOGGER.info("Inside - PurchaseOrderController.getPendingCustomer()");
+		
+		try {
+			
+			List<PurchesOrder> findByStatus = purchesOrderRepo.findByStatus("YET TO SUBMIT");
+			if(findByStatus.size()<0) {
+				throw new VendorNotFoundException("No Pending Data");
+			}else {
+				return findByStatus;
+			}
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
 
 	
 }
