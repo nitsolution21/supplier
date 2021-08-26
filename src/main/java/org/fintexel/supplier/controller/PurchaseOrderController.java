@@ -8,10 +8,13 @@ import java.util.Optional;
 import org.fintexel.supplier.customerentity.CustomerAddress;
 import org.fintexel.supplier.customerentity.CustomerContact;
 import org.fintexel.supplier.customerentity.PurchesOrder;
+import org.fintexel.supplier.customerentity.PurchesOrderStatus;
 import org.fintexel.supplier.customerentity.SelectedItem;
 import org.fintexel.supplier.customerentity.SupplierAllDetailsForPO;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.PurchesOrderRepo;
+import org.fintexel.supplier.customerrepository.PurchesOrderStatusRepo;
+import org.fintexel.supplier.entity.ApproveMap;
 import org.fintexel.supplier.entity.InventoryDetails;
 import org.fintexel.supplier.entity.ItemCategory;
 import org.fintexel.supplier.entity.ItemSubCategory;
@@ -43,6 +46,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -90,7 +94,10 @@ public class PurchaseOrderController {
 	private CustomerAddressRepo customerAddressRepo;
 	
 	@Autowired
-	ItemSubCategoryRepo itemSubCategoryRepo;
+	private ItemSubCategoryRepo itemSubCategoryRepo;
+	
+	@Autowired
+	private PurchesOrderStatusRepo purchesOrderStatusRepo;
 
 	
 	
@@ -150,23 +157,64 @@ public class PurchaseOrderController {
 				
 				if(customerContactList.size()>0) {
 					for(CustomerContact obj : customerContactList) {
-						SupDetails supDetails = supDetailsRepo.findById(obj.getSupplierCode()).get();
+						SupDetails supDetails = supDetailsRepo.findById(code).get();
 						String supplierCode = supDetails.getSupplierCode();
-						if(supplierCode.equals(code)) {
-							
+						System.out.println("*****  " + supDetails.toString());
+						if(obj.getSupplierCode().equals(code)) {
 							SupplierAllDetailsForPO supplierAllDetailsForPO = new SupplierAllDetailsForPO();
-							SupDetails supDetails2 = supDetailsRepo.findById(supplierCode).get();
-							SupAddress supAddress = supAddressRepo.findByIsPrimary(1).get();
-							SupBank supBank = supBankRepo.findByIsPrimary(1).get();
-							List<InventoryDetails> findBySupplierCodeInventory = inventoryRepo.findBySupplierCode(supplierCode);
-							List<SupDepartment> findBySupplierCodeDepertment = supDepartmentRepo.findBySupplierCode(supplierCode);
-							List<ItemCategory> findBySupplierCodeCategory = itemCategoryRepo.findBySupplierCode(supplierCode);
-							supplierAllDetailsForPO.setFindBySupplierCodeDepertment(findBySupplierCodeDepertment);
-							supplierAllDetailsForPO.setSupAddress(supAddress);
-							supplierAllDetailsForPO.setSupDetails(supDetails2);
-							supplierAllDetailsForPO.setSupBank(supBank);
-//							supplierAllDetailsForPO.setFindBySupplierCodeInventory(findBySupplierCodeInventory);
-							supplierAllDetailsForPO.setFindBySupplierCodeCategory(findBySupplierCodeCategory);
+							SupDetails supDetails2=new SupDetails();
+							SupAddress supAddress=new SupAddress();
+							SupBank supBank = new SupBank();
+							List<InventoryDetails> findBySupplierCodeInventory = new ArrayList<InventoryDetails>();
+							List<SupDepartment> findBySupplierCodeDepertment = new ArrayList<SupDepartment>();
+							List<ItemCategory> findBySupplierCodeCategory = new ArrayList<ItemCategory>();
+							try {
+								supDetails2 = supDetailsRepo.findById(supplierCode).get();
+							}catch(Exception e) {
+								
+							}
+							try {
+								supAddress = supAddressRepo.findByIsPrimary(1).get();
+							}catch(Exception e) {
+								
+							}
+							try {
+								supBank = supBankRepo.findByIsPrimary(1).get();
+							}catch(Exception e) {
+								
+							}
+							try {
+								findBySupplierCodeInventory = inventoryRepo.findBySupplierCode(supplierCode);
+							}catch(Exception e) {
+								
+							}
+							try {
+								findBySupplierCodeDepertment = supDepartmentRepo.findBySupplierCode(supplierCode);
+							}catch(Exception e) {
+								
+							}
+							try {
+								findBySupplierCodeCategory = itemCategoryRepo.findBySupplierCode(supplierCode);
+							}catch(Exception e) {
+								
+							}
+							try {
+								supplierAllDetailsForPO.setFindBySupplierCodeDepertment(findBySupplierCodeDepertment);
+								supplierAllDetailsForPO.setSupAddress(supAddress);
+								supplierAllDetailsForPO.setSupDetails(supDetails2);
+								supplierAllDetailsForPO.setSupBank(supBank);
+//								supplierAllDetailsForPO.setFindBySupplierCodeInventory(findBySupplierCodeInventory);
+								supplierAllDetailsForPO.setFindBySupplierCodeCategory(findBySupplierCodeCategory);
+							}catch(Exception e) {
+								
+							}
+							
+							
+							
+							
+						
+							
+							
 							return supplierAllDetailsForPO;
 							
 						}
@@ -283,7 +331,30 @@ public class PurchaseOrderController {
 	}
 	
 
-	
+	@PostMapping("/pendingCustomerStatus")
+	public void pendingCustomerStatus(@RequestBody() ArrayList<ApproveMap> approveMap) {
+		LOGGER.info("Inside - PurchaseOrderController.pendingCustomerStatus()");
+		
+		try {
+			
+			for(ApproveMap obj : approveMap) {
+				PurchesOrder purchesOrder = purchesOrderRepo.findById(obj.getId()).get();
+				PurchesOrderStatus purchesOrderStatus = purchesOrderStatusRepo.findById(obj.getId()).get();
+				purchesOrder.setStatus(obj.getStatus());
+				purchesOrder.setComment(obj.getComment());
+				purchesOrderStatus.setPOStatus(obj.getStatus());
+				purchesOrderStatus.setComment(obj.getComment());
+				
+				purchesOrderRepo.save(purchesOrder);
+				purchesOrderStatusRepo.save(purchesOrderStatus);
+				
+			}
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+	}
 	
 	
 	
