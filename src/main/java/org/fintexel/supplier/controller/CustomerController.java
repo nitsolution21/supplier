@@ -717,16 +717,23 @@ public class CustomerController {
 				
 				switch (roleByUserId) {
 				case "SADMIN":
-					if (fieldValidation.isEmpty(customerDepartments.getDepartmentName()) && fieldValidation.isEmpty(customerDepartments.getEmail()) && fieldValidation.isEmpty(customerDepartments.getPhoneNo()) && fieldValidation.isEmpty(customerDepartments.getCostCode())) {
+					if (fieldValidation.isEmpty(customerDepartments.getDepartmentName())
+							&& fieldValidation.isEmpty(customerDepartments.getEmail())
+							&& fieldValidation.isEmpty(customerDepartments.getPhoneNo())
+							&& fieldValidation.isEmpty(customerDepartments.getCostCode())
+							&& fieldValidation.isEmpty(customerDepartments.getPrimaryContact())) {
 						if (fieldValidation.isEmail(customerDepartments.getEmail())) {
 							departments.setDepartmentName(customerDepartments.getDepartmentName());
 							departments.setEmail(customerDepartments.getEmail());
 							departments.setPhoneNo(customerDepartments.getPhoneNo());
 							departments.setCostCode(customerDepartments.getCostCode());
 							departments.setcId(companyProfileIdByCustomerId);
+							departments.setPrimaryContact(customerDepartments.getPrimaryContact());
+							
 							try {
-								if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo())) {
+								if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo()) && fieldValidation.isEmpty(customerDepartments.getSecondaryContact())) {
 									departments.setAlternatePhoneNo(customerDepartments.getAlternatePhoneNo());
+									departments.setSecondaryContact(customerDepartments.getSecondaryContact());
 								}
 							} catch (Exception e) {
 								// TODO: handle exception
@@ -753,16 +760,22 @@ public class CustomerController {
 						throw new VendorNotFoundException("All field required");
 					}
 				case "ADMIN":
-					if (fieldValidation.isEmpty(customerDepartments.getDepartmentName()) && fieldValidation.isEmpty(customerDepartments.getEmail()) && fieldValidation.isEmpty(customerDepartments.getPhoneNo()) && fieldValidation.isEmpty(customerDepartments.getCostCode())) {
+					if (fieldValidation.isEmpty(customerDepartments.getDepartmentName())
+							&& fieldValidation.isEmpty(customerDepartments.getEmail())
+							&& fieldValidation.isEmpty(customerDepartments.getPhoneNo())
+							&& fieldValidation.isEmpty(customerDepartments.getCostCode())
+							&& fieldValidation.isEmpty(customerDepartments.getPrimaryContact())) {
 						if (fieldValidation.isEmail(customerDepartments.getEmail())) {
 							departments.setDepartmentName(customerDepartments.getDepartmentName());
 							departments.setEmail(customerDepartments.getEmail());
 							departments.setPhoneNo(customerDepartments.getPhoneNo());
 							departments.setCostCode(customerDepartments.getCostCode());
+							departments.setPrimaryContact(customerDepartments.getPrimaryContact());
 							departments.setcId(companyProfileIdByCustomerId);
 							try {
-								if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo())) {
+								if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo()) && fieldValidation.isEmpty(customerDepartments.getSecondaryContact())) {
 									departments.setAlternatePhoneNo(customerDepartments.getAlternatePhoneNo());
+									departments.setSecondaryContact(customerDepartments.getSecondaryContact());
 								}
 							} catch (Exception e) {
 								// TODO: handle exception
@@ -840,17 +853,23 @@ public class CustomerController {
 					CustomerDepartments departments = new CustomerDepartments();
 					switch (roleByUserId) {
 					case "SADMIN":
-						if (fieldValidation.isEmpty(customerDepartments.getDepartmentName()) && fieldValidation.isEmpty(customerDepartments.getEmail()) && fieldValidation.isEmpty(customerDepartments.getPhoneNo()) && fieldValidation.isEmpty(customerDepartments.getCostCode())) {
+						if (fieldValidation.isEmpty(customerDepartments.getDepartmentName())
+								&& fieldValidation.isEmpty(customerDepartments.getEmail())
+								&& fieldValidation.isEmpty(customerDepartments.getPhoneNo())
+								&& fieldValidation.isEmpty(customerDepartments.getCostCode())
+								&& fieldValidation.isEmpty(customerDepartments.getPrimaryContact())) {
 							if (fieldValidation.isEmail(customerDepartments.getEmail())) {
 								departments.setDepartmentName(customerDepartments.getDepartmentName());
 								departments.setEmail(customerDepartments.getEmail());
 								departments.setPhoneNo(customerDepartments.getPhoneNo());
 								departments.setCostCode(customerDepartments.getCostCode());
 								departments.setDepartmentId(departmentId);
+								departments.setPrimaryContact(customerDepartments.getPrimaryContact());
 								departments.setcId(companyProfileIdByCustomerId);
 								try {
-									if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo())) {
+									if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo()) && fieldValidation.isEmpty(customerDepartments.getSecondaryContact())) {
 										departments.setAlternatePhoneNo(customerDepartments.getAlternatePhoneNo());
+										departments.setSecondaryContact(customerDepartments.getSecondaryContact());
 									}
 								} catch (Exception e) {
 									// TODO: handle exception
@@ -866,17 +885,23 @@ public class CustomerController {
 							throw new VendorNotFoundException("All field required");
 						}
 					case "ADMIN":
-						if (fieldValidation.isEmpty(customerDepartments.getDepartmentName()) && fieldValidation.isEmpty(customerDepartments.getEmail()) && fieldValidation.isEmpty(customerDepartments.getPhoneNo()) && fieldValidation.isEmpty(customerDepartments.getCostCode())) {
+						if (fieldValidation.isEmpty(customerDepartments.getDepartmentName())
+								&& fieldValidation.isEmpty(customerDepartments.getEmail())
+								&& fieldValidation.isEmpty(customerDepartments.getPhoneNo())
+								&& fieldValidation.isEmpty(customerDepartments.getCostCode())
+								&& fieldValidation.isEmpty(customerDepartments.getPrimaryContact())) {
 							if (fieldValidation.isEmail(customerDepartments.getEmail())) {
 								departments.setDepartmentName(customerDepartments.getDepartmentName());
 								departments.setEmail(customerDepartments.getEmail());
 								departments.setPhoneNo(customerDepartments.getPhoneNo());
 								departments.setCostCode(customerDepartments.getCostCode());
 								departments.setDepartmentId(departmentId);
+								departments.setPrimaryContact(customerDepartments.getPrimaryContact());
 								departments.setcId(companyProfileIdByCustomerId);
 								try {
-									if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo())) {
+									if (fieldValidation.isEmpty(customerDepartments.getAlternatePhoneNo()) && fieldValidation.isEmpty(customerDepartments.getSecondaryContact())) {
 										departments.setAlternatePhoneNo(customerDepartments.getAlternatePhoneNo());
+										departments.setSecondaryContact(customerDepartments.getSecondaryContact());
 									}
 								} catch (Exception e) {
 									// TODO: handle exception

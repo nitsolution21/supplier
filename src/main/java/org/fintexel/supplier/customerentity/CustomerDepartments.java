@@ -22,6 +22,8 @@ public class CustomerDepartments {
 	@Column(name = "ALTERNATE_PHONENO") private String alternatePhoneNo;
 	@Column(name = "COST_CODE") private String costCode;
 	@Column(name = "STATUS") private String status;
+	@Column(name = "PRIMARY_CONTACT") private String primaryContact;
+	@Column(name = "SECONDARY_CONTACT") private String secondaryContact;
 	@Column(name = "CREATED_BY") private String createdBy;
 	@Column(name = "CREATED_ON") private Date createdOn;
 	@Column(name = "UPDATED_BY") private String updatedBy;
@@ -33,8 +35,8 @@ public class CustomerDepartments {
 	}
 
 	public CustomerDepartments(Long departmentId, Long cId, String departmentName, String email, String phoneNo,
-			String alternatePhoneNo, String costCode, String status, String createdBy, Date createdOn, String updatedBy,
-			Date updatedOn) {
+			String alternatePhoneNo, String costCode, String status, String primaryContact, String secondaryContact,
+			String createdBy, Date createdOn, String updatedBy, Date updatedOn) {
 		super();
 		this.departmentId = departmentId;
 		this.cId = cId;
@@ -44,10 +46,21 @@ public class CustomerDepartments {
 		this.alternatePhoneNo = alternatePhoneNo;
 		this.costCode = costCode;
 		this.status = status;
+		this.primaryContact = primaryContact;
+		this.secondaryContact = secondaryContact;
 		this.createdBy = createdBy;
 		this.createdOn = createdOn;
 		this.updatedBy = updatedBy;
 		this.updatedOn = updatedOn;
+	}
+
+	@Override
+	public String toString() {
+		return "CustomerDepartments [departmentId=" + departmentId + ", cId=" + cId + ", departmentName="
+				+ departmentName + ", email=" + email + ", phoneNo=" + phoneNo + ", alternatePhoneNo="
+				+ alternatePhoneNo + ", costCode=" + costCode + ", status=" + status + ", primaryContact="
+				+ primaryContact + ", secondaryContact=" + secondaryContact + ", createdBy=" + createdBy
+				+ ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + "]";
 	}
 
 	public Long getDepartmentId() {
@@ -114,6 +127,22 @@ public class CustomerDepartments {
 		this.status = status;
 	}
 
+	public String getPrimaryContact() {
+		return primaryContact;
+	}
+
+	public void setPrimaryContact(String primaryContact) {
+		this.primaryContact = primaryContact;
+	}
+
+	public String getSecondaryContact() {
+		return secondaryContact;
+	}
+
+	public void setSecondaryContact(String secondaryContact) {
+		this.secondaryContact = secondaryContact;
+	}
+
 	public String getCreatedBy() {
 		return createdBy;
 	}
@@ -145,14 +174,8 @@ public class CustomerDepartments {
 	public void setUpdatedOn(Date updatedOn) {
 		this.updatedOn = updatedOn;
 	}
-
-	@Override
-	public String toString() {
-		return "CustomerDepartments [departmentId=" + departmentId + ", cId=" + cId + ", departmentName="
-				+ departmentName + ", email=" + email + ", phoneNo=" + phoneNo + ", alternatePhoneNo="
-				+ alternatePhoneNo + ", costCode=" + costCode + ", status=" + status + ", createdBy=" + createdBy
-				+ ", createdOn=" + createdOn + ", updatedBy=" + updatedBy + ", updatedOn=" + updatedOn + "]";
-	}
+	
+	
 	
 	
 }

@@ -754,6 +754,14 @@ public class PurchaseOrderController {
 					loginCustomerDetails.setCustomerDepartments(findDepartmentBycId);
 				}
 				
+				int posize = purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId).size();
+				 
+				 if (posize > 0) {
+					 loginCustomerDetails.setPoNumber("PO - 00"+(posize+1));
+				} else {
+					loginCustomerDetails.setPoNumber("PO - 00"+1);
+				}
+				
 				return loginCustomerDetails;
 			}
 		} catch (Exception e) {
