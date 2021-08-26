@@ -271,7 +271,7 @@ public class PurchaseOrderController {
 		
 		try {
 			
-			List<PurchesOrder> findByCId = purchesOrderRepo.findByCId(id);
+			List<PurchesOrder> findByCId = purchesOrderRepo.findBycId(id);
 			if(findByCId.size()<0) {
 				throw new VendorNotFoundException("No Pending Data");
 			}else {
