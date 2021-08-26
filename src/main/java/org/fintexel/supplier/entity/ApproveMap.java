@@ -3,19 +3,7 @@ package org.fintexel.supplier.entity;
 public class ApproveMap {
 	private Long id;
 	private String status;
-	public ApproveMap(Long id, String status) {
-		super();
-		this.id = id;
-		this.status = status;
-	}
-	public ApproveMap() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	@Override
-	public String toString() {
-		return "ApproveMap [id=" + id + ", status=" + status + "]";
-	}
+	private String comment;
 	public Long getId() {
 		return id;
 	}
@@ -28,6 +16,27 @@ public class ApproveMap {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public String getComment() {
+		return comment;
+	}
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+	@Override
+	public String toString() {
+		return "ApproveMap [id=" + id + ", status=" + status + ", comment=" + comment + "]";
+	}
+	public ApproveMap(Long id, String status, String comment) {
+		super();
+		this.id = id;
+		this.status = status;
+		this.comment = comment;
+	}
+	public ApproveMap() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
 	
 	
 }
