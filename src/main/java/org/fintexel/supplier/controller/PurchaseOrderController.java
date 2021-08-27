@@ -1030,7 +1030,7 @@ public class PurchaseOrderController {
 	public CustomeResponseEntity submitPO(@RequestBody RequestPurchesOrder requestPurchesOrder, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.submitPO()");
 		try {
-			
+			System.out.println("Data &&&&&&  "+requestPurchesOrder.getPurchesOrder());
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
 			if (companyProfileIdByCustomerId == -1) {
