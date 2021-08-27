@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table(name = "PO_ID")
+@Table(name = "TBL_PO_STATUSES")
 public class PurchesOrderStatus {
 	@Id
 	@Column(name = "PO_ID") private Long POId;	
