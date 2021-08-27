@@ -11,12 +11,14 @@ import org.fintexel.supplier.customerentity.CustomerAddress;
 import org.fintexel.supplier.customerentity.CustomerContact;
 import org.fintexel.supplier.customerentity.PurchesOrder;
 import org.fintexel.supplier.customerentity.PurchesOrderStatus;
+import org.fintexel.supplier.customerentity.RequestPurchesOrder;
 import org.fintexel.supplier.customerentity.SelectedItem;
 import org.fintexel.supplier.customerentity.SupplierAllDetailsForPO;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.PurchesOrderRepo;
 import org.fintexel.supplier.customerrepository.PurchesOrderStatusRepo;
 import org.fintexel.supplier.entity.ApproveMap;
+import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.InventoryDetails;
 import org.fintexel.supplier.entity.ItemCategory;
 import org.fintexel.supplier.entity.ItemSubCategory;
@@ -30,6 +32,7 @@ import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
+import org.fintexel.supplier.customerrepository.PurchesOrderItemsRepo;
 import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.helper.GetCustomerDetails;
@@ -41,6 +44,7 @@ import org.fintexel.supplier.repository.SupAddressRepo;
 import org.fintexel.supplier.repository.SupBankRepo;
 import org.fintexel.supplier.repository.SupDepartmentRepo;
 import org.fintexel.supplier.repository.SupDetailsRepo;
+import org.fintexel.supplier.validation.FieldValidation;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,6 +98,9 @@ public class PurchaseOrderController {
 	private ItemCategoryRepo itemCategoryRepo;
 	
 	@Autowired
+	private PurchesOrderItemsRepo purchesOrderItemsRepo; 
+	
+	@Autowired
 	private CustomerDepartmentsRepo customerDepartmentsRepo; 
 	
 	@Autowired
@@ -104,6 +111,9 @@ public class PurchaseOrderController {
 	
 	@Autowired
 	private PurchesOrderStatusRepo purchesOrderStatusRepo;
+	
+	@Autowired
+	private FieldValidation fieldValidation;
 
 	
 	
@@ -858,8 +868,8 @@ public class PurchaseOrderController {
 	
 	
 	
-	@GetMapping("/getLoginCustomerDetails")
-	public PrsonceLoginCustomerDetails getLoginCustomerDetails(@RequestHeader(name = "Authorization") String token) {
+	@GetMapping("/getLoginCustomerDetails/{supplierCode}")
+	public PrsonceLoginCustomerDetails getLoginCustomerDetails(@PathVariable String supplierCode,@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.getLoginDetails()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
@@ -879,12 +889,27 @@ public class PurchaseOrderController {
 					loginCustomerDetails.setCustomerDepartments(findDepartmentBycId);
 				}
 				
-				int posize = purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId).size();
+				String posize = Integer.toString(purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId).size());
 				 
-				 if (posize > 0) {
-					 loginCustomerDetails.setPoNumber("PO - 00"+(posize+1));
-				} else {
-					loginCustomerDetails.setPoNumber("PO - 00"+1);
+				switch (posize.length()) {
+				case 0:
+					loginCustomerDetails.setPoNumber("PO - 00" + Integer.parseInt(posize+1));
+					break;
+				case 1:
+					loginCustomerDetails.setPoNumber("PO - 00" + Integer.parseInt(posize+1));
+					break;
+				case 2:
+					loginCustomerDetails.setPoNumber("PO - 0" + Integer.parseInt(posize+1));
+					break;
+				default:
+					loginCustomerDetails.setPoNumber("PO - " + Integer.parseInt(posize+1));
+					break;
+				}
+				
+				Optional<CustomerContact> findContactTrams = customerContactRepo.findContactTrams(companyProfileIdByCustomerId, supplierCode);
+				
+				if (findContactTrams.isPresent()) {
+					loginCustomerDetails.setContractTerms(findContactTrams.get().getContractTerms());
 				}
 				
 				return loginCustomerDetails;
@@ -989,6 +1014,69 @@ public class PurchaseOrderController {
 				return findUserByDepartment.get();
 			} else {
 				throw new VendorNotFoundException("Data note found");
+			}
+			
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	@PostMapping("/savePO")
+	public void savePO() {
+		
+	}
+	
+	@PostMapping("/submitPO") 
+	public CustomeResponseEntity submitPO(@RequestBody RequestPurchesOrder requestPurchesOrder, @RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - PurchaseOrderController.submitPO()");
+		try {
+			
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+			if (companyProfileIdByCustomerId == -1) {
+				throw new VendorNotFoundException("Customer not found");
+			} else {
+				if (fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getPoNumber()) 
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getUserId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getSupplierCode())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDepartmentId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getCusAddrId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getCusAddrText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getSupAddrId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getSupAddrText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getContractId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getContractTerms())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getComment())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getShipToId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getShipToText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getBillToId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getBillToText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())) {
+					
+					requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
+					requestPurchesOrder.getPurchesOrder().setStatus("WAITING FOR APPROVAL");
+					
+					PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
+					if (!savePurchesOrder.equals(null)) {
+						
+					requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
+						
+						item.setPOId(savePurchesOrder.getPOId());
+						
+						purchesOrderItemsRepo.save(item);
+					});
+					
+					return new CustomeResponseEntity("SUCCESS","PO save successfully");
+						
+					} else {
+						throw new VendorNotFoundException("Data Not save in data base");
+					}
+				} else {
+					throw new VendorNotFoundException("validation error");
+				}
+				
 			}
 			
 		} catch (Exception e) {

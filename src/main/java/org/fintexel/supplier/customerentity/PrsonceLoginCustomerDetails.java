@@ -10,6 +10,8 @@ public class PrsonceLoginCustomerDetails {
 	private List<CustomerDepartments> customerDepartments = new ArrayList<CustomerDepartments>();
 	
 	private String poNumber;
+	
+	private long contractTerms;
 
 	public PrsonceLoginCustomerDetails() {
 		super();
@@ -17,17 +19,18 @@ public class PrsonceLoginCustomerDetails {
 	}
 
 	public PrsonceLoginCustomerDetails(CustomerAddress customerAddress, List<CustomerDepartments> customerDepartments,
-			String poNumber) {
+			String poNumber, long contractTerms) {
 		super();
 		this.customerAddress = customerAddress;
 		this.customerDepartments = customerDepartments;
 		this.poNumber = poNumber;
+		this.contractTerms = contractTerms;
 	}
 
 	@Override
 	public String toString() {
 		return "PrsonceLoginCustomerDetails [customerAddress=" + customerAddress + ", customerDepartments="
-				+ customerDepartments + ", poNumber=" + poNumber + "]";
+				+ customerDepartments + ", poNumber=" + poNumber + ", contractTerms=" + contractTerms + "]";
 	}
 
 	public CustomerAddress getCustomerAddress() {
@@ -52,6 +55,14 @@ public class PrsonceLoginCustomerDetails {
 
 	public void setPoNumber(String poNumber) {
 		this.poNumber = poNumber;
+	}
+
+	public long getContractTerms() {
+		return contractTerms;
+	}
+
+	public void setContractTerms(long contractTerms) {
+		this.contractTerms = contractTerms;
 	}
 	
 	
