@@ -155,6 +155,9 @@ public class VendorController {
 					if (find.getEmail().equals(vendorReg.getEmail())) {
 						throw new VendorNotFoundException("Email already exist");
 					}
+					if(find.getSupplierCompName().toLowerCase().equals(vendorReg.getSupplierCompName().toLowerCase())) {
+						throw new VendorNotFoundException("Company already exist");
+					}
 				}
 
 				filterVendorReg.setUsername(vendorReg.getEmail());
