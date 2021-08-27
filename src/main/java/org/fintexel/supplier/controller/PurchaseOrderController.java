@@ -889,6 +889,8 @@ public class PurchaseOrderController {
 				
 				if (findContactTrams.isPresent()) {
 					loginCustomerDetails.setContractTerms(findContactTrams.get().getContractTerms());
+					
+					loginCustomerDetails.setContractId(findContactTrams.get().getContractId());
 				}
 				
 				return loginCustomerDetails;
