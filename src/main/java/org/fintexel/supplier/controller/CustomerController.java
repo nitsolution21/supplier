@@ -1423,11 +1423,13 @@ System.out.println("Inside if2  "+address);
 	
 	
 	@GetMapping("/{code}")
-	public String getSupplierNameByCode(@PathVariable("code") String code) {
+	public Map<String, String> getSupplierNameByCode(@PathVariable("code") String code) {
 		LOGGER.info("Inside - VendorController.getSupplierNameByCode()");
 
 		try {
-			return supDetailsRepo.findById(code).get().getSupplierCompName();
+			Map<String, String> supplierName = new HashMap<>();
+			supplierName.put("supplierName", supDetailsRepo.findById(code).get().getSupplierCompName());
+			return supplierName;
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}

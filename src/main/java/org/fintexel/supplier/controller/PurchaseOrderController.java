@@ -2,7 +2,9 @@ package org.fintexel.supplier.controller;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.fintexel.supplier.customerentity.CustomerAddress;
@@ -31,6 +33,7 @@ import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.helper.GetCustomerDetails;
+import org.fintexel.supplier.helper.LoginUserDetails;
 import org.fintexel.supplier.repository.InventoryRepo;
 import org.fintexel.supplier.repository.ItemCategoryRepo;
 import org.fintexel.supplier.repository.ItemSubCategoryRepo;
@@ -56,6 +59,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/customer/po")
 public class PurchaseOrderController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PurchaseOrderController.class);
+	
+	@Autowired
+	private LoginUserDetails loginUserDetails;
 	
 	@Autowired
 	private GetCustomerDetails getCustomerDetails;
@@ -356,6 +362,33 @@ public class PurchaseOrderController {
 		
 	}
 	
+	
+	
+	
+	/*   SUPPLIER SIDE PO */
+	
+	
+	@GetMapping("/itemToConfirm")
+	public void itemToConfirm(@RequestHeader(name = "Authorization") String token) {
+//		Map<String, String> queryMap = new HashMap<>();
+		LOGGER.info("Inside - PurchaseOrderController.itemToConfirm()");
+		
+		try {
+			
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+			if (!loginSupplierCode.equals(null)) {
+				
+				purchesOrderRepo.findByStatusWithSupplierCode(token, loginSupplierCode);
+				
+			}else {
+				throw new VendorNotFoundException("Token Expir");
+			}
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+	}
 	
 	
 	
