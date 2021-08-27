@@ -347,8 +347,8 @@ public class PurchaseOrderController {
 				PurchesOrder purchesOrder = purchesOrderRepo.findById(obj.getId()).get();
 				PurchesOrderStatus purchesOrderStatus = purchesOrderStatusRepo.findById(obj.getId()).get();
 				purchesOrder.setStatus(obj.getStatus());
-				purchesOrder.setComment(obj.getComment());
-				purchesOrderStatus.setPOStatus(obj.getStatus());
+				purchesOrder.setStatusComment(obj.getComment());
+				purchesOrderStatus.setPOStatus (obj.getStatus());
 				purchesOrderStatus.setComment(obj.getComment());
 				
 				purchesOrderRepo.save(purchesOrder);
@@ -368,9 +368,9 @@ public class PurchaseOrderController {
 	/*   SUPPLIER SIDE PO */
 	
 	
-	@GetMapping("/itemToConfirm")
-	public void itemToConfirm(@RequestHeader(name = "Authorization") String token) {
-//		Map<String, String> queryMap = new HashMap<>();
+	@GetMapping("/item/{value}")
+	public List<Map<String, String>> itemToConfirm(@PathVariable("value") String value , @RequestHeader(name = "Authorization") String token) {
+	List<Map<String, String>> itemToConfirmResponse = new ArrayList<>();
 		LOGGER.info("Inside - PurchaseOrderController.itemToConfirm()");
 		
 		try {
@@ -378,7 +378,28 @@ public class PurchaseOrderController {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			if (!loginSupplierCode.equals(null)) {
 				
-				purchesOrderRepo.findByStatusWithSupplierCode(token, loginSupplierCode);
+				if(value.equals("TOSHIP")) {
+					value = "APPROVED BY IT";
+				}else if(value.equals("TOCONFIRM")){
+					value = "APPROVED BY SUPPLIER";
+				}else if(value.equals("CLOSED")) {
+					value = "COMPLETED";
+				}
+				List<PurchesOrder> findByStatusWithSupplierCode = purchesOrderRepo.findByStatusWithSupplierCode(value , loginSupplierCode);
+				for(PurchesOrder obj : findByStatusWithSupplierCode) {
+
+					String username = customerRegisterRepo.findById(obj.getUserId()).get().getUsername();
+					
+					Map<String, String> temp = new HashMap<>();
+					temp.put("customerName", username);
+					temp.put("poNumber", obj.getPoNumber());
+					temp.put("issuedate", obj.getCreatedOn()+"");
+					temp.put("totalValue", (obj.getAmount()+obj.getAmount()*10/100)+"");
+					temp.put("taxableValue", (obj.getAmount()*10/100)+"");
+					temp.put("status", obj.getStatus());
+					itemToConfirmResponse.add(temp);
+				}
+				return itemToConfirmResponse;
 				
 			}else {
 				throw new VendorNotFoundException("Token Expir");
