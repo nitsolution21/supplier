@@ -1047,8 +1047,61 @@ public class PurchaseOrderController {
 	}
 	
 	@PostMapping("/savePO")
-	public void savePO() {
-		
+	public CustomeResponseEntity savePO(@RequestBody RequestPurchesOrder requestPurchesOrder, @RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - PurchaseOrderController.savePO()");
+		try {
+			System.out.println("Data &&&&&&  "+requestPurchesOrder.getPurchesOrder());
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+			if (companyProfileIdByCustomerId == -1) {
+				throw new VendorNotFoundException("Customer not found");
+			} else {
+				if (fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getPoNumber()) 
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getUserId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getSupplierCode())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDepartmentId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getCusAddrId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getCusAddrText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getSupAddrId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getSupAddrText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getContractId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getContractTerms())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getComment())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getShipToId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getShipToText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getBillToId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getBillToText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())) {
+					
+					requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
+					requestPurchesOrder.getPurchesOrder().setStatus("DRAFT");
+					
+					PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
+					if (!savePurchesOrder.equals(null)) {
+						
+					requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
+						
+						item.setPOId(savePurchesOrder.getPOId());
+						
+						purchesOrderItemsRepo.save(item);
+					});
+					
+					return new CustomeResponseEntity("SUCCESS","PO save successfully");
+						
+					} else {
+						throw new VendorNotFoundException("Data Not save in data base");
+					}
+				} else {
+					throw new VendorNotFoundException("validation error");
+				}
+				
+			}
+			
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
 	}
 	
 	@PostMapping("/submitPO") 
@@ -1093,7 +1146,7 @@ public class PurchaseOrderController {
 						purchesOrderItemsRepo.save(item);
 					});
 					
-					return new CustomeResponseEntity("SUCCESS","PO save successfully");
+					return new CustomeResponseEntity("SUCCESS","PO submit successfully");
 						
 					} else {
 						throw new VendorNotFoundException("Data Not save in data base");
