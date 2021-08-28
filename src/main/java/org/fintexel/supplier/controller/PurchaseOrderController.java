@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.fintexel.supplier.customerentity.CustomerAddress;
 import org.fintexel.supplier.customerentity.CustomerContact;
 import org.fintexel.supplier.customerentity.PurchesOrder;
+import org.fintexel.supplier.customerentity.PurchesOrderItems;
 import org.fintexel.supplier.customerentity.PurchesOrderStatus;
 import org.fintexel.supplier.customerentity.RequestPurchesOrder;
 import org.fintexel.supplier.customerentity.SelectedItem;
@@ -925,17 +926,18 @@ public class PurchaseOrderController {
 	}
 	
 	@GetMapping("/getLoginCustomerAllPO")
-	public List<PurchesOrder> getLoginCustomerAllPO(@RequestHeader(name = "Authorization") String token) {
+	public Map<PurchesOrder, List<PurchesOrderItems>> getLoginCustomerAllPO(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.getLoginCustomerAllPO()");
 		try {
+			Map<PurchesOrder, List<PurchesOrderItems>> itemList = new HashMap<PurchesOrder, List<PurchesOrderItems>>();
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
 			
-			if (companyProfileIdByCustomerId == -1) {
+			if (customerIdFromToken == -1) {
 				throw new VendorNotFoundException("Customer not found");
 			}
 			else {
-				List<RequestPurchesOrder> purchesOrders = new ArrayList<RequestPurchesOrder>();
+//				List<RequestPurchesOrder> purchesOrders = new ArrayList<RequestPurchesOrder>();
 				
 				List<PurchesOrder> findPOBycId = purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId);
 				if (findPOBycId.size() > 0) {
@@ -985,8 +987,12 @@ public class PurchaseOrderController {
 								order.setStatusComment(po.getStatusComment());
 								order.setCreatedBy(po.getCreatedBy());
 								order.setCreatedOn(po.getCreatedOn());
+								List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(po.getPOId());
+								itemList.put(po, findPoItemByPOId);
 								
-								purchesOrders.add(order);
+								
+								
+								//purchesOrders.add(order);
 								
 								
 							} catch (Exception e) {
@@ -994,13 +1000,15 @@ public class PurchaseOrderController {
 							}
 						} else {
 							
-							purchesOrders.add(po);
+							List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(po.getPOId());
+							itemList.put(po, findPoItemByPOId);
+//							purchesOrders.add(po);
 							
 							
 						}
 					});
 					
-					return purchesOrders;
+					return itemList;
 				} else {
 					throw new VendorNotFoundException("PO not found for this company");
 				}
