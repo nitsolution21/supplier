@@ -993,6 +993,7 @@ public class PurchaseOrderController {
 							
 							purchesOrders.add(po);
 							
+							
 						}
 					});
 					
@@ -1007,15 +1008,26 @@ public class PurchaseOrderController {
 	}
 	
 	@GetMapping("/getUserByDepartmentId/{departmentId}")
-	public CustomerRegister getCustomerByDepartmentId(@PathVariable long departmentId) {
+	public List<CustomeResponseEntity> getCustomerByDepartmentId(@PathVariable long departmentId) {
 		LOGGER.info("Inside - PurchaseOrderController.getCustomerByDepartmentId()");
 		try {
 			
-			Optional<CustomerRegister> findUserByDepartment = customerRegisterRepo.findUserByDepartment(departmentId);
-			if (findUserByDepartment.isPresent()) {
-				return findUserByDepartment.get();
+//			Optional<CustomerRegister> findUserByDepartment = customerRegisterRepo.findUserByDepartment(departmentId);
+//			if (findUserByDepartment.isPresent()) {
+//				return findUserByDepartment.get();
+//			} else {
+//				throw new VendorNotFoundException("Data note found");
+//			}
+			List<CustomeResponseEntity> customeResponseEntities = new ArrayList<CustomeResponseEntity>();
+			
+			Optional<CustomerDepartments> findDepartmentById = customerDepartmentsRepo.findById(departmentId);
+			
+			if (findDepartmentById.isPresent()) {
+				customeResponseEntities.add(new CustomeResponseEntity("SUCCRSS", findDepartmentById.get().getPrimaryContact()));
+				customeResponseEntities.add(new CustomeResponseEntity("SUCCRSS", findDepartmentById.get().getSecondaryContact()));
+				return customeResponseEntities;
 			} else {
-				throw new VendorNotFoundException("Data note found");
+				throw new VendorNotFoundException("Department not found");
 			}
 			
 		} catch (Exception e) {
