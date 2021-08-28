@@ -190,7 +190,9 @@ public class PurchaseOrderController {
 								
 							}
 							try {
-								supAddress = supAddressRepo.findByIsPrimary(1).get();
+								 Optional<SupAddress> findByIsPrimary = supAddressRepo.findByIsPrimary(1);
+								 System.out.println("%%%%%%%%%%@@@@@@@@ "+ findByIsPrimary.toString());
+								 supAddress = findByIsPrimary.get();
 							}catch(Exception e) {
 								
 							}
@@ -273,7 +275,7 @@ public class PurchaseOrderController {
 						ItemCategory itemCategory = itemCategoryRepo.findById(id).get();
 						System.out.println("&&&&&   "+ itemCategory.toString());
 //						List<InventoryDetails> findBySupplierCode = inventoryRepo.findBySupplierCode(itemCategory.getSupplierCode());
-						List<InventoryDetails> findByCategoryIdInventory = inventoryRepo.findByCategoryId(id);
+						List<InventoryDetails> findByCategoryIdInventory = inventoryRepo.findByCategoryId(itemCategory.getCategoryId());
 						
 //						if(findByCategoryId.get(0).getSupplierCode().equals(findBySupplierCode.get(0).getSupplierCode())) {
 //							
@@ -283,6 +285,7 @@ public class PurchaseOrderController {
 							SupDetails supDetails = supDetailsRepo.findById(obj.getSupplierCode()).get();
 							String supplierCode = supDetails.getSupplierCode();
 							if(supplierCode.equals(itemCategory.getSupplierCode())) {
+								System.out.println("if  "+ findByCategoryIdInventory.size());
 //								if(itemCategory.getSupplierCode().equals(supplierCode)) {
 									Optional<ItemSubCategory> findByIdSubCatagory = itemSubCategoryRepo.findById(findByCategoryIdInventory.get(0).getCategoryId());
 									SelectedItem selectedItem = new SelectedItem();
@@ -932,7 +935,7 @@ public class PurchaseOrderController {
 				throw new VendorNotFoundException("Customer not found");
 			}
 			else {
-				List<PurchesOrder> purchesOrders = new ArrayList<PurchesOrder>();
+				List<RequestPurchesOrder> purchesOrders = new ArrayList<RequestPurchesOrder>();
 				
 				List<PurchesOrder> findPOBycId = purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId);
 				if (findPOBycId.size() > 0) {
