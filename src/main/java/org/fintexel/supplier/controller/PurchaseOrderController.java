@@ -28,6 +28,7 @@ import org.fintexel.supplier.entity.SupBank;
 import org.fintexel.supplier.entity.SupDepartment;
 import org.fintexel.supplier.customerentity.CustomerDepartments;
 import org.fintexel.supplier.customerentity.CustomerRegister;
+import org.fintexel.supplier.customerentity.GetPurchesOrder;
 import org.fintexel.supplier.customerentity.PrsonceLoginCustomerDetails;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
@@ -971,10 +972,10 @@ public class PurchaseOrderController {
 	}
 	
 	@GetMapping("/getLoginCustomerAllPO")
-	public Map<PurchesOrder, List<PurchesOrderItems>> getLoginCustomerAllPO(@RequestHeader(name = "Authorization") String token) {
+	public List<GetPurchesOrder> getLoginCustomerAllPO(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.getLoginCustomerAllPO()");
 		try {
-			Map<PurchesOrder, List<PurchesOrderItems>> itemList = new HashMap<PurchesOrder, List<PurchesOrderItems>>();
+			List<GetPurchesOrder> itemList = new ArrayList<GetPurchesOrder>();
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
 			
@@ -987,10 +988,11 @@ public class PurchaseOrderController {
 				List<PurchesOrder> findPOBycId = purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId);
 				if (findPOBycId.size() > 0) {
 					findPOBycId.forEach(po -> {
+//						LOGGER.info(po.getB)
 						if (po.getStatus().equals("DRAFT")) {
 							try {
 								
-								PurchesOrder order = new PurchesOrder();
+								GetPurchesOrder order = new GetPurchesOrder();
 				
 								order.setcId(po.getcId());
 								order.setPOId(po.getPOId());
@@ -1016,15 +1018,19 @@ public class PurchaseOrderController {
 								order.setComment(po.getComment());
 								order.setShipToId(po.getShipToId());
 								
+								order.setBillToId(po.getBillToId());
+								order.setBillToText(po.getBillToText());
+								
 								Optional<CustomerAddress> findShipToAddressById = customerAddressRepo.findById(po.getShipToId());
 								JSONObject shipToAddressJsonObject = new JSONObject(findShipToAddressById.get());
 								order.setShipToText(shipToAddressJsonObject.toString());
 								
 								order.setDeliveryToId(po.getDeliveryToId());
 								
-								Optional<CustomerRegister> finDeliveryDetailsdById = customerRegisterRepo.findById(po.getDeliveryToId());
-								JSONObject deliveryDetailsJsonObject = new JSONObject(finDeliveryDetailsdById.get());
-								order.setDeliveryToText(deliveryDetailsJsonObject.toString());
+//								Optional<CustomerRegister> finDeliveryDetailsdById = customerRegisterRepo.findById(po.getDeliveryToId());
+//								JSONObject deliveryDetailsJsonObject = new JSONObject(finDeliveryDetailsdById.get());
+//								order.setDeliveryToText(deliveryDetailsJsonObject.toString());
+								order.setDeliveryToText(po.getDeliveryToText());
 								
 								order.setCurType(po.getCurType());
 								order.setAmount(po.getAmount());
@@ -1033,8 +1039,16 @@ public class PurchaseOrderController {
 								order.setCreatedBy(po.getCreatedBy());
 								order.setCreatedOn(po.getCreatedOn());
 								List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(po.getPOId());
-								itemList.put(po, findPoItemByPOId);
 								
+								List<PurchesOrderItems> items = new ArrayList<PurchesOrderItems>();
+								
+								findPoItemByPOId.forEach(item -> {
+									items.add(item);
+								});
+								
+								order.setPurchesOrderItems(items);
+								
+								itemList.add(order);
 								
 								
 								//purchesOrders.add(order);
@@ -1045,8 +1059,45 @@ public class PurchaseOrderController {
 							}
 						} else {
 							
+							GetPurchesOrder order = new GetPurchesOrder();
+							
+							order.setcId(po.getcId());
+							order.setPOId(po.getPOId());
+							order.setPoNumber(po.getPoNumber());
+							order.setUserId(po.getUserId());
+							order.setUserId(po.getUserId());
+							order.setSupplierCode(po.getSupplierCode());
+							order.setDepartmentId(po.getDepartmentId());
+							order.setCusAddrId(po.getCusAddrId());
+							order.setCusAddrText(po.getCusAddrText());
+							order.setSupAddrText(po.getSupAddrText());
+							order.setContractId(po.getContractId());
+							order.setContractTerms(po.getContractTerms());
+							order.setComment(po.getComment());
+							order.setShipToId(po.getShipToId());
+							order.setShipToText(po.getShipToText());
+							order.setDeliveryToId(po.getDeliveryToId());
+							order.setDeliveryToText(po.getDeliveryToText());
+							order.setBillToId(po.getBillToId());
+							order.setBillToText(po.getBillToText());
+							order.setCurType(po.getCurType());
+							order.setAmount(po.getAmount());
+							order.setStatus(po.getStatus());
+							order.setStatusComment(po.getStatusComment());
+							order.setCreatedBy(po.getCreatedBy());
+							order.setCreatedOn(po.getCreatedOn());
+							
 							List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(po.getPOId());
-							itemList.put(po, findPoItemByPOId);
+							
+							List<PurchesOrderItems> items = new ArrayList<PurchesOrderItems>();
+							
+							findPoItemByPOId.forEach(item -> {
+								items.add(item);
+							});
+							
+							order.setPurchesOrderItems(items);
+							
+							itemList.add(order);
 //							purchesOrders.add(po);
 							
 							
@@ -1125,7 +1176,7 @@ public class PurchaseOrderController {
 					
 					PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
 					if (!savePurchesOrder.equals(null)) {
-						
+					LOGGER.info("ITEM >>> FOR >>> PO "+requestPurchesOrder.getPurchesOrderItems());
 					requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
 						
 						item.setPOId(savePurchesOrder.getPOId());
