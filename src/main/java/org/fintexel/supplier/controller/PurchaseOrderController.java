@@ -15,9 +15,13 @@ import org.fintexel.supplier.customerentity.PurchesOrderStatus;
 import org.fintexel.supplier.customerentity.RequestPurchesOrder;
 import org.fintexel.supplier.customerentity.SelectedItem;
 import org.fintexel.supplier.customerentity.SupplierAllDetailsForPO;
+import org.fintexel.supplier.customerentity.SupplierInvoice;
+import org.fintexel.supplier.customerentity.SupplierInvoiceItem;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.PurchesOrderRepo;
 import org.fintexel.supplier.customerrepository.PurchesOrderStatusRepo;
+import org.fintexel.supplier.customerrepository.SupplierInvoiceItemRepo;
+import org.fintexel.supplier.customerrepository.SupplierInvoiceRepo;
 import org.fintexel.supplier.entity.ApproveMap;
 import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.InventoryDetails;
@@ -29,6 +33,7 @@ import org.fintexel.supplier.entity.SupDepartment;
 import org.fintexel.supplier.customerentity.CustomerDepartments;
 import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerentity.GetPurchesOrder;
+import org.fintexel.supplier.customerentity.InvoiceStraching;
 import org.fintexel.supplier.customerentity.PrsonceLoginCustomerDetails;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
@@ -116,6 +121,12 @@ public class PurchaseOrderController {
 	
 	@Autowired
 	private FieldValidation fieldValidation;
+	
+	@Autowired
+	SupplierInvoiceRepo supplierInvoiceRepo;
+	
+	@Autowired
+	SupplierInvoiceItemRepo supplierInvoiceItemRepo;
 
 	
 	
@@ -443,6 +454,23 @@ public class PurchaseOrderController {
 	}
 	
 	
+	@GetMapping("/itemByPOId/{POId}")
+	public List<PurchesOrderItems> getitemByPOId(@PathVariable("POId") Long id) {
+		LOGGER.info("Inside - PurchaseOrderController.getitemByPOId()");
+		try {
+			
+			List<PurchesOrderItems> findByPOId = purchesOrderItemsRepo.findByPOId(id);
+			if(findByPOId.size()<1) {
+				throw new VendorNotFoundException("No Data Found");
+			}
+			return findByPOId;
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	
 	
 	
 	
@@ -475,6 +503,73 @@ public class PurchaseOrderController {
 		}
 		
 	}
+	
+	
+	
+	
+	@PostMapping("/invoice")
+	public CustomeResponseEntity invoice(@RequestBody() InvoiceStraching invoiceStraching , @RequestHeader(name ="Authorization") String token) {
+		
+		LOGGER.info("Inside - PurchaseOrderController.invoice()");
+		try {
+			
+			if(fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getPOId()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvDate()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvDesc()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvTaxid()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getRemitTo()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getBillTo()) &&
+//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getShipCharges()) &&
+//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getHandlingCharges()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalGross()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalTax()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getSubtotal()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalAmount()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getStatus()) &&
+//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvAttachment()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getCreatedBy()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getCreatedOn()) 
+					//fieldValidation.isEmpty(invoiceStraching.getPurchesOrderItems().getI) &&
+					
+					
+					) {
+				
+				
+				
+				
+				SupplierInvoice save = supplierInvoiceRepo.save(invoiceStraching.getSupplierInvoice());
+				SupplierInvoiceItem supplierInvoiceItem = new SupplierInvoiceItem();
+				
+				supplierInvoiceItem.setInvId(save.getInvId());
+//				supplierInvoiceItem.setPoitemId(invoiceStraching.getSupplierInvoiceItem().getPoitemId());
+//				supplierInvoiceItem.setItemQty(invoiceStraching.getSupplierInvoiceItem().getItemQty());
+				supplierInvoiceItemRepo.save(supplierInvoiceItem);
+				
+				
+				
+//				supplierInvoiceItemRepo
+//				purchesOrderItemsRepo
+				
+				
+				return new CustomeResponseEntity("SUCCESS","DATA ADD SUCCESSFULLY");
+				
+				
+				
+			}else {
+				throw new VendorNotFoundException("Validation Error");
+			}
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+	}
+	
+	@PostMapping("/invoice/item")
+	
+	
+	
+	
 	
 	
 	

@@ -1582,8 +1582,10 @@ System.out.println("Inside if2  "+address);
 	public SupContract updateVendorContact(@PathVariable long contactId, @RequestBody() SupContract contact) {
 		LOGGER.info("Inside - CustomerController.updateVendorContact()");
 		try {
+			System.out.println("findSupplierContactById " +contactId);
 			
 			Optional<SupContract> findSupplierContactById = supContractRepo.findById(contactId);
+			System.out.println("findSupplierContactById " +findSupplierContactById.get().toString());
 			if (findSupplierContactById.isPresent()) {
 				String loginSupplierCode = contact.getSupplierCode();
 				if ((fieldValidation.isEmpty(contact.getContractType()))
