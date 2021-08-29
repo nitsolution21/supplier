@@ -396,6 +396,7 @@ public class PurchaseOrderController {
 		try {
 			
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+			System.out.print("****  "+loginSupplierCode );
 			if (!loginSupplierCode.equals(null)) {
 				
 				if(value.equals("TOSHIP")) {
@@ -410,6 +411,10 @@ public class PurchaseOrderController {
 				List<PurchesOrder> findByStatusWithSupplierCode = purchesOrderRepo.findByStatusWithSupplierCode(value , loginSupplierCode);
 				
 				System.out.print("****  "+loginSupplierCode +  "  ---- " +findByStatusWithSupplierCode.size());
+				
+				if(findByStatusWithSupplierCode.size()<1) {
+					throw new VendorNotFoundException("No Data Found ");
+				}
 				for(PurchesOrder obj : findByStatusWithSupplierCode) {
 					
 					String username = customerRegisterRepo.findById(obj.getUserId()).get().getUsername();
@@ -1169,7 +1174,8 @@ public class PurchaseOrderController {
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getBillToText())
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToId())
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToText())
-					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())) {
+//					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())
+					) {
 					
 					requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
 					requestPurchesOrder.getPurchesOrder().setStatus("DRAFT");
@@ -1235,6 +1241,7 @@ public class PurchaseOrderController {
 					requestPurchesOrder.getPurchesOrder().setStatus("WAITING FOR APPROVAL");
 					
 					PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
+					System.out.println("SU:2021-08-29:16  " + savePurchesOrder.toString());
 					if (!savePurchesOrder.equals(null)) {
 						
 					requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
