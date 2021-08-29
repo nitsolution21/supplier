@@ -1290,12 +1290,13 @@ public class CustomerController {
 			
 			long customerIdFromToken = getCustomerDetails.getCIdFromToken(token);
 			List<CustomerContact> findBycId = customerContactRepo.findBycId(customerIdFromToken);
-			System.out.println("llllll  *****   " + customerIdFromToken);
+			System.out.println("llllll  *****   " + findBycId.get(0).toString());
 			List<SupDetails> supplierDetails = new ArrayList<>();
 			if(findBycId.size()<1) {
 				throw new VendorNotFoundException("No Data Found in Database");
 			}else {
 				for(CustomerContact obj : findBycId) {
+					
 					supplierDetails.add(supDetailsRepo.findById(obj.getSupplierCode()).get());
 				}
 			
