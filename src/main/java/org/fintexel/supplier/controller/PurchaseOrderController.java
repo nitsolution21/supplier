@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.fintexel.supplier.customerentity.CustomerAddress;
 import org.fintexel.supplier.customerentity.CustomerContact;
 import org.fintexel.supplier.customerentity.PurchesOrder;
+import org.fintexel.supplier.customerentity.PurchesOrderItems;
 import org.fintexel.supplier.customerentity.PurchesOrderStatus;
 import org.fintexel.supplier.customerentity.RequestPurchesOrder;
 import org.fintexel.supplier.customerentity.SelectedItem;
@@ -190,7 +191,9 @@ public class PurchaseOrderController {
 								
 							}
 							try {
-								supAddress = supAddressRepo.findByIsPrimary(1).get();
+								 Optional<SupAddress> findByIsPrimary = supAddressRepo.findByIsPrimary(1);
+								 System.out.println("%%%%%%%%%%@@@@@@@@ "+ findByIsPrimary.toString());
+								 supAddress = findByIsPrimary.get();
 							}catch(Exception e) {
 								
 							}
@@ -273,7 +276,7 @@ public class PurchaseOrderController {
 						ItemCategory itemCategory = itemCategoryRepo.findById(id).get();
 						System.out.println("&&&&&   "+ itemCategory.toString());
 //						List<InventoryDetails> findBySupplierCode = inventoryRepo.findBySupplierCode(itemCategory.getSupplierCode());
-						List<InventoryDetails> findByCategoryIdInventory = inventoryRepo.findByCategoryId(id);
+						List<InventoryDetails> findByCategoryIdInventory = inventoryRepo.findByCategoryId(itemCategory.getCategoryId());
 						
 //						if(findByCategoryId.get(0).getSupplierCode().equals(findBySupplierCode.get(0).getSupplierCode())) {
 //							
@@ -283,6 +286,7 @@ public class PurchaseOrderController {
 							SupDetails supDetails = supDetailsRepo.findById(obj.getSupplierCode()).get();
 							String supplierCode = supDetails.getSupplierCode();
 							if(supplierCode.equals(itemCategory.getSupplierCode())) {
+								System.out.println("if  "+ findByCategoryIdInventory.size());
 //								if(itemCategory.getSupplierCode().equals(supplierCode)) {
 									Optional<ItemSubCategory> findByIdSubCatagory = itemSubCategoryRepo.findById(findByCategoryIdInventory.get(0).getCategoryId());
 									SelectedItem selectedItem = new SelectedItem();
@@ -951,6 +955,8 @@ public class PurchaseOrderController {
 				
 				if (findContactTrams.isPresent()) {
 					loginCustomerDetails.setContractTerms(findContactTrams.get().getContractTerms());
+					
+					loginCustomerDetails.setContractId(findContactTrams.get().getContractId());
 				}
 				
 				return loginCustomerDetails;
@@ -961,17 +967,18 @@ public class PurchaseOrderController {
 	}
 	
 	@GetMapping("/getLoginCustomerAllPO")
-	public List<PurchesOrder> getLoginCustomerAllPO(@RequestHeader(name = "Authorization") String token) {
+	public Map<PurchesOrder, List<PurchesOrderItems>> getLoginCustomerAllPO(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.getLoginCustomerAllPO()");
 		try {
+			Map<PurchesOrder, List<PurchesOrderItems>> itemList = new HashMap<PurchesOrder, List<PurchesOrderItems>>();
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
 			
-			if (companyProfileIdByCustomerId == -1) {
+			if (customerIdFromToken == -1) {
 				throw new VendorNotFoundException("Customer not found");
 			}
 			else {
-				List<PurchesOrder> purchesOrders = new ArrayList<PurchesOrder>();
+//				List<RequestPurchesOrder> purchesOrders = new ArrayList<RequestPurchesOrder>();
 				
 				List<PurchesOrder> findPOBycId = purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId);
 				if (findPOBycId.size() > 0) {
@@ -1021,8 +1028,12 @@ public class PurchaseOrderController {
 								order.setStatusComment(po.getStatusComment());
 								order.setCreatedBy(po.getCreatedBy());
 								order.setCreatedOn(po.getCreatedOn());
+								List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(po.getPOId());
+								itemList.put(po, findPoItemByPOId);
 								
-								purchesOrders.add(order);
+								
+								
+								//purchesOrders.add(order);
 								
 								
 							} catch (Exception e) {
@@ -1030,12 +1041,15 @@ public class PurchaseOrderController {
 							}
 						} else {
 							
-							purchesOrders.add(po);
+							List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(po.getPOId());
+							itemList.put(po, findPoItemByPOId);
+//							purchesOrders.add(po);
+							
 							
 						}
 					});
 					
-					return purchesOrders;
+					return itemList;
 				} else {
 					throw new VendorNotFoundException("PO not found for this company");
 				}
@@ -1046,15 +1060,26 @@ public class PurchaseOrderController {
 	}
 	
 	@GetMapping("/getUserByDepartmentId/{departmentId}")
-	public CustomerRegister getCustomerByDepartmentId(@PathVariable long departmentId) {
+	public List<CustomeResponseEntity> getCustomerByDepartmentId(@PathVariable long departmentId) {
 		LOGGER.info("Inside - PurchaseOrderController.getCustomerByDepartmentId()");
 		try {
 			
-			Optional<CustomerRegister> findUserByDepartment = customerRegisterRepo.findUserByDepartment(departmentId);
-			if (findUserByDepartment.isPresent()) {
-				return findUserByDepartment.get();
+//			Optional<CustomerRegister> findUserByDepartment = customerRegisterRepo.findUserByDepartment(departmentId);
+//			if (findUserByDepartment.isPresent()) {
+//				return findUserByDepartment.get();
+//			} else {
+//				throw new VendorNotFoundException("Data note found");
+//			}
+			List<CustomeResponseEntity> customeResponseEntities = new ArrayList<CustomeResponseEntity>();
+			
+			Optional<CustomerDepartments> findDepartmentById = customerDepartmentsRepo.findById(departmentId);
+			
+			if (findDepartmentById.isPresent()) {
+				customeResponseEntities.add(new CustomeResponseEntity("SUCCRSS", findDepartmentById.get().getPrimaryContact()));
+				customeResponseEntities.add(new CustomeResponseEntity("SUCCRSS", findDepartmentById.get().getSecondaryContact()));
+				return customeResponseEntities;
 			} else {
-				throw new VendorNotFoundException("Data note found");
+				throw new VendorNotFoundException("Department not found");
 			}
 			
 		} catch (Exception e) {
@@ -1063,8 +1088,61 @@ public class PurchaseOrderController {
 	}
 	
 	@PostMapping("/savePO")
-	public void savePO() {
-		
+	public CustomeResponseEntity savePO(@RequestBody RequestPurchesOrder requestPurchesOrder, @RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - PurchaseOrderController.savePO()");
+		try {
+			System.out.println("Data &&&&&&  "+requestPurchesOrder.getPurchesOrder());
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+			if (companyProfileIdByCustomerId == -1) {
+				throw new VendorNotFoundException("Customer not found");
+			} else {
+				if (fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getPoNumber()) 
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getUserId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getSupplierCode())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDepartmentId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getCusAddrId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getCusAddrText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getSupAddrId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getSupAddrText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getContractId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getContractTerms())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getComment())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getShipToId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getShipToText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getBillToId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getBillToText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToId())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToText())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())) {
+					
+					requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
+					requestPurchesOrder.getPurchesOrder().setStatus("DRAFT");
+					
+					PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
+					if (!savePurchesOrder.equals(null)) {
+						
+					requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
+						
+						item.setPOId(savePurchesOrder.getPOId());
+						
+						purchesOrderItemsRepo.save(item);
+					});
+					
+					return new CustomeResponseEntity("SUCCESS","PO save successfully");
+						
+					} else {
+						throw new VendorNotFoundException("Data Not save in data base");
+					}
+				} else {
+					throw new VendorNotFoundException("validation error");
+				}
+				
+			}
+			
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
 	}
 	
 	@PostMapping("/submitPO") 
@@ -1109,7 +1187,7 @@ public class PurchaseOrderController {
 						purchesOrderItemsRepo.save(item);
 					});
 					
-					return new CustomeResponseEntity("SUCCESS","PO save successfully");
+					return new CustomeResponseEntity("SUCCESS","PO submit successfully");
 						
 					} else {
 						throw new VendorNotFoundException("Data Not save in data base");

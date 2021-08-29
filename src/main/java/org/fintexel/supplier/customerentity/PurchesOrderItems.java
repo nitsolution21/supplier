@@ -13,20 +13,50 @@ public class PurchesOrderItems {
 	@Column(name = "PO_ID") private Long POId;
 	@Column(name = "ITEM_ID") private Long itemId;
 	@Column(name = "ITEM_DESCRIPTION") private String itemDescription;
-	@Column(name = "ITEM_QTY") private int itemQty;
+	@Column(name = "ITEM_QTY") private int qty;
 	@Column(name = "CUR_TYPE") private String curType;
-	@Column(name = "ITEM_PRICE") private float itemPrice;
-	@Column(name = "ITEM_SUBTOTAL") private float itemSubtotal;
-	@Column(name = "ITEM_TAX") private float itemTax;
-	@Column(name = "ITEM_DIS_PER") private float itemDisPer;
-	@Column(name = "ITEM_DIS_CUR") private float itemDisCur;
-	@Column(name = "ITEM_CATEGORY_ID") private Long itemCategoryId;
-	@Column(name = "ITEM_SUBCATEGORY_ID") private Long itemSubcategoryId;
-	@Column(name = "ITEM_BRAND_ID") private Long itemBrandId;
+	@Column(name = "ITEM_PRICE") private float unitPrice;
+	@Column(name = "ITEM_SUBTOTAL") private float amount;
+	@Column(name = "ITEM_TAX") private float tax;
+	@Column(name = "ITEM_CATEGORY_ID") private Long categoryId;
+	@Column(name = "ITEM_SUBCATEGORY_ID") private Long subcategoryId;
+	@Column(name = "ITEM_BRAND_ID") private Long brandId;
 	@Column(name = "ITEM_CATEGORY_TEXT") private String itemCategoryText;
 	@Column(name = "ITEM_SUBCATEGORY_TEXT") private String itemSubcategoryText;
 	@Column(name = "ITEM_BRAND_TEXT") private String itemBrandText;
 	@Column(name = "ITEM_TOTAL") private float itemTotal;
+	public PurchesOrderItems() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public PurchesOrderItems(Long pOId, Long itemId, String itemDescription, int qty, String curType, float unitPrice,
+			float amount, float tax, Long categoryId, Long subcategoryId, Long brandId, String itemCategoryText,
+			String itemSubcategoryText, String itemBrandText, float itemTotal) {
+		super();
+		POId = pOId;
+		this.itemId = itemId;
+		this.itemDescription = itemDescription;
+		this.qty = qty;
+		this.curType = curType;
+		this.unitPrice = unitPrice;
+		this.amount = amount;
+		this.tax = tax;
+		this.categoryId = categoryId;
+		this.subcategoryId = subcategoryId;
+		this.brandId = brandId;
+		this.itemCategoryText = itemCategoryText;
+		this.itemSubcategoryText = itemSubcategoryText;
+		this.itemBrandText = itemBrandText;
+		this.itemTotal = itemTotal;
+	}
+	@Override
+	public String toString() {
+		return "PurchesOrderItems [POId=" + POId + ", itemId=" + itemId + ", itemDescription=" + itemDescription
+				+ ", qty=" + qty + ", curType=" + curType + ", unitPrice=" + unitPrice + ", amount=" + amount + ", tax="
+				+ tax + ", categoryId=" + categoryId + ", subcategoryId=" + subcategoryId + ", brandId=" + brandId
+				+ ", itemCategoryText=" + itemCategoryText + ", itemSubcategoryText=" + itemSubcategoryText
+				+ ", itemBrandText=" + itemBrandText + ", itemTotal=" + itemTotal + "]";
+	}
 	public Long getPOId() {
 		return POId;
 	}
@@ -45,11 +75,11 @@ public class PurchesOrderItems {
 	public void setItemDescription(String itemDescription) {
 		this.itemDescription = itemDescription;
 	}
-	public int getItemQty() {
-		return itemQty;
+	public int getQty() {
+		return qty;
 	}
-	public void setItemQty(int itemQty) {
-		this.itemQty = itemQty;
+	public void setQty(int qty) {
+		this.qty = qty;
 	}
 	public String getCurType() {
 		return curType;
@@ -57,53 +87,41 @@ public class PurchesOrderItems {
 	public void setCurType(String curType) {
 		this.curType = curType;
 	}
-	public float getItemPrice() {
-		return itemPrice;
+	public float getUnitPrice() {
+		return unitPrice;
 	}
-	public void setItemPrice(float itemPrice) {
-		this.itemPrice = itemPrice;
+	public void setUnitPrice(float unitPrice) {
+		this.unitPrice = unitPrice;
 	}
-	public float getItemSubtotal() {
-		return itemSubtotal;
+	public float getAmount() {
+		return amount;
 	}
-	public void setItemSubtotal(float itemSubtotal) {
-		this.itemSubtotal = itemSubtotal;
+	public void setAmount(float amount) {
+		this.amount = amount;
 	}
-	public float getItemTax() {
-		return itemTax;
+	public float getTax() {
+		return tax;
 	}
-	public void setItemTax(float itemTax) {
-		this.itemTax = itemTax;
+	public void setTax(float tax) {
+		this.tax = tax;
 	}
-	public float getItemDisPer() {
-		return itemDisPer;
+	public Long getCategoryId() {
+		return categoryId;
 	}
-	public void setItemDisPer(float itemDisPer) {
-		this.itemDisPer = itemDisPer;
+	public void setCategoryId(Long categoryId) {
+		this.categoryId = categoryId;
 	}
-	public float getItemDisCur() {
-		return itemDisCur;
+	public Long getSubcategoryId() {
+		return subcategoryId;
 	}
-	public void setItemDisCur(float itemDisCur) {
-		this.itemDisCur = itemDisCur;
+	public void setSubcategoryId(Long subcategoryId) {
+		this.subcategoryId = subcategoryId;
 	}
-	public Long getItemCategoryId() {
-		return itemCategoryId;
+	public Long getBrandId() {
+		return brandId;
 	}
-	public void setItemCategoryId(Long itemCategoryId) {
-		this.itemCategoryId = itemCategoryId;
-	}
-	public Long getItemSubcategoryId() {
-		return itemSubcategoryId;
-	}
-	public void setItemSubcategoryId(Long itemSubcategoryId) {
-		this.itemSubcategoryId = itemSubcategoryId;
-	}
-	public Long getItemBrandId() {
-		return itemBrandId;
-	}
-	public void setItemBrandId(Long itemBrandId) {
-		this.itemBrandId = itemBrandId;
+	public void setBrandId(Long brandId) {
+		this.brandId = brandId;
 	}
 	public String getItemCategoryText() {
 		return itemCategoryText;
@@ -129,21 +147,6 @@ public class PurchesOrderItems {
 	public void setItemTotal(float itemTotal) {
 		this.itemTotal = itemTotal;
 	}
-	@Override
-	public String toString() {
-		return "PurchesOrderItems [POId=" + POId + ", itemId=" + itemId + ", itemDescription=" + itemDescription
-				+ ", itemQty=" + itemQty + ", curType=" + curType + ", itemPrice=" + itemPrice + ", itemSubtotal="
-				+ itemSubtotal + ", itemTax=" + itemTax + ", itemDisPer=" + itemDisPer + ", itemDisCur=" + itemDisCur
-				+ ", itemCategoryId=" + itemCategoryId + ", itemSubcategoryId=" + itemSubcategoryId + ", itemBrandId="
-				+ itemBrandId + ", itemCategoryText=" + itemCategoryText + ", itemSubcategoryText="
-				+ itemSubcategoryText + ", itemBrandText=" + itemBrandText + ", itemTotal=" + itemTotal + "]";
-	}
-	public PurchesOrderItems() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	
-	
 	
 	
 }

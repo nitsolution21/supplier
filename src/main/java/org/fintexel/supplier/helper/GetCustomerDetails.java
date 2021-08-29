@@ -57,9 +57,7 @@ public class GetCustomerDetails {
 	
 //	String departmentName = null, UserFunctionalitiName = null;
 	
-	private List<CustomerDepartments> customerDepartments = new  ArrayList<>();
-	
-	private List<CustomerFunctionalitiesMaster> customerFunctionalitiesMasters  = new  ArrayList<>();
+
 	
 	public long getCustomerIdFromToken(String token) {
 		LOGGER.info("Token is >>>> "+token);
@@ -111,14 +109,15 @@ public class GetCustomerDetails {
 	
 	public List<CustomerDepartments> getDepartments(long userId) {
 		try {
+			List<CustomerDepartments> customerDepartments = new  ArrayList<>();
 			List<CustomerUserDepartments> findDepartmentIdByUserId = customerUserDepartmentsRepo.findByUserId(userId);
 			if (findDepartmentIdByUserId.size() > 0)  {
 				for(CustomerUserDepartments department : findDepartmentIdByUserId ) {
 					Optional<CustomerDepartments> findDepartmentById = customerDepartmentsRepo.findById(department.getDepartmentId());
 					//this.departmentName = this.departmentName + findDepartmentById.get().getDepartmentName() +",";
-					this.customerDepartments.add(findDepartmentById.get());
+					customerDepartments.add(findDepartmentById.get());
 				}
-				return this.customerDepartments; 
+				return customerDepartments; 
 			}
 			else {
 //				return this.departmentName = "Department not found for this user";
@@ -132,6 +131,7 @@ public class GetCustomerDetails {
 	public List<CustomerFunctionalitiesMaster> getFunctionaliti(long userId) {
 		
 		try {
+			List<CustomerFunctionalitiesMaster> customerFunctionalitiesMasters  = new  ArrayList<>();
 			
 			List<CustomerUserFunctionaliti> findUserFunctionalitiIdByUserId = customerUserFunctionalitiRepo.findByUserId(userId);
 			
@@ -141,9 +141,9 @@ public class GetCustomerDetails {
 					Optional<CustomerFunctionalitiesMaster> findFunctionalitiById = customerFunctionalitiesMasterRepo.findById(customerUserFunctionaliti.getfId());
 					
 					//his.UserFunctionalitiName = this.UserFunctionalitiName + findFunctionalitiById.get().getfName() + ",";
-					this.customerFunctionalitiesMasters.add(findFunctionalitiById.get());
+					customerFunctionalitiesMasters.add(findFunctionalitiById.get());
 				}
-				return this.customerFunctionalitiesMasters;
+				return customerFunctionalitiesMasters;
 			}
 			else {
 //				return this.UserFunctionalitiName= "Functionaliti not found for this user";
