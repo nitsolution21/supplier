@@ -1258,7 +1258,7 @@ public class PurchaseOrderController {
 	
 	@GetMapping("/getLoginCustomerAllPOFromSupplier/{cId}")
 	public List<GetPurchesOrder> getLoginCustomerAllPOFromSupplier(@PathVariable long cId) {
-		LOGGER.info("Inside - PurchaseOrderController.getLoginCustomerAllPO()");
+		LOGGER.info("Inside - PurchaseOrderController.getLoginCustomerAllPOFromSupplier()");
 		try {
 			List<GetPurchesOrder> itemList = new ArrayList<GetPurchesOrder>();
 //			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
