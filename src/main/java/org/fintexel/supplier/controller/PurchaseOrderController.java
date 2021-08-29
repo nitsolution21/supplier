@@ -1253,4 +1253,149 @@ public class PurchaseOrderController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
+	
+	
+	
+	@GetMapping("/getLoginCustomerAllPOFromSupplier/{cId}")
+	public List<GetPurchesOrder> getLoginCustomerAllPOFromSupplier(@PathVariable long cId) {
+		LOGGER.info("Inside - PurchaseOrderController.getLoginCustomerAllPO()");
+		try {
+			List<GetPurchesOrder> itemList = new ArrayList<GetPurchesOrder>();
+//			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+//			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+			
+			if (cId == -1) {
+				throw new VendorNotFoundException("Customer not found");
+			}
+			else {
+//				List<RequestPurchesOrder> purchesOrders = new ArrayList<RequestPurchesOrder>();
+				
+				List<PurchesOrder> findPOBycId = purchesOrderRepo.findBycId((int) cId);
+				if (findPOBycId.size() > 0) {
+					findPOBycId.forEach(po -> {
+//						LOGGER.info(po.getB)
+						if (po.getStatus().equals("DRAFT")) {
+							try {
+								
+								GetPurchesOrder order = new GetPurchesOrder();
+				
+								order.setcId(po.getcId());
+								order.setPOId(po.getPOId());
+								order.setPoNumber(po.getPoNumber());
+								order.setUserId(po.getUserId());
+								order.setUserId(po.getUserId());
+								order.setSupplierCode(po.getSupplierCode());
+								order.setDepartmentId(po.getDepartmentId());
+								order.setCusAddrId(po.getCusAddrId());
+								
+								Optional<CustomerAddress> findCustomerAddressById = customerAddressRepo.findById(po.getCusAddrId());
+								JSONObject customerAddressJsonObject = new JSONObject(findCustomerAddressById.get());
+								order.setCusAddrText(customerAddressJsonObject.toString());
+								
+								order.setSupAddrId(po.getSupAddrId());
+								
+								Optional<SupAddress> findSuppAddressById = supAddressRepo.findById(po.getSupAddrId());
+								JSONObject suppAddressJsonObject = new JSONObject(findSuppAddressById.get());
+								order.setSupAddrText(suppAddressJsonObject.toString());
+								
+								order.setContractId(po.getContractId());
+								order.setContractTerms(po.getContractTerms());
+								order.setComment(po.getComment());
+								order.setShipToId(po.getShipToId());
+								
+								order.setBillToId(po.getBillToId());
+								order.setBillToText(po.getBillToText());
+								
+								Optional<CustomerAddress> findShipToAddressById = customerAddressRepo.findById(po.getShipToId());
+								JSONObject shipToAddressJsonObject = new JSONObject(findShipToAddressById.get());
+								order.setShipToText(shipToAddressJsonObject.toString());
+								
+								order.setDeliveryToId(po.getDeliveryToId());
+								
+//								Optional<CustomerRegister> finDeliveryDetailsdById = customerRegisterRepo.findById(po.getDeliveryToId());
+//								JSONObject deliveryDetailsJsonObject = new JSONObject(finDeliveryDetailsdById.get());
+//								order.setDeliveryToText(deliveryDetailsJsonObject.toString());
+								order.setDeliveryToText(po.getDeliveryToText());
+								
+								order.setCurType(po.getCurType());
+								order.setAmount(po.getAmount());
+								order.setStatus(po.getStatus());
+								order.setStatusComment(po.getStatusComment());
+								order.setCreatedBy(po.getCreatedBy());
+								order.setCreatedOn(po.getCreatedOn());
+								List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(po.getPOId());
+								
+								List<PurchesOrderItems> items = new ArrayList<PurchesOrderItems>();
+								
+								findPoItemByPOId.forEach(item -> {
+									items.add(item);
+								});
+								
+								order.setPurchesOrderItems(items);
+								
+								itemList.add(order);
+								
+								
+								//purchesOrders.add(order);
+								
+								
+							} catch (Exception e) {
+								throw new VendorNotFoundException(e.getMessage());
+							}
+						} else {
+							
+							GetPurchesOrder order = new GetPurchesOrder();
+							
+							order.setcId(po.getcId());
+							order.setPOId(po.getPOId());
+							order.setPoNumber(po.getPoNumber());
+							order.setUserId(po.getUserId());
+							order.setUserId(po.getUserId());
+							order.setSupplierCode(po.getSupplierCode());
+							order.setDepartmentId(po.getDepartmentId());
+							order.setCusAddrId(po.getCusAddrId());
+							order.setCusAddrText(po.getCusAddrText());
+							order.setSupAddrText(po.getSupAddrText());
+							order.setContractId(po.getContractId());
+							order.setContractTerms(po.getContractTerms());
+							order.setComment(po.getComment());
+							order.setShipToId(po.getShipToId());
+							order.setShipToText(po.getShipToText());
+							order.setDeliveryToId(po.getDeliveryToId());
+							order.setDeliveryToText(po.getDeliveryToText());
+							order.setBillToId(po.getBillToId());
+							order.setBillToText(po.getBillToText());
+							order.setCurType(po.getCurType());
+							order.setAmount(po.getAmount());
+							order.setStatus(po.getStatus());
+							order.setStatusComment(po.getStatusComment());
+							order.setCreatedBy(po.getCreatedBy());
+							order.setCreatedOn(po.getCreatedOn());
+							
+							List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(po.getPOId());
+							
+							List<PurchesOrderItems> items = new ArrayList<PurchesOrderItems>();
+							
+							findPoItemByPOId.forEach(item -> {
+								items.add(item);
+							});
+							
+							order.setPurchesOrderItems(items);
+							
+							itemList.add(order);
+//							purchesOrders.add(po);
+							
+							
+						}
+					});
+					
+					return itemList;
+				} else {
+					throw new VendorNotFoundException("PO not found for this company");
+				}
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
 }
