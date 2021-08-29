@@ -287,6 +287,7 @@ public class InventoryController {
 					details.setBrandId(inventoryDetails.getBrandId());
 					details.setSubcategoryId(inventoryDetails.getSubcategoryId());
 					details.setItemDescription(inventoryDetails.getItemDescription());
+					details.setQty(inventoryDetails.getQty());
 					try {
 						if (fieldValidation.isEmpty(inventoryDetails.getQty())
 								&& fieldValidation.isEmpty(inventoryDetails.getUnitPrice())

@@ -400,13 +400,17 @@ public class PurchaseOrderController {
 				if(value.equals("TOSHIP")) {
 					value = "APPROVED BY IT";
 				}else if(value.equals("TOCONFIRM")){
-					value = "APPROVED BY SUPPLIER";
+					System.out.print("****  "+loginSupplierCode );
+					value = "WAITING FOR APPROVAL";
 				}else if(value.equals("CLOSED")) {
+					System.out.print("****  "+loginSupplierCode );
 					value = "COMPLETED";
 				}
 				List<PurchesOrder> findByStatusWithSupplierCode = purchesOrderRepo.findByStatusWithSupplierCode(value , loginSupplierCode);
+				
+				System.out.print("****  "+loginSupplierCode +  "  ---- " +findByStatusWithSupplierCode.size());
 				for(PurchesOrder obj : findByStatusWithSupplierCode) {
-
+					
 					String username = customerRegisterRepo.findById(obj.getUserId()).get().getUsername();
 					
 					Map<String, String> temp = new HashMap<>();
@@ -1155,7 +1159,8 @@ public class PurchaseOrderController {
 			if (companyProfileIdByCustomerId == -1) {
 				throw new VendorNotFoundException("Customer not found");
 			} else {
-				if (fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getPoNumber()) 
+				if (
+						fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getPoNumber()) 
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getUserId())
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getSupplierCode())
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDepartmentId())
@@ -1172,7 +1177,8 @@ public class PurchaseOrderController {
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getBillToText())
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToId())
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToText())
-					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())) {
+//					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())
+					) {
 					
 					requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
 					requestPurchesOrder.getPurchesOrder().setStatus("WAITING FOR APPROVAL");
