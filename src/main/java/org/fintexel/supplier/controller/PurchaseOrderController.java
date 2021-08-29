@@ -375,14 +375,19 @@ public class PurchaseOrderController {
 	
 	
 	
+	
+	
+	
+	
+	
+	
 	/*   SUPPLIER SIDE PO */
 	
 	
 	@GetMapping("/item/{value}")
 	public List<Map<String, String>> itemToConfirm(@PathVariable("value") String value , @RequestHeader(name = "Authorization") String token) {
-	List<Map<String, String>> itemToConfirmResponse = new ArrayList<>();
 		LOGGER.info("Inside - PurchaseOrderController.itemToConfirm()");
-		
+	List<Map<String, String>> itemToConfirmResponse = new ArrayList<>();	
 		try {
 			
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
@@ -402,6 +407,8 @@ public class PurchaseOrderController {
 					
 					Map<String, String> temp = new HashMap<>();
 					temp.put("customerName", username);
+					temp.put("POId", obj.getPOId()+"");
+					temp.put("cId", obj.getcId()+"");
 					temp.put("poNumber", obj.getPoNumber());
 					temp.put("issuedate", obj.getCreatedOn()+"");
 					temp.put("totalValue", (obj.getAmount()+obj.getAmount()*10/100)+"");
@@ -414,6 +421,40 @@ public class PurchaseOrderController {
 			}else {
 				throw new VendorNotFoundException("Token Expir");
 			}
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+	}
+	
+	
+	
+	
+	
+	@PostMapping("/item/changeStatus/{id}")
+	public CustomeResponseEntity changeItemStatus(@PathVariable("id") Long id,@RequestBody() String value , @RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - PurchaseOrderController.changeItemStatus()");
+		try {
+			
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+			
+			
+			PurchesOrderStatus purchesOrderStatus = purchesOrderStatusRepo.findById(id).get();
+			PurchesOrder purchesOrder = purchesOrderRepo.findById(id).get();
+			if(loginSupplierCode.equals(purchesOrder.getSupplierCode())) {
+				purchesOrderStatus.setPOStatus(value);
+				purchesOrderStatusRepo.save(purchesOrderStatus);
+				purchesOrder.setStatus(value);
+				purchesOrderRepo.save(purchesOrder);
+				
+				return new CustomeResponseEntity("SUCCESS" , "DATA UPDATED");
+			}else {
+				throw new VendorNotFoundException("This PO Not Under By This Supplier");
+			}
+			
+			
+			
 			
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
