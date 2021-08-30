@@ -1252,7 +1252,7 @@ public class PurchaseOrderController {
 					
 					
 					Optional<PurchesOrder> findPoByPoNumber = purchesOrderRepo.findByPoNumber(requestPurchesOrder.getPurchesOrder().getPoNumber());
-					LOGGER.info("Call databade>>>>>>{{{}}}}"+findPoByPoNumber.get());
+					//LOGGER.info("Call databade>>>>>>{{{}}}}"+findPoByPoNumber.get());
 					if (findPoByPoNumber.isPresent()) {
 						requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
 						requestPurchesOrder.getPurchesOrder().setStatus("DRAFT");
@@ -1342,7 +1342,7 @@ public class PurchaseOrderController {
 					
 					Optional<PurchesOrder> findPoByPoNumber = purchesOrderRepo.findByPoNumber(requestPurchesOrder.getPurchesOrder().getPoNumber());
 					
-					LOGGER.info("Call databade>>>>>>{{{}}}}"+findPoByPoNumber.get());
+					//LOGGER.info("Call databade>>>>>>{{{}}}}"+findPoByPoNumber.get());
 					
 					if (findPoByPoNumber.isPresent()) {
 						requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
