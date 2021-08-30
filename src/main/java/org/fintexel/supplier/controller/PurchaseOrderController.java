@@ -123,12 +123,12 @@ public class PurchaseOrderController {
 	private FieldValidation fieldValidation;
 	
 	@Autowired
-	SupplierInvoiceRepo supplierInvoiceRepo;
+	private SupplierInvoiceRepo supplierInvoiceRepo;
 	
 	@Autowired
-	SupplierInvoiceItemRepo supplierInvoiceItemRepo;
+	private SupplierInvoiceItemRepo supplierInvoiceItemRepo;
 
-	
+	private Integer i;
 	
 
 	
@@ -529,26 +529,48 @@ public class PurchaseOrderController {
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvAttachment()) &&
 					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getCreatedBy()) &&
 					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getCreatedOn()) 
-					//fieldValidation.isEmpty(invoiceStraching.getPurchesOrderItems().getI) &&
 					
 					
 					) {
 				
 				
+				List<PurchesOrderItems> findByPOId = purchesOrderItemsRepo.findByPOId(invoiceStraching.getSupplierInvoice().getPOId());
 				
+				if(!(findByPOId.size()+"").equals(invoiceStraching.getPurchesOrderItems()+"")) {
+					throw new VendorNotFoundException("PO Item List Not Match ");
+				}
+				
+				List<PurchesOrderItems> purchesOrderItems = invoiceStraching.getPurchesOrderItems();
 				
 				SupplierInvoice save = supplierInvoiceRepo.save(invoiceStraching.getSupplierInvoice());
-				SupplierInvoiceItem supplierInvoiceItem = new SupplierInvoiceItem();
+				i=0;
+				for(PurchesOrderItems obj : purchesOrderItems) {
+					if(!(obj.getItemId() == findByPOId.get(i).getItemId()))
+						throw new VendorNotFoundException("PO Items List are Not Match ");
+					
+				}
+				i=0;
+				for(PurchesOrderItems obj : purchesOrderItems) {
+					SupplierInvoiceItem supplierInvoiceItem = new SupplierInvoiceItem();
+					supplierInvoiceItem.setInvId(save.getInvId());
+					supplierInvoiceItem.setPoitemId(invoiceStraching.getPurchesOrderItems().get(i).getPOItemId());
+					
+					supplierInvoiceItem.setItemQty(invoiceStraching.getPurchesOrderItems().get(i).getQty());
+					supplierInvoiceItem.setItemPrice(obj.getUnitPrice());
+					supplierInvoiceItem.setItemGross(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice());
+					supplierInvoiceItem.setItemTax(obj.getTax());
+					supplierInvoiceItem.setItemSubtotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
+					supplierInvoiceItem.setItemTotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
+					supplierInvoiceItemRepo.save(supplierInvoiceItem);
+				}
 				
-				supplierInvoiceItem.setInvId(save.getInvId());
-//				supplierInvoiceItem.setPoitemId(invoiceStraching.getSupplierInvoiceItem().getPoitemId());
-//				supplierInvoiceItem.setItemQty(invoiceStraching.getSupplierInvoiceItem().getItemQty());
-				supplierInvoiceItemRepo.save(supplierInvoiceItem);
 				
 				
 				
-//				supplierInvoiceItemRepo
-//				purchesOrderItemsRepo
+				
+			
+				
+				
 				
 				
 				return new CustomeResponseEntity("SUCCESS","DATA ADD SUCCESSFULLY");

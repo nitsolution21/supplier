@@ -2,6 +2,8 @@ package org.fintexel.supplier.customerentity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -10,6 +12,8 @@ import javax.persistence.Table;
 public class PurchesOrderItems {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "POITEM_ID") private Long POItemId;
 	@Column(name = "PO_ID") private Long POId;
 	@Column(name = "ITEM_ID") private Long itemId;
 	@Column(name = "ITEM_DESCRIPTION") private String itemDescription;
@@ -25,37 +29,11 @@ public class PurchesOrderItems {
 	@Column(name = "ITEM_SUBCATEGORY_TEXT") private String itemSubcategoryText;
 	@Column(name = "ITEM_BRAND_TEXT") private String itemBrandText;
 	@Column(name = "ITEM_TOTAL") private float itemTotal;
-	public PurchesOrderItems() {
-		super();
-		// TODO Auto-generated constructor stub
+	public Long getPOItemId() {
+		return POItemId;
 	}
-	public PurchesOrderItems(Long pOId, Long itemId, String itemDescription, int qty, String curType, float unitPrice,
-			float amount, float tax, Long categoryId, Long subcategoryId, Long brandId, String itemCategoryText,
-			String itemSubcategoryText, String itemBrandText, float itemTotal) {
-		super();
-		POId = pOId;
-		this.itemId = itemId;
-		this.itemDescription = itemDescription;
-		this.qty = qty;
-		this.curType = curType;
-		this.unitPrice = unitPrice;
-		this.amount = amount;
-		this.tax = tax;
-		this.categoryId = categoryId;
-		this.subcategoryId = subcategoryId;
-		this.brandId = brandId;
-		this.itemCategoryText = itemCategoryText;
-		this.itemSubcategoryText = itemSubcategoryText;
-		this.itemBrandText = itemBrandText;
-		this.itemTotal = itemTotal;
-	}
-	@Override
-	public String toString() {
-		return "PurchesOrderItems [POId=" + POId + ", itemId=" + itemId + ", itemDescription=" + itemDescription
-				+ ", qty=" + qty + ", curType=" + curType + ", unitPrice=" + unitPrice + ", amount=" + amount + ", tax="
-				+ tax + ", categoryId=" + categoryId + ", subcategoryId=" + subcategoryId + ", brandId=" + brandId
-				+ ", itemCategoryText=" + itemCategoryText + ", itemSubcategoryText=" + itemSubcategoryText
-				+ ", itemBrandText=" + itemBrandText + ", itemTotal=" + itemTotal + "]";
+	public void setPOItemId(Long pOItemId) {
+		POItemId = pOItemId;
 	}
 	public Long getPOId() {
 		return POId;
@@ -146,6 +124,40 @@ public class PurchesOrderItems {
 	}
 	public void setItemTotal(float itemTotal) {
 		this.itemTotal = itemTotal;
+	}
+	@Override
+	public String toString() {
+		return "PurchesOrderItems [POItemId=" + POItemId + ", POId=" + POId + ", itemId=" + itemId
+				+ ", itemDescription=" + itemDescription + ", qty=" + qty + ", curType=" + curType + ", unitPrice="
+				+ unitPrice + ", amount=" + amount + ", tax=" + tax + ", categoryId=" + categoryId + ", subcategoryId="
+				+ subcategoryId + ", brandId=" + brandId + ", itemCategoryText=" + itemCategoryText
+				+ ", itemSubcategoryText=" + itemSubcategoryText + ", itemBrandText=" + itemBrandText + ", itemTotal="
+				+ itemTotal + "]";
+	}
+	public PurchesOrderItems(Long pOItemId, Long pOId, Long itemId, String itemDescription, int qty, String curType,
+			float unitPrice, float amount, float tax, Long categoryId, Long subcategoryId, Long brandId,
+			String itemCategoryText, String itemSubcategoryText, String itemBrandText, float itemTotal) {
+		super();
+		POItemId = pOItemId;
+		POId = pOId;
+		this.itemId = itemId;
+		this.itemDescription = itemDescription;
+		this.qty = qty;
+		this.curType = curType;
+		this.unitPrice = unitPrice;
+		this.amount = amount;
+		this.tax = tax;
+		this.categoryId = categoryId;
+		this.subcategoryId = subcategoryId;
+		this.brandId = brandId;
+		this.itemCategoryText = itemCategoryText;
+		this.itemSubcategoryText = itemSubcategoryText;
+		this.itemBrandText = itemBrandText;
+		this.itemTotal = itemTotal;
+	}
+	public PurchesOrderItems() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 	
 	
