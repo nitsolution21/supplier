@@ -1057,8 +1057,9 @@ public class PurchaseOrderController {
 			}
 			else {
 //				List<RequestPurchesOrder> purchesOrders = new ArrayList<RequestPurchesOrder>();
-				
+				LOGGER.info("customerIdFromToken present:   ||||||||------||||||   ");
 				List<PurchesOrder> findPOBycId = purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId);
+				//LOGGER.info("customerIdFromToken present:   ||||||||------||||||   ");
 				if (findPOBycId.size() > 0) {
 					findPOBycId.forEach(po -> {
 //						LOGGER.info(po.getB)
@@ -1131,7 +1132,7 @@ public class PurchaseOrderController {
 								throw new VendorNotFoundException(e.getMessage());
 							}
 						} else {
-							
+							LOGGER.info("Not draft:   ||||||||------||||||   ");
 							GetPurchesOrder order = new GetPurchesOrder();
 							
 							order.setcId(po.getcId());
@@ -1160,7 +1161,9 @@ public class PurchaseOrderController {
 							order.setCreatedBy(po.getCreatedBy());
 							order.setCreatedOn(po.getCreatedOn());
 							
+							
 							List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(po.getPOId());
+							
 							
 							List<PurchesOrderItems> items = new ArrayList<PurchesOrderItems>();
 							
@@ -1169,6 +1172,7 @@ public class PurchaseOrderController {
 							});
 							
 							order.setPurchesOrderItems(items);
+							
 							
 							itemList.add(order);
 //							purchesOrders.add(po);
@@ -1219,10 +1223,10 @@ public class PurchaseOrderController {
 	public CustomeResponseEntity savePO(@RequestBody RequestPurchesOrder requestPurchesOrder, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.savePO()");
 		try {
-			System.out.println("Data &&&&&&  "+requestPurchesOrder.getPurchesOrder());
+			LOGGER.info("Data &&&&&&  "+requestPurchesOrder.getPurchesOrder());
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
-			if (companyProfileIdByCustomerId == -1) {
+			if (customerIdFromToken == -1) {
 				throw new VendorNotFoundException("Customer not found");
 			} else {
 				if (
@@ -1246,18 +1250,21 @@ public class PurchaseOrderController {
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())
 					) {
 					
-					Optional<PurchesOrder> findPoByPoNumber = purchesOrderRepo.findByPoNumber(requestPurchesOrder.getPurchesOrder().getPoNumber());
 					
+					Optional<PurchesOrder> findPoByPoNumber = purchesOrderRepo.findByPoNumber(requestPurchesOrder.getPurchesOrder().getPoNumber());
+					LOGGER.info("Call databade>>>>>>{{{}}}}"+findPoByPoNumber.get());
 					if (findPoByPoNumber.isPresent()) {
 						requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
 						requestPurchesOrder.getPurchesOrder().setStatus("DRAFT");
 						requestPurchesOrder.getPurchesOrder().setPOId(findPoByPoNumber.get().getPOId());
+						LOGGER.info("DETAILS IS >>>>>>}}}}}"+requestPurchesOrder.getPurchesOrder());
 						PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
 						if (!savePurchesOrder.equals(null)) {
 //							List<PurchesOrderItems> findItemByPOId = purchesOrderItemsRepo.findByPOId(findPoByPoNumber.get().getPOId());
 							requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
 								Optional<PurchesOrderItems> finItemdById = purchesOrderItemsRepo.findById(item.getPOItemId());
 								item.setPOId(savePurchesOrder.getPOId());
+								item.setItemGross(item.getUnitPrice() * item.getQty());
 								item.setPOItemId(finItemdById.get().getPOItemId());
 								purchesOrderItemsRepo.save(item);
 							});
@@ -1277,7 +1284,7 @@ public class PurchaseOrderController {
 						if (!savePurchesOrder.equals(null)) {
 							
 						requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
-							
+							item.setItemGross(item.getUnitPrice() * item.getQty());
 							item.setPOId(savePurchesOrder.getPOId());
 							purchesOrderItemsRepo.save(item);
 						});
@@ -1304,7 +1311,7 @@ public class PurchaseOrderController {
 	public CustomeResponseEntity submitPO(@RequestBody RequestPurchesOrder requestPurchesOrder, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.submitPO()");
 		try {
-			System.out.println("Data &&&&&&  "+requestPurchesOrder.getPurchesOrder());
+			LOGGER.info("Data &&&&&&  "+requestPurchesOrder.getPurchesOrder());
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
 			if (companyProfileIdByCustomerId == -1) {
@@ -1328,22 +1335,35 @@ public class PurchaseOrderController {
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getBillToText())
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToId())
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToText())
-//					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())
 					) {
 					
+					LOGGER.info("After validation");
+					
 					Optional<PurchesOrder> findPoByPoNumber = purchesOrderRepo.findByPoNumber(requestPurchesOrder.getPurchesOrder().getPoNumber());
+					
+					LOGGER.info("Call databade>>>>>>{{{}}}}"+findPoByPoNumber.get());
 					
 					if (findPoByPoNumber.isPresent()) {
 						requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
 						requestPurchesOrder.getPurchesOrder().setStatus("WAITING FOR APPROVAL");
 						requestPurchesOrder.getPurchesOrder().setPOId(findPoByPoNumber.get().getPOId());
+						
+						LOGGER.info("Before Update PO  >>>><<<<<<<"+requestPurchesOrder.getPurchesOrder());
+						
 						PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
+						
+						LOGGER.info("After Update PO  >>>><<<<<<<"+requestPurchesOrder.getPurchesOrder());
 						if (!savePurchesOrder.equals(null)) {
 //							List<PurchesOrderItems> findItemByPOId = purchesOrderItemsRepo.findByPOId(findPoByPoNumber.get().getPOId());
+							LOGGER.info("Item is.....||||.....___||__"+requestPurchesOrder.getPurchesOrderItems());
 							requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
-								Optional<PurchesOrderItems> finItemdById = purchesOrderItemsRepo.findById(item.getPOItemId());
+								List<PurchesOrderItems> finItemdById = purchesOrderItemsRepo.findByPOId(savePurchesOrder.getPOId());
 								item.setPOId(savePurchesOrder.getPOId());
-								item.setPOItemId(finItemdById.get().getPOItemId());
+								item.setItemGross(item.getUnitPrice() * item.getQty());
+								finItemdById.forEach(setID -> {
+									item.setPOItemId(setID.getPOItemId());
+								});
 								purchesOrderItemsRepo.save(item);
 							});
 							
@@ -1362,7 +1382,7 @@ public class PurchaseOrderController {
 						if (!savePurchesOrder.equals(null)) {
 							
 						requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
-							
+							item.setItemGross(item.getUnitPrice() * item.getQty());
 							item.setPOId(savePurchesOrder.getPOId());
 							purchesOrderItemsRepo.save(item);
 						});
