@@ -20,6 +20,7 @@ import org.fintexel.supplier.customerentity.CustomerProfile;
 import org.fintexel.supplier.customerentity.CustomerProfileResponce;
 import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerentity.CustomerUserDepartments;
+import org.fintexel.supplier.customerentity.GetResponceContract;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
@@ -119,7 +120,7 @@ public class CustomerController {
 	private CustomerDepartmentsRepo customerDepartmentsRepo;
 	
 	@Autowired
-	CustomerUserDepartmentsRepo customerUserDepartmentsRepo;
+	private CustomerUserDepartmentsRepo customerUserDepartmentsRepo;
 
 	@Autowired
 	RegTypeRepo regTypeRepo;
@@ -446,7 +447,7 @@ public class CustomerController {
 		}
 	}
 	@GetMapping("/contract")
-	public List<CustomerContact> getCustomerContact(@RequestHeader(name = "Authorization") String token) {
+	public List<GetResponceContract> getCustomerContact(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.getCustomerContact()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
@@ -459,7 +460,31 @@ public class CustomerController {
 					if (findCustomerById.get().getcId() == companyProfileIdByCustomerId) {
 						List<CustomerContact> findContactBycId = customerContactRepo.findBycId(companyProfileIdByCustomerId);
 						if (findContactBycId.size() > 0) {
-							return findContactBycId;
+							List<GetResponceContract> getResponceContract = new ArrayList<GetResponceContract>();
+							//return findContactBycId;
+							findContactBycId.forEach(contract -> {
+								GetResponceContract getResponceContract2 = new GetResponceContract();
+								
+								Optional<SupDetails> findDetailsById = supDetailsRepo.findById(contract.getSupplierCode());
+								
+								getResponceContract2.setcId(contract.getcId());
+								getResponceContract2.setContractEndDate(contract.getContractEndDate());
+								getResponceContract2.setContractId(contract.getContractId());
+								getResponceContract2.setContractLocation(contract.getContractLocation());
+								getResponceContract2.setContractProof(contract.getContractProof());
+								getResponceContract2.setContractTerms(contract.getContractTerms());
+								getResponceContract2.setContractType(contract.getContractType());
+								getResponceContract2.setCreatedBy(contract.getCreatedBy());
+								getResponceContract2.setCreatedOn(contract.getCreatedOn());
+								getResponceContract2.setSupplierCode(contract.getSupplierCode());
+								getResponceContract2.setSupplierCompanyName(findDetailsById.get().getSupplierCompName());
+								getResponceContract2.setUpdatedBy(contract.getUpdatedBy());
+								getResponceContract2.setUpdatedOn(contract.getUpdatedOn());
+								
+								getResponceContract.add(getResponceContract2);
+								
+							});
+							return getResponceContract;
 						} else {
 							throw new VendorNotFoundException("Contact not found!!");
 						}
