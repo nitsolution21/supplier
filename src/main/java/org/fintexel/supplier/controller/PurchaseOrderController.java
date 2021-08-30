@@ -541,58 +541,59 @@ public class PurchaseOrderController {
 		String taskID1_ = "", taskID2_ = "", processInstID_ = "";
 		
 		String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+		System.out.println("loginSupplierCode  "+loginSupplierCode);
 		LOGGER.info("Inside - PurchaseOrderController.invoice()");
 		try {
 			
-//			if(fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getPOId()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvDate()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvDesc()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvTaxid()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getRemitTo()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getBillTo()) &&
-////					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getShipCharges()) &&
-////					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getHandlingCharges()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalGross()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalTax()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getSubtotal()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalAmount()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getStatus()) &&
-////					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvAttachment()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getCreatedBy()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getCreatedOn()) 
-//					
-//					
-//					) {
-//				
-//				
-//				List<PurchesOrderItems> findByPOId = purchesOrderItemsRepo.findByPOId(invoiceStraching.getSupplierInvoice().getPOId());
-//				
-//				if(!(findByPOId.size()+"").equals(invoiceStraching.getPurchesOrderItems()+"")) {
-//					throw new VendorNotFoundException("PO Item List Not Match ");
-//				}
-//				
-//				List<PurchesOrderItems> purchesOrderItems = invoiceStraching.getPurchesOrderItems();
-//				
-//				SupplierInvoice save = supplierInvoiceRepo.save(invoiceStraching.getSupplierInvoice());
-//				i=0;
-//				for(PurchesOrderItems obj : purchesOrderItems) {
-//					if(!(obj.getItemId() == findByPOId.get(i).getItemId()))
-//						throw new VendorNotFoundException("PO Items List are Not Match ");
-//					
-//				}
-//				i=0;
-//				for(PurchesOrderItems obj : purchesOrderItems) {
-//					SupplierInvoiceItem supplierInvoiceItem = new SupplierInvoiceItem();
-//					supplierInvoiceItem.setInvId(save.getInvId());
-//					supplierInvoiceItem.setPoitemId(invoiceStraching.getPurchesOrderItems().get(i).getPOItemId());
-//					
-//					supplierInvoiceItem.setItemQty(invoiceStraching.getPurchesOrderItems().get(i).getQty());
-//					supplierInvoiceItem.setItemPrice(obj.getUnitPrice());
-//					supplierInvoiceItem.setItemGross(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice());
-//					supplierInvoiceItem.setItemTax(obj.getTax());
-//					supplierInvoiceItem.setItemSubtotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
-//					supplierInvoiceItem.setItemTotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
-//					supplierInvoiceItemRepo.save(supplierInvoiceItem);
+			if(fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getPOId()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvDate()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvDesc()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvTaxid()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getRemitTo()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getBillTo()) &&
+//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getShipCharges()) &&
+//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getHandlingCharges()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalGross()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalTax()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getSubtotal()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalAmount()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getStatus()) &&
+//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvAttachment()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getCreatedBy()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getCreatedOn()) 
+					
+					
+					) {
+				PurchesOrder purchesOrder = purchesOrderRepo.findById(invoiceStraching.getSupplierInvoice().getPOId()).get();
+				
+				List<PurchesOrderItems> findByPOId = purchesOrderItemsRepo.findByPOId(invoiceStraching.getSupplierInvoice().getPOId());
+				
+				if(!(findByPOId.size()+"").equals(invoiceStraching.getPurchesOrderItems()+"")) {
+					throw new VendorNotFoundException("PO Item List Not Match ");
+				}
+				
+				List<PurchesOrderItems> purchesOrderItems = invoiceStraching.getPurchesOrderItems();
+				
+				SupplierInvoice save = supplierInvoiceRepo.save(invoiceStraching.getSupplierInvoice());
+				i=0;
+				for(PurchesOrderItems obj : purchesOrderItems) {
+					if(!(obj.getItemId() == findByPOId.get(i).getItemId()))
+						throw new VendorNotFoundException("PO Items List are Not Match ");
+					
+				}
+				i=0;
+				for(PurchesOrderItems obj : purchesOrderItems) {
+					SupplierInvoiceItem supplierInvoiceItem = new SupplierInvoiceItem();
+					supplierInvoiceItem.setInvId(save.getInvId());
+					supplierInvoiceItem.setPoitemId(invoiceStraching.getPurchesOrderItems().get(i).getPOItemId());
+					
+					supplierInvoiceItem.setItemQty(invoiceStraching.getPurchesOrderItems().get(i).getQty());
+					supplierInvoiceItem.setItemPrice(obj.getUnitPrice());
+					supplierInvoiceItem.setItemGross(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice());
+					supplierInvoiceItem.setItemTax(obj.getTax());
+					supplierInvoiceItem.setItemSubtotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
+					supplierInvoiceItem.setItemTotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
+					SupplierInvoiceItem save2 = supplierInvoiceItemRepo.save(supplierInvoiceItem);
 					
 					/*
 					 * ----------- REQUEST PROCESS ID with PROCESS DEFINITION KEY
@@ -604,9 +605,18 @@ public class PurchaseOrderController {
 			
 			
 					SupDetails supDetails = supDetailsRepo.findById(loginSupplierCode).get();
+					System.out.println("supDetails  "+supDetails.toString());
+					
 					VendorRegister vendorRegister = vendorRegisterRepo.findById(supDetails.getRegisterId()).get();
-					SupAddress supAddress = supAddressRepo.findByIsPrimaryWithSupplierCode(1, loginSupplierCode).get();
+					System.out.println("vendorRegister  "+vendorRegister.toString());
+					
+			
+					
 					SupBank supBank = supBankRepo.findByIsPrimaryWithSupplierCode(1, loginSupplierCode).get();
+					System.out.println("supBank  "+supBank.toString());
+					
+					SupAddress supAddress = supAddressRepo.findByIsPrimaryWithSupplierCode(1, loginSupplierCode).get();
+					System.out.println("supAddress  "+supAddress.toString());
 //					supDepartmentRepo.findBySupplierCode(loginSupplierCode);
 			
 			
@@ -678,6 +688,8 @@ public class PurchaseOrderController {
 					suppliername.put("type", "string");
 					suppliername.put("value", supAddress.getCity());
 					formReqBody.put(suppliername);
+					
+					System.out.println("supAddress.getCity() "+supAddress.getCity());
 
 					JSONObject supplieremail = new JSONObject();
 					supplieremail.put("name", "country");
@@ -686,25 +698,31 @@ public class PurchaseOrderController {
 					supplieremail.put("value", supAddress.getCountry());
 					formReqBody.put(supplieremail);
 
+					System.out.println("supAddress.getCountry() "+supAddress.getCountry());
+					
 					JSONObject username = new JSONObject();
 					username.put("name", "invoiceamount");
 					username.put("scope", "local");
 					username.put("type", "string");
-					username.put("value", "1000");
+					username.put("value", save.getTotalAmount());
+//					username.put("value", "");
 					formReqBody.put(username);
+					
+					
 
 					JSONObject password = new JSONObject();
 					password.put("name", "invoicedate");
 					password.put("scope", "local");
 					password.put("type", "string");
-					password.put("value", "13/12/21");
+					password.put("value", save.getCreatedOn());
+//					password.put("value", "");
 					formReqBody.put(password);
 
 					JSONObject registrationid = new JSONObject();
 					registrationid.put("name", "invoicemode");
 					registrationid.put("scope", "local");
 					registrationid.put("type", "string");
-					registrationid.put("value", "SR ");
+					registrationid.put("value", "");
 					formReqBody.put(registrationid);
 
 					
@@ -712,7 +730,8 @@ public class PurchaseOrderController {
 					invoicenumber.put("name", "invoicenumber");
 					invoicenumber.put("scope", "local");
 					invoicenumber.put("type", "string");
-					invoicenumber.put("value", "SR ");
+					invoicenumber.put("value", save.getInvId());
+//					invoicenumber.put("value", "");
 					formReqBody.put(invoicenumber);
 					
 					
@@ -721,7 +740,7 @@ public class PurchaseOrderController {
 					invoicetype.put("name", "invoicetype");
 					invoicetype.put("scope", "local");
 					invoicetype.put("type", "string");
-					invoicetype.put("value", "SR ");
+					invoicetype.put("value", "");
 					formReqBody.put(invoicetype);
 
 					
@@ -730,15 +749,18 @@ public class PurchaseOrderController {
 					pincode.put("name", "pincode");
 					pincode.put("scope", "local");
 					pincode.put("type", "string");
-					pincode.put("value", supAddress.getPostalCode());
+					pincode.put("value", supAddress.getPostalCode()+"");
 					formReqBody.put(pincode);
+					
+					System.out.println("supAddress.getPostalCode() "+supAddress.getPostalCode());
 
 					
 					JSONObject podate = new JSONObject();
 					podate.put("name", "podate");
 					podate.put("scope", "local");
 					podate.put("type", "string");
-					podate.put("value", "SR " );
+//					podate.put("value", "" );
+					podate.put("value", purchesOrder.getCreatedOn() );
 					formReqBody.put(podate);
 
 					
@@ -746,7 +768,8 @@ public class PurchaseOrderController {
 					ponumber.put("name", "ponumber");
 					ponumber.put("scope", "local");
 					ponumber.put("type", "string");
-					ponumber.put("value", "SR ");
+//					ponumber.put("value", "");
+					ponumber.put("value", purchesOrder.getPoNumber());
 					formReqBody.put(ponumber);
 
 					
@@ -756,13 +779,15 @@ public class PurchaseOrderController {
 					state.put("type", "string");
 					state.put("value", supAddress.getRegion());
 					formReqBody.put(state);
+					
+					System.out.println("supAddress.getRegion() "+supAddress.getRegion());
 
 					
 					JSONObject taskdate = new JSONObject();
 					taskdate.put("name", "taskdate");
 					taskdate.put("scope", "local");
 					taskdate.put("type", "string");
-					taskdate.put("value", "SR " );
+					taskdate.put("value", "" );
 					formReqBody.put(taskdate);
 
 					
@@ -770,8 +795,10 @@ public class PurchaseOrderController {
 					vendoraccount.put("name", "vendoraccount");
 					vendoraccount.put("scope", "local");
 					vendoraccount.put("type", "string");
-					vendoraccount.put("value", supBank.getBankAccountNo());
+					vendoraccount.put("value", supBank.getBankAccountNo()+"");
 					formReqBody.put(vendoraccount);
+					
+					System.out.println("supBank.getBankAccountNo() "+supBank.getBankAccountNo()+"");
 
 					
 					JSONObject vendoraddress = new JSONObject();
@@ -782,7 +809,7 @@ public class PurchaseOrderController {
 					formReqBody.put(vendoraddress);
 					
 					
-					
+					System.out.println("supAddress.getAddress1() "+supAddress.getAddress1());
 					
 					
 					JSONObject vendoremail = new JSONObject();
@@ -792,14 +819,17 @@ public class PurchaseOrderController {
 					vendoremail.put("value", vendorRegister.getEmail());
 					formReqBody.put(vendoremail);
 					
+					System.out.println("vendorRegister.getEmail() "+vendorRegister.getEmail());
+					
 					
 					JSONObject vendorid = new JSONObject();
 					vendorid.put("name", "vendorid");
 					vendorid.put("scope", "local");
 					vendorid.put("type", "string");
-					vendorid.put("value", vendorRegister.getRegisterId());
+					vendorid.put("value", vendorRegister.getRegisterId()+"");
 					formReqBody.put(vendorid);
 					
+					System.out.println("vendorRegister.getRegisterId() "+vendorRegister.getRegisterId());
 					
 					JSONObject vendorname = new JSONObject();
 					vendorname.put("name", "vendorname");
@@ -809,7 +839,7 @@ public class PurchaseOrderController {
 					formReqBody.put(vendorname);
 					
 					
-
+					System.out.println("vendorRegister.getSupplierCompName() "+vendorRegister.getSupplierCompName());
 					
 
 					
@@ -867,49 +897,63 @@ public class PurchaseOrderController {
 					 * -------------------------------------------------------
 					 */
 
-//					HttpHeaders autoCompleteHeader = new HttpHeaders();
-//					autoCompleteHeader.add("Cookie", coockie_);
-//					autoCompleteHeader.setContentType(MediaType.APPLICATION_JSON);
-//
-//					JSONObject autoCompleate = new JSONObject();
-//					autoCompleate.put("taskIdActual", taskID1_);
-//					autoCompleate.put("suppliername", filterVendorReg.getSupplierCompName());
-//					autoCompleate.put("supplieremail", filterVendorReg.getEmail());
-//					autoCompleate.put("username", filterVendorReg.getUsername());
-//					autoCompleate.put("password", rowPassword);
-//					autoCompleate.put("registrationid", "SR " + filterVendorReg.getRegisterId());
-//
-//					JSONObject autoCompleate_ = new JSONObject();
-//					autoCompleate_.put("formId", "56d9e9ee-ed45-11eb-ba6c-0a5bf303a9fe");
-//					autoCompleate_.put("values", autoCompleate);
-//
-//					LOGGER.info("Body  " + autoCompleate_);
-//					LOGGER.info("headers  " + autoCompleteHeader);
-//
-//					HttpEntity<String> autoCompeleteEntity = new HttpEntity<String>(autoCompleate_.toString(),
-//							autoCompleteHeader);
-//					ResponseEntity autoCompleteResponse = restTemplate.exchange(
-//							"http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskID1_, HttpMethod.POST,
-//							autoCompeleteEntity, String.class);
-//					LOGGER.info("Result  " + autoCompleteResponse.getHeaders());
-//
-//					/*
-//					 * ----------- QUERY TO FETCH TASKID_2
-//					 * -------------------------------------------------------
-//					 */
-//
-//					queryRequest_1 = restTemplate.exchange("http://65.2.162.230:8080/flowable-rest/service/query/tasks",
-//							HttpMethod.POST, baseAuthEntity, String.class, 1);
-//					taskJA = new JSONArray(new JSONObject(queryRequest_1.getBody()).get("data").toString());
-//
-//					taskID2_ = (String) taskJA.getJSONObject(0).get("id");
-//					LOGGER.info("Registration TaskID_2 : " + taskID2_);
-//
-//					// ----------- AUTO CLAIMING REGISTRATION APPROVAL
-//					// -------------------------------------------------------
-//					autoClaimResponse = restTemplate.exchange(
-//							"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskID2_ + "/action/claim", HttpMethod.PUT,
-//							autoClaimEntity, String.class);
+					HttpHeaders autoCompleteHeader = new HttpHeaders();
+					autoCompleteHeader.add("Cookie", coockie_);
+					autoCompleteHeader.setContentType(MediaType.APPLICATION_JSON);
+
+					JSONObject autoCompleate = new JSONObject();
+					autoCompleate.put("taskIdActual", taskID1_);
+					autoCompleate.put("invoicemode","");
+					autoCompleate.put("workunitid", "");
+					autoCompleate.put("taskdate", "");
+					autoCompleate.put("vendorname",vendorRegister.getSupplierCompName() );
+					autoCompleate.put("vendorid", vendorRegister.getRegisterId() );
+					autoCompleate.put("vendoremail", vendorRegister.getEmail());
+					autoCompleate.put("vendoraddress", supAddress.getAddress1());
+					autoCompleate.put("city", supAddress.getCity());
+					autoCompleate.put("state", supAddress.getRegion());
+					autoCompleate.put("pincode", supAddress.getPostalCode() );
+					autoCompleate.put("vendoraccount", supBank.getBankAccountNo() );
+					autoCompleate.put("country", supAddress.getCountry());
+					autoCompleate.put("invoicetype", "" );
+					autoCompleate.put("invoicenumber", save.getInvId()+"" );
+					autoCompleate.put("invoiceamount", save.getTotalAmount()+"");
+					autoCompleate.put("invoicedate", save.getCreatedOn()+"" );
+					autoCompleate.put("podate", purchesOrder.getCreatedOn()+"");
+					autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
+					
+
+					JSONObject autoCompleate_ = new JSONObject();
+					autoCompleate_.put("formId", "cf1fb287-0974-11ec-8348-0a5bf303a9fe");
+					autoCompleate_.put("values", autoCompleate);
+
+					LOGGER.info("Body  " + autoCompleate_);
+					LOGGER.info("headers  " + autoCompleteHeader);
+
+					HttpEntity<String> autoCompeleteEntity = new HttpEntity<String>(autoCompleate_.toString(),
+							autoCompleteHeader);
+					ResponseEntity autoCompleteResponse = restTemplate.exchange(
+							"http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskID1_, HttpMethod.POST,
+							autoCompeleteEntity, String.class);
+					LOGGER.info("Result  " + autoCompleteResponse.getHeaders());
+
+					/*
+					 * ----------- QUERY TO FETCH TASKID_2
+					 * -------------------------------------------------------
+					 */
+
+					queryRequest_1 = restTemplate.exchange("http://65.2.162.230:8080/flowable-rest/service/query/tasks",
+							HttpMethod.POST, baseAuthEntity, String.class, 1);
+					taskJA = new JSONArray(new JSONObject(queryRequest_1.getBody()).get("data").toString());
+
+					taskID2_ = (String) taskJA.getJSONObject(0).get("id");
+					LOGGER.info("Registration TaskID_2 : " + taskID2_);
+
+					// ----------- AUTO CLAIMING REGISTRATION APPROVAL
+					// -------------------------------------------------------
+					autoClaimResponse = restTemplate.exchange(
+							"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskID2_ + "/action/claim", HttpMethod.PUT,
+							autoClaimEntity, String.class);
 					
 					
 					System.out.println("response =============   ");
@@ -918,7 +962,7 @@ public class PurchaseOrderController {
 
 					
 					
-//				}
+				}
 				
 				
 				
@@ -933,10 +977,10 @@ public class PurchaseOrderController {
 				
 				
 				
-//			}else {
-//				throw new VendorNotFoundException("Validation Error");
-//			}
-//			
+			}else {
+				throw new VendorNotFoundException("Validation Error");
+			}
+////			
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
