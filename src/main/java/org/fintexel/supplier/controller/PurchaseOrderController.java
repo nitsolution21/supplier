@@ -926,6 +926,7 @@ public class PurchaseOrderController {
 	@GetMapping("/getLoginCustomerDetails/{supplierCode}")
 	public PrsonceLoginCustomerDetails getLoginCustomerDetails(@PathVariable String supplierCode,@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.getLoginDetails()");
+		// Test push
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
