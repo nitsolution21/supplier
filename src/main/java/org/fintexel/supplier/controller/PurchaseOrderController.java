@@ -137,10 +137,9 @@ public class PurchaseOrderController {
 	private FieldValidation fieldValidation;
 	
 	@Autowired
-	SupplierInvoiceRepo supplierInvoiceRepo;
+	private SupplierInvoiceRepo supplierInvoiceRepo;
 	
 	@Autowired
-<<<<<<< HEAD
 	private SupplierInvoiceItemRepo supplierInvoiceItemRepo;
 	
 	@Autowired
@@ -148,13 +147,8 @@ public class PurchaseOrderController {
 	
 	@Autowired
 	private VendorRegisterRepo vendorRegisterRepo;
-=======
-	SupplierInvoiceItemRepo supplierInvoiceItemRepo;
 
-	
-	
->>>>>>> eee8c8943c2d4a51483e2fd04ef771481b912c1e
-
+	private Integer i;
 	
 
 	
@@ -550,7 +544,6 @@ public class PurchaseOrderController {
 		LOGGER.info("Inside - PurchaseOrderController.invoice()");
 		try {
 			
-<<<<<<< HEAD
 //			if(fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getPOId()) &&
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvDate()) &&
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvDesc()) &&
@@ -600,25 +593,6 @@ public class PurchaseOrderController {
 //					supplierInvoiceItem.setItemSubtotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
 //					supplierInvoiceItem.setItemTotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
 //					supplierInvoiceItemRepo.save(supplierInvoiceItem);
-=======
-			if(fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getPOId()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvDate()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvDesc()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvTaxid()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getRemitTo()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getBillTo()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getShipCharges()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getHandlingCharges()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalGross()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalTax()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getSubtotal()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalAmount()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getStatus()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvAttachment()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getCreatedBy()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getCreatedOn()) 
-					//fieldValidation.isEmpty(invoiceStraching.getPurchesOrderItems().getI) &&
->>>>>>> eee8c8943c2d4a51483e2fd04ef771481b912c1e
 					
 					/*
 					 * ----------- REQUEST PROCESS ID with PROCESS DEFINITION KEY
@@ -648,7 +622,6 @@ public class PurchaseOrderController {
 					BaseAuthHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 					BaseAuthHeader.setBasicAuth("admin", "test");
 					
-<<<<<<< HEAD
 					/*
 					 * ============================== ProcessInstance Request
 					 * ================================================
@@ -946,25 +919,14 @@ public class PurchaseOrderController {
 					
 					
 //				}
-=======
-					) {
 				
 				
 				
 				
-				SupplierInvoice save = supplierInvoiceRepo.save(invoiceStraching.getSupplierInvoice());
-				SupplierInvoiceItem supplierInvoiceItem = new SupplierInvoiceItem();
->>>>>>> eee8c8943c2d4a51483e2fd04ef771481b912c1e
 				
-				supplierInvoiceItem.setInvId(save.getInvId());
-//				supplierInvoiceItem.setPoitemId(invoiceStraching.getSupplierInvoiceItem().getPoitemId());
-//				supplierInvoiceItem.setItemQty(invoiceStraching.getSupplierInvoiceItem().getItemQty());
-				supplierInvoiceItemRepo.save(supplierInvoiceItem);
+			
 				
 				
-				
-//				supplierInvoiceItemRepo
-//				purchesOrderItemsRepo
 				
 				
 				return new CustomeResponseEntity("SUCCESS","DATA ADD SUCCESSFULLY");
@@ -1295,7 +1257,7 @@ public class PurchaseOrderController {
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getBillToText())
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToId())
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToText())
-					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())
+//					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())
 					) {
 					
 					requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
