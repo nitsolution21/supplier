@@ -32,6 +32,7 @@ import org.fintexel.supplier.entity.SupBank;
 import org.fintexel.supplier.entity.SupDepartment;
 import org.fintexel.supplier.customerentity.CustomerDepartments;
 import org.fintexel.supplier.customerentity.CustomerRegister;
+import org.fintexel.supplier.customerentity.GetPendingPoResponceForSuppiler;
 import org.fintexel.supplier.customerentity.GetPurchesOrder;
 import org.fintexel.supplier.customerentity.InvoiceStraching;
 import org.fintexel.supplier.customerentity.PrsonceLoginCustomerDetails;
@@ -802,7 +803,8 @@ public class PurchaseOrderController {
 			if (companyProfileIdByCustomerId == -1) {
 				throw new VendorNotFoundException("Customer not found");
 			} else {
-				if (fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getPoNumber()) 
+				if (
+						fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getPoNumber()) 
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getUserId())
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getSupplierCode())
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDepartmentId())
@@ -819,27 +821,52 @@ public class PurchaseOrderController {
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getBillToText())
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToId())
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getDeliveryToText())
-//					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())
+					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())
 					) {
 					
-					requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
-					requestPurchesOrder.getPurchesOrder().setStatus("DRAFT");
+					Optional<PurchesOrder> findPoByPoNumber = purchesOrderRepo.findByPoNumber(requestPurchesOrder.getPurchesOrder().getPoNumber());
 					
-					PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
-					if (!savePurchesOrder.equals(null)) {
-					LOGGER.info("ITEM >>> FOR >>> PO "+requestPurchesOrder.getPurchesOrderItems());
-					requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
-						
-						item.setPOId(savePurchesOrder.getPOId());
-						
-						purchesOrderItemsRepo.save(item);
-					});
-					
-					return new CustomeResponseEntity("SUCCESS","PO save successfully");
+					if (findPoByPoNumber.isPresent()) {
+						requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
+						requestPurchesOrder.getPurchesOrder().setStatus("DRAFT");
+						requestPurchesOrder.getPurchesOrder().setPOId(findPoByPoNumber.get().getPOId());
+						PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
+						if (!savePurchesOrder.equals(null)) {
+//							List<PurchesOrderItems> findItemByPOId = purchesOrderItemsRepo.findByPOId(findPoByPoNumber.get().getPOId());
+							requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
+								Optional<PurchesOrderItems> finItemdById = purchesOrderItemsRepo.findById(item.getPOItemId());
+								item.setPOId(savePurchesOrder.getPOId());
+								item.setPOItemId(finItemdById.get().getPOItemId());
+								purchesOrderItemsRepo.save(item);
+							});
+							
+							return new CustomeResponseEntity("SUCCESS","PO submit successfully");
+							
+						} else {
+							throw new VendorNotFoundException("Data Not save in data base");
+						}
 						
 					} else {
-						throw new VendorNotFoundException("Data Not save in data base");
+						requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
+						requestPurchesOrder.getPurchesOrder().setStatus("DRAFT");
+						
+						PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
+//						System.out.println("SU:2021-08-29:16  " + savePurchesOrder.toString());
+						if (!savePurchesOrder.equals(null)) {
+							
+						requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
+							
+							item.setPOId(savePurchesOrder.getPOId());
+							purchesOrderItemsRepo.save(item);
+						});
+						
+						return new CustomeResponseEntity("SUCCESS","PO submit successfully");
+							
+						} else {
+							throw new VendorNotFoundException("Data Not save in data base");
+						}
 					}
+					
 				} else {
 					throw new VendorNotFoundException("validation error");
 				}
@@ -882,25 +909,49 @@ public class PurchaseOrderController {
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())
 					) {
 					
-					requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
-					requestPurchesOrder.getPurchesOrder().setStatus("WAITING FOR APPROVAL");
+					Optional<PurchesOrder> findPoByPoNumber = purchesOrderRepo.findByPoNumber(requestPurchesOrder.getPurchesOrder().getPoNumber());
 					
-					PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
-					System.out.println("SU:2021-08-29:16  " + savePurchesOrder.toString());
-					if (!savePurchesOrder.equals(null)) {
-						
-					requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
-						
-						item.setPOId(savePurchesOrder.getPOId());
-						
-						purchesOrderItemsRepo.save(item);
-					});
-					
-					return new CustomeResponseEntity("SUCCESS","PO submit successfully");
+					if (findPoByPoNumber.isPresent()) {
+						requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
+						requestPurchesOrder.getPurchesOrder().setStatus("WAITING FOR APPROVAL");
+						requestPurchesOrder.getPurchesOrder().setPOId(findPoByPoNumber.get().getPOId());
+						PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
+						if (!savePurchesOrder.equals(null)) {
+//							List<PurchesOrderItems> findItemByPOId = purchesOrderItemsRepo.findByPOId(findPoByPoNumber.get().getPOId());
+							requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
+								Optional<PurchesOrderItems> finItemdById = purchesOrderItemsRepo.findById(item.getPOItemId());
+								item.setPOId(savePurchesOrder.getPOId());
+								item.setPOItemId(finItemdById.get().getPOItemId());
+								purchesOrderItemsRepo.save(item);
+							});
+							
+							return new CustomeResponseEntity("SUCCESS","PO submit successfully");
+							
+						} else {
+							throw new VendorNotFoundException("Data Not save in data base");
+						}
 						
 					} else {
-						throw new VendorNotFoundException("Data Not save in data base");
+						requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
+						requestPurchesOrder.getPurchesOrder().setStatus("WAITING FOR APPROVAL");
+						
+						PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
+//						System.out.println("SU:2021-08-29:16  " + savePurchesOrder.toString());
+						if (!savePurchesOrder.equals(null)) {
+							
+						requestPurchesOrder.getPurchesOrderItems().forEach(item -> {
+							
+							item.setPOId(savePurchesOrder.getPOId());
+							purchesOrderItemsRepo.save(item);
+						});
+						
+						return new CustomeResponseEntity("SUCCESS","PO submit successfully");
+							
+						} else {
+							throw new VendorNotFoundException("Data Not save in data base");
+						}
 					}
+					
 				} else {
 					throw new VendorNotFoundException("validation error");
 				}
@@ -1056,4 +1107,19 @@ public class PurchaseOrderController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
+	
+//	@GetMapping("/getPendingPoForSuppiler/{suppilerCode}")
+//	public List<GetPendingPoResponceForSuppiler> getPendingPoForSuppiler(@PathVariable String suppilerCode) {
+//		if (!suppilerCode.equals(null)) {
+//			List<GetPendingPoResponceForSuppiler> allPendingPOForSuppiler = purchesOrderRepo.getAllPendingPOForSuppiler(suppilerCode);
+//			if (allPendingPOForSuppiler.size() > 0) {
+//				return allPendingPOForSuppiler;
+//			} else {
+//				throw new VendorNotFoundException("No data found");
+//			}
+//		} else {
+//			throw new VendorNotFoundException("Don't get any supplier code");
+//		}
+//	}
+	
 }
