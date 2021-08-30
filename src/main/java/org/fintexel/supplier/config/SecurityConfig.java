@@ -85,7 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET,"/vendor/pending/request/{code}").permitAll()
 				.antMatchers(HttpMethod.POST,"/vendor/approved").permitAll()
 				.antMatchers(HttpMethod.GET,"/vendor/pending").permitAll()
-				.antMatchers(HttpMethod.GET,"/customer/po/pendingCustomerStatus").permitAll()
+				.antMatchers(HttpMethod.POST,"/customer/po/pendingCustomerStatus").permitAll()
 				.antMatchers(HttpMethod.GET,"/customer/po/pendingCustomer/details/{id}").permitAll()
 				.antMatchers(HttpMethod.GET,"/customer/po/pendingCustomer").permitAll()
 //				.antMatchers(HttpMethod.POST,"/update").permitAll()
