@@ -13,7 +13,7 @@ public interface ItemCategoryRepo extends JpaRepository<ItemCategory,Long>{
 	
 	List<ItemCategory>findBySupplierCode(String supplierCode);
 	
-	@Query("select SC from ItemSubCategory SC, ItemCategory IC where SC.categoryId = IC.categoryId and IC.supplierCode = ?1")
+	@Query(value = "SELECT * FROM flowable.ITEM_CATEGORY where SUPPLIER_CODE = ?1 and CATEGORY_ID in (select CATEGORY_ID from ITEM_SUB_CATEGORY where SUPPLIER_CODE = ?1)" , nativeQuery = true)
 	List<ItemCategory>findBySupplierCodeWithHaveSubCategory(String supplierCode);
 	
 }
