@@ -36,6 +36,7 @@ import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerentity.GetPendingPoResponceForSuppiler;
 import org.fintexel.supplier.customerentity.GetPurchesOrder;
 import org.fintexel.supplier.customerentity.InvoiceStraching;
+import org.fintexel.supplier.customerentity.POFlowableItem;
 import org.fintexel.supplier.customerentity.PrsonceLoginCustomerDetails;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
@@ -219,7 +220,7 @@ public class PurchaseOrderController {
 							try {
 								supDetails2 = supDetailsRepo.findById(supplierCode).get();
 							}catch(Exception e) {
-								
+								throw new VendorNotFoundException("Supplier Details is Not Created");
 							}
 							try {
 								 Optional<SupAddress> findByIsPrimary = supAddressRepo.findByIsPrimaryWithSupplierCode(1, supplierCode);
@@ -233,7 +234,7 @@ public class PurchaseOrderController {
 								 System.out.println("%%%%%%%%%%@@@@@@@@ "+ findByIsPrimary.toString());
 								 
 							}catch(Exception e) {
-								
+								throw new VendorNotFoundException("Supplier Address is Not Created");
 							}
 							try {
 								Optional<SupBank> findByIsPrimaryWithSupplierCode = supBankRepo.findByIsPrimaryWithSupplierCode(1, supplierCode);
@@ -243,22 +244,22 @@ public class PurchaseOrderController {
 							    	supBank = supBankRepo.findBySupplierCodeWithLastRow(supplierCode).get();
 							    }
 							}catch(Exception e) {
-								
+								throw new VendorNotFoundException("Supplier Bank is Not Created");
 							}
 							try {
 								findBySupplierCodeInventory = inventoryRepo.findBySupplierCode(supplierCode);
 							}catch(Exception e) {
-								
+								throw new VendorNotFoundException("Supplier inventory is Not Created");
 							}
 							try {
 								findBySupplierCodeDepertment = supDepartmentRepo.findBySupplierCode(supplierCode);
 							}catch(Exception e) {
-								
+								throw new VendorNotFoundException("Supplier Depertment is Not Created");
 							}
 							try {
-								findBySupplierCodeCategory = itemCategoryRepo.findBySupplierCode(supplierCode);
+								findBySupplierCodeCategory = itemCategoryRepo.findBySupplierCodeWithHaveSubCategory(supplierCode);
 							}catch(Exception e) {
-								
+								throw new VendorNotFoundException("Supplier Category is Not Created");
 							}
 							try {
 								supplierAllDetailsForPO.setFindBySupplierCodeDepertment(findBySupplierCodeDepertment);
@@ -377,16 +378,22 @@ public class PurchaseOrderController {
 	}
 	
 	@GetMapping("/pendingCustomer/details/{id}")
-	public List<PurchesOrder> getPendingCustomerDetails(@PathVariable("id") int id) {
+	public POFlowableItem getPendingCustomerDetails(@PathVariable("id") int id) {
 	LOGGER.info("Inside - PurchaseOrderController.getPendingCustomerDetails()");
-		
+	POFlowableItem poFlowableItem = new POFlowableItem();
 		try {
 			
 			List<PurchesOrder> findByCId = purchesOrderRepo.findBycId(id);
 			if(findByCId.size()<0) {
 				throw new VendorNotFoundException("No Pending Data");
 			}else {
-				return findByCId;
+				findByCId.forEach(obj->{
+					poFlowableItem.setPurchesOrder(obj);
+					List<PurchesOrderItems> findByPOId = purchesOrderItemsRepo.findByPOId(obj.getPOId());
+					poFlowableItem.setPurchesOrderItems(findByPOId);
+					
+				});
+				return poFlowableItem;
 			}
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
