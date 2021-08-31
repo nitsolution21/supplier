@@ -1252,7 +1252,7 @@ public class PurchaseOrderController {
 					
 					
 					Optional<PurchesOrder> findPoByPoNumber = purchesOrderRepo.findByPoNumber(requestPurchesOrder.getPurchesOrder().getPoNumber());
-					LOGGER.info("Call databade>>>>>>{{{}}}}"+findPoByPoNumber.get());
+//					LOGGER.info("Call databade>>>>>>{{{}}}}"+findPoByPoNumber.get());
 					if (findPoByPoNumber.isPresent()) {
 						requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
 						requestPurchesOrder.getPurchesOrder().setStatus("DRAFT");
@@ -1276,10 +1276,15 @@ public class PurchaseOrderController {
 						}
 						
 					} else {
+						LOGGER.info("Frist Save <<<>>>><<>>>>>  ");
 						requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);
 						requestPurchesOrder.getPurchesOrder().setStatus("DRAFT");
 						
+						LOGGER.info("Before save data "+requestPurchesOrder.getPurchesOrder());
+						
 						PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
+						
+						LOGGER.info("After save data "+savePurchesOrder);
 //						System.out.println("SU:2021-08-29:16  " + savePurchesOrder.toString());
 						if (!savePurchesOrder.equals(null)) {
 							
@@ -1342,7 +1347,7 @@ public class PurchaseOrderController {
 					
 					Optional<PurchesOrder> findPoByPoNumber = purchesOrderRepo.findByPoNumber(requestPurchesOrder.getPurchesOrder().getPoNumber());
 					
-					LOGGER.info("Call databade>>>>>>{{{}}}}"+findPoByPoNumber.get());
+//					LOGGER.info("Call databade>>>>>>{{{}}}}"+findPoByPoNumber.get());
 					
 					if (findPoByPoNumber.isPresent()) {
 						requestPurchesOrder.getPurchesOrder().setcId((int) companyProfileIdByCustomerId);

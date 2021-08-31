@@ -1925,27 +1925,35 @@ System.out.println("Inside if2  "+address);
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 //			String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
 			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
-			if (companyProfileIdByCustomerId == -1) {
+			if (customerIdFromToken == -1) {
 				
 				throw new VendorNotFoundException("Customer not found");
 				
 			} else {
-				List<SupDetails> responceSupDetails = new ArrayList<SupDetails>();
 				
 				List<CustomerContact> findContractBycId = customerContactRepo.findBycId(companyProfileIdByCustomerId);
-				List<SupDetails> findAllSupplierDetails = supDetailsRepo.findAll();
-				
-				findContractBycId.forEach(contract -> {
+				if (findContractBycId.size() > 0) {
+					List<SupDetails> findAllSupplierDetails = supDetailsRepo.findAll();
 					
-					findAllSupplierDetails.forEach(supplierDetails -> {
-						if (!contract.getSupplierCode().equals(supplierDetails.getSupplierCode())) {
-							responceSupDetails.add(supplierDetails);
-						}
-					});
+					List<SupDetails> responceSupDetails = new ArrayList<SupDetails>();
 					
-				});
-				
-				return responceSupDetails;
+					
+						
+						findAllSupplierDetails.forEach(supplierDetails -> {
+							findContractBycId.forEach(contract -> {
+								if (!contract.getSupplierCode().equals(supplierDetails.getSupplierCode())) {
+									responceSupDetails.add(supplierDetails);
+								}
+							});
+						});
+						
+					return responceSupDetails;
+				} else {
+					LOGGER.info("In else");
+					List<SupDetails> findAllSupplierDetails = supDetailsRepo.findAll();
+					
+					return findAllSupplierDetails;
+				}
 				
 			}
 		} catch (Exception e) {
