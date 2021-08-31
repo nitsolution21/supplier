@@ -240,7 +240,7 @@ public class PurchaseOrderController {
 								 }else {
 									 supAddress = findByIsPrimary.get();
 								 }
-								 System.out.println("%%%%%%%%%%@@@@@@@@ "+ findByIsPrimary.toString());
+//								 System.out.println("%%%%%%%%%%@@@@@@@@ "+ findByIsPrimary.toString());
 								 
 							}catch(Exception e) {
 								throw new VendorNotFoundException("Supplier Address is Not Created");
@@ -253,22 +253,22 @@ public class PurchaseOrderController {
 							    	supBank = supBankRepo.findBySupplierCodeWithLastRow(supplierCode).get();
 							    }
 							}catch(Exception e) {
-								throw new VendorNotFoundException("Supplier Bank is Not Created");
+//								throw new VendorNotFoundException("Supplier Bank is Not Created");
 							}
 							try {
 								findBySupplierCodeInventory = inventoryRepo.findBySupplierCode(supplierCode);
 							}catch(Exception e) {
-								throw new VendorNotFoundException("Supplier inventory is Not Created");
+//								throw new VendorNotFoundException("Supplier inventory is Not Created");
 							}
 							try {
 								findBySupplierCodeDepertment = supDepartmentRepo.findBySupplierCode(supplierCode);
 							}catch(Exception e) {
-								throw new VendorNotFoundException("Supplier Depertment is Not Created");
+//								throw new VendorNotFoundException("Supplier Depertment is Not Created");
 							}
 							try {
 								findBySupplierCodeCategory = itemCategoryRepo.findBySupplierCodeWithHaveSubCategory(supplierCode);
 							}catch(Exception e) {
-								throw new VendorNotFoundException("Supplier Category is Not Created");
+//								throw new VendorNotFoundException("Supplier Category is Not Created");
 							}
 							try {
 								supplierAllDetailsForPO.setFindBySupplierCodeDepertment(findBySupplierCodeDepertment);
