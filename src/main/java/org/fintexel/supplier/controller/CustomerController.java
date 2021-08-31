@@ -1950,7 +1950,7 @@ System.out.println("Inside if2  "+address);
 							findContractBycId.forEach(contract -> {
 								if (!contract.getSupplierCode().equals(supplierDetails.getSupplierCode())) {
 									responceSupDetails.add(supplierDetails);
-								}
+								} 
 							});
 						});
 						
