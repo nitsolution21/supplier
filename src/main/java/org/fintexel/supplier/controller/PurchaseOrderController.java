@@ -387,9 +387,9 @@ public class PurchaseOrderController {
 	}
 	
 	@GetMapping("/pendingCustomer/details/{id}")
-	public POFlowableItem getPendingCustomerDetails(@PathVariable("id") int id) {
+	public List<POFlowableItem> getPendingCustomerDetails(@PathVariable("id") int id) {
 	LOGGER.info("Inside - PurchaseOrderController.getPendingCustomerDetails()");
-	POFlowableItem poFlowableItem = new POFlowableItem();
+	List<POFlowableItem> poFlowableItem = new ArrayList<POFlowableItem>();
 		try {
 			
 			List<PurchesOrder> findByCId = purchesOrderRepo.findBycId(id);
@@ -397,9 +397,11 @@ public class PurchaseOrderController {
 				throw new VendorNotFoundException("No Pending Data");
 			}else {
 				findByCId.forEach(obj->{
-					poFlowableItem.setPurchesOrder(obj);
+					POFlowableItem temp = new POFlowableItem();
+					temp.setPurchesOrder(obj);
 					List<PurchesOrderItems> findByPOId = purchesOrderItemsRepo.findByPOId(obj.getPOId());
-					poFlowableItem.setPurchesOrderItems(findByPOId);
+					temp.setPurchesOrderItems(findByPOId);
+					poFlowableItem.add(temp);
 					
 				});
 				return poFlowableItem;
