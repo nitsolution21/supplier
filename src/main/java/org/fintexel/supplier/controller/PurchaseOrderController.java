@@ -32,6 +32,7 @@ import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupBank;
 import org.fintexel.supplier.entity.SupDepartment;
 import org.fintexel.supplier.customerentity.CustomerDepartments;
+import org.fintexel.supplier.customerentity.CustomerProfile;
 import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerentity.GetPendingPoResponceForSuppiler;
 import org.fintexel.supplier.customerentity.GetPurchesOrder;
@@ -40,6 +41,7 @@ import org.fintexel.supplier.customerentity.PrsonceLoginCustomerDetails;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
+import org.fintexel.supplier.customerrepository.CustomerProfileRepo;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.customerrepository.PurchesOrderAttachmentRepo;
 import org.fintexel.supplier.customerrepository.PurchesOrderItemsRepo;
@@ -152,6 +154,9 @@ public class PurchaseOrderController {
 	
 	@Autowired
 	private PurchesOrderAttachmentRepo purchesOrderAttachmentRepo;
+	
+	@Autowired
+	private CustomerProfileRepo customerProfileRepo; 
 
 	private Integer i;
 	
@@ -1079,7 +1084,6 @@ public class PurchaseOrderController {
 			}
 			else {
 //				List<RequestPurchesOrder> purchesOrders = new ArrayList<RequestPurchesOrder>();
-				LOGGER.info("customerIdFromToken present:   ||||||||------||||||   ");
 				List<PurchesOrder> findPOBycId = purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId);
 				//LOGGER.info("customerIdFromToken present:   ||||||||------||||||   ");
 				if (findPOBycId.size() > 0) {
@@ -1098,6 +1102,13 @@ public class PurchaseOrderController {
 								order.setSupplierCode(po.getSupplierCode());
 								order.setDepartmentId(po.getDepartmentId());
 								order.setCusAddrId(po.getCusAddrId());
+								
+								
+								Optional<CustomerDepartments> findDepartmentById = customerDepartmentsRepo.findById(po.getDepartmentId());
+								order.setDepartmentName(findDepartmentById.get().getDepartmentName());
+								
+								Optional<CustomerProfile> finCusomerProfiledById = customerProfileRepo.findById(companyProfileIdByCustomerId);
+								order.setCustomerName(finCusomerProfiledById.get().getCustomerName());
 								
 								Optional<CustomerAddress> findCustomerAddressById = customerAddressRepo.findById(po.getCusAddrId());
 								JSONObject customerAddressJsonObject = new JSONObject(findCustomerAddressById.get());
@@ -1182,6 +1193,12 @@ public class PurchaseOrderController {
 							order.setStatusComment(po.getStatusComment());
 							order.setCreatedBy(po.getCreatedBy());
 							order.setCreatedOn(po.getCreatedOn());
+							
+							Optional<CustomerDepartments> findDepartmentById = customerDepartmentsRepo.findById(po.getDepartmentId());
+							order.setDepartmentName(findDepartmentById.get().getDepartmentName());
+							
+							Optional<CustomerProfile> finCusomerProfiledById = customerProfileRepo.findById(companyProfileIdByCustomerId);
+							order.setCustomerName(finCusomerProfiledById.get().getCustomerName());
 							
 							
 							List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(po.getPOId());

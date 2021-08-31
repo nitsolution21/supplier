@@ -10,6 +10,8 @@ public class GetPurchesOrder {
 	private Long userId;
 	private String supplierCode;
 	private Long departmentId;
+	private String departmentName;
+	private String customerName;
 	private Long cusAddrId;
 	private String cusAddrText;
 	private Long supAddrId;
@@ -38,10 +40,11 @@ public class GetPurchesOrder {
 	}
 
 	public GetPurchesOrder(Long pOId, int cId, String poNumber, Long userId, String supplierCode, Long departmentId,
-			Long cusAddrId, String cusAddrText, Long supAddrId, String supAddrText, Long contractId, int contractTerms,
-			String comment, Long shipToId, String shipToText, Long billToId, String billToText, Long deliveryToId,
-			String deliveryToText, String curType, float amount, String status, String statusComment, String createdBy,
-			Date createdOn, int isDeleted, List<PurchesOrderItems> purchesOrderItems) {
+			String departmentName, String customerName, Long cusAddrId, String cusAddrText, Long supAddrId,
+			String supAddrText, Long contractId, int contractTerms, String comment, Long shipToId, String shipToText,
+			Long billToId, String billToText, Long deliveryToId, String deliveryToText, String curType, float amount,
+			String status, String statusComment, String createdBy, Date createdOn, int isDeleted,
+			List<PurchesOrderItems> purchesOrderItems) {
 		super();
 		POId = pOId;
 		this.cId = cId;
@@ -49,6 +52,8 @@ public class GetPurchesOrder {
 		this.userId = userId;
 		this.supplierCode = supplierCode;
 		this.departmentId = departmentId;
+		this.departmentName = departmentName;
+		this.customerName = customerName;
 		this.cusAddrId = cusAddrId;
 		this.cusAddrText = cusAddrText;
 		this.supAddrId = supAddrId;
@@ -75,14 +80,15 @@ public class GetPurchesOrder {
 	@Override
 	public String toString() {
 		return "GetPurchesOrder [POId=" + POId + ", cId=" + cId + ", poNumber=" + poNumber + ", userId=" + userId
-				+ ", supplierCode=" + supplierCode + ", departmentId=" + departmentId + ", cusAddrId=" + cusAddrId
-				+ ", cusAddrText=" + cusAddrText + ", supAddrId=" + supAddrId + ", supAddrText=" + supAddrText
-				+ ", contractId=" + contractId + ", contractTerms=" + contractTerms + ", comment=" + comment
-				+ ", shipToId=" + shipToId + ", shipToText=" + shipToText + ", billToId=" + billToId + ", billToText="
-				+ billToText + ", deliveryToId=" + deliveryToId + ", deliveryToText=" + deliveryToText + ", curType="
-				+ curType + ", amount=" + amount + ", status=" + status + ", statusComment=" + statusComment
-				+ ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", isDeleted=" + isDeleted
-				+ ", purchesOrderItems=" + purchesOrderItems + "]";
+				+ ", supplierCode=" + supplierCode + ", departmentId=" + departmentId + ", departmentName="
+				+ departmentName + ", customerName=" + customerName + ", cusAddrId=" + cusAddrId + ", cusAddrText="
+				+ cusAddrText + ", supAddrId=" + supAddrId + ", supAddrText=" + supAddrText + ", contractId="
+				+ contractId + ", contractTerms=" + contractTerms + ", comment=" + comment + ", shipToId=" + shipToId
+				+ ", shipToText=" + shipToText + ", billToId=" + billToId + ", billToText=" + billToText
+				+ ", deliveryToId=" + deliveryToId + ", deliveryToText=" + deliveryToText + ", curType=" + curType
+				+ ", amount=" + amount + ", status=" + status + ", statusComment=" + statusComment + ", createdBy="
+				+ createdBy + ", createdOn=" + createdOn + ", isDeleted=" + isDeleted + ", purchesOrderItems="
+				+ purchesOrderItems + "]";
 	}
 
 	public Long getPOId() {
@@ -131,6 +137,22 @@ public class GetPurchesOrder {
 
 	public void setDepartmentId(Long departmentId) {
 		this.departmentId = departmentId;
+	}
+
+	public String getDepartmentName() {
+		return departmentName;
+	}
+
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
 	}
 
 	public Long getCusAddrId() {
@@ -301,6 +323,5 @@ public class GetPurchesOrder {
 		this.purchesOrderItems = purchesOrderItems;
 	}
 	
-	
-	
+		
 }
