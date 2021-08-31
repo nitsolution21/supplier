@@ -237,7 +237,7 @@ public class PurchaseOrderController {
 							}
 							try {
 								Optional<SupBank> findByIsPrimaryWithSupplierCode = supBankRepo.findByIsPrimaryWithSupplierCode(1, supplierCode);
-							    if(findByIsPrimaryWithSupplierCode.isEmpty()) {
+							    if(findByIsPrimaryWithSupplierCode.isPresent()) {
 							    	supBank = findByIsPrimaryWithSupplierCode.get();
 							    }else {
 							    	supBank = supBankRepo.findBySupplierCodeWithLastRow(supplierCode).get();
