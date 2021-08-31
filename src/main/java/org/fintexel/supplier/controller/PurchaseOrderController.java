@@ -1024,7 +1024,7 @@ public class PurchaseOrderController {
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
-			if (companyProfileIdByCustomerId == -1) {
+			if (customerIdFromToken == -1) {
 				throw new VendorNotFoundException("Customer not found");
 			} else {
 				PrsonceLoginCustomerDetails loginCustomerDetails = new PrsonceLoginCustomerDetails();
@@ -1037,6 +1037,12 @@ public class PurchaseOrderController {
 				List<CustomerDepartments> findDepartmentBycId = customerDepartmentsRepo.findBycId(companyProfileIdByCustomerId);
 				if (findDepartmentBycId.size() > 0) {
 					loginCustomerDetails.setCustomerDepartments(findDepartmentBycId);
+				}
+				
+				Optional<CustomerProfile> findCustomerProfileById = customerProfileRepo.findById(companyProfileIdByCustomerId);
+				
+				if (findCustomerProfileById.isPresent()) {
+					loginCustomerDetails.setCustomerName(findCustomerProfileById.get().getCustomerName());
 				}
 				
 				String posize = Integer.toString(purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId).size());
@@ -1107,8 +1113,6 @@ public class PurchaseOrderController {
 								Optional<CustomerDepartments> findDepartmentById = customerDepartmentsRepo.findById(po.getDepartmentId());
 								order.setDepartmentName(findDepartmentById.get().getDepartmentName());
 								
-								Optional<CustomerProfile> finCusomerProfiledById = customerProfileRepo.findById(companyProfileIdByCustomerId);
-								order.setCustomerName(finCusomerProfiledById.get().getCustomerName());
 								
 								Optional<CustomerAddress> findCustomerAddressById = customerAddressRepo.findById(po.getCusAddrId());
 								JSONObject customerAddressJsonObject = new JSONObject(findCustomerAddressById.get());
@@ -1196,9 +1200,6 @@ public class PurchaseOrderController {
 							
 							Optional<CustomerDepartments> findDepartmentById = customerDepartmentsRepo.findById(po.getDepartmentId());
 							order.setDepartmentName(findDepartmentById.get().getDepartmentName());
-							
-							Optional<CustomerProfile> finCusomerProfiledById = customerProfileRepo.findById(companyProfileIdByCustomerId);
-							order.setCustomerName(finCusomerProfiledById.get().getCustomerName());
 							
 							
 							List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(po.getPOId());
