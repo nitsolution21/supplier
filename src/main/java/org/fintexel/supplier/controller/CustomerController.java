@@ -1416,7 +1416,8 @@ public class CustomerController {
 
 				if (!loginSupplierCode.equals(null)) {
 
-System.out.println("Inside if2  "+address);
+//System.out.println("Inside if2  "+address);
+//					LOGGER.info("gate data from user"+)
 					SupAddress filterAddressUp = new SupAddress();
 					filterAddressUp.setSupplierCode(loginSupplierCode);
 					filterAddressUp.setAddressType(address.getAddressType());
@@ -1435,6 +1436,7 @@ System.out.println("Inside if2  "+address);
 					filterAddressUp.setStatus("APPROVED");
 					filterAddressUp.setAddressProof(address.getAddressProof());
 					filterAddressUp.setAddressProofPath(address.getAddressProofPath());
+					LOGGER.info("Before save data ><<><><><><><><><><><><><><><><><><><><><>"+filterAddressUp);
 					SupAddress save = this.supAddRepo.save(filterAddressUp);
 					return new CustomeResponseEntity("SUCCESS", "Data Added Successfully");
 				} else {
@@ -1934,32 +1936,11 @@ System.out.println("Inside if2  "+address);
 				throw new VendorNotFoundException("Customer not found");
 				
 			} else {
-				
-				List<CustomerContact> findContractBycId = customerContactRepo.findBycId(companyProfileIdByCustomerId);
-				if (findContractBycId.size() > 0) {
-					List<SupDetails> findAllSupplierDetails = supDetailsRepo.findAll();
-					
-					List<SupDetails> responceSupDetails = new ArrayList<SupDetails>();
-					
-					
-					if(findAllSupplierDetails.size()<1) {
-						throw new VendorNotFoundException("No Supplier Found in databse");
-					}
-						
-						findAllSupplierDetails.forEach(supplierDetails -> {
-							findContractBycId.forEach(contract -> {
-								if (!contract.getSupplierCode().equals(supplierDetails.getSupplierCode())) {
-									responceSupDetails.add(supplierDetails);
-								} 
-							});
-						});
-						
-					return responceSupDetails;
+				List<SupDetails> allNotContactSuppiler = supDetailsRepo.getAllNotContactSuppiler(companyProfileIdByCustomerId);
+				if (allNotContactSuppiler.size() > 0) {
+					return allNotContactSuppiler;
 				} else {
-					LOGGER.info("In else");
-					List<SupDetails> findAllSupplierDetails = supDetailsRepo.findAll();
-					
-					return findAllSupplierDetails;
+					throw new VendorNotFoundException("Suppiler details not found");
 				}
 				
 			}
