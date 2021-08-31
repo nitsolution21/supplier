@@ -97,7 +97,9 @@ public class InventoryDetails {
 	}
 
 	public void setUnitPrice(float unitPrice) {
+		
 		this.unitPrice = unitPrice;
+		System.out.println("--------  "+ this.unitPrice);
 	}
 
 	public int getSku() {
@@ -186,14 +188,7 @@ public class InventoryDetails {
 				+ itemDescription + ", qty=" + qty + ", unitPrice=" + unitPrice + ", sku=" + sku + ", categoryId="
 				+ categoryId + ", brandId=" + brandId + ", subcategoryId=" + subcategoryId + ", status=" + status
 				+ ", discount=" + discount + ", createdBy=" + createdBy + ", createdOn=" + createdOn + ", updatedBy="
-				+ updatedBy + ", updatedOn=" + updatedOn + ", getItemId()=" + getItemId() + ", getSupplierCode()="
-				+ getSupplierCode() + ", getItemDescription()=" + getItemDescription() + ", getQty()=" + getQty()
-				+ ", getUnitPrice()=" + getUnitPrice() + ", getSku()=" + getSku() + ", getCategoryId()="
-				+ getCategoryId() + ", getBrandId()=" + getBrandId() + ", getSubcategoryId()=" + getSubcategoryId()
-				+ ", getStatus()=" + getStatus() + ", getDiscount()=" + getDiscount() + ", getCreatedBy()="
-				+ getCreatedBy() + ", getCreatedOn()=" + getCreatedOn() + ", getUpdatedBy()=" + getUpdatedBy()
-				+ ", getUpdatedOn()=" + getUpdatedOn() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode()
-				+ ", toString()=" + super.toString() + "]";
+				+ updatedBy + ", updatedOn=" + updatedOn + "]";
 	}
 
 	public InventoryDetails(long itemId, String supplierCode, String itemDescription, int qty, float unitPrice, int sku,
@@ -221,6 +216,8 @@ public class InventoryDetails {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
+
 	
 		
 }

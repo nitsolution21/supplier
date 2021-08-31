@@ -365,6 +365,10 @@ public class UploadServiceImpl implements UploadService {
 				if (find.getEmail().equals(email)) {
 					throw new VendorNotFoundException("Email already exist - " + email);
 				}
+				if(find.getSupplierCompName().toLowerCase().equals(filterVendorReg.getSupplierCompName().toLowerCase())) {
+					throw new VendorNotFoundException("Company already exist");
+				}
+				
 			}
 
 			filterVendorReg.setUsername(email);

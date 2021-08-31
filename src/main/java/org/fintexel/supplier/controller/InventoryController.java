@@ -282,6 +282,7 @@ public class InventoryController {
 //				 List<InventoryDetails> findBySupplierCode = inventoryRepo.findBySupplierCode(loginSupplierCode);
 				if (!loginSupplierCode.equals(null)) {
 					InventoryDetails details = new InventoryDetails();
+					inventoryDetails.setSupplierCode(loginSupplierCode);
 					details.setSupplierCode(loginSupplierCode);
 					details.setCategoryId(inventoryDetails.getCategoryId());
 					details.setBrandId(inventoryDetails.getBrandId());
@@ -308,7 +309,12 @@ public class InventoryController {
 					} catch (Exception e) {
 
 					}
-					InventoryDetails save = inventoryRepo.save(details);
+					
+				
+					InventoryDetails save = inventoryRepo.save(inventoryDetails);
+					
+					System.out.println("inventoryDetails "  +inventoryDetails);
+					System.out.println("details "  +save);
 					
 					Optional<ItemBrand> findByIdBrand = itemBrandRepo.findById(save.getBrandId());
 					

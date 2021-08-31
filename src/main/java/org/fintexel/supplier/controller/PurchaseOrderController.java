@@ -221,14 +221,26 @@ public class PurchaseOrderController {
 								
 							}
 							try {
-								 Optional<SupAddress> findByIsPrimary = supAddressRepo.findByIsPrimary(1);
+								 Optional<SupAddress> findByIsPrimary = supAddressRepo.findByIsPrimaryWithSupplierCode(1, supplierCode);
+								 
+								 if(!findByIsPrimary.isPresent()) {
+									 supAddress = supAddressRepo.findBySupplierCodeWithLastRow(supplierCode).get();
+									 
+								 }else {
+									 supAddress = findByIsPrimary.get();
+								 }
 								 System.out.println("%%%%%%%%%%@@@@@@@@ "+ findByIsPrimary.toString());
-								 supAddress = findByIsPrimary.get();
+								 
 							}catch(Exception e) {
 								
 							}
 							try {
-								supBank = supBankRepo.findByIsPrimary(1).get();
+								Optional<SupBank> findByIsPrimaryWithSupplierCode = supBankRepo.findByIsPrimaryWithSupplierCode(1, supplierCode);
+							    if(findByIsPrimaryWithSupplierCode.isEmpty()) {
+							    	supBank = findByIsPrimaryWithSupplierCode.get();
+							    }else {
+							    	supBank = supBankRepo.findBySupplierCodeWithLastRow(supplierCode).get();
+							    }
 							}catch(Exception e) {
 								
 							}
@@ -564,8 +576,11 @@ public class PurchaseOrderController {
 					
 					
 					) {
-				PurchesOrder purchesOrder = purchesOrderRepo.findById(invoiceStraching.getSupplierInvoice().getPOId()).get();
 				
+				
+				
+				PurchesOrder purchesOrder = purchesOrderRepo.findById(invoiceStraching.getSupplierInvoice().getPOId()).get();
+				System.out.println("loginSupplierCode  "+invoiceStraching.getSupplierInvoice().getPOId());
 				List<PurchesOrderItems> findByPOId = purchesOrderItemsRepo.findByPOId(invoiceStraching.getSupplierInvoice().getPOId());
 				
 				if(!(findByPOId.size()+"").equals(invoiceStraching.getPurchesOrderItems()+"")) {
@@ -575,12 +590,15 @@ public class PurchaseOrderController {
 				List<PurchesOrderItems> purchesOrderItems = invoiceStraching.getPurchesOrderItems();
 				
 				SupplierInvoice save = supplierInvoiceRepo.save(invoiceStraching.getSupplierInvoice());
+				System.out.println("loginSupplierCode  "+loginSupplierCode);
 				i=0;
 				for(PurchesOrderItems obj : purchesOrderItems) {
 					if(!(obj.getItemId() == findByPOId.get(i).getItemId()))
 						throw new VendorNotFoundException("PO Items List are Not Match ");
 					
 				}
+				
+				
 				i=0;
 				for(PurchesOrderItems obj : purchesOrderItems) {
 					SupplierInvoiceItem supplierInvoiceItem = new SupplierInvoiceItem();

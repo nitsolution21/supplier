@@ -975,6 +975,9 @@ public class CustomerController {
 					if (find.getEmail().equals(addVendorWithContract.getEmail())) {
 						throw new VendorNotFoundException("Email already exist");
 					}
+					if(find.getSupplierCompName().toLowerCase().equals(addVendorWithContract.getSupplierCompName().toLowerCase())) {
+						throw new VendorNotFoundException("Company already exist");
+					}
 				}
 
 				filterVendorReg.setUsername(addVendorWithContract.getEmail());
@@ -1310,7 +1313,7 @@ public class CustomerController {
 	
 	@GetMapping("/vendors")
 	public List<SupDetails> vendors(@RequestHeader(name = "Authorization") String token) {
-		LOGGER.info("Inside - VendorController.postSupplierDetails()");
+		LOGGER.info("Inside - CustomerController.vendors()");
 		try {
 			
 			long customerIdFromToken = getCustomerDetails.getCIdFromToken(token);
@@ -1934,6 +1937,13 @@ System.out.println("Inside if2  "+address);
 				
 				List<CustomerContact> findContractBycId = customerContactRepo.findBycId(companyProfileIdByCustomerId);
 				List<SupDetails> findAllSupplierDetails = supDetailsRepo.findAll();
+				
+				if(findContractBycId.size()<1) {
+					throw new VendorNotFoundException("No Controct Found in Database");
+				}
+				if(findAllSupplierDetails.size()<1) {
+					throw new VendorNotFoundException("No Supplier Found in databse");
+				}
 				
 				findContractBycId.forEach(contract -> {
 					
