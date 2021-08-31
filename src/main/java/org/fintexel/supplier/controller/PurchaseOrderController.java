@@ -41,6 +41,7 @@ import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
+import org.fintexel.supplier.customerrepository.PurchesOrderAttachmentRepo;
 import org.fintexel.supplier.customerrepository.PurchesOrderItemsRepo;
 import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.entity.VendorRegister;
@@ -148,6 +149,9 @@ public class PurchaseOrderController {
 	
 	@Autowired
 	private VendorRegisterRepo vendorRegisterRepo;
+	
+	@Autowired
+	private PurchesOrderAttachmentRepo purchesOrderAttachmentRepo;
 
 	private Integer i;
 	
@@ -1392,6 +1396,15 @@ public class PurchaseOrderController {
 								purchesOrderItemsRepo.save(item);
 							});
 							
+							try {
+								if (fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrderAttachment().getAtName()) && fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrderAttachment().getAtPath())) {
+									requestPurchesOrder.getPurchesOrderAttachment().setPOId(savePurchesOrder.getPOId());
+									purchesOrderAttachmentRepo.save(requestPurchesOrder.getPurchesOrderAttachment());
+								}
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+							
 							return new CustomeResponseEntity("SUCCESS","PO submit successfully");
 							
 						} else {
@@ -1411,6 +1424,15 @@ public class PurchaseOrderController {
 							item.setPOId(savePurchesOrder.getPOId());
 							purchesOrderItemsRepo.save(item);
 						});
+						
+						try {
+							if (fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrderAttachment().getAtName()) && fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrderAttachment().getAtPath())) {
+								requestPurchesOrder.getPurchesOrderAttachment().setPOId(savePurchesOrder.getPOId());
+								purchesOrderAttachmentRepo.save(requestPurchesOrder.getPurchesOrderAttachment());
+							}
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
 						
 						return new CustomeResponseEntity("SUCCESS","PO submit successfully");
 							
