@@ -12,8 +12,8 @@ public interface SupAddressRepo extends JpaRepository<SupAddress, Long> {
 	
 	List<SupAddress> findBySupplierCode(String code);
 	
-	@Query(value  = "select s from SupAddress s where s.isPrimary = ?1 ORDER BY id DESC LIMIT 1" , nativeQuery = true)
-	Optional<SupAddress> findBySupplierCodeWithLastRow(String code);
+	@Query(value  = "select * from SUP_ADDRESS where IS_PRIMARY = ?1 and SUPPLIER_CODE = ?2 ORDER BY ADDRESS_ID DESC LIMIT 1" , nativeQuery = true)
+	Optional<SupAddress> findBySupplierCodeWithLastRow(int isPrimary , String supplierCode);
 //	@Query("select s from SupAddress s where s.isPrimary = ?1")
 //	Optional<SupAddress> findByIsPrimary(int isPrimary);
 	

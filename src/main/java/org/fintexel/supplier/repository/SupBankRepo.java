@@ -13,8 +13,8 @@ public interface SupBankRepo extends JpaRepository<SupBank, Long> {
 	
 	Optional<SupBank> findBySwiftCode(String swiftCode);
 	
-	@Query(value = "select s from SupBank s where s.isPrimary = ?1 ORDER BY s.bankId DESC LIMIT 1" , nativeQuery = true)
-	Optional<SupBank> findBySupplierCodeWithLastRow(String supplierCode);
+	@Query(value = "select s from SupBank s where s.isPrimary = ?1 and s.supplierCode = ?2 ORDER BY s.bankId DESC LIMIT 1" , nativeQuery = true)
+	Optional<SupBank> findBySupplierCodeWithLastRow(int isPrimary , String supplierCode);
 	
 //	@Query("select s from SupBank s where s.isPrimary = ?1")
 //	Optional<SupBank> findByIsPrimary(int key);

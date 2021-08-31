@@ -232,26 +232,26 @@ public class PurchaseOrderController {
 								throw new VendorNotFoundException("Supplier Details is Not Created");
 							}
 							try {
-								 Optional<SupAddress> findByIsPrimary = supAddressRepo.findByIsPrimaryWithSupplierCode(1, supplierCode);
-								 
-								 if(!findByIsPrimary.isPresent()) {
-									 supAddress = supAddressRepo.findBySupplierCodeWithLastRow(supplierCode).get();
-									 
-								 }else {
-									 supAddress = findByIsPrimary.get();
-								 }
+//								 Optional<SupAddress> findByIsPrimary = supAddressRepo.findByIsPrimaryWithSupplierCode(1, supplierCode);
+//								 
+//								 if(!findByIsPrimary.isPresent()) {
+									 supAddress = supAddressRepo.findBySupplierCodeWithLastRow(0, supplierCode).get();
+//									 
+//								 }else {
+//									 supAddress = findByIsPrimary.get();
+//								 }
 //								 System.out.println("%%%%%%%%%%@@@@@@@@ "+ findByIsPrimary.toString());
 								 
 							}catch(Exception e) {
 								throw new VendorNotFoundException("Supplier Address is Not Created");
 							}
 							try {
-								Optional<SupBank> findByIsPrimaryWithSupplierCode = supBankRepo.findByIsPrimaryWithSupplierCode(1, supplierCode);
-							    if(findByIsPrimaryWithSupplierCode.isPresent()) {
-							    	supBank = findByIsPrimaryWithSupplierCode.get();
-							    }else {
-							    	supBank = supBankRepo.findBySupplierCodeWithLastRow(supplierCode).get();
-							    }
+//								Optional<SupBank> findByIsPrimaryWithSupplierCode = supBankRepo.findByIsPrimaryWithSupplierCode(1, supplierCode);
+//							    if(findByIsPrimaryWithSupplierCode.isPresent()) {
+//							    	supBank = findByIsPrimaryWithSupplierCode.get();
+//							    }else {
+							    	supBank = supBankRepo.findBySupplierCodeWithLastRow(0, supplierCode).get();
+//							    }
 							}catch(Exception e) {
 //								throw new VendorNotFoundException("Supplier Bank is Not Created");
 							}
