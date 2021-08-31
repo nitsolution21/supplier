@@ -14,6 +14,8 @@ public class PrsonceLoginCustomerDetails {
 	private long contractTerms;
 	
 	private long contractId;
+	
+	private String customerName;
 
 	public PrsonceLoginCustomerDetails() {
 		super();
@@ -21,20 +23,21 @@ public class PrsonceLoginCustomerDetails {
 	}
 
 	public PrsonceLoginCustomerDetails(CustomerAddress customerAddress, List<CustomerDepartments> customerDepartments,
-			String poNumber, long contractTerms, long contractId) {
+			String poNumber, long contractTerms, long contractId, String customerName) {
 		super();
 		this.customerAddress = customerAddress;
 		this.customerDepartments = customerDepartments;
 		this.poNumber = poNumber;
 		this.contractTerms = contractTerms;
 		this.contractId = contractId;
+		this.customerName = customerName;
 	}
 
 	@Override
 	public String toString() {
 		return "PrsonceLoginCustomerDetails [customerAddress=" + customerAddress + ", customerDepartments="
 				+ customerDepartments + ", poNumber=" + poNumber + ", contractTerms=" + contractTerms + ", contractId="
-				+ contractId + "]";
+				+ contractId + ", customerName=" + customerName + "]";
 	}
 
 	public CustomerAddress getCustomerAddress() {
@@ -76,8 +79,13 @@ public class PrsonceLoginCustomerDetails {
 	public void setContractId(long contractId) {
 		this.contractId = contractId;
 	}
-	
-	
-	
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
 	
 }
