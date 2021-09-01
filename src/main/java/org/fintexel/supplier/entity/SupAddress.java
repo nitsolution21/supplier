@@ -293,12 +293,12 @@ public class SupAddress {
 	public static SupAddress fromJson(String value) throws Exception {
 		try {
 			  JsonObject obj = (JsonObject) JsonParser.parseString(value);
-		     SupAddress supAddress = new SupAddress (Long.parseLong(obj.get("addressId").toString()) , (String) obj.get("supplierCode").toString() , (String) obj.get("addressType").toString() ,
-		    		(String) obj.get("address1").toString() , 
+		     SupAddress supAddress = new SupAddress (Long.parseLong(obj.get("addressId").toString()) , (String) obj.get("supplierCode").toString().replace("\"", "") , (String) obj.get("addressType").toString().replace("\"", "") ,
+		    		(String) obj.get("address1").toString().replace("\"", "") , 
 //		    		obj.get("address2").toString() ,
-		    		(String) obj.get("city").toString() ,Integer.parseInt( obj.get("postalCode").toString()) ,
-		    		(String) obj.get("country").toString() , (String) obj.get("region").toString() ,
-		    		(String) obj.get("addressProof").toString() , (String) obj.get("addressProofPath").toString());
+		    		(String) obj.get("city").toString().replace("\"", "") ,Integer.parseInt( obj.get("postalCode").toString()) ,
+		    		(String) obj.get("country").toString().replace("\"", "") , (String) obj.get("region").toString().replace("\"", "") ,
+		    		(String) obj.get("addressProof").toString().replace("\"", "") , (String) obj.get("addressProofPath").toString().replace("\"", ""));
 		     try {
 				if (fieldValidation.isEmpty((String) obj.get("address2").toString())) {
 					supAddress.setAddress2((String) obj.get("address2").toString());

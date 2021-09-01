@@ -228,15 +228,15 @@ public class SupDepartment {
 		 System.out.println(value);
 		 try {
 			 SupDepartment department =  new SupDepartment (Long.parseLong(obj.get("departmentId").toString()) ,
-		    		 obj.get("supplierCode").toString(), (String) obj.get("departmentName").toString(),
-		    		(String) obj.get("supplierContact1").toString(),// (String) obj.get("supplierContact2").toString(),
-		    		(String) obj.get("email").toString(), (String) obj.get("phoneno").toString(),
+		    		 obj.get("supplierCode").toString().replace("\"", ""), (String) obj.get("departmentName").toString().replace("\"", ""),
+		    		(String) obj.get("supplierContact1").toString().replace("\"", ""),// (String) obj.get("supplierContact2").toString(),
+		    		(String) obj.get("email").toString().replace("\"", ""), (String) obj.get("phoneno").toString().replace("\"", ""),
 //		    		(String) obj.get("alternatePhoneno").toString(),
-		    		(String) obj.get("status").toString());
+		    		(String) obj.get("status").toString().replace("\"", ""));
 			 try {
-				if (fieldValidation.isEmpty((String) obj.get("supplierContact2").toString()) && fieldValidation.isEmpty((String) obj.get("alternatePhoneno").toString())) {
-					department.setAlternatePhoneno((String) obj.get("alternatePhoneno").toString());
-					department.setSupplierContact2((String) obj.get("supplierContact2").toString());
+				if (fieldValidation.isEmpty((String) obj.get("supplierContact2").toString().replace("\"", "")) && fieldValidation.isEmpty((String) obj.get("alternatePhoneno").toString().replace("\"", ""))) {
+					department.setAlternatePhoneno((String) obj.get("alternatePhoneno").toString().replace("\"", ""));
+					department.setSupplierContact2((String) obj.get("supplierContact2").toString().replace("\"", ""));
 				}
 			} catch (Exception e) {
 				// TODO: handle exception

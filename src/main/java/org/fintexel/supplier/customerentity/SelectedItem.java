@@ -9,24 +9,24 @@ import org.fintexel.supplier.entity.ItemSubCategory;
 public class SelectedItem {
 	
 	List<InventoryDetails> findByCategoryId;
-	Optional<ItemSubCategory> findById;
+	List<ItemSubCategory> findById;
 	public List<InventoryDetails> getFindByCategoryId() {
 		return findByCategoryId;
 	}
 	public void setFindByCategoryId(List<InventoryDetails> findByCategoryId) {
 		this.findByCategoryId = findByCategoryId;
 	}
-	public Optional<ItemSubCategory> getFindById() {
+	public List<ItemSubCategory> getFindById() {
 		return findById;
 	}
-	public void setFindById(Optional<ItemSubCategory> findById) {
+	public void setFindById(List<ItemSubCategory> findById) {
 		this.findById = findById;
 	}
 	@Override
 	public String toString() {
 		return "SelectedItem [findByCategoryId=" + findByCategoryId + ", findById=" + findById + "]";
 	}
-	public SelectedItem(List<InventoryDetails> findByCategoryId, Optional<ItemSubCategory> findById) {
+	public SelectedItem(List<InventoryDetails> findByCategoryId, List<ItemSubCategory> findById) {
 		super();
 		this.findByCategoryId = findByCategoryId;
 		this.findById = findById;
@@ -35,6 +35,7 @@ public class SelectedItem {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
 	
 	
 
