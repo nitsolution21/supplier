@@ -243,10 +243,10 @@ public class SupDetails {
 		 JsonObject obj = (JsonObject) JsonParser.parseString(value);
 		 System.out.println("ok  " +obj);
 		 try {
-			  SupDetails supDetails = new SupDetails ((String) obj.get("supplierCode").toString(),
-			    		Long.parseLong((String) obj.get("registerId").toString())  , (String) obj.get("supplierCompName").toString() ,
-			    		(String) obj.get("registrationType").toString() , (String) obj.get("registrationNo").toString() ,
-			    		(String) obj.get("status").toString() 
+			  SupDetails supDetails = new SupDetails ((String) obj.get("supplierCode").toString().replace("\"", ""),
+			    		Long.parseLong((String) obj.get("registerId").toString())  , (String) obj.get("supplierCompName").toString().replace("\"", "") ,
+			    		(String) obj.get("registrationType").toString().replace("\"", "") , (String) obj.get("registrationNo").toString().replace("\"", "") ,
+			    		(String) obj.get("status").toString().replace("\"", "") 
 			    		);
 				DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 				LocalDateTime lastLoginNow = LocalDateTime.now();
@@ -254,7 +254,7 @@ public class SupDetails {
 			  supDetails.setLastlogin(lastLogin);
 			  try {
 				if(fieldValidation.isEmpty((String) obj.get("remarks").toString())) {
-					supDetails.setRemarks(obj.get("remarks").toString());
+					supDetails.setRemarks(obj.get("remarks").toString().replace("\"", ""));
 				}
 				 
 			} catch (Exception e) {

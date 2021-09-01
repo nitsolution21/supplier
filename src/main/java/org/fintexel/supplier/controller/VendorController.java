@@ -1735,7 +1735,7 @@ public class VendorController {
 				String tableName = supRequest2.getTableName();
 				supRequest2.setStatus("APPROVED");
 				if (tableName.equals("SUP_ADDRESS")) {
-					if (supRequest2.getReqType().equals("CREATE")) {
+					if (supRequest2.getReqType().equals("UPDATE")) {
 						SupAddress supAddressOld = SupAddress.fromJson(oldValue);
 
 					}
@@ -1745,6 +1745,7 @@ public class VendorController {
 					// supAddressNew.setAddressId(supAddressNew.getAddressId());
 					// supAddressNew.setStatus(findById.get().getStatus());
 					supAddressNew.setStatus(obj.getStatus());
+					System.out.println("save   -----   " + obj.getStatus());
 					supAddRepo.save(supAddressNew);
 					supRequestRepo.save(supRequest2);
 
@@ -1782,10 +1783,10 @@ public class VendorController {
 //				supBankNew.setBankId(supBankNew.getBankId());
 //				supBankNew.setStatus(findById.get().getStatus());
 					supBankNew.setStatus(obj.getStatus());
-
+					LOGGER.info("before if4" + supBankNew.toString() );
 					supBankRepo.save(supBankNew);
 					supRequestRepo.save(supRequest2);
-					LOGGER.info("before if4");
+					
 				} else if (tableName.equals("SUP_DETAILS")) {
 					if (supRequest2.getReqType().equals("UPDATE")) {
 						SupDetails supDetailsOld = SupDetails.fromJson(oldValue);

@@ -332,19 +332,19 @@ public class SupBank {
 	public static SupBank fromJson(String value) throws Exception {
 		 JsonObject obj = (JsonObject) JsonParser.parseString(value);
 		 try {
-			 	SupBank bank = new SupBank (Long.parseLong((String) obj.get("bankId").toString()) , (String)obj.get("supplierCode").toString() ,
-			    		(String) obj.get("bankName").toString() ,(String) obj.get("bankBranch").toString() ,
-			    		(String) obj.get("bankAccountNo").toString() , (String) obj.get("currency").toString(),
-			    		(String) obj.get("accountHolder").toString() ,
-			    		(String) obj.get("ifscCode").toString() , (String) obj.get("country").toString(),
-			    		(String) obj.get("status").toString() );
+			 	SupBank bank = new SupBank (Long.parseLong((String) obj.get("bankId").toString()) , (String)obj.get("supplierCode").toString().replace("\"", "") ,
+			    		(String) obj.get("bankName").toString().replace("\"", "") ,(String) obj.get("bankBranch").toString().replace("\"", "") ,
+			    		(String) obj.get("bankAccountNo").toString().replace("\"", "") , (String) obj.get("currency").toString().replace("\"", ""),
+			    		(String) obj.get("accountHolder").toString().replace("\"", "") ,
+			    		(String) obj.get("ifscCode").toString().replace("\"", "") , (String) obj.get("country").toString().replace("\"", ""),
+			    		(String) obj.get("status").toString().replace("\"", "") );
 			 	try {
-					if (fieldValidation.isEmpty((String) obj.get("bankBic").toString()) && fieldValidation.isEmpty((String) obj.get("chequeNo").toString()) && fieldValidation.isEmpty((String) obj.get("transilRoutingNo").toString())  && fieldValidation.isEmpty((String) obj.get("swiftCode").toString()) && fieldValidation.isEmpty((String) obj.get("bankEvidence").toString()) && fieldValidation.isEmpty((String) obj.get("evidencePath").toString()) ) {
-						bank.setBankBic(obj.get("bankBic").toString());
-						bank.setChequeNo((String) obj.get("chequeNo").toString());
-						bank.setSwiftCode((String) obj.get("swiftCode").toString());
-						bank.setBankEvidence((String) obj.get("bankEvidence").toString());
-						bank.setEvidencePath((String) obj.get("evidencePath").toString());
+					if (fieldValidation.isEmpty((String) obj.get("bankBic").toString().replace("\"", "")) && fieldValidation.isEmpty((String) obj.get("chequeNo").toString().replace("\"", "")) && fieldValidation.isEmpty((String) obj.get("transilRoutingNo").toString().replace("\"", ""))  && fieldValidation.isEmpty((String) obj.get("swiftCode").toString().replace("\"", "")) && fieldValidation.isEmpty((String) obj.get("bankEvidence").toString().replace("\"", "")) && fieldValidation.isEmpty((String) obj.get("evidencePath").toString().replace("\"", "")) ) {
+						bank.setBankBic(obj.get("bankBic").toString().replace("\"", ""));
+						bank.setChequeNo((String) obj.get("chequeNo").toString().replace("\"", ""));
+						bank.setSwiftCode((String) obj.get("swiftCode").toString().replace("\"", ""));
+						bank.setBankEvidence((String) obj.get("bankEvidence").toString().replace("\"", ""));
+						bank.setEvidencePath((String) obj.get("evidencePath").toString().replace("\"", ""));
 					}
 				} catch (Exception e) {
 					// TODO: handle exception

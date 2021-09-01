@@ -323,43 +323,48 @@ public class PurchaseOrderController {
 				throw new VendorNotFoundException("Customer Data Not Found");
 			}else {
 				
-				List<CustomerContact> customerContactList = customerContactRepo.findBycId(cIdFromToken);
-				
-				if(customerContactList.size()>0) {					
-						ItemCategory itemCategory = itemCategoryRepo.findById(id).get();
-						System.out.println("&&&&&   "+ itemCategory.toString());
+//				List<CustomerContact> customerContactList = customerContactRepo.findBycId(cIdFromToken);
+//				
+//				if(customerContactList.size()>0) {					
+//						ItemCategory itemCategory = itemCategoryRepo.findById(id).get();
+//						System.out.println("&&&&&   "+ itemCategory.toString());
 //						List<InventoryDetails> findBySupplierCode = inventoryRepo.findBySupplierCode(itemCategory.getSupplierCode());
-						List<InventoryDetails> findByCategoryIdInventory = inventoryRepo.findByCategoryId(itemCategory.getCategoryId());
+						List<ItemSubCategory> findByIdSubCatagory = itemSubCategoryRepo.findByCategoryId(id);
+						List<InventoryDetails> findByCategoryIdInventory = inventoryRepo.findByCategoryId(id);
+						SelectedItem selectedItem = new SelectedItem();
+						selectedItem.setFindByCategoryId(findByCategoryIdInventory);
+						selectedItem.setFindById(findByIdSubCatagory);
 						
+						return selectedItem;
 //						if(findByCategoryId.get(0).getSupplierCode().equals(findBySupplierCode.get(0).getSupplierCode())) {
 //							
 //						}else {
 						
-						for(CustomerContact obj : customerContactList) {
-							SupDetails supDetails = supDetailsRepo.findById(obj.getSupplierCode()).get();
-							String supplierCode = supDetails.getSupplierCode();
-							if(supplierCode.equals(itemCategory.getSupplierCode())) {
-								System.out.println("if  "+ findByCategoryIdInventory.size());
+//						for(CustomerContact obj : customerContactList) {
+//							SupDetails supDetails = supDetailsRepo.findById(obj.getSupplierCode()).get();
+//							String supplierCode = supDetails.getSupplierCode();
+//							if(supplierCode.equals(itemCategory.getSupplierCode())) {
+//								System.out.println("if  "+ findByCategoryIdInventory.size());
 //								if(itemCategory.getSupplierCode().equals(supplierCode)) {
-									Optional<ItemSubCategory> findByIdSubCatagory = itemSubCategoryRepo.findById(findByCategoryIdInventory.get(0).getCategoryId());
-									SelectedItem selectedItem = new SelectedItem();
-									selectedItem.setFindByCategoryId(findByCategoryIdInventory);
-									selectedItem.setFindById(findByIdSubCatagory);
-									return selectedItem;
-//								}else {
-//									throw new VendorNotFoundException("No Contract Made With This Customer and Supplier");
-//								}
-								
-							}
-						}
-						
-							throw new VendorNotFoundException("No Contract Made With This Customer and Supplier");
+//									List<ItemSubCategory> findByIdSubCatagory = itemSubCategoryRepo.findByCategoryId(id);
+//									SelectedItem selectedItem = new SelectedItem();
+//									selectedItem.setFindByCategoryId(findByCategoryIdInventory);
+//									selectedItem.setFindById(findByIdSubCatagory);
+//									return selectedItem;
+////								}else {
+////									throw new VendorNotFoundException("No Contract Made With This Customer and Supplier");
+////								}
+//								
+//							}
 //						}
+//						
+//							throw new VendorNotFoundException("No Contract Made With This Customer and Supplier");
+////						}
 					
-				}else {
-					throw new VendorNotFoundException("No Contract Found With This Customer");
-				}
-				
+//				}else {
+//					throw new VendorNotFoundException("No Contract Found With This Customer");
+//				}
+//				
 			}
 			
 		}catch(Exception e) {

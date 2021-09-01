@@ -11,5 +11,7 @@ public interface ItemSubCategoryRepo extends JpaRepository<ItemSubCategory,Long>
 	
 	List<ItemSubCategory> findBySupplierCode(String supplierCode);
 	
+	List<ItemSubCategory> findByCategoryId(Long categoryId);
+	
 
 }
