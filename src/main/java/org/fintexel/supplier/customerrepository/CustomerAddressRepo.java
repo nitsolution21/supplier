@@ -16,5 +16,8 @@ public interface CustomerAddressRepo extends JpaRepository<CustomerAddress, Long
 	
 	public Optional<CustomerAddress> findByIsPrimary(int isPrimary);
 	
+	@Query(value = "select * from flowable.TBL_CUS_ADDRESS where IS_PRIMARY = ?1 and CID = ?2 order by ADDRESS_ID desc limit 1")
+	public Optional<CustomerAddress> findLastCompanyPrimaryAddress(int isPrimary, long cId);
+	
 	
 }
