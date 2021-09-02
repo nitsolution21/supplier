@@ -240,6 +240,7 @@ public class SupDetails {
 	
 	
 	public static SupDetails fromJson(String value) throws Exception {
+		 System.out.println("ok  " +value);
 		 JsonObject obj = (JsonObject) JsonParser.parseString(value);
 		 System.out.println("ok  " +obj);
 		 try {
