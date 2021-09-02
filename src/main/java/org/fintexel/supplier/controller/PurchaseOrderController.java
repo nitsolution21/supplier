@@ -1043,7 +1043,7 @@ public class PurchaseOrderController {
 			} else {
 				PrsonceLoginCustomerDetails loginCustomerDetails = new PrsonceLoginCustomerDetails();
 				
-				Optional<CustomerAddress> findAddressByIsPrimary = customerAddressRepo.findByIsPrimary(1);
+				Optional<CustomerAddress> findAddressByIsPrimary = customerAddressRepo.findLastCompanyPrimaryAddress(0, companyProfileIdByCustomerId);
 				if (findAddressByIsPrimary.isPresent()) {
 					loginCustomerDetails.setCustomerAddress(findAddressByIsPrimary.get());
 				}
@@ -1629,18 +1629,18 @@ public class PurchaseOrderController {
 		}
 	}
 	
-//	@GetMapping("/getPendingPoForSuppiler/{suppilerCode}")
-//	public List<GetPendingPoResponceForSuppiler> getPendingPoForSuppiler(@PathVariable String suppilerCode) {
-//		if (!suppilerCode.equals(null)) {
-//			List<GetPendingPoResponceForSuppiler> allPendingPOForSuppiler = purchesOrderRepo.getAllPendingPOForSuppiler(suppilerCode);
-//			if (allPendingPOForSuppiler.size() > 0) {
-//				return allPendingPOForSuppiler;
-//			} else {
-//				throw new VendorNotFoundException("No data found");
-//			}
-//		} else {
-//			throw new VendorNotFoundException("Don't get any supplier code");
-//		}
-//	}
+	@GetMapping("/getPendingPoForSuppiler/{suppilerCode}")
+	public List<GetPendingPoResponceForSuppiler> getPendingPoForSuppiler(@PathVariable String suppilerCode) {
+		if (!suppilerCode.equals(null)) {
+			List<GetPendingPoResponceForSuppiler> allPendingPOForSuppiler = purchesOrderRepo.getAllPendingPOForSuppiler(suppilerCode);
+			if (allPendingPOForSuppiler.size() > 0) {
+				return allPendingPOForSuppiler;
+			} else {
+				throw new VendorNotFoundException("No data found");
+			}
+		} else {
+			throw new VendorNotFoundException("Don't get any supplier code");
+		}
+	}
 	
 }

@@ -20,14 +20,14 @@ public interface PurchesOrderRepo extends JpaRepository<PurchesOrder, Long>{
 	
 	public Optional<PurchesOrder> findByPoNumber(String poNumber);
 	
-//	@Query("select SD.supplierCompName,CP.customerName,PO.poNumber,\r\n"
-//			+ "PI.POItemId,PI.itemId,PI.itemDescription,POP.pendingQty,PI.curType,PI.unitPrice,PI.itemBrandText,PI.itemCategoryText,PI.itemSubcategoryText\r\n"
-//			+ "  from PurchesOrder PO \r\n"
-//			+ "join PurchesOrderPending POP using(poId) \r\n"
-//			+ "    left outer join CustomerProfile CP on(PO.cId=CP.cId)\r\n"
-//			+ "    left outer join SupDetails SD on(SD.supplierCode=PO.supplierCode) \r\n"
-//			+ "    left outer join PurchesOrderItems PI on (PI.POItemId = POP.poitemId)\r\n"
-//			+ "where PO.supplierCode=?1")
-//	public List<GetPendingPoResponceForSuppiler> getAllPendingPOForSuppiler(String SuppilerCode);
+	@Query(value="select SD.SUPPLIER_COMP_NAME,CP.CUSTOMER_NAME,PO.PO_NUMBER,\r\n"
+			+ "PI.POITEM_ID,PI.ITEM_ID,PI.ITEM_DESCRIPTION,POP.PENDING_QTY,PI.CUR_TYPE,PI.ITEM_PRICE,PI.ITEM_BRAND_TEXT,PI.ITEM_CATEGORY_TEXT,PI.ITEM_SUBCATEGORY_TEXT\r\n"
+			+ "  from TBL_PO PO \r\n"
+			+ "join TBL_PO_PENDINGS POP using(PO_ID) \r\n"
+			+ "    left outer join TBL_CUS_PROFILE CP on(PO.CID=CP.CID)\r\n"
+			+ "    left outer join SUP_DETAILS SD on(SD.SUPPLIER_CODE=PO.SUPPLIER_CODE) \r\n"
+			+ "    left outer join TBL_PO_ITEMS PI on (PI.POITEM_ID = POP.POITEM_ID)\r\n"
+			+ "where PO.SUPPLIER_CODE=?1", nativeQuery=true)
+	public List<GetPendingPoResponceForSuppiler> getAllPendingPOForSuppiler(String SuppilerCode);
 
 }
