@@ -1676,4 +1676,148 @@ public class PurchaseOrderController {
 		}
 	}
 	
+	
+	@GetMapping("/getPOByPOId/{poId}")
+	public List<GetPurchesOrder> getPOByPOId(@PathVariable long poId) {
+		LOGGER.info("Inside - PurchaseOrderController.getLoginCustomerAllPOFromSupplier()");
+		try {
+			List<GetPurchesOrder> itemList = new ArrayList<GetPurchesOrder>();
+//			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+//			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
+			
+			if (poId == -1) {
+				throw new VendorNotFoundException("Po not found");
+			}
+			else {
+//				List<RequestPurchesOrder> purchesOrders = new ArrayList<RequestPurchesOrder>();
+				
+				 Optional<PurchesOrder> findPOBycId = purchesOrderRepo.findById(poId);
+				if (findPOBycId.isPresent()) {
+					
+//						LOGGER.info(po.getB)
+						if (findPOBycId.get().getStatus().equals("DRAFT")) {
+							try {
+								
+								GetPurchesOrder order = new GetPurchesOrder();
+				
+								order.setcId(findPOBycId.get().getcId());
+								order.setPOId(findPOBycId.get().getPOId());
+								order.setPoNumber(findPOBycId.get().getPoNumber());
+								order.setUserId(findPOBycId.get().getUserId());
+								order.setUserId(findPOBycId.get().getUserId());
+								order.setSupplierCode(findPOBycId.get().getSupplierCode());
+								order.setDepartmentId(findPOBycId.get().getDepartmentId());
+								order.setCusAddrId(findPOBycId.get().getCusAddrId());
+								
+								Optional<CustomerAddress> findCustomerAddressById = customerAddressRepo.findById(findPOBycId.get().getCusAddrId());
+								JSONObject customerAddressJsonObject = new JSONObject(findCustomerAddressById.get());
+								order.setCusAddrText(customerAddressJsonObject.toString());
+								
+								order.setSupAddrId(findPOBycId.get().getSupAddrId());
+								
+								Optional<SupAddress> findSuppAddressById = supAddressRepo.findById(findPOBycId.get().getSupAddrId());
+								JSONObject suppAddressJsonObject = new JSONObject(findSuppAddressById.get());
+								order.setSupAddrText(suppAddressJsonObject.toString());
+								
+								order.setContractId(findPOBycId.get().getContractId());
+								order.setContractTerms(findPOBycId.get().getContractTerms());
+								order.setComment(findPOBycId.get().getComment());
+								order.setShipToId(findPOBycId.get().getShipToId());
+								
+								order.setBillToId(findPOBycId.get().getBillToId());
+								order.setBillToText(findPOBycId.get().getBillToText());
+								
+								Optional<CustomerAddress> findShipToAddressById = customerAddressRepo.findById(findPOBycId.get().getShipToId());
+								JSONObject shipToAddressJsonObject = new JSONObject(findShipToAddressById.get());
+								order.setShipToText(shipToAddressJsonObject.toString());
+								
+								order.setDeliveryToId(findPOBycId.get().getDeliveryToId());
+								
+//								Optional<CustomerRegister> finDeliveryDetailsdById = customerRegisterRepo.findById(po.getDeliveryToId());
+//								JSONObject deliveryDetailsJsonObject = new JSONObject(finDeliveryDetailsdById.get());
+//								order.setDeliveryToText(deliveryDetailsJsonObject.toString());
+								order.setDeliveryToText(findPOBycId.get().getDeliveryToText());
+								
+								order.setCurType(findPOBycId.get().getCurType());
+								order.setAmount(findPOBycId.get().getAmount());
+								order.setStatus(findPOBycId.get().getStatus());
+								order.setStatusComment(findPOBycId.get().getStatusComment());
+								order.setCreatedBy(findPOBycId.get().getCreatedBy());
+								order.setCreatedOn(findPOBycId.get().getCreatedOn());
+								List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(findPOBycId.get().getPOId());
+								
+								List<PurchesOrderItems> items = new ArrayList<PurchesOrderItems>();
+								
+								findPoItemByPOId.forEach(item -> {
+									items.add(item);
+								});
+								
+								order.setPurchesOrderItems(items);
+								
+								itemList.add(order);
+								
+								
+								//purchesOrders.add(order);
+								
+								
+							} catch (Exception e) {
+								throw new VendorNotFoundException(e.getMessage());
+							}
+						} else {
+							
+							GetPurchesOrder order = new GetPurchesOrder();
+							
+							order.setcId(findPOBycId.get().getcId());
+							order.setPOId(findPOBycId.get().getPOId());
+							order.setPoNumber(findPOBycId.get().getPoNumber());
+							order.setUserId(findPOBycId.get().getUserId());
+							order.setUserId(findPOBycId.get().getUserId());
+							order.setSupplierCode(findPOBycId.get().getSupplierCode());
+							order.setDepartmentId(findPOBycId.get().getDepartmentId());
+							order.setCusAddrId(findPOBycId.get().getCusAddrId());
+							order.setCusAddrText(findPOBycId.get().getCusAddrText());
+							order.setSupAddrText(findPOBycId.get().getSupAddrText());
+							order.setContractId(findPOBycId.get().getContractId());
+							order.setContractTerms(findPOBycId.get().getContractTerms());
+							order.setComment(findPOBycId.get().getComment());
+							order.setShipToId(findPOBycId.get().getShipToId());
+							order.setShipToText(findPOBycId.get().getShipToText());
+							order.setDeliveryToId(findPOBycId.get().getDeliveryToId());
+							order.setDeliveryToText(findPOBycId.get().getDeliveryToText());
+							order.setBillToId(findPOBycId.get().getBillToId());
+							order.setBillToText(findPOBycId.get().getBillToText());
+							order.setCurType(findPOBycId.get().getCurType());
+							order.setAmount(findPOBycId.get().getAmount());
+							order.setStatus(findPOBycId.get().getStatus());
+							order.setStatusComment(findPOBycId.get().getStatusComment());
+							order.setCreatedBy(findPOBycId.get().getCreatedBy());
+							order.setCreatedOn(findPOBycId.get().getCreatedOn());
+							
+							List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(findPOBycId.get().getPOId());
+							
+							List<PurchesOrderItems> items = new ArrayList<PurchesOrderItems>();
+							
+							findPoItemByPOId.forEach(item -> {
+								items.add(item);
+							});
+							
+							order.setPurchesOrderItems(items);
+							
+							itemList.add(order);
+//							purchesOrders.add(po);
+							
+							
+						}
+				
+					
+					return itemList;
+				} else {
+					throw new VendorNotFoundException("PO not found for this company");
+				}
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
 }
