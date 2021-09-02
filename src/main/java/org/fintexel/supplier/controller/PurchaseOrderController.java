@@ -376,8 +376,37 @@ public class PurchaseOrderController {
 	}
 	
 	
+//	@GetMapping("/pendingCustomer")
+//	public ResponseEntity<?> getPendingCustomer() {
+//	LOGGER.info("Inside - PurchaseOrderController.getPendingCustomer()");
+////		List<JSONObject> response = new ArrayList<JSONObject>();
+//	JSONArray response = new JSONArray();
+//		try {
+//			
+//			List<PurchesOrder> findByStatus = purchesOrderRepo.findByStatus("WAITING FOR APPROVAL");
+//			if(findByStatus.size()<0) {
+//				throw new VendorNotFoundException("No Pending Data");
+//			}else {
+//				findByStatus.forEach(obj -> {
+//					JSONObject temp = new JSONObject();
+//					CustomerProfile customerProfile = customerProfileRepo.findById((long)obj.getcId()).get();
+//					temp.put("listPurchesorder", findByStatus);
+//					temp.put("customerName", customerProfile.getCustomerName());
+//					System.out.println("oj  ==  "+temp.toString());
+//					response.put(temp);
+//				});
+//				System.out.print("ooooff   "+response.toString());
+//				ResponseEntity<JSONArray> res = new ResponseEntity();
+//				return response;
+//			}
+//		}catch(Exception e) {
+//			throw new VendorNotFoundException(e.getMessage());
+//		}
+//	}
+	
+	
 	@GetMapping("/pendingCustomer")
-	public List<JSONObject> getPendingCustomer() {
+	public List<PurchesOrder> getPendingCustomer() {
 	LOGGER.info("Inside - PurchaseOrderController.getPendingCustomer()");
 		List<JSONObject> response = new ArrayList<JSONObject>();
 		try {
@@ -386,20 +415,14 @@ public class PurchaseOrderController {
 			if(findByStatus.size()<0) {
 				throw new VendorNotFoundException("No Pending Data");
 			}else {
-				findByStatus.forEach(obj -> {
-					JSONObject temp = new JSONObject();
-					CustomerProfile customerProfile = customerProfileRepo.findById((long)obj.getcId()).get();
-					temp.put("listPurchesorder", findByStatus);
-					temp.put("customerName", customerProfile.getCustomerName());
-					response.add(temp);
-				});
-
-				return response;
+				return findByStatus;
 			}
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 	}
+	
+	
 	
 	@GetMapping("/pendingCustomer/details/{id}")
 	public List<POFlowableItem> getPendingCustomerDetails(@PathVariable("id") int id) {
