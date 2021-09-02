@@ -264,12 +264,28 @@ public class CustomerLoginController {
 										.findByUserId(registerCustomer.getUserId());
 								/* start code from here */
 								if (findFunctionalityByUserId.size() < 1) {
-									functionality.setUserId(registerCustomer.getUserId());
-									functionality.setfId(customerRegisterRequest.getFuncationality());
-									CustomerUserFunctionaliti save = customerUserFunctionalitiRepo.save(functionality);
-									LOGGER.info(
-											"After save customer Departments if user is not present in customer functionality table >>>>>>> "
-													+ save);
+									if (customerRegisterRequest.getFuncationality() == 8) {
+										List<CustomerUserFunctionaliti> customerUserFunctionalitis = new ArrayList<CustomerUserFunctionaliti>();
+										CustomerUserFunctionaliti customerUserFunctionaliti = new CustomerUserFunctionaliti();
+										functionality.setUserId(registerCustomer.getUserId());
+										functionality.setfId(customerRegisterRequest.getFuncationality());
+										
+										customerUserFunctionaliti.setfId(9);
+										customerUserFunctionaliti.setUserId(registerCustomer.getUserId());
+										
+										customerUserFunctionalitis.add(functionality);
+										customerUserFunctionalitis.add(customerUserFunctionaliti);
+										
+										customerUserFunctionalitiRepo.saveAll(customerUserFunctionalitis);
+										
+									} else {
+										functionality.setUserId(registerCustomer.getUserId());
+										functionality.setfId(customerRegisterRequest.getFuncationality());
+										CustomerUserFunctionaliti save = customerUserFunctionalitiRepo.save(functionality);
+										LOGGER.info(
+												"After save customer Departments if user is not present in customer functionality table >>>>>>> "
+														+ save);
+									}
 
 								} else {
 									findFunctionalityByUserId.forEach(presentFunctionality -> {
