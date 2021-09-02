@@ -70,6 +70,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -375,12 +376,12 @@ public class PurchaseOrderController {
 		
 	}
 	
-	
+//	
 //	@GetMapping("/pendingCustomer")
 //	public ResponseEntity<?> getPendingCustomer() {
 //	LOGGER.info("Inside - PurchaseOrderController.getPendingCustomer()");
-////		List<JSONObject> response = new ArrayList<JSONObject>();
-//	JSONArray response = new JSONArray();
+//		List<JSONObject> response = new ArrayList<JSONObject>();
+////	JSONArray response = new JSONArray();
 //		try {
 //			
 //			List<PurchesOrder> findByStatus = purchesOrderRepo.findByStatus("WAITING FOR APPROVAL");
@@ -390,14 +391,13 @@ public class PurchaseOrderController {
 //				findByStatus.forEach(obj -> {
 //					JSONObject temp = new JSONObject();
 //					CustomerProfile customerProfile = customerProfileRepo.findById((long)obj.getcId()).get();
-//					temp.put("listPurchesorder", findByStatus);
+//					temp.put("listPurchesorder", obj);
 //					temp.put("customerName", customerProfile.getCustomerName());
 //					System.out.println("oj  ==  "+temp.toString());
-//					response.put(temp);
+//					response.add(temp);
 //				});
 //				System.out.print("ooooff   "+response.toString());
-//				ResponseEntity<JSONArray> res = new ResponseEntity();
-//				return response;
+//				 return ResponseEntity.ok(response.toString());
 //			}
 //		}catch(Exception e) {
 //			throw new VendorNotFoundException(e.getMessage());
@@ -509,10 +509,10 @@ public class PurchaseOrderController {
 			if (!loginSupplierCode.equals(null)) {
 				
 				if(value.equals("TOSHIP")) {
-					value = "APPROVED BY SUPPLIER";
+					value = "APPROVED_BY_SUPPLIER";
 				}else if(value.equals("TOCONFIRM")){
 					System.out.print("****  "+loginSupplierCode );
-					value = "APPROVED BY IT";
+					value = "APPROVED_BY_IT";
 				}else if(value.equals("CLOSED")) {
 					System.out.print("****  "+loginSupplierCode );
 					value = "COMPLETED";
