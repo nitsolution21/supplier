@@ -91,6 +91,9 @@ public class PurchaseOrderController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PurchaseOrderController.class);
 	
 	@Autowired
+	private CustomerProfileRepo customerProfileRepo;
+	
+	@Autowired
 	private LoginUserDetails loginUserDetails;
 	
 	@Autowired
@@ -156,8 +159,7 @@ public class PurchaseOrderController {
 	@Autowired
 	private PurchesOrderAttachmentRepo purchesOrderAttachmentRepo;
 	
-	@Autowired
-	private CustomerProfileRepo customerProfileRepo; 
+
 
 	private Integer i;
 	
@@ -375,16 +377,24 @@ public class PurchaseOrderController {
 	
 	
 	@GetMapping("/pendingCustomer")
-	public List<PurchesOrder> getPendingCustomer() {
+	public List<JSONObject> getPendingCustomer() {
 	LOGGER.info("Inside - PurchaseOrderController.getPendingCustomer()");
-		
+		List<JSONObject> response = new ArrayList<JSONObject>();
 		try {
 			
 			List<PurchesOrder> findByStatus = purchesOrderRepo.findByStatus("WAITING FOR APPROVAL");
 			if(findByStatus.size()<0) {
 				throw new VendorNotFoundException("No Pending Data");
 			}else {
-				return findByStatus;
+				findByStatus.forEach(obj -> {
+					JSONObject temp = new JSONObject();
+					CustomerProfile customerProfile = customerProfileRepo.findById((long)obj.getcId()).get();
+					temp.put("listPurchesorder", findByStatus);
+					temp.put("customerName", customerProfile.getCustomerName());
+					response.add(temp);
+				});
+
+				return response;
 			}
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -476,10 +486,10 @@ public class PurchaseOrderController {
 			if (!loginSupplierCode.equals(null)) {
 				
 				if(value.equals("TOSHIP")) {
-					value = "APPROVED BY IT";
+					value = "APPROVED BY SUPPLIER";
 				}else if(value.equals("TOCONFIRM")){
 					System.out.print("****  "+loginSupplierCode );
-					value = "WAITING FOR APPROVAL";
+					value = "APPROVED BY IT";
 				}else if(value.equals("CLOSED")) {
 					System.out.print("****  "+loginSupplierCode );
 					value = "COMPLETED";
