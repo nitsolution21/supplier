@@ -1728,7 +1728,7 @@ public class VendorController {
 				Optional<SupRequest> findById = supRequestRepo.findById(obj.getId());
 				SupRequest supRequest2 = findById.get();
 				String oldValue = "";
-				if (!supRequest2.getReqType().equals("UPDATE")) {
+				if (supRequest2.getReqType().equals("UPDATE")) {
 					oldValue = supRequest2.getOldValue();
 				}
 				String newValue = supRequest2.getNewValue();
