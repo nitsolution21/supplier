@@ -30,6 +30,7 @@ import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.entity.SupRequest;
 import org.fintexel.supplier.entity.User;
 import org.fintexel.supplier.entity.VendorRegister;
+import org.fintexel.supplier.entity.flowableentity.FlowableForm;
 import org.fintexel.supplier.entity.flowableentity.FlowableRegistration;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.flowable.FlowableContainer;
@@ -45,6 +46,7 @@ import org.fintexel.supplier.repository.SupDetailsRepo;
 import org.fintexel.supplier.repository.SupRequestRepo;
 import org.fintexel.supplier.repository.UserRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
+import org.fintexel.supplier.repository.flowablerepo.FlowableFormRepo;
 import org.fintexel.supplier.repository.flowablerepo.FlowableRegistrationRepo;
 import org.fintexel.supplier.validation.FieldValidation;
 import org.json.JSONArray;
@@ -85,6 +87,9 @@ import net.bytebuddy.implementation.bind.annotation.BindingPriority;
 public class VendorController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(VendorController.class);
+	
+	@Autowired
+	private FlowableFormRepo flowableFormRepo;
 
 	@Autowired
 	private UserRepo userRepo;
@@ -328,8 +333,13 @@ public class VendorController {
 				autoCompleate.put("password", rowPassword);
 				autoCompleate.put("registrationid", "SR " + filterVendorReg.getRegisterId());
 
+				FlowableForm flowableForm = flowableFormRepo.findByFromId("supplierReg").get();
+				String id = flowableForm.getId();
+				
+				System.out.println("id" + id);
+				
 				JSONObject autoCompleate_ = new JSONObject();
-				autoCompleate_.put("formId", "56d9e9ee-ed45-11eb-ba6c-0a5bf303a9fe");
+				autoCompleate_.put("formId", id);
 				autoCompleate_.put("values", autoCompleate);
 
 				LOGGER.info("Body  " + autoCompleate_);
@@ -537,22 +547,22 @@ public class VendorController {
 //		}
 //	}
 
-	@GetMapping("/")
-	public String getUser() {
-		LOGGER.info("Inside - VendorController.getUser()");
-		return "Hello";
-	}
-
-	@GetMapping("/user")
-	List<User> all() {
-		LOGGER.info("Inside - VendorController.all()");
-		return userRepo.findAll();
-	}
-
-	@PostMapping("/user")
-	User newVendor(@RequestBody User newUser) {
-		return userRepo.save(newUser);
-	}
+//	@GetMapping("/")
+//	public String getUser() {
+//		LOGGER.info("Inside - VendorController.getUser()");
+//		return "Hello";
+//	}
+//
+//	@GetMapping("/user")
+//	List<User> all() {
+//		LOGGER.info("Inside - VendorController.all()");
+//		return userRepo.findAll();
+//	}
+//
+//	@PostMapping("/user")
+//	User newVendor(@RequestBody User newUser) {
+//		return userRepo.save(newUser);
+//	}
 
 	@GetMapping("/supplierAddress")
 	public List<SupAddress> allAdd() {
@@ -606,7 +616,14 @@ public class VendorController {
 					filterSupDetails.setRegisterId(supDetails.getRegisterId());
 					filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
 					filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
-
+					
+					
+					try {
+						filterSupDetails.setRemarks(supDetails.getRemarks());
+					}catch(Exception e) {
+						
+					}
+					
 					DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 					LocalDateTime lastLoginNow = LocalDateTime.now();
 					Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -626,6 +643,8 @@ public class VendorController {
 
 //					filterSupDetails.setLastlogin(supDetails.getLastlogin());
 					filterSupDetails.setSupplierCode("SU:" + supCodeNow.format(supCodeFormat) + ":" + findAll.size());
+					filterSupDetails.setCreatedBy(Integer.parseInt(supDetails.getRegisterId()+""));
+					filterSupDetails.setCreatedOn(lastLogin);
 					filterSupDetails.setStatus("PENDING");
 					SupDetails save = supDetailsRepo.save(filterSupDetails);
 					JSONObject suppliernamenew = new JSONObject(filterSupDetails);
@@ -714,7 +733,7 @@ public class VendorController {
 					& (fieldValidation.isEmpty(supDetails.getRegistrationNo()))
 					& (fieldValidation.isEmpty(supDetails.getCostCenter()))
 					& (fieldValidation.isEmpty(supDetails.getRemarks()))
-					& (fieldValidation.isEmpty(supDetails.getLastlogin()))) {
+					) {
 
 				Optional<SupDetails> findById = supDetailsRepo.findById(code);
 
@@ -731,9 +750,18 @@ public class VendorController {
 								filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
 								filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
 								filterSupDetails.setRegisterId(supDetails.getRegisterId());
-								filterSupDetails.setCostCenter(supDetails.getCostCenter());
-								filterSupDetails.setRemarks(supDetails.getRemarks());
-								filterSupDetails.setLastlogin(supDetails.getLastlogin());
+//								filterSupDetails.setCostCenter(supDetails.getCostCenter());
+								try {
+									filterSupDetails.setRemarks(supDetails.getRemarks());
+								}catch(Exception e) {
+									
+								}
+								DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+								LocalDateTime lastLoginNow = LocalDateTime.now();
+								Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+										.parse(lastLoginNow.format(lastLogingFormat));
+								filterSupDetails.setUpdatedBy(Integer.parseInt(supDetails.getRegisterId()+""));
+								filterSupDetails.setUpdatedOn(lastLogin);
 								filterSupDetails.setSupplierCode(findById.get().getSupplierCode());
 								filterSupDetails.setStatus("PENDING");
 
