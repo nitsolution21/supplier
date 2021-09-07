@@ -1840,6 +1840,15 @@ public class CustomerController {
 						} catch (Exception e) {
 
 						}
+						
+						DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+						LocalDateTime lastLoginNow = LocalDateTime.now();
+						Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+								.parse(lastLoginNow.format(lastLogingFormat));
+						SupDetails supDetails = supDetailsRepo.findById(loginSupplierCode).get();
+						department.setUpdatedBy(Integer.parseInt(supDetails.getRegisterId()+""));
+						department.setUpdatedOn(lastLogin);
+						
 						department.setPhoneno(supDepartment.getPhoneno());
 						SupDepartment save = supDepartmentRepo.save(department);
 						return save;
@@ -1909,6 +1918,15 @@ public class CustomerController {
 							} catch (Exception e) {
 
 							}
+							
+							DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+							LocalDateTime lastLoginNow = LocalDateTime.now();
+							Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+									.parse(lastLoginNow.format(lastLogingFormat));
+							SupDetails supDetails = supDetailsRepo.findById(loginSupplierCode).get();
+							department.setUpdatedBy(Integer.parseInt(supDetails.getRegisterId()+""));
+							department.setUpdatedOn(lastLogin);
+							
 							department.setPhoneno(supDepartment.getPhoneno());
 							SupDepartment save = supDepartmentRepo.save(department);
 							return save;

@@ -867,6 +867,8 @@ public class VendorController {
 							throw new VendorNotFoundException("Already Previous Request is Pending");
 						}
 					}
+					
+					
 
 					SupAddress filterAddressUp = new SupAddress();
 					filterAddressUp.setSupplierCode(loginSupplierCode);
@@ -879,6 +881,14 @@ public class VendorController {
 					} catch (Exception e) {
 
 					}
+					
+					DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+					LocalDateTime lastLoginNow = LocalDateTime.now();
+					Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+							.parse(lastLoginNow.format(lastLogingFormat));
+					SupDetails supDetails = supDetailsRepo.findById(loginSupplierCode).get();
+					filterAddressUp.setUpdatedBy(Integer.parseInt(supDetails.getRegisterId()+""));
+					filterAddressUp.setUpdatedOn(lastLogin);
 					filterAddressUp.setPostalCode(address.getPostalCode());
 					filterAddressUp.setCity(address.getCity());
 					filterAddressUp.setCountry(address.getCountry());
@@ -991,6 +1001,14 @@ public class VendorController {
 								} catch (Exception e) {
 
 								}
+								
+								DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+								LocalDateTime lastLoginNow = LocalDateTime.now();
+								Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+										.parse(lastLoginNow.format(lastLogingFormat));
+								SupDetails supDetails = supDetailsRepo.findById(loginSupplierCode).get();
+								filterAddressUp.setUpdatedBy(Integer.parseInt(supDetails.getRegisterId()+""));
+								filterAddressUp.setUpdatedOn(lastLogin);
 								filterAddressUp.setPostalCode(address.getPostalCode());
 								filterAddressUp.setCity(address.getCity());
 								filterAddressUp.setCountry(address.getCountry());
@@ -1308,6 +1326,15 @@ public class VendorController {
 						}
 					}
 					SupBank bank = new SupBank();
+					
+					DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+					LocalDateTime lastLoginNow = LocalDateTime.now();
+					Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+							.parse(lastLoginNow.format(lastLogingFormat));
+					SupDetails supDetails = supDetailsRepo.findById(loginSupplierCode).get();
+					bank.setUpdatedBy(Integer.parseInt(supDetails.getRegisterId()+""));
+					bank.setUpdatedOn(lastLogin);
+					
 					bank.setAccountHolder(supBank.getAccountHolder());
 					bank.setBankAccountNo(supBank.getBankAccountNo());
 					bank.setBankBic(supBank.getBankBic());
@@ -1403,6 +1430,15 @@ public class VendorController {
 									&& fieldValidation.isEmpty(supBank.getIfscCode())
 									&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())) {
 								SupBank bank = new SupBank();
+								
+								DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+								LocalDateTime lastLoginNow = LocalDateTime.now();
+								Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+										.parse(lastLoginNow.format(lastLogingFormat));
+								SupDetails supDetails = supDetailsRepo.findById(loginSupplierCode).get();
+								bank.setUpdatedBy(Integer.parseInt(supDetails.getRegisterId()+""));
+								bank.setUpdatedOn(lastLogin);
+								
 								bank.setBankId(bankId);
 								bank.setAccountHolder(supBank.getAccountHolder());
 								bank.setBankAccountNo(supBank.getBankAccountNo());
@@ -1549,6 +1585,15 @@ public class VendorController {
 						}
 
 						SupDepartment department = new SupDepartment();
+						
+						DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+						LocalDateTime lastLoginNow = LocalDateTime.now();
+						Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+								.parse(lastLoginNow.format(lastLogingFormat));
+						SupDetails supDetails = supDetailsRepo.findById(loginSupplierCode).get();
+						department.setUpdatedBy(Integer.parseInt(supDetails.getRegisterId()+""));
+						department.setUpdatedOn(lastLogin);
+						
 						department.setDepartmentName(supDepartment.getDepartmentName());
 						department.setSupplierCode(loginSupplierCode);
 						department.setSupplierContact1(supDepartment.getSupplierContact1());
@@ -1621,6 +1666,14 @@ public class VendorController {
 									} catch (Exception e) {
 
 									}
+									DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+									LocalDateTime lastLoginNow = LocalDateTime.now();
+									Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+											.parse(lastLoginNow.format(lastLogingFormat));
+									SupDetails supDetails = supDetailsRepo.findById(loginSupplierCode).get();
+									department.setUpdatedBy(Integer.parseInt(supDetails.getRegisterId()+""));
+									department.setUpdatedOn(lastLogin);
+									
 									department.setPhoneno(supDepartment.getPhoneno());
 									department.setDepartmentId(departmentId);
 
