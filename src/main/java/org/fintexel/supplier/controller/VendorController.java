@@ -612,7 +612,7 @@ public class VendorController {
 					Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 							.parse(lastLoginNow.format(lastLogingFormat));
 
-					filterSupDetails.setLastlogin(lastLogin);
+//					filterSupDetails.setLastlogin(lastLogin);
 
 					try {
 
@@ -624,7 +624,7 @@ public class VendorController {
 
 					}
 
-					filterSupDetails.setLastlogin(supDetails.getLastlogin());
+//					filterSupDetails.setLastlogin(supDetails.getLastlogin());
 					filterSupDetails.setSupplierCode("SU:" + supCodeNow.format(supCodeFormat) + ":" + findAll.size());
 					filterSupDetails.setStatus("PENDING");
 					SupDetails save = supDetailsRepo.save(filterSupDetails);

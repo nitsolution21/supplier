@@ -379,7 +379,7 @@ public class PurchaseOrderController {
 	@GetMapping("/pendingCustomer")
 	public List<JSONObject> getPendingCustomer() {
 	LOGGER.info("Inside - PurchaseOrderController.getPendingCustomer()");
-		List<JSONObject> response = new ArrayList<JSONObject>();
+		List<JSONObject> response = new ArrayList<>();
 		try {
 			
 			List<PurchesOrder> findByStatus = purchesOrderRepo.findByStatus("WAITING FOR APPROVAL");
@@ -389,9 +389,11 @@ public class PurchaseOrderController {
 				findByStatus.forEach(obj -> {
 					JSONObject temp = new JSONObject();
 					CustomerProfile customerProfile = customerProfileRepo.findById((long)obj.getcId()).get();
+					
 					temp.put("listPurchesorder", findByStatus);
 					temp.put("customerName", customerProfile.getCustomerName());
 					response.add(temp);
+					System.out.println("okk  ===  " + temp.toString());
 				});
 
 				return response;
