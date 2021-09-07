@@ -1096,16 +1096,16 @@ public class PurchaseOrderController {
 				 
 				switch (posize.length()) {
 				case 0:
-					loginCustomerDetails.setPoNumber("PO - 00" + Integer.parseInt(posize+1));
+					loginCustomerDetails.setPoNumber("PO - 00" + Integer.toString((Integer.parseInt(posize) + 1)));
 					break;
 				case 1:
-					loginCustomerDetails.setPoNumber("PO - 00" + Integer.parseInt(posize+1));
+					loginCustomerDetails.setPoNumber("PO - 00" + Integer.toString((Integer.parseInt(posize) + 1)));
 					break;
 				case 2:
-					loginCustomerDetails.setPoNumber("PO - 0" + Integer.parseInt(posize+1));
+					loginCustomerDetails.setPoNumber("PO - 0" + Integer.toString((Integer.parseInt(posize) + 1)));
 					break;
 				default:
-					loginCustomerDetails.setPoNumber("PO - " + Integer.parseInt(posize+1));
+					loginCustomerDetails.setPoNumber("PO - " + Integer.toString((Integer.parseInt(posize) + 1)));
 					break;
 				}
 				
@@ -1188,6 +1188,10 @@ public class PurchaseOrderController {
 //								Optional<CustomerRegister> finDeliveryDetailsdById = customerRegisterRepo.findById(po.getDeliveryToId());
 //								JSONObject deliveryDetailsJsonObject = new JSONObject(finDeliveryDetailsdById.get());
 //								order.setDeliveryToText(deliveryDetailsJsonObject.toString());
+								Optional<SupDetails> findSuppilerById = supDetailsRepo.findById(po.getSupplierCode());
+								
+								order.setSupplierName(findSuppilerById.get().getSupplierCompName());
+								
 								order.setDeliveryToText(po.getDeliveryToText());
 								
 								order.setCurType(po.getCurType());

@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -645,8 +646,13 @@ public class CustomerController {
 								customerProfile2.setCustomerContact1(customerProfile.getCustomerContact1());
 								customerProfile2.setRegistrationType(customerProfile.getRegistrationType());
 								customerProfile2.setRegistrationNo(customerProfile.getRegistrationNo());
-								customerProfile2.setStatus("COMPLEATE");
+								customerProfile2.setStatus("COMPLETE");
 								customerProfile2.setcId(profileId);
+								LocalDateTime ldt = LocalDateTime.now();
+								String dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy", Locale.ENGLISH).format(ldt);
+								Date date = new SimpleDateFormat("MM-dd-yyyy").parse(dateFormat);
+								customerProfile2.setUpdatedOn(date);
+								customerProfile2.setUpdatedBy(findById.get().getName());
 								try {
 									if (fieldValidation.isEmpty(customerProfile.getCustomerContact2())) {
 										customerProfile2.setCustomerContact2(customerProfile.getCustomerContact2());
@@ -654,6 +660,7 @@ public class CustomerController {
 								} catch (Exception e) {
 									// TODO: handle exception
 								}
+								LOGGER.info("updated data is >>> >>> <<< >>>> <<<< >>>"+customerProfile2);
 								return customerProfileRepo.save(customerProfile2);
 							} else {
 								throw new VendorNotFoundException("Validation error");
