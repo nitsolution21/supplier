@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Table(name = "TBL_CUS_PROFILE")
 public class CustomerProfile {
@@ -25,7 +27,7 @@ public class CustomerProfile {
 	@Column(name = "CREATED_BY") private String createdBy;
 	@Column(name = "CREATED_ON") private Date createdOn;
 	@Column(name = "UPDATED_BY") private String updatedBy;
-	@Column(name = "UPDATED_ON") private Date updatedOn;
+	@JsonFormat(pattern = "MM-dd-yyyy") @Column(name = "UPDATED_ON") private Date updatedOn;
 	
 	public CustomerProfile() {
 		super();
