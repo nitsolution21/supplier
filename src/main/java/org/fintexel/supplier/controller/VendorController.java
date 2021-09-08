@@ -1419,16 +1419,17 @@ public class VendorController {
 						} else {
 							if (fieldValidation.isEmpty(supBank.getAccountHolder())
 									&& fieldValidation.isEmpty(supBank.getBankAccountNo())
-									&& fieldValidation.isEmpty(supBank.getBankBic())
+//									&& fieldValidation.isEmpty(supBank.getBankBic())
 									&& fieldValidation.isEmpty(supBank.getBankBranch())
 									&& fieldValidation.isEmpty(supBank.getBankEvidence())
 									&& fieldValidation.isEmpty(supBank.getBankName())
-									&& fieldValidation.isEmpty(supBank.getChequeNo())
+//									&& fieldValidation.isEmpty(supBank.getChequeNo())
 									&& fieldValidation.isEmpty(supBank.getCountry())
 									&& fieldValidation.isEmpty(supBank.getCurrency())
 									&& fieldValidation.isEmpty(supBank.getEvidencePath())
-									&& fieldValidation.isEmpty(supBank.getIfscCode())
-									&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())) {
+//									&& fieldValidation.isEmpty(supBank.getIfscCode())
+//									&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())
+									) {
 								SupBank bank = new SupBank();
 								
 								DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
