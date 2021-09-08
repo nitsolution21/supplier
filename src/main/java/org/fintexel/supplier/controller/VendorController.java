@@ -1744,7 +1744,7 @@ public class VendorController {
 								supRequest.setSupplierCode(loginSupplierCode);
 								supRequest.setTableName("SUP_DEPARTMENT");
 								supRequest.setId(findById.get().getDepartmentId());
-								supRequest.setNewValue(findById.get().toString());
+								supRequest.setNewValue(suppliernamenew.toString());
 								supRequest.setStatus("PENDING");
 								supRequest.setReqType("DELETE");
 								supRequestRepo.save(supRequest);
@@ -1813,14 +1813,14 @@ public class VendorController {
 				Optional<SupRequest> findById = supRequestRepo.findById(obj.getId());
 				SupRequest supRequest2 = findById.get();
 				String oldValue = "";
-				if (supRequest2.getReqType().equals("UPDATE") || supRequest2.getReqType().equals("DELETE")) {
+				if (supRequest2.getReqType().equals("UPDATE") ) {
 					oldValue = supRequest2.getOldValue();
 				}
 				String newValue = supRequest2.getNewValue();
 				String tableName = supRequest2.getTableName();
 				supRequest2.setStatus("APPROVED");
 				if (tableName.equals("SUP_ADDRESS")) {
-					if (supRequest2.getReqType().equals("UPDATE") || supRequest2.getReqType().equals("DELETE")) {
+					if (supRequest2.getReqType().equals("UPDATE") ) {
 						SupAddress supAddressOld = SupAddress.fromJson(oldValue);
 
 					}
@@ -1848,9 +1848,10 @@ public class VendorController {
 //				supRequestRepo.save(supRequest2);
 //			}
 				else if (tableName.equals("SUP_DEPARTMENT")) {
-					if (supRequest2.getReqType().equals("UPDATE") || supRequest2.getReqType().equals("DELETE")) {
+					if (supRequest2.getReqType().equals("UPDATE") ) {
 						SupDepartment supDepartmentOld = SupDepartment.fromJson(oldValue);
 					}
+					
 
 					SupDepartment supDepartmentnew = SupDepartment.fromJson(newValue);
 					LOGGER.info("Inside - VendorController.vendorApproved() -dept" + supDepartmentnew);
@@ -1861,7 +1862,7 @@ public class VendorController {
 					supRequestRepo.save(supRequest2);
 					LOGGER.info("before if3");
 				} else if (tableName.equals("SUP_BANK")) {
-					if (supRequest2.getReqType().equals("UPDATE") || supRequest2.getReqType().equals("DELETE")) {
+					if (supRequest2.getReqType().equals("UPDATE") ) {
 						SupBank supBankOld = SupBank.fromJson(oldValue);
 					}
 					SupBank supBankNew = SupBank.fromJson(newValue);
@@ -1873,7 +1874,7 @@ public class VendorController {
 					supRequestRepo.save(supRequest2);
 					
 				} else if (tableName.equals("SUP_DETAILS")) {
-					if (supRequest2.getReqType().equals("UPDATE") || supRequest2.getReqType().equals("DELETE")) {
+					if (supRequest2.getReqType().equals("UPDATE") ) {
 						SupDetails supDetailsOld = SupDetails.fromJson(oldValue);
 					}
 

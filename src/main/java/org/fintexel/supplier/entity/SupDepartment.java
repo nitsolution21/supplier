@@ -224,6 +224,7 @@ public class SupDepartment {
 	
 	
 	public static SupDepartment fromJson(String value) {
+		 System.out.println(value);
 		 JsonObject obj = (JsonObject) JsonParser.parseString(value);
 		 System.out.println(value);
 		 try {
