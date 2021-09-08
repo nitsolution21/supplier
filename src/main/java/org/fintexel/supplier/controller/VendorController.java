@@ -423,20 +423,20 @@ public class VendorController {
 	 * else { throw new VendorNotFoundException("Token is not valid"); } }
 	 */
 
-	@GetMapping("/vendor/{vendorId}")
-	public Optional<VendorRegister> getRegisterVendor(@PathVariable() long vendorId) {
-		LOGGER.info("Inside - VendorController.getRegisterVendor()");
-		try {
-			Optional<VendorRegister> findById = this.vendorRepo.findById(vendorId);
-			LOGGER.info("Inside - VendorController.getRegisterVendor() - " + findById);
-			if (!(findById.isPresent())) {
-				throw new VendorNotFoundException("Vendor Not Found");
-			}
-			return findById;
-		} catch (Exception e) {
-			throw new VendorNotFoundException(e.getMessage());
-		}
-	}
+//	@GetMapping("/vendor/{vendorId}")
+//	public Optional<VendorRegister> getRegisterVendor(@PathVariable() long vendorId) {
+//		LOGGER.info("Inside - VendorController.getRegisterVendor()");
+//		try {
+//			Optional<VendorRegister> findById = this.vendorRepo.findById(vendorId);
+//			LOGGER.info("Inside - VendorController.getRegisterVendor() - " + findById);
+//			if (!(findById.isPresent())) {
+//				throw new VendorNotFoundException("Vendor Not Found");
+//			}
+//			return findById;
+//		} catch (Exception e) {
+//			throw new VendorNotFoundException(e.getMessage());
+//		}
+//	}
 
 //	@PutMapping("/vendor/{vendorId}")
 //	public VendorRegister putRegisterVendor(@PathVariable("vendorId") long vendorId,
@@ -564,12 +564,12 @@ public class VendorController {
 //		return userRepo.save(newUser);
 //	}
 
-	@GetMapping("/supplierAddress")
-	public List<SupAddress> allAdd() {
-		LOGGER.info("Inside - VendorController.allAdd()");
-		List<SupAddress> findAll = supAddRepo.findAll();
-		return findAll;
-	}
+//	@GetMapping("/supplierAddress")
+//	public List<SupAddress> allAdd() {
+//		LOGGER.info("Inside - VendorController.allAdd()");
+//		List<SupAddress> findAll = supAddRepo.findAll();
+//		return findAll;
+//	}
 
 	// ********** Write By Soumen **********//
 	// Start
@@ -1419,16 +1419,17 @@ public class VendorController {
 						} else {
 							if (fieldValidation.isEmpty(supBank.getAccountHolder())
 									&& fieldValidation.isEmpty(supBank.getBankAccountNo())
-									&& fieldValidation.isEmpty(supBank.getBankBic())
+//									&& fieldValidation.isEmpty(supBank.getBankBic())
 									&& fieldValidation.isEmpty(supBank.getBankBranch())
 									&& fieldValidation.isEmpty(supBank.getBankEvidence())
 									&& fieldValidation.isEmpty(supBank.getBankName())
-									&& fieldValidation.isEmpty(supBank.getChequeNo())
+//									&& fieldValidation.isEmpty(supBank.getChequeNo())
 									&& fieldValidation.isEmpty(supBank.getCountry())
 									&& fieldValidation.isEmpty(supBank.getCurrency())
 									&& fieldValidation.isEmpty(supBank.getEvidencePath())
-									&& fieldValidation.isEmpty(supBank.getIfscCode())
-									&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())) {
+//									&& fieldValidation.isEmpty(supBank.getIfscCode())
+//									&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())
+									) {
 								SupBank bank = new SupBank();
 								
 								DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
