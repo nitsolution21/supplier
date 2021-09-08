@@ -21,6 +21,7 @@ import org.fintexel.supplier.customerentity.CustomerProfile;
 import org.fintexel.supplier.customerentity.CustomerProfileResponce;
 import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerentity.CustomerUserDepartments;
+import org.fintexel.supplier.customerentity.GeoEntity;
 import org.fintexel.supplier.customerentity.GetResponceContract;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
@@ -29,6 +30,7 @@ import org.fintexel.supplier.customerrepository.CustomerProfileRepo;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserRolesRepo;
+import org.fintexel.supplier.customerrepository.GeoRepo;
 import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.RegType;
 import org.fintexel.supplier.entity.SupAddress;
@@ -135,6 +137,9 @@ public class CustomerController {
 	
 	@Autowired
 	private SupBankRepo supBankRepo;
+	
+	@Autowired
+	private GeoRepo geoRepo;
 
 	@PostMapping("/address")
 	public CustomerAddress createCustomerAddress(@RequestBody CustomerAddress customerAddress, @RequestHeader(name = "Authorization") String token) {
@@ -1973,6 +1978,20 @@ public class CustomerController {
 			throw new VendorNotFoundException(e.getMessage());
 		}
 		
+	}
+	
+	@GetMapping("/getGeoData/{parentId}")
+	List<GeoEntity> getGeoData(@PathVariable long parentId) {
+		try {
+			List<GeoEntity> findGeoByParentId = geoRepo.findByParentId(parentId);
+			if (findGeoByParentId.size() > 0) {
+				return findGeoByParentId;
+			} else {
+				throw new VendorNotFoundException("Data not found");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
 	}
 	
 	
