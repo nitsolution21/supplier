@@ -731,7 +731,7 @@ public class VendorController {
 					& (fieldValidation.isEmpty(supDetails.getRegistrationType()))
 					& (fieldValidation.isEmpty(supDetails.getRegisterId()))
 					& (fieldValidation.isEmpty(supDetails.getRegistrationNo()))
-					& (fieldValidation.isEmpty(supDetails.getCostCenter()))
+//					& (fieldValidation.isEmpty(supDetails.getCostCenter()))
 					& (fieldValidation.isEmpty(supDetails.getRemarks()))
 					) {
 
@@ -745,11 +745,11 @@ public class VendorController {
 							if (findById.get().getStatus().equals("PENDING")) {
 								throw new VendorNotFoundException("Already Previous Request is Pending");
 							} else {
-								SupDetails filterSupDetails = new SupDetails();
-								filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
+								SupDetails filterSupDetails = supDetailsRepo.findById(loginSupplierCode).get();
+//								filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
 								filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
 								filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
-								filterSupDetails.setRegisterId(supDetails.getRegisterId());
+//								filterSupDetails.setRegisterId(supDetails.getRegisterId());
 //								filterSupDetails.setCostCenter(supDetails.getCostCenter());
 								try {
 									filterSupDetails.setRemarks(supDetails.getRemarks());
@@ -762,7 +762,7 @@ public class VendorController {
 										.parse(lastLoginNow.format(lastLogingFormat));
 								filterSupDetails.setUpdatedBy(Integer.parseInt(supDetails.getRegisterId()+""));
 								filterSupDetails.setUpdatedOn(lastLogin);
-								filterSupDetails.setSupplierCode(findById.get().getSupplierCode());
+//								filterSupDetails.setSupplierCode(findById.get().getSupplierCode());
 								filterSupDetails.setStatus("PENDING");
 
 								List<SupRequest> findAllWithStatus = supRequestRepo.findAllWithStatus("PENDING");
