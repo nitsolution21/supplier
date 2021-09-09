@@ -1872,8 +1872,9 @@ public class VendorController {
 					if (supRequest2.getReqType().equals("UPDATE") ) {
 						SupBank supBankOld = SupBank.fromJson(oldValue);
 					}
-					supBankNew.setStatus(obj.getStatus());
+					
 					SupBank supBankNew = SupBank.fromJson(newValue);
+					supBankNew.setStatus(obj.getStatus());
 					if (supRequest2.getReqType().equals("DELETE") ) {
 						supBankNew.setStatus("DELETE");
 					}
