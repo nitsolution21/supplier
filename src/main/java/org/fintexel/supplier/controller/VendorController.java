@@ -929,7 +929,7 @@ public class VendorController {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			if (!loginSupplierCode.equals(null)) {
 
-				List<SupAddress> vendorAddress = this.supAddRepo.findBySupplierCode(loginSupplierCode);
+				List<SupAddress> vendorAddress = this.supAddRepo.findBySupplierCodeWithStatus(loginSupplierCode,"DELETE");
 
 				if (vendorAddress.size() < 1) {
 					throw new VendorNotFoundException("Vendor Address Not Exist");
@@ -1385,7 +1385,7 @@ public class VendorController {
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			if (!loginSupplierCode.equals(null)) {
-				List<SupBank> supBankDetails = supBankRepo.findBySupplierCode(loginSupplierCode);
+				List<SupBank> supBankDetails = supBankRepo.findBySupplierCodeWithStatus(loginSupplierCode,"DELETE");
 				if (supBankDetails.size() < 1) {
 					throw new VendorNotFoundException("Bank details not found");
 				} else {
@@ -1550,7 +1550,7 @@ public class VendorController {
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			if (!loginSupplierCode.equals(null)) {
-				List<SupDepartment> supDepartment = supDepartmentRepo.findBySupplierCode(loginSupplierCode);
+				List<SupDepartment> supDepartment = supDepartmentRepo.findBySupplierCodeWithStatus(loginSupplierCode,"DELETE");
 				if (supDepartment.size() > 0) {
 					return supDepartment;
 				} else {
