@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import org.fintexel.supplier.customerentity.AddVendorWithContract;
 import org.fintexel.supplier.customerentity.CustomerAddress;
+import org.fintexel.supplier.customerentity.CustomerAddressResponse;
 import org.fintexel.supplier.customerentity.CustomerContact;
 
 import org.fintexel.supplier.customerentity.CustomerDepartments;
@@ -245,7 +246,7 @@ public class CustomerController {
 	}
 	
 	@GetMapping("/address")
-	public List<CustomerAddress> getAddress(@RequestHeader(name = "Authorization") String token) {
+	public List<CustomerAddressResponse> getAddress(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.getAddress()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
@@ -255,7 +256,36 @@ public class CustomerController {
 			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
 			List<CustomerAddress> findByCId = customerAddressRepo.findActiveAddress(companyProfileIdByCustomerId);
 			if (findByCId.size() > 0) {
-				return findByCId;
+				List<CustomerAddressResponse> addressResponse = new ArrayList<CustomerAddressResponse>();
+				findByCId.forEach(addr -> {
+					CustomerAddressResponse customerAddressResponse = new CustomerAddressResponse();
+					try {
+						Optional<GeoEntity> findGeoById = geoRepo.findById(Long.parseLong(addr.getRegion()));
+						customerAddressResponse.setRegion(findGeoById.get().getName());
+						customerAddressResponse.setRegionId(findGeoById.get().getGeoId());
+					} catch (Exception e) {
+						customerAddressResponse.setRegion(addr.getRegion());
+						customerAddressResponse.setRegionId(-1);
+					}
+					customerAddressResponse.setAddress1(addr.getAddress1());
+					customerAddressResponse.setAddress2(addr.getAddress2());
+					customerAddressResponse.setAddressId(addr.getAddressId());
+					customerAddressResponse.setAddressProof(addr.getAddressProof());
+					customerAddressResponse.setAddressProofPath(addr.getAddressProofPath());
+					customerAddressResponse.setAddressType(addr.getAddressType());
+					customerAddressResponse.setcId(addr.getcId());
+					customerAddressResponse.setCountry(addr.getCountry());
+					customerAddressResponse.setCity(addr.getCity());
+					customerAddressResponse.setCreatedBy(addr.getCreatedBy());
+					customerAddressResponse.setCreatedOn(addr.getCreatedOn());
+					customerAddressResponse.setIsPrimary(addr.getIsPrimary());
+					customerAddressResponse.setPostalCode(addr.getPostalCode());
+					customerAddressResponse.setStatus(addr.getStatus());
+					customerAddressResponse.setUpdatedBy(addr.getUpdatedBy());
+					customerAddressResponse.setUpdatedOn(addr.getUpdatedOn());
+					addressResponse.add(customerAddressResponse);
+				});
+				return addressResponse;
 			} else {
 				throw new VendorNotFoundException("No address found for this company!! Please add first");
 			}
