@@ -731,7 +731,7 @@ public class VendorController {
 					& (fieldValidation.isEmpty(supDetails.getRegistrationType()))
 					& (fieldValidation.isEmpty(supDetails.getRegisterId()))
 					& (fieldValidation.isEmpty(supDetails.getRegistrationNo()))
-					& (fieldValidation.isEmpty(supDetails.getCostCenter()))
+//					& (fieldValidation.isEmpty(supDetails.getCostCenter()))
 					& (fieldValidation.isEmpty(supDetails.getRemarks()))
 					) {
 
@@ -745,11 +745,11 @@ public class VendorController {
 							if (findById.get().getStatus().equals("PENDING")) {
 								throw new VendorNotFoundException("Already Previous Request is Pending");
 							} else {
-								SupDetails filterSupDetails = new SupDetails();
-								filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
+								SupDetails filterSupDetails = supDetailsRepo.findById(loginSupplierCode).get();
+//								filterSupDetails.setSupplierCompName(supDetails.getSupplierCompName());
 								filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
 								filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
-								filterSupDetails.setRegisterId(supDetails.getRegisterId());
+//								filterSupDetails.setRegisterId(supDetails.getRegisterId());
 //								filterSupDetails.setCostCenter(supDetails.getCostCenter());
 								try {
 									filterSupDetails.setRemarks(supDetails.getRemarks());
@@ -762,7 +762,7 @@ public class VendorController {
 										.parse(lastLoginNow.format(lastLogingFormat));
 								filterSupDetails.setUpdatedBy(Integer.parseInt(supDetails.getRegisterId()+""));
 								filterSupDetails.setUpdatedOn(lastLogin);
-								filterSupDetails.setSupplierCode(findById.get().getSupplierCode());
+//								filterSupDetails.setSupplierCode(findById.get().getSupplierCode());
 								filterSupDetails.setStatus("PENDING");
 
 								List<SupRequest> findAllWithStatus = supRequestRepo.findAllWithStatus("PENDING");
@@ -929,10 +929,10 @@ public class VendorController {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			if (!loginSupplierCode.equals(null)) {
 
-				List<SupAddress> vendorAddress = this.supAddRepo.findBySupplierCode(loginSupplierCode);
+				List<SupAddress> vendorAddress = this.supAddRepo.findBySupplierCodeWithStatus(loginSupplierCode,"DELETE");
 
 				if (vendorAddress.size() < 1) {
-					throw new VendorNotFoundException("Vendor Not Exist");
+					throw new VendorNotFoundException("Vendor Address Not Exist");
 				} else {
 					return vendorAddress;
 				}
@@ -1385,7 +1385,7 @@ public class VendorController {
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			if (!loginSupplierCode.equals(null)) {
-				List<SupBank> supBankDetails = supBankRepo.findBySupplierCode(loginSupplierCode);
+				List<SupBank> supBankDetails = supBankRepo.findBySupplierCodeWithStatus(loginSupplierCode,"DELETE");
 				if (supBankDetails.size() < 1) {
 					throw new VendorNotFoundException("Bank details not found");
 				} else {
@@ -1550,7 +1550,7 @@ public class VendorController {
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			if (!loginSupplierCode.equals(null)) {
-				List<SupDepartment> supDepartment = supDepartmentRepo.findBySupplierCode(loginSupplierCode);
+				List<SupDepartment> supDepartment = supDepartmentRepo.findBySupplierCodeWithStatus(loginSupplierCode,"DELETE");
 				if (supDepartment.size() > 0) {
 					return supDepartment;
 				} else {
@@ -1744,7 +1744,7 @@ public class VendorController {
 								supRequest.setSupplierCode(loginSupplierCode);
 								supRequest.setTableName("SUP_DEPARTMENT");
 								supRequest.setId(findById.get().getDepartmentId());
-								supRequest.setNewValue(findById.get().toString());
+								supRequest.setNewValue(suppliernamenew.toString());
 								supRequest.setStatus("PENDING");
 								supRequest.setReqType("DELETE");
 								supRequestRepo.save(supRequest);
@@ -1790,6 +1790,9 @@ public class VendorController {
 		LOGGER.info("Inside - VendorController.getPendingRequest()");
 		try {
 			List<SupRequest> findWithStatus = supRequestRepo.findAllStatus("PENDING", code);
+			if(findWithStatus.size()<0) {
+				throw new VendorNotFoundException("Code is not valid");
+			}
 			return findWithStatus;
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -1810,23 +1813,26 @@ public class VendorController {
 				Optional<SupRequest> findById = supRequestRepo.findById(obj.getId());
 				SupRequest supRequest2 = findById.get();
 				String oldValue = "";
-				if (supRequest2.getReqType().equals("UPDATE")) {
+				if (supRequest2.getReqType().equals("UPDATE") ) {
 					oldValue = supRequest2.getOldValue();
 				}
 				String newValue = supRequest2.getNewValue();
 				String tableName = supRequest2.getTableName();
 				supRequest2.setStatus("APPROVED");
 				if (tableName.equals("SUP_ADDRESS")) {
-					if (supRequest2.getReqType().equals("UPDATE")) {
+					if (supRequest2.getReqType().equals("UPDATE") ) {
 						SupAddress supAddressOld = SupAddress.fromJson(oldValue);
 
 					}
 
 					SupAddress supAddressNew = SupAddress.fromJson(newValue);
+					supAddressNew.setStatus(obj.getStatus());
+					if (supRequest2.getReqType().equals("DELETE") ) {
+						supAddressNew.setStatus("DELETE");
+					}
 
 					// supAddressNew.setAddressId(supAddressNew.getAddressId());
 					// supAddressNew.setStatus(findById.get().getStatus());
-					supAddressNew.setStatus(obj.getStatus());
 					System.out.println("save   -----   " + obj.getStatus());
 					supAddRepo.save(supAddressNew);
 					supRequestRepo.save(supRequest2);
@@ -1845,39 +1851,53 @@ public class VendorController {
 //				supRequestRepo.save(supRequest2);
 //			}
 				else if (tableName.equals("SUP_DEPARTMENT")) {
-					if (supRequest2.getReqType().equals("UPDATE")) {
+					if (supRequest2.getReqType().equals("UPDATE") ) {
 						SupDepartment supDepartmentOld = SupDepartment.fromJson(oldValue);
 					}
+					
 
 					SupDepartment supDepartmentnew = SupDepartment.fromJson(newValue);
+					supDepartmentnew.setStatus(obj.getStatus());
+					if (supRequest2.getReqType().equals("DELETE") ) {
+						supDepartmentnew.setStatus("DELETE");
+					}
 					LOGGER.info("Inside - VendorController.vendorApproved() -dept" + supDepartmentnew);
 //				supDepartmentnew.setDepartmentId(supDepartmentnew.getDepartmentId());
 //				supDepartmentnew.setStatus(findById.get().getStatus());
-					supDepartmentnew.setStatus(obj.getStatus());
+				
 					supDepartmentRepo.save(supDepartmentnew);
 					supRequestRepo.save(supRequest2);
 					LOGGER.info("before if3");
 				} else if (tableName.equals("SUP_BANK")) {
-					if (supRequest2.getReqType().equals("UPDATE")) {
+					if (supRequest2.getReqType().equals("UPDATE") ) {
 						SupBank supBankOld = SupBank.fromJson(oldValue);
 					}
+					
 					SupBank supBankNew = SupBank.fromJson(newValue);
+					supBankNew.setStatus(obj.getStatus());
+					if (supRequest2.getReqType().equals("DELETE") ) {
+						supBankNew.setStatus("DELETE");
+					}
 //				supBankNew.setBankId(supBankNew.getBankId());
 //				supBankNew.setStatus(findById.get().getStatus());
-					supBankNew.setStatus(obj.getStatus());
+					
 					LOGGER.info("before if4" + supBankNew.toString() );
 					supBankRepo.save(supBankNew);
 					supRequestRepo.save(supRequest2);
 					
 				} else if (tableName.equals("SUP_DETAILS")) {
-					if (supRequest2.getReqType().equals("UPDATE")) {
+					if (supRequest2.getReqType().equals("UPDATE") ) {
 						SupDetails supDetailsOld = SupDetails.fromJson(oldValue);
 					}
 
 					SupDetails supDetailsNew = SupDetails.fromJson(newValue);
+					supDetailsNew.setStatus(obj.getStatus());
+					if (supRequest2.getReqType().equals("DELETE") ) {
+						supDetailsNew.setStatus("DELETE");
+					}
 					LOGGER.info("______________" + supRequest2);
 //				supDetailsNew.setRegisterId(supDetailsNew.getRegisterId());
-					supDetailsNew.setStatus(obj.getStatus());
+					
 //				List<RegType> findAll = regTypeRepo.findAll();
 //				for (RegType find : findAll) {
 //					if((!find.getName().equals(supDetailsNew.getRegistrationType())) && (obj.getStatus().equals("APPROVED"))) {
