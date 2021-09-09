@@ -10,6 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface SupDepartmentRepo extends JpaRepository<SupDepartment, Long> {
 	List<SupDepartment> findBySupplierCode(String supplierCode);
 	
-	@Query(value = "select * from SUP_DEPARTMENT where SUPPLIER_CODE = ?1 and STATUS = ?2" , nativeQuery = true)
+	@Query(value = "select * from SUP_DEPARTMENT where SUPPLIER_CODE = ?1 and STATUS != ?2" , nativeQuery = true)
 	List<SupDepartment> findBySupplierCodeWithStatus(String supplierCode , String status);
 }

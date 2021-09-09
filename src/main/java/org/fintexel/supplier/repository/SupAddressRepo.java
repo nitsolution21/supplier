@@ -21,6 +21,6 @@ public interface SupAddressRepo extends JpaRepository<SupAddress, Long> {
 	Optional<SupAddress> findByIsPrimaryWithSupplierCode(int isPrimary , String supplierCode);
 	
 	
-	@Query(value = "select * from SUP_ADDRESS where SUPPLIER_CODE = ?1 and STATUS = ?2" , nativeQuery = true)
+	@Query(value = "select * from SUP_ADDRESS where SUPPLIER_CODE = ?1 and STATUS != ?2" , nativeQuery = true)
 	List<SupAddress> findBySupplierCodeWithStatus(String supplierCode , String status);
 }

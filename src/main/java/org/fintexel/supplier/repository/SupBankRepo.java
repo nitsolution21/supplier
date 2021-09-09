@@ -23,6 +23,6 @@ public interface SupBankRepo extends JpaRepository<SupBank, Long> {
 	@Query("select s from SupBank s where s.isPrimary = ?1 and s.supplierCode = ?2")
 	Optional<SupBank> findByIsPrimaryWithSupplierCode(int key , String supplierCode);
 	
-	@Query(value = "select * from SUP_BANK where SUPPLIER_CODE = ?1 and STATUS = ?2" , nativeQuery = true)
+	@Query(value = "select * from SUP_BANK where SUPPLIER_CODE = ?1 and STATUS != ?2" , nativeQuery = true)
 	List<SupBank> findBySupplierCodeWithStatus(String supplierCode , String status);
 }
