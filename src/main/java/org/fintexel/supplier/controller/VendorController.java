@@ -1826,6 +1826,10 @@ public class VendorController {
 					}
 
 					SupAddress supAddressNew = SupAddress.fromJson(newValue);
+					
+					if (supRequest2.getReqType().equals("DELETE") ) {
+						supAddressNew.setStatus("DELETE");
+					}
 
 					// supAddressNew.setAddressId(supAddressNew.getAddressId());
 					// supAddressNew.setStatus(findById.get().getStatus());
@@ -1854,6 +1858,9 @@ public class VendorController {
 					
 
 					SupDepartment supDepartmentnew = SupDepartment.fromJson(newValue);
+					if (supRequest2.getReqType().equals("DELETE") ) {
+						supDepartmentnew.setStatus("DELETE");
+					}
 					LOGGER.info("Inside - VendorController.vendorApproved() -dept" + supDepartmentnew);
 //				supDepartmentnew.setDepartmentId(supDepartmentnew.getDepartmentId());
 //				supDepartmentnew.setStatus(findById.get().getStatus());
@@ -1866,6 +1873,9 @@ public class VendorController {
 						SupBank supBankOld = SupBank.fromJson(oldValue);
 					}
 					SupBank supBankNew = SupBank.fromJson(newValue);
+					if (supRequest2.getReqType().equals("DELETE") ) {
+						supBankNew.setStatus("DELETE");
+					}
 //				supBankNew.setBankId(supBankNew.getBankId());
 //				supBankNew.setStatus(findById.get().getStatus());
 					supBankNew.setStatus(obj.getStatus());
@@ -1879,6 +1889,9 @@ public class VendorController {
 					}
 
 					SupDetails supDetailsNew = SupDetails.fromJson(newValue);
+					if (supRequest2.getReqType().equals("DELETE") ) {
+						supDetailsNew.setStatus("DELETE");
+					}
 					LOGGER.info("______________" + supRequest2);
 //				supDetailsNew.setRegisterId(supDetailsNew.getRegisterId());
 					supDetailsNew.setStatus(obj.getStatus());
