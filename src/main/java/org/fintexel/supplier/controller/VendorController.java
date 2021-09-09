@@ -1826,14 +1826,13 @@ public class VendorController {
 					}
 
 					SupAddress supAddressNew = SupAddress.fromJson(newValue);
-					
+					supAddressNew.setStatus(obj.getStatus());
 					if (supRequest2.getReqType().equals("DELETE") ) {
 						supAddressNew.setStatus("DELETE");
 					}
 
 					// supAddressNew.setAddressId(supAddressNew.getAddressId());
 					// supAddressNew.setStatus(findById.get().getStatus());
-					supAddressNew.setStatus(obj.getStatus());
 					System.out.println("save   -----   " + obj.getStatus());
 					supAddRepo.save(supAddressNew);
 					supRequestRepo.save(supRequest2);
@@ -1858,13 +1857,14 @@ public class VendorController {
 					
 
 					SupDepartment supDepartmentnew = SupDepartment.fromJson(newValue);
+					supDepartmentnew.setStatus(obj.getStatus());
 					if (supRequest2.getReqType().equals("DELETE") ) {
 						supDepartmentnew.setStatus("DELETE");
 					}
 					LOGGER.info("Inside - VendorController.vendorApproved() -dept" + supDepartmentnew);
 //				supDepartmentnew.setDepartmentId(supDepartmentnew.getDepartmentId());
 //				supDepartmentnew.setStatus(findById.get().getStatus());
-					supDepartmentnew.setStatus(obj.getStatus());
+				
 					supDepartmentRepo.save(supDepartmentnew);
 					supRequestRepo.save(supRequest2);
 					LOGGER.info("before if3");
@@ -1872,13 +1872,14 @@ public class VendorController {
 					if (supRequest2.getReqType().equals("UPDATE") ) {
 						SupBank supBankOld = SupBank.fromJson(oldValue);
 					}
+					supBankNew.setStatus(obj.getStatus());
 					SupBank supBankNew = SupBank.fromJson(newValue);
 					if (supRequest2.getReqType().equals("DELETE") ) {
 						supBankNew.setStatus("DELETE");
 					}
 //				supBankNew.setBankId(supBankNew.getBankId());
 //				supBankNew.setStatus(findById.get().getStatus());
-					supBankNew.setStatus(obj.getStatus());
+					
 					LOGGER.info("before if4" + supBankNew.toString() );
 					supBankRepo.save(supBankNew);
 					supRequestRepo.save(supRequest2);
@@ -1889,12 +1890,13 @@ public class VendorController {
 					}
 
 					SupDetails supDetailsNew = SupDetails.fromJson(newValue);
+					supDetailsNew.setStatus(obj.getStatus());
 					if (supRequest2.getReqType().equals("DELETE") ) {
 						supDetailsNew.setStatus("DELETE");
 					}
 					LOGGER.info("______________" + supRequest2);
 //				supDetailsNew.setRegisterId(supDetailsNew.getRegisterId());
-					supDetailsNew.setStatus(obj.getStatus());
+					
 //				List<RegType> findAll = regTypeRepo.findAll();
 //				for (RegType find : findAll) {
 //					if((!find.getName().equals(supDetailsNew.getRegistrationType())) && (obj.getStatus().equals("APPROVED"))) {
