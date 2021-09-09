@@ -2025,7 +2025,19 @@ public class CustomerController {
 	}
 	
 	
-
+	@GetMapping("/getAllCountry")
+	public List<GeoEntity> getAllCountry() {
+		try {
+			List<GeoEntity> findByType = geoRepo.findByType("COUNTRY");
+			if (findByType.size() > 0) {
+				return findByType;
+			} else {
+				throw new VendorNotFoundException("Data not found");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
 	
 }
 	

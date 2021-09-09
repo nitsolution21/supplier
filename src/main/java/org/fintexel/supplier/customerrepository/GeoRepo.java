@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface GeoRepo extends JpaRepository<GeoEntity, Long> {
 	
 	public List<GeoEntity> findByParentId(long parentId);
+	
+	public List<GeoEntity> findByType(String type);
 }
