@@ -5,13 +5,26 @@ public class LoginResponce {
 	private String token;
 	private long registerId;
 	private String supplierCompanyName;
+	private boolean lastLogin;
 	
-	public LoginResponce(String username, String token, long registerId, String supplierCompanyName) {
+	
+
+	public boolean isLastLogin() {
+		return lastLogin;
+	}
+
+	public void setLastLogin(boolean lastLogin) {
+		this.lastLogin = lastLogin;
+	}
+
+	public LoginResponce(String username, String token, long registerId, String supplierCompanyName,
+			boolean lastLogin) {
 		super();
 		this.username = username;
 		this.token = token;
 		this.registerId = registerId;
 		this.supplierCompanyName = supplierCompanyName;
+		this.lastLogin = lastLogin;
 	}
 
 	public LoginResponce() {
@@ -53,8 +66,11 @@ public class LoginResponce {
 
 	@Override
 	public String toString() {
-		return "LoginResponce [username=" + username + ", token=" + token + ", registerId="+registerId+", supplierCompanyName"+supplierCompanyName+"]";
+		return "LoginResponce [username=" + username + ", token=" + token + ", registerId=" + registerId
+				+ ", supplierCompanyName=" + supplierCompanyName + ", lastLogin=" + lastLogin + "]";
 	}
+
+	
 	
 	
 	

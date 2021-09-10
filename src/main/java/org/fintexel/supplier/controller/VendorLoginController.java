@@ -29,6 +29,7 @@ import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.flowable.FlowableContainer;
 import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.repository.ForgotPasswordRepo;
+import org.fintexel.supplier.repository.SupDetailsRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.fintexel.supplier.repository.flowablerepo.FlowableFormRepo;
 import org.fintexel.supplier.repository.flowablerepo.FlowableRegistrationRepo;
@@ -71,6 +72,9 @@ public class VendorLoginController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(VendorLoginController.class);
 
+	@Autowired
+	private SupDetailsRepo supDetailsRepo;
+	
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	
@@ -131,10 +135,30 @@ public class VendorLoginController {
 
 		String token = jwtUtil.generateToken(vendor);
 
-		Optional<VendorRegister> findByUsername = vendorRegisterRepo.findByUsername(vendor.getUsername());
-
+	Optional<VendorRegister> findByUsername = vendorRegisterRepo.findByUsername(vendor.getUsername());
+		
+		DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime lastLoginNow = LocalDateTime.now();
+		boolean lastLogin = false;
+		SupDetails supDetails = new SupDetails();
+		try {
+			Date lastLoginTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+					.parse(lastLoginNow.format(lastLogingFormat));
+			supDetails = supDetailsRepo.findByRegisterId(findByUsername.get().getRegisterId()).get(0);
+			
+			if(fieldValidation.isEmpty(supDetails.getLastlogin())) {
+				lastLogin =true;
+			}else {
+				supDetails.setLastlogin(lastLoginTime);
+				supDetailsRepo.save(supDetails);
+			}
+		}catch(Exception e) {
+			
+		}
+		
+		
 		return ResponseEntity.ok(new LoginResponce(vendor.getUsername(), token, findByUsername.get().getRegisterId(),
-				findByUsername.get().getSupplierCompName()));
+				findByUsername.get().getSupplierCompName(), lastLogin));
 	}
 
 	@GetMapping("/vendorLogin")
