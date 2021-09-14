@@ -18,6 +18,7 @@ import org.fintexel.supplier.entity.ChangePassword;
 import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.ForgotPassword;
 import org.fintexel.supplier.entity.ForgotPasswordRequestEntity;
+import org.fintexel.supplier.entity.LoginLog;
 import org.fintexel.supplier.entity.LoginResponce;
 import org.fintexel.supplier.entity.RecoverPassword;
 import org.fintexel.supplier.entity.SupDetails;
@@ -29,6 +30,7 @@ import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.flowable.FlowableContainer;
 import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.repository.ForgotPasswordRepo;
+import org.fintexel.supplier.repository.LoginLogRepo;
 import org.fintexel.supplier.repository.SupDetailsRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.fintexel.supplier.repository.flowablerepo.FlowableFormRepo;
@@ -108,10 +110,13 @@ public class VendorLoginController {
 	private BCryptPasswordEncoder passwordEncoder;
 
 	@Autowired
-	FlowableRegistrationRepo flowableRegistrationRepo;
+	private FlowableRegistrationRepo flowableRegistrationRepo;
 
 	@Autowired
-	ForgotPasswordRepo forgotPasswordRepo;
+	private ForgotPasswordRepo forgotPasswordRepo;
+	
+	@Autowired
+	private LoginLogRepo loginLogRepo;
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -141,8 +146,9 @@ public class VendorLoginController {
 		LocalDateTime lastLoginNow = LocalDateTime.now();
 		boolean lastLogin = false;
 		SupDetails supDetails = new SupDetails();
+		Date lastLoginTime = new Date();
 		try {
-			Date lastLoginTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+			lastLoginTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 					.parse(lastLoginNow.format(lastLogingFormat));
 			supDetails = supDetailsRepo.findByRegisterId(findByUsername.get().getRegisterId()).get(0);
 			
@@ -154,6 +160,23 @@ public class VendorLoginController {
 			}
 		}catch(Exception e) {
 			
+		}
+		
+		Optional<LoginLog> findByRegisterId = loginLogRepo.findByRegisterId(findByUsername.get().getRegisterId());
+		if(findByRegisterId.isPresent()) {
+			LoginLog loginLog = findByRegisterId.get();
+			loginLog.setLoginTime(lastLoginTime);
+			int parseInt = Integer.parseInt(loginLog.getLoginAttempt())+1;
+			loginLog.setLoginAttempt(parseInt+"");
+			loginLogRepo.save(loginLog);
+			lastLogin=true;
+		}else {
+			LoginLog loginLog = new LoginLog();
+			loginLog.setRegisterId(findByUsername.get().getRegisterId());
+			loginLog.setLoginTime(lastLoginTime);
+			loginLog.setLoginAttempt("1");
+			loginLogRepo.save(loginLog);
+			lastLogin=false;
 		}
 		
 		
