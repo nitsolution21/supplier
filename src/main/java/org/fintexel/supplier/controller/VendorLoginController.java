@@ -177,7 +177,7 @@ public class VendorLoginController {
 			loginLog.setLoginAttempt("1");
 			loginLogRepo.save(loginLog);
 			lastLogin=false;
-		}
+		} 
 		
 		
 		return ResponseEntity.ok(new LoginResponce(vendor.getUsername(), token, findByUsername.get().getRegisterId(),
