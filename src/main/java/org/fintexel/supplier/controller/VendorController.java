@@ -21,6 +21,7 @@ import javax.validation.Valid;
 import org.fintexel.supplier.entity.ApproveMap;
 import org.fintexel.supplier.entity.CurrencyMaster;
 import org.fintexel.supplier.entity.CustomeResponseEntity;
+import org.fintexel.supplier.entity.LoginLog;
 import org.fintexel.supplier.entity.RegType;
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupContract;
@@ -37,6 +38,7 @@ import org.fintexel.supplier.flowable.FlowableContainer;
 import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.helper.LoginUserDetails;
 import org.fintexel.supplier.repository.CurrencyMasterRepo;
+import org.fintexel.supplier.repository.LoginLogRepo;
 import org.fintexel.supplier.repository.RegTypeRepo;
 import org.fintexel.supplier.repository.SupAddressRepo;
 import org.fintexel.supplier.repository.SupContractRepo;
@@ -87,6 +89,9 @@ import net.bytebuddy.implementation.bind.annotation.BindingPriority;
 public class VendorController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(VendorController.class);
+	
+	@Autowired
+	private LoginLogRepo loginLogRepo;
 	
 	@Autowired
 	private FlowableFormRepo flowableFormRepo;
@@ -580,7 +585,7 @@ public class VendorController {
 		try {
 
 			List<RegType> findAll = regTypeRepo.findAll();
-			if (findAll.size() < 1) {
+			if (findAll.size() < 1) { 
 				throw new VendorNotFoundException("No Data Present");
 			} else {
 				return findAll;
@@ -656,6 +661,12 @@ public class VendorController {
 					supRequest.setReqType("CREATE");
 
 					supRequestRepo.save(supRequest);
+					
+					
+					LoginLog loginLog = loginLogRepo.findByRegisterId(supDetails.getRegisterId()).get();
+					loginLog.setSupplierCode(filterSupDetails.getSupplierCode());
+					loginLogRepo.save(loginLog);
+					
 					return save;
 				} else {
 

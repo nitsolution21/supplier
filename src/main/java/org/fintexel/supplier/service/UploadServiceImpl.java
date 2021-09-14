@@ -20,9 +20,11 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.fintexel.supplier.customerentity.CustomerDepartments;
 import org.fintexel.supplier.customerentity.CustomerFunctionalitiesMaster;
+import org.fintexel.supplier.customerentity.GeoEntity;
 import org.fintexel.supplier.customerentity.RolesMaster;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerFunctionalitiesMasterRepo;
+import org.fintexel.supplier.customerrepository.GeoRepo;
 import org.fintexel.supplier.customerrepository.RolesMasterRepo;
 import org.fintexel.supplier.entity.MasterCurrencyType;
 import org.fintexel.supplier.entity.MasterRegType;
@@ -111,13 +113,13 @@ public class UploadServiceImpl implements UploadService {
 	
 
 	@Autowired
-	UploadErrorEntity UploadErrorEntity;
+	private UploadErrorEntity UploadErrorEntity;
 
 	@Autowired
 	UploadService uploadService;
 
 	@Autowired
-	UploadEntity uploadEntity;
+	private UploadEntity uploadEntity;
 
 	@Autowired
 	private FieldValidation fieldValidation;
@@ -130,14 +132,17 @@ public class UploadServiceImpl implements UploadService {
 	
 	
 	@Autowired
-	CustomerDepartmentsRepo customerDepartmentsRepo;
+	private CustomerDepartmentsRepo customerDepartmentsRepo;
 	
 	
 	@Autowired
-	RolesMasterRepo rolesMasterRepo;
+	private RolesMasterRepo rolesMasterRepo;
 	
 	@Autowired
-	CustomerFunctionalitiesMasterRepo customerFunctionalitiesMasterRepo;
+	private CustomerFunctionalitiesMasterRepo customerFunctionalitiesMasterRepo;
+	
+	@Autowired
+	private GeoRepo geoRepo;
 
 	Map<String, String> errorMap = new HashMap<>();
 
@@ -1680,7 +1685,7 @@ System.out.println("returnFlag " +returnFlag);
 	@Override
 	public boolean uploadFunc(MultipartFile uploadFile) {
 
-		LOGGER.info("Inside  - UploadServiceImpl.upload()");
+		LOGGER.info("Inside  - UploadServiceImpl.uploadFunc()");
 
 		DataFormatter dataFormatter = new DataFormatter();
 		String sheetName = "Sheet1";
@@ -1734,6 +1739,102 @@ System.out.println("returnFlag " +returnFlag);
 		}
 
 		return returnFlag;
+	}
+
+	@Override
+	public void bulkUploadRegionCountry(MultipartFile uploadFile) {
+		// TODO Auto-generated method stub
+		
+		LOGGER.info("Inside  - UploadServiceImpl.bulkUploadRegionCountry()");
+		try {
+			
+			DataFormatter dataFormatter = new DataFormatter();
+			String sheetName = "Sheet1";
+			boolean returnFlag = true;
+
+			File fileName = new File(uploadFile.getOriginalFilename());
+
+			Sheet sheet = loadTemplate(uploadFile, sheetName);
+
+			int minRow = sheet.getFirstRowNum() + 1;
+			int maxRow = sheet.getLastRowNum();
+			Row row = sheet.getRow(sheet.getFirstRowNum());
+			int minCell = row.getFirstCellNum();
+			int maxCell = row.getLastCellNum() - 1;
+
+			for (int i = minRow; i <= maxRow; i++) {
+				Row rows = sheet.getRow(i);
+
+				for (int c = minCell; c <= maxCell; c++) {
+					returnFlag = false;
+					Cell cells = rows.getCell(c);
+					String cellValue = dataFormatter.formatCellValue(cells);
+
+					System.out.println("Value is ==========  "+cellValue);
+					
+					if (cellValue.equals(null) || cellValue.equals("")) {
+						returnFlag = true;
+						UploadErrorEntity.setRowNumber(i);
+						UploadErrorEntity.setCellNumber(c);
+						UploadErrorEntity.setErrorDescription("Blank Value");
+
+					}
+
+				}
+
+					try {
+						if(fieldValidation.isEmpty(rows.getCell(0).toString())) {
+							uploadEntity.setRegionName(rows.getCell(0).toString());
+							
+							try {
+								if(fieldValidation.isEmpty(rows.getCell(1).toString())) {
+									uploadEntity.setCountryName(rows.getCell(1).toString());
+								}
+							}catch(Exception e) {	
+							}
+							
+							GeoEntity geoEntity = new GeoEntity();
+							List<GeoEntity> findByNameReg = geoRepo.findByNameWithType(uploadEntity.getRegionName().toUpperCase(),"REGION");
+							
+							if(findByNameReg.size()<1) {
+								geoEntity.setName(uploadEntity.getRegionName());
+								geoEntity.setParentId(0);
+								geoEntity.setType("REGION");
+								GeoEntity save = geoRepo.save(geoEntity);
+								GeoEntity geoEntityCountry = new GeoEntity();
+								geoEntityCountry.setName(uploadEntity.getCountryName());
+								geoEntityCountry.setParentId(save.getGeoId());
+								geoEntityCountry.setType("COUNTRY");
+								geoRepo.save(geoEntityCountry);
+							}else {
+								List<GeoEntity> findByNameCoun = geoRepo.findByNameWithType(uploadEntity.getRegionName().toUpperCase(),"COUNTRY");
+								
+								if(findByNameCoun.size()<1) {
+									geoEntity.setName(uploadEntity.getCountryName());
+									geoEntity.setParentId(findByNameReg.get(0).getGeoId());
+									geoEntity.setType("COUNTRY");
+									GeoEntity save = geoRepo.save(geoEntity);
+								}
+							}
+							
+						}
+					}catch(Exception e) {
+						
+						
+							
+					}
+					
+
+			}
+
+//			return returnFlag;
+
+			
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
 	}
 	
 	

@@ -81,6 +81,14 @@ public class UploadEntity {
 	private int contractTerms;
 	private String contractProof;
 	private String contractLocation;
+	
+	
+	
+	private String countryName;
+	private String regionName;
+	
+	
+	
 	public String getSlno() {
 		return slno;
 	}
@@ -381,6 +389,18 @@ public class UploadEntity {
 	public void setContractLocation(String contractLocation) {
 		this.contractLocation = contractLocation;
 	}
+	public String getCountryName() {
+		return countryName;
+	}
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
+	}
+	public String getRegionName() {
+		return regionName;
+	}
+	public void setRegionName(String regionName) {
+		this.regionName = regionName;
+	}
 	@Override
 	public String toString() {
 		return "UploadEntity [slno=" + slno + ", email=" + email + ", supplierCode=" + supplierCode + ", registerId="
@@ -399,7 +419,8 @@ public class UploadEntity {
 				+ ", supplierContact2=" + supplierContact2 + ", phoneno=" + phoneno + ", supEmail=" + supEmail
 				+ ", alternatePhoneno=" + alternatePhoneno + ", contractId=" + contractId + ", contractType="
 				+ contractType + ", contractTerms=" + contractTerms + ", contractProof=" + contractProof
-				+ ", contractLocation=" + contractLocation + "]";
+				+ ", contractLocation=" + contractLocation + ", countryName=" + countryName + ", regionName="
+				+ regionName + "]";
 	}
 	public UploadEntity(String slno, String email, String supplierCode, Long registerId, String supplierCompName,
 			String registrationType, String registrationNo, String status, String costCenter, String remarks,
@@ -410,7 +431,8 @@ public class UploadEntity {
 			String chequeNo, String accountHolder, String swiftCode, String ifscCode, String bankEvidence,
 			String evidencePath, long departmentId, String departmentName, String supplierContact1,
 			String supplierContact2, String phoneno, String supEmail, String alternatePhoneno, Long contractId,
-			String contractType, int contractTerms, String contractProof, String contractLocation) {
+			String contractType, int contractTerms, String contractProof, String contractLocation, String countryName,
+			String regionName) {
 		super();
 		this.slno = slno;
 		this.email = email;
@@ -462,11 +484,16 @@ public class UploadEntity {
 		this.contractTerms = contractTerms;
 		this.contractProof = contractProof;
 		this.contractLocation = contractLocation;
+		this.countryName = countryName;
+		this.regionName = regionName;
 	}
 	public UploadEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	
+
 
 
 	

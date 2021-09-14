@@ -145,19 +145,10 @@ public class VendorLoginController {
 		DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime lastLoginNow = LocalDateTime.now();
 		boolean lastLogin = false;
-		SupDetails supDetails = new SupDetails();
 		Date lastLoginTime = new Date();
 		try {
 			lastLoginTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 					.parse(lastLoginNow.format(lastLogingFormat));
-			supDetails = supDetailsRepo.findByRegisterId(findByUsername.get().getRegisterId()).get(0);
-			
-			if(fieldValidation.isEmpty(supDetails.getLastlogin())) {
-				lastLogin =true;
-			}else {
-				supDetails.setLastlogin(lastLoginTime);
-				supDetailsRepo.save(supDetails);
-			}
 		}catch(Exception e) {
 			
 		}
