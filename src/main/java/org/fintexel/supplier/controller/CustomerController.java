@@ -186,8 +186,28 @@ public class CustomerController {
 						}
 
 						 CustomerAddress saveCustomerAddress = customerAddressRepo.save(filterCustomerAddress);
-						 
-
+						 GeoEntity geoEntity = new GeoEntity();
+							List<GeoEntity> findByNameReg = geoRepo.findByNameWithType(customerAddress.getRegion().toUpperCase(),"REGION");
+						 if(findByNameReg.size()<1) {
+								geoEntity.setName(customerAddress.getRegion());
+								geoEntity.setParentId(0);
+								geoEntity.setType("REGION");
+								GeoEntity save = geoRepo.save(geoEntity);
+								GeoEntity geoEntityCountry = new GeoEntity();
+								geoEntityCountry.setName(customerAddress.getCountry());
+								geoEntityCountry.setParentId(save.getGeoId());
+								geoEntityCountry.setType("COUNTRY");
+								geoRepo.save(geoEntityCountry);
+							}else {
+								List<GeoEntity> findByNameCoun = geoRepo.findByNameWithType(customerAddress.getRegion().toUpperCase(),"COUNTRY");
+								
+								if(findByNameCoun.size()<1) {
+									geoEntity.setName(customerAddress.getCountry());
+									geoEntity.setParentId(findByNameReg.get(0).getGeoId());
+									geoEntity.setType("COUNTRY");
+									GeoEntity save = geoRepo.save(geoEntity);
+								}
+							}
 						return saveCustomerAddress;
 
 					} else {
