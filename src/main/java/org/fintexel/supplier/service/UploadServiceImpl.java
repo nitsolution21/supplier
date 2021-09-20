@@ -18,10 +18,12 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.fintexel.supplier.customerentity.ContractAndAddressType;
 import org.fintexel.supplier.customerentity.CustomerDepartments;
 import org.fintexel.supplier.customerentity.CustomerFunctionalitiesMaster;
 import org.fintexel.supplier.customerentity.GeoEntity;
 import org.fintexel.supplier.customerentity.RolesMaster;
+import org.fintexel.supplier.customerrepository.ContractAndAddressTypeRepo;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerFunctionalitiesMasterRepo;
 import org.fintexel.supplier.customerrepository.GeoRepo;
@@ -65,6 +67,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -143,6 +146,9 @@ public class UploadServiceImpl implements UploadService {
 	
 	@Autowired
 	private GeoRepo geoRepo;
+	
+	@Autowired
+	private ContractAndAddressTypeRepo contractAndAddressTypeRepo;
 
 	Map<String, String> errorMap = new HashMap<>();
 
@@ -1816,6 +1822,84 @@ System.out.println("returnFlag " +returnFlag);
 									GeoEntity save = geoRepo.save(geoEntity);
 								}
 							}
+							
+						}
+					}catch(Exception e) {
+						
+						
+							
+					}
+					
+
+			}
+
+//			return returnFlag;
+
+			
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+	}
+
+	@Override
+	public void bulkUploadContractAndAddressType(MultipartFile uploadFile , String token) {
+		// TODO Auto-generated method stub
+		
+		LOGGER.info("Inside  - UploadServiceImpl.bulkUploadRegionCountry()");
+		try {
+			
+			DataFormatter dataFormatter = new DataFormatter();
+			String sheetName = "Sheet1";
+			boolean returnFlag = true;
+
+			File fileName = new File(uploadFile.getOriginalFilename());
+
+			Sheet sheet = loadTemplate(uploadFile, sheetName);
+
+			int minRow = sheet.getFirstRowNum() + 1;
+			int maxRow = sheet.getLastRowNum();
+			Row row = sheet.getRow(sheet.getFirstRowNum());
+			int minCell = row.getFirstCellNum();
+			int maxCell = row.getLastCellNum() - 1;
+
+			for (int i = minRow; i <= maxRow; i++) {
+				Row rows = sheet.getRow(i);
+
+				for (int c = minCell; c <= maxCell; c++) {
+					returnFlag = false;
+					Cell cells = rows.getCell(c);
+					String cellValue = dataFormatter.formatCellValue(cells);
+
+					System.out.println("Value is ==========  "+cellValue);
+					
+					if (cellValue.equals(null) || cellValue.equals("")) {
+						returnFlag = true;
+						UploadErrorEntity.setRowNumber(i);
+						UploadErrorEntity.setCellNumber(c);
+						UploadErrorEntity.setErrorDescription("Blank Value");
+
+					}
+
+				}
+
+					try {
+						if(fieldValidation.isEmpty(rows.getCell(0).toString()) && fieldValidation.isEmpty(rows.getCell(1).toString()) && fieldValidation.isEmpty(rows.getCell(2).toString()) && fieldValidation.isEmpty(rows.getCell(4).toString()) && fieldValidation.isEmpty(rows.getCell(5).toString())) {
+							uploadEntity.setcId(Integer.parseInt(rows.getCell(0).toString()));
+							uploadEntity.setName(rows.getCell(1).toString());
+							uploadEntity.setType(rows.getCell(2).toString());
+							uploadEntity.setName(rows.getCell(4).toString());
+							uploadEntity.setType(rows.getCell(5).toString());
+							
+							try {
+								if(fieldValidation.isEmpty(rows.getCell(3).toString())) {
+									uploadEntity.setOrder(Integer.parseInt(rows.getCell(1).toString()));
+								}
+							}catch(Exception e) {	
+							}
+							ContractAndAddressType contractAndAddressType = new ContractAndAddressType();
+							
 							
 						}
 					}catch(Exception e) {

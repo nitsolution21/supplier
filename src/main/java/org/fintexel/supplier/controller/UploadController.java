@@ -457,6 +457,47 @@ public class UploadController {
 		
 	}
 	
+	@PostMapping("/uploadContractAndAddressType")
+	public CustomeResponseEntity uploadContractAndAddressType(@RequestParam("file") MultipartFile file , @RequestHeader(name = "Authorization") String token) {
+		
+		LOGGER.info("Inside - UploadController.uploadContractAndAddress()");
+		
+		try {
+			
+			if(file.isEmpty()) {
+				LOGGER.info("File is Empty");
+			}else {
+				String originalFilename = file.getOriginalFilename();
+				String substring = originalFilename.substring(file.getOriginalFilename().lastIndexOf(".")+1, file.getOriginalFilename().length());
+				if(substring.toLowerCase().equals("xls") || (substring.toLowerCase().equals("xlsb")) || substring.toLowerCase().equals("xlsm") || substring.toLowerCase().equals("xlsx") || substring.toLowerCase().equals("ods"))  {
+
+					
+				}else {
+					System.out.println("file type  _____---------  " + substring);
+					throw new VendorNotFoundException("File Type Should be xls/xlsb/xlsm/xlsx/ods");
+				}
+				LOGGER.info("File name is - "+file.getName());
+			}
+			
+			Date date = new Date();
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			String strDate= formatter.format(date);		
+			String uploadRefID = file.getOriginalFilename()+"_"+strDate.toString();
+			LOGGER.info("Ref ID  - "+uploadRefID);
+
+			
+			uploadService.bulkUploadContractAndAddressType(file,token);
+//			LOGGER.info("return Flag  - "+flag);
+			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	
+	
+	
 
 
 }
