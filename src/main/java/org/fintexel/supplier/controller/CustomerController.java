@@ -99,7 +99,7 @@ public class CustomerController {
 	FlowableRegistrationRepo flowableRegistrationRepo;
 	
 	@Autowired
-	CustomerAddressRepo customerAddressRepo;
+	private CustomerAddressRepo customerAddressRepo;
 
 	@Autowired
 	private FieldValidation fieldValidation;
@@ -184,7 +184,12 @@ public class CustomerController {
 						} catch (Exception e) {
 							// TODO: handle exception
 						}
+						
+							List<CustomerAddress> addressType = customerAddressRepo.findByAddressType(customerAddress.getAddressType());
 
+							if(addressType.size()<1) {
+								filterCustomerAddress.setAddressType(customerAddress.getAddressType());
+							}
 						 CustomerAddress saveCustomerAddress = customerAddressRepo.save(filterCustomerAddress);
 						 GeoEntity geoEntity = new GeoEntity();
 							List<GeoEntity> findByNameReg = geoRepo.findByNameWithType(customerAddress.getRegion().toUpperCase(),"REGION");

@@ -18,6 +18,10 @@ public interface CustomerAddressRepo extends JpaRepository<CustomerAddress, Long
 	
 	@Query(value = "select addr.* from flowable.TBL_CUS_ADDRESS addr where addr.IS_PRIMARY = ?1 and addr.CID = ?2 order by addr.ADDRESS_ID desc limit 1", nativeQuery = true)
 	public Optional<CustomerAddress> findLastCompanyPrimaryAddress(int isPrimary, long cId);
+
+	public List<CustomerAddress> findByAddressType(String addressType);
+
+	
 	
 	
 }
