@@ -89,6 +89,15 @@ public class UploadEntity {
 	
 	
 	
+	private int cId;
+	private String name;
+	private String type;
+	private int order;
+	
+	
+	
+	
+	
 	public String getSlno() {
 		return slno;
 	}
@@ -401,6 +410,34 @@ public class UploadEntity {
 	public void setRegionName(String regionName) {
 		this.regionName = regionName;
 	}
+	public int getcId() {
+		return cId;
+	}
+	public void setcId(int cId) {
+		this.cId = cId;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public int getOrder() {
+		return order;
+	}
+	public void setOrder(int order) {
+		this.order = order;
+	}
+	
+	
+	
+	
 	@Override
 	public String toString() {
 		return "UploadEntity [slno=" + slno + ", email=" + email + ", supplierCode=" + supplierCode + ", registerId="
@@ -420,8 +457,11 @@ public class UploadEntity {
 				+ ", alternatePhoneno=" + alternatePhoneno + ", contractId=" + contractId + ", contractType="
 				+ contractType + ", contractTerms=" + contractTerms + ", contractProof=" + contractProof
 				+ ", contractLocation=" + contractLocation + ", countryName=" + countryName + ", regionName="
-				+ regionName + "]";
+				+ regionName + ", cId=" + cId + ", name=" + name + ", type=" + type + ", order=" + order + "]";
 	}
+	
+	
+	
 	public UploadEntity(String slno, String email, String supplierCode, Long registerId, String supplierCompName,
 			String registrationType, String registrationNo, String status, String costCenter, String remarks,
 			Date lastlogin, Date createdOn, int createdBy, int updatedBy, Date updatedOn, Long addressId,
@@ -432,7 +472,7 @@ public class UploadEntity {
 			String evidencePath, long departmentId, String departmentName, String supplierContact1,
 			String supplierContact2, String phoneno, String supEmail, String alternatePhoneno, Long contractId,
 			String contractType, int contractTerms, String contractProof, String contractLocation, String countryName,
-			String regionName) {
+			String regionName, int cId, String name, String type, int order) {
 		super();
 		this.slno = slno;
 		this.email = email;
@@ -486,15 +526,22 @@ public class UploadEntity {
 		this.contractLocation = contractLocation;
 		this.countryName = countryName;
 		this.regionName = regionName;
+		this.cId = cId;
+		this.name = name;
+		this.type = type;
+		this.order = order;
 	}
+	
+	
+	
 	public UploadEntity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	
 	
-
-
+	
+	
 
 	
 	

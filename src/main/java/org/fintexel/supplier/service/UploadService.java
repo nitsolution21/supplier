@@ -38,7 +38,7 @@ public interface UploadService {
 	
 	void bulkUploadSupplierContact(UploadEntity supAddress , String type);
 	
-	void bulkUploadRegionCountry(MultipartFile uploadFile);
+	
 	
 	
 	
@@ -58,6 +58,10 @@ public interface UploadService {
 	boolean uploadDept(MultipartFile uploadFile);
 	
 	boolean uploadFunc(MultipartFile uploadFile);
+	
+	void bulkUploadRegionCountry(MultipartFile uploadFile);
+	
+	void bulkUploadContractAndAddressType(MultipartFile uploadFile , String token);
 	
 	
 	

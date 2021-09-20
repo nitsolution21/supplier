@@ -24,6 +24,7 @@ import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerentity.CustomerUserDepartments;
 import org.fintexel.supplier.customerentity.GeoEntity;
 import org.fintexel.supplier.customerentity.GetResponceContract;
+import org.fintexel.supplier.customerentity.VendorsStretchingClass;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
@@ -1379,20 +1380,26 @@ public class CustomerController {
 	
 	
 	@GetMapping("/vendors")
-	public List<SupDetails> vendors(@RequestHeader(name = "Authorization") String token) {
+	public List<VendorsStretchingClass> vendors(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.vendors()");
 		try {
 			
 			long customerIdFromToken = getCustomerDetails.getCIdFromToken(token);
 			List<CustomerContact> findBycId = customerContactRepo.findBycId(customerIdFromToken);
 			System.out.println("llllll  *****   " + findBycId.get(0).toString());
-			List<SupDetails> supplierDetails = new ArrayList<>();
+			List<VendorsStretchingClass> supplierDetails = new ArrayList<>();
 			if(findBycId.size()<1) {
 				throw new VendorNotFoundException("No Data Found in Database");
 			}else {
 				for(CustomerContact obj : findBycId) {
-					
-					supplierDetails.add(supDetailsRepo.findById(obj.getSupplierCode()).get());
+					VendorsStretchingClass vendorsStretchingClass = new VendorsStretchingClass();
+					vendorsStretchingClass.setSupplierCompName(supDetailsRepo.findById(obj.getSupplierCode()).get().getSupplierCompName());
+					vendorsStretchingClass.setRegistrationNo(supDetailsRepo.findById(obj.getSupplierCode()).get().getRegistrationNo());
+					vendorsStretchingClass.setRegistrationType(supDetailsRepo.findById(obj.getSupplierCode()).get().getRegistrationType());
+					vendorsStretchingClass.setSupplierCode(supDetailsRepo.findById(obj.getSupplierCode()).get().getSupplierCode());
+					vendorsStretchingClass.setStatus(supDetailsRepo.findById(obj.getSupplierCode()).get().getStatus());
+					vendorsStretchingClass.setSupplier(vendorRepo.findById(supDetailsRepo.findById(obj.getSupplierCode()).get().getRegisterId()).get().getUsername());
+					supplierDetails.add(vendorsStretchingClass);
 				}
 			
 			}
