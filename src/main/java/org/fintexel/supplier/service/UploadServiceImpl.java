@@ -41,6 +41,7 @@ import org.fintexel.supplier.entity.UploadErrorEntity;
 import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.entity.flowableentity.FlowableRegistration;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
+import org.fintexel.supplier.helper.GetCustomerDetails;
 import org.fintexel.supplier.repository.MasterCurrencyTypeRepo;
 import org.fintexel.supplier.repository.MasterRegTypeRepo;
 import org.fintexel.supplier.repository.SupAddressRepo;
@@ -95,6 +96,9 @@ public class UploadServiceImpl implements UploadService {
 
 	@Autowired
 	private SupDetails supDetails;
+	
+	@Autowired
+	private GetCustomerDetails getCustomerDetails;
 
 	@Autowired
 	private SupAddress supAddress;
@@ -1885,20 +1889,23 @@ System.out.println("returnFlag " +returnFlag);
 				}
 
 					try {
-						if(fieldValidation.isEmpty(rows.getCell(0).toString()) && fieldValidation.isEmpty(rows.getCell(1).toString()) && fieldValidation.isEmpty(rows.getCell(2).toString()) && fieldValidation.isEmpty(rows.getCell(4).toString()) && fieldValidation.isEmpty(rows.getCell(5).toString())) {
-							uploadEntity.setcId(Integer.parseInt(rows.getCell(0).toString()));
-							uploadEntity.setName(rows.getCell(1).toString());
-							uploadEntity.setType(rows.getCell(2).toString());
-							uploadEntity.setName(rows.getCell(4).toString());
-							uploadEntity.setType(rows.getCell(5).toString());
+						if(fieldValidation.isEmpty(rows.getCell(0).toString()) && fieldValidation.isEmpty(rows.getCell(1).toString()) && fieldValidation.isEmpty(rows.getCell(2).toString())) {
+							long cIdFromToken = getCustomerDetails.getCIdFromToken(token);
+							uploadEntity.setcId(Integer.parseInt(cIdFromToken+""));
+							uploadEntity.setName(rows.getCell(0).toString());
+							uploadEntity.setType(rows.getCell(1).toString());
+//							uploadEntity.setCreatedOn(rows.getCell(4).toString());
+//							uploadEntity.setCreatedBy();
 							
 							try {
-								if(fieldValidation.isEmpty(rows.getCell(3).toString())) {
-									uploadEntity.setOrder(Integer.parseInt(rows.getCell(1).toString()));
+								if(fieldValidation.isEmpty(rows.getCell(2).toString())) {
+									uploadEntity.setOrder(Integer.parseInt(rows.getCell(3).toString()));
 								}
 							}catch(Exception e) {	
 							}
 							ContractAndAddressType contractAndAddressType = new ContractAndAddressType();
+							
+							contractAndAddressTypeRepo.save(contractAndAddressType);
 							
 							
 						}
