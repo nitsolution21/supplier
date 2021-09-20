@@ -1388,9 +1388,12 @@ public class CustomerController {
 			}else {
 				for(CustomerContact obj : findBycId) {
 					VendorsStretchingClass vendorsStretchingClass = new VendorsStretchingClass();
-					vendorsStretchingClass.setSupDetails(supDetailsRepo.findById(obj.getSupplierCode()).get());
-					String username = vendorRepo.findById(supDetailsRepo.findById(obj.getSupplierCode()).get().getRegisterId()).get().getUsername();
-					vendorsStretchingClass.setSupplier(username);
+					vendorsStretchingClass.setSupplierCompName(supDetailsRepo.findById(obj.getSupplierCode()).get().getSupplierCompName());
+					vendorsStretchingClass.setRegistrationNo(supDetailsRepo.findById(obj.getSupplierCode()).get().getRegistrationNo());
+					vendorsStretchingClass.setRegistrationType(supDetailsRepo.findById(obj.getSupplierCode()).get().getRegistrationType());
+					vendorsStretchingClass.setSupplierCode(supDetailsRepo.findById(obj.getSupplierCode()).get().getSupplierCode());
+					vendorsStretchingClass.setStatus(supDetailsRepo.findById(obj.getSupplierCode()).get().getStatus());
+					vendorsStretchingClass.setSupplier(vendorRepo.findById(supDetailsRepo.findById(obj.getSupplierCode()).get().getRegisterId()).get().getUsername());
 					supplierDetails.add(vendorsStretchingClass);
 				}
 			
