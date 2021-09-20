@@ -1903,9 +1903,22 @@ System.out.println("returnFlag " +returnFlag);
 								}
 							}catch(Exception e) {	
 							}
-							ContractAndAddressType contractAndAddressType = new ContractAndAddressType();
+							List<ContractAndAddressType> findByNameWithCId = contractAndAddressTypeRepo.findByNameWithCId(uploadEntity.getName().toUpperCase(),Integer.parseInt(cIdFromToken+""),"ADDRESS");
+							if(findByNameWithCId.size()<1) {
+								ContractAndAddressType contractAndAddressType = new ContractAndAddressType();
+								contractAndAddressType.setcId(Integer.parseInt(cIdFromToken+""));
+								contractAndAddressType.setName(uploadEntity.getName());
+								if(uploadEntity.getType().equals("ADDRESS")) {
+									contractAndAddressType.setType("ADDRESS");
+								}else if(uploadEntity.getType().equals("CONTRACT")) {
+									contractAndAddressType.setType("CONTRACT");
+								}
+								
+								contractAndAddressTypeRepo.save(contractAndAddressType);
+							}
 							
-							contractAndAddressTypeRepo.save(contractAndAddressType);
+							
+							
 							
 							
 						}
