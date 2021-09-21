@@ -506,12 +506,12 @@ public class CustomerController {
 	}
 	
 	@GetMapping("/contractAndAddressType/{type}")
-	public List<ContractAndAddressType> getContractAndAddressType(@RequestHeader(name = "Authorization") String token) {
+	public List<ContractAndAddressType> getContractAndAddressType(@RequestHeader(name = "Authorization") String token , @PathVariable("type") String type) {
 		
 		LOGGER.info("Inside - CustomerController.getContractAndAddressType()");
 		try {
 			long companyProfileIdByCustomerId = getCustomerDetails.getCIdFromToken(token);
-			List<ContractAndAddressType> findByTypeWithCId = contractAndAddressTypeRepo.findByTypeWithCId((int)companyProfileIdByCustomerId, "CONTRACT");
+			List<ContractAndAddressType> findByTypeWithCId = contractAndAddressTypeRepo.findByTypeWithCId((int)companyProfileIdByCustomerId, type);
 			if(findByTypeWithCId.size()<1) {
 				throw new VendorNotFoundException("No Contract Type Found");
 			}else {
