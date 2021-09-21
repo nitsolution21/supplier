@@ -200,13 +200,9 @@ public class CustomerController {
 								
 								ContractAndAddressType contractAndAddress = new ContractAndAddressType();
 								contractAndAddress.setType("ADDRESS");
-								contractAndAddress.setcId(Integer.parseInt( customerIdFromToken+""));
+								contractAndAddress.setcId((long)Integer.parseInt( customerIdFromToken+""));
 								contractAndAddress.setCreatedBy( customerIdFromToken+"");
 								contractAndAddress.setName(customerAddress.getAddressType());
-								LocalDateTime ldt = LocalDateTime.now();
-								String dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy", Locale.ENGLISH).format(ldt);
-								Date date = new SimpleDateFormat("MM-dd-yyyy").parse(dateFormat);
-								contractAndAddress.setCreatedOn(date);
 								
 								contractAndAddressTypeRepo.save(contractAndAddress);
 								
