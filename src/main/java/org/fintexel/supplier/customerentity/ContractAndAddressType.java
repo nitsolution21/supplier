@@ -17,23 +17,28 @@ public class ContractAndAddressType {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID") private Long id;
-	@Column(name = "CID") private int cId;
+	@Column(name = "CID") private Long cId;
 	@Column(name = "NAME") private String name;
 	@Column(name = "TYPE") private String type;
-	@Column(name = "ORDER") private int order;
-	@JsonFormat(pattern = "DD-MM-YY")
-	@Column(name = "CREATED_ON") private Date createdOn;
+	@Column(name = "ORDER") private Long order;
+//	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+//	@Column(name = "CREATED_ON") private Date createdOn;
 	@Column(name = "CREATED_BY") private String createdBy;
+	@Override
+	public String toString() {
+		return "ContractAndAddressType [id=" + id + ", cId=" + cId + ", name=" + name + ", type=" + type + ", order="
+				+ order + ", createdBy=" + createdBy + "]";
+	}
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public int getcId() {
+	public Long getcId() {
 		return cId;
 	}
-	public void setcId(int cId) {
+	public void setcId(Long cId) {
 		this.cId = cId;
 	}
 	public String getName() {
@@ -48,17 +53,11 @@ public class ContractAndAddressType {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public int getOrder() {
+	public Long getOrder() {
 		return order;
 	}
-	public void setOrder(int order) {
+	public void setOrder(Long order) {
 		this.order = order;
-	}
-	public Date getCreatedOn() {
-		return createdOn;
-	}
-	public void setCreatedOn(Date createdOn) {
-		this.createdOn = createdOn;
 	}
 	public String getCreatedBy() {
 		return createdBy;
@@ -66,27 +65,19 @@ public class ContractAndAddressType {
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-	@Override
-	public String toString() {
-		return "ContractAndAddressType [id=" + id + ", cId=" + cId + ", name=" + name + ", type=" + type + ", order="
-				+ order + ", createdOn=" + createdOn + ", createdBy=" + createdBy + "]";
-	}
-	public ContractAndAddressType() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	public ContractAndAddressType(Long id, int cId, String name, String type, int order, Date createdOn,
-			String createdBy) {
+	public ContractAndAddressType(Long id, Long cId, String name, String type, Long order, String createdBy) {
 		super();
 		this.id = id;
 		this.cId = cId;
 		this.name = name;
 		this.type = type;
 		this.order = order;
-		this.createdOn = createdOn;
 		this.createdBy = createdBy;
 	}
-	
+	public ContractAndAddressType() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	
 	
 
