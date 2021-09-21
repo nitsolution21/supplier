@@ -1389,6 +1389,15 @@ public class CustomerController {
 							customerContactRepo.save(contact);
 							
 							
+							List<ContractAndAddressType> findByNameWithCId = contractAndAddressTypeRepo.findByNameWithCId(addVendorWithContract.getContractType().toUpperCase(), (int)companyProfileIdByCustomerId, "CONTRACT");
+							if(findByNameWithCId.size()<1) {
+								ContractAndAddressType contractAndAddressType = new ContractAndAddressType();
+								contractAndAddressType.setcId((long)Integer.parseInt(companyProfileIdByCustomerId+""));
+								contractAndAddressType.setName(addVendorWithContract.getContractType());
+								contractAndAddressType.setType("CONTRACT");
+								contractAndAddressTypeRepo.save(contractAndAddressType);
+							}
+							
 							
 						} else {
 							throw new VendorNotFoundException("Validation error contract");
