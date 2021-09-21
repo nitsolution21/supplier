@@ -326,7 +326,7 @@ public class CustomerController {
 					customerAddressResponse.setAddressId(addr.getAddressId());
 					customerAddressResponse.setAddressProof(addr.getAddressProof());
 					customerAddressResponse.setAddressProofPath(addr.getAddressProofPath());
-//					customerAddressResponse.setAddressType(addr.getAddressType());
+					customerAddressResponse.setAddressType(addr.getAddressType());
 					customerAddressResponse.setcId(addr.getcId());
 					customerAddressResponse.setCountry(addr.getCountry());
 					customerAddressResponse.setCity(addr.getCity());
@@ -337,8 +337,13 @@ public class CustomerController {
 					customerAddressResponse.setStatus(addr.getStatus());
 					customerAddressResponse.setUpdatedBy(addr.getUpdatedBy());
 					customerAddressResponse.setUpdatedOn(addr.getUpdatedOn());
-					Optional<ContractAndAddressType> findById = contractAndAddressTypeRepo.findById(Long.parseLong( addr.getAddressType()));
-					customerAddressResponse.setAddressType(findById.get().getName());
+					try {
+						Optional<ContractAndAddressType> findById = contractAndAddressTypeRepo.findById(Long.parseLong( addr.getAddressType()));
+						customerAddressResponse.setAddressType(findById.get().getName());
+					}catch(Exception e) {
+						
+					}
+					
 					
 					addressResponse.add(customerAddressResponse);
 				});
@@ -627,10 +632,15 @@ public class CustomerController {
 								getResponceContract2.setContractLocation(contract.getContractLocation());
 								getResponceContract2.setContractProof(contract.getContractProof());
 								getResponceContract2.setContractTerms(contract.getContractTerms());
+								getResponceContract2.setContractType(contract.getContractType());
+								try {
+									ContractAndAddressType contractAndAddressType = contractAndAddressTypeRepo.findById(Long.parseLong(contract.getContractType())).get();
+									
+									getResponceContract2.setContractType(contractAndAddressType.getName());
+								}catch(Exception e) {
+									
+								}
 								
-								ContractAndAddressType contractAndAddressType = contractAndAddressTypeRepo.findById(Long.parseLong(contract.getContractType())).get();
-								
-								getResponceContract2.setContractType(contractAndAddressType.getName());
 								getResponceContract2.setCreatedBy(contract.getCreatedBy());
 								getResponceContract2.setCreatedOn(contract.getCreatedOn());
 								getResponceContract2.setSupplierCode(contract.getSupplierCode());
