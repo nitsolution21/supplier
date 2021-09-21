@@ -1913,9 +1913,6 @@ System.out.println("returnFlag " +returnFlag);
 								}else if(uploadEntity.getType().equals("CONTRACT")) {
 									contractAndAddressType.setType("CONTRACT");
 								}
-								ContractAndAddressType contractAndAddressType1 = new ContractAndAddressType();
-								System.out.println("contractAndAddressType =====  "+contractAndAddressType.toString());
-								contractAndAddressType1.setId((long)2);
 								contractAndAddressTypeRepo.save(contractAndAddressType);
 							}	
 							

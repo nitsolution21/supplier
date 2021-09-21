@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.fintexel.supplier.customerentity.AddVendorWithContract;
+import org.fintexel.supplier.customerentity.ContractAndAddressType;
 import org.fintexel.supplier.customerentity.CustomerAddress;
 import org.fintexel.supplier.customerentity.CustomerAddressResponse;
 import org.fintexel.supplier.customerentity.CustomerContact;
@@ -25,6 +26,7 @@ import org.fintexel.supplier.customerentity.CustomerUserDepartments;
 import org.fintexel.supplier.customerentity.GeoEntity;
 import org.fintexel.supplier.customerentity.GetResponceContract;
 import org.fintexel.supplier.customerentity.VendorsStretchingClass;
+import org.fintexel.supplier.customerrepository.ContractAndAddressTypeRepo;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
@@ -89,6 +91,9 @@ public class CustomerController {
 	
 	@Autowired
 	private SupAddressRepo supAddRepo;
+	
+	@Autowired
+	private ContractAndAddressTypeRepo contractAndAddressTypeRepo;
 	
 	@Autowired
 	private SupDetailsRepo supDetailsRepo;
@@ -474,6 +479,26 @@ public class CustomerController {
 		}
 	}
 	
+	@GetMapping("/contractAndAddressType/{type}")
+	public List<ContractAndAddressType> getContractAndAddressType(@RequestHeader(name = "Authorization") String token) {
+		
+		LOGGER.info("Inside - CustomerController.getContractAndAddressType()");
+		try {
+			long companyProfileIdByCustomerId = getCustomerDetails.getCIdFromToken(token);
+			List<ContractAndAddressType> findByTypeWithCId = contractAndAddressTypeRepo.findByTypeWithCId((int)companyProfileIdByCustomerId, "CONTRACT");
+			if(findByTypeWithCId.size()<1) {
+				throw new VendorNotFoundException("No Contract Type Found");
+			}else {
+				return findByTypeWithCId;
+			}
+			
+			
+		}catch(Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
+	}
+	
 	@PostMapping("/contract")
 	public CustomerContact createCustomerContact(@RequestBody CustomerContact customerContact,  @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.createCustomerContact()");
@@ -494,6 +519,16 @@ public class CustomerController {
 					contact.setSupplierCode(customerContact.getSupplierCode());
 					contact.setContractEndDate(customerContact.getContractEndDate());
 					contact.setCreatedOn(new Date());
+					
+					List<ContractAndAddressType> findByNameWithCId = contractAndAddressTypeRepo.findByNameWithCId(customerContact.getContractType().toUpperCase(), (int)companyProfileIdByCustomerId, "CONTRACT");
+					if(findByNameWithCId.size()<1) {
+						ContractAndAddressType contractAndAddressType = new ContractAndAddressType();
+						contractAndAddressType.setcId((long)Integer.parseInt(companyProfileIdByCustomerId+""));
+						contractAndAddressType.setName(customerContact.getContractType());
+						contractAndAddressType.setType("CONTRACT");
+						contractAndAddressTypeRepo.save(contractAndAddressType);
+					}
+					
 					return customerContactRepo.save(contact);
 				} else {
 					throw new VendorNotFoundException("Validation error");
