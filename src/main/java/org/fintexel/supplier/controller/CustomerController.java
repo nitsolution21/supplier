@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.fintexel.supplier.customerentity.AddVendorWithContract;
+import org.fintexel.supplier.customerentity.ContractAndAddressType;
 import org.fintexel.supplier.customerentity.CustomerAddress;
 import org.fintexel.supplier.customerentity.CustomerAddressResponse;
 import org.fintexel.supplier.customerentity.CustomerContact;
@@ -25,6 +26,7 @@ import org.fintexel.supplier.customerentity.CustomerUserDepartments;
 import org.fintexel.supplier.customerentity.GeoEntity;
 import org.fintexel.supplier.customerentity.GetResponceContract;
 import org.fintexel.supplier.customerentity.VendorsStretchingClass;
+import org.fintexel.supplier.customerrepository.ContractAndAddressTypeRepo;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
 import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
@@ -142,6 +144,9 @@ public class CustomerController {
 	
 	@Autowired
 	private GeoRepo geoRepo;
+	
+	@Autowired
+	private ContractAndAddressTypeRepo contractAndAddressTypeRepo;
 
 	@PostMapping("/address")
 	public CustomerAddress createCustomerAddress(@RequestBody CustomerAddress customerAddress, @RequestHeader(name = "Authorization") String token) {
@@ -186,11 +191,34 @@ public class CustomerController {
 							// TODO: handle exception
 						}
 						
-							List<CustomerAddress> addressType = customerAddressRepo.findByAddressType(customerAddress.getAddressType());
-
-							if(addressType.size()<1) {
-								filterCustomerAddress.setAddressType(customerAddress.getAddressType());
+							
+						try {
+							
+							List<ContractAndAddressType> addressType = contractAndAddressTypeRepo.findByNameCid(customerAddress.getAddressType().toUpperCase(),customerIdFromToken);
+							
+							if (addressType.size()<1) {
+								
+								ContractAndAddressType contractAndAddress = new ContractAndAddressType();
+								contractAndAddress.setType("ADDRESS");
+								contractAndAddress.setcId(Integer.parseInt( customerIdFromToken+""));
+								contractAndAddress.setCreatedBy( customerIdFromToken+"");
+								contractAndAddress.setName(customerAddress.getAddressType());
+								LocalDateTime ldt = LocalDateTime.now();
+								String dateFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy", Locale.ENGLISH).format(ldt);
+								Date date = new SimpleDateFormat("MM-dd-yyyy").parse(dateFormat);
+								contractAndAddress.setCreatedOn(date);
+								
+								contractAndAddressTypeRepo.save(contractAndAddress);
+								
 							}
+							
+							
+						} catch(Exception e) {
+							
+							throw new VendorNotFoundException(e.getMessage());
+						}
+							
+						
 						 CustomerAddress saveCustomerAddress = customerAddressRepo.save(filterCustomerAddress);
 						 GeoEntity geoEntity = new GeoEntity();
 							List<GeoEntity> findByNameReg = geoRepo.findByNameWithType(customerAddress.getRegion().toUpperCase(),"REGION");
