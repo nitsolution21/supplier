@@ -21,6 +21,93 @@ public class RequestStrachingClass {
 	private String updatedBy;
 	private Date updatedOn;
 	private boolean other;
+	 private Long addressId;
+	 private String addressType;
+	 private String address1;
+	 private String address2;
+	 private String city;
+	 private String postalCode;
+	 private String country;
+	 private String region;
+	 private String addressProof;
+	 private String addressProofPath;
+	 private String status;
+	 private int isPrimary;
+
+
+	 
+	public Long getAddressId() {
+		return addressId;
+	}
+	public void setAddressId(Long addressId) {
+		this.addressId = addressId;
+	}
+	public String getAddressType() {
+		return addressType;
+	}
+	public void setAddressType(String addressType) {
+		this.addressType = addressType;
+	}
+	public String getAddress1() {
+		return address1;
+	}
+	public void setAddress1(String address1) {
+		this.address1 = address1;
+	}
+	public String getAddress2() {
+		return address2;
+	}
+	public void setAddress2(String address2) {
+		this.address2 = address2;
+	}
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getPostalCode() {
+		return postalCode;
+	}
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+	public String getCountry() {
+		return country;
+	}
+	public void setCountry(String country) {
+		this.country = country;
+	}
+	public String getRegion() {
+		return region;
+	}
+	public void setRegion(String region) {
+		this.region = region;
+	}
+	public String getAddressProof() {
+		return addressProof;
+	}
+	public void setAddressProof(String addressProof) {
+		this.addressProof = addressProof;
+	}
+	public String getAddressProofPath() {
+		return addressProofPath;
+	}
+	public void setAddressProofPath(String addressProofPath) {
+		this.addressProofPath = addressProofPath;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public int getIsPrimary() {
+		return isPrimary;
+	}
+	public void setIsPrimary(int isPrimary) {
+		this.isPrimary = isPrimary;
+	}
 	public Long getContractId() {
 		return contractId;
 	}

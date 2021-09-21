@@ -151,7 +151,7 @@ public class CustomerController {
 	
 	
 	@PostMapping("/address")
-	public CustomerAddress createCustomerAddress(@RequestBody CustomerAddress customerAddress, @RequestHeader(name = "Authorization") String token) {
+	public CustomerAddress createCustomerAddress(@RequestBody RequestStrachingClass customerAddress, @RequestHeader(name = "Authorization") String token) {
 
 		LOGGER.info("Inside - CustomerController.createCustomerAddress()");
 
@@ -196,9 +196,10 @@ public class CustomerController {
 							
 						try {
 							
-							List<ContractAndAddressType> addressType = contractAndAddressTypeRepo.findByNameCid(customerAddress.getAddressType(),customerIdFromToken);
+							//List<ContractAndAddressType> addressType = contractAndAddressTypeRepo.findByNameCid(customerAddress.getAddressType(),customerIdFromToken);
 							
-							if (addressType.size()<1) {
+							
+							if (customerAddress.isOther()) {
 								
 								ContractAndAddressType contractAndAddress = new ContractAndAddressType();
 								contractAndAddress.setType("ADDRESS");
@@ -206,7 +207,8 @@ public class CustomerController {
 								contractAndAddress.setCreatedBy( customerIdFromToken+"");
 								contractAndAddress.setName(customerAddress.getAddressType());
 								
-								contractAndAddressTypeRepo.save(contractAndAddress);
+								ContractAndAddressType save = contractAndAddressTypeRepo.save(contractAndAddress);
+								filterCustomerAddress.setAddressType(save.getId()+"");
 								
 							}
 							
@@ -324,7 +326,7 @@ public class CustomerController {
 					customerAddressResponse.setAddressId(addr.getAddressId());
 					customerAddressResponse.setAddressProof(addr.getAddressProof());
 					customerAddressResponse.setAddressProofPath(addr.getAddressProofPath());
-					customerAddressResponse.setAddressType(addr.getAddressType());
+//					customerAddressResponse.setAddressType(addr.getAddressType());
 					customerAddressResponse.setcId(addr.getcId());
 					customerAddressResponse.setCountry(addr.getCountry());
 					customerAddressResponse.setCity(addr.getCity());
@@ -335,6 +337,9 @@ public class CustomerController {
 					customerAddressResponse.setStatus(addr.getStatus());
 					customerAddressResponse.setUpdatedBy(addr.getUpdatedBy());
 					customerAddressResponse.setUpdatedOn(addr.getUpdatedOn());
+					Optional<ContractAndAddressType> findById = contractAndAddressTypeRepo.findById(Long.parseLong( addr.getAddressType()));
+					customerAddressResponse.setAddressType(findById.get().getName());
+					
 					addressResponse.add(customerAddressResponse);
 				});
 				return addressResponse;
@@ -371,7 +376,7 @@ public class CustomerController {
 //	}
 
 	@PutMapping("/address/{id}")
-	public CustomerAddress putCustomerAddress(@PathVariable Long id, @RequestBody CustomerAddress customerAddress, @RequestHeader(name = "Authorization") String token) {
+	public CustomerAddress putCustomerAddress(@PathVariable Long id, @RequestBody RequestStrachingClass customerAddress, @RequestHeader(name = "Authorization") String token) {
 
 		LOGGER.info("Inside - CustomerController.putCustomerAddress()");
 
@@ -411,6 +416,30 @@ public class CustomerController {
 								}
 							} catch (Exception e) {
 								// TODO: handle exception
+							}
+							
+							try {
+								
+								//List<ContractAndAddressType> addressType = contractAndAddressTypeRepo.findByNameCid(customerAddress.getAddressType(),customerIdFromToken);
+								
+								
+								if (customerAddress.isOther()) {
+									
+									ContractAndAddressType contractAndAddress = new ContractAndAddressType();
+									contractAndAddress.setType("ADDRESS");
+									contractAndAddress.setcId((long)Integer.parseInt( customerIdFromToken+""));
+									contractAndAddress.setCreatedBy( customerIdFromToken+"");
+									contractAndAddress.setName(customerAddress.getAddressType());
+									
+									ContractAndAddressType save = contractAndAddressTypeRepo.save(contractAndAddress);
+									filterCustomerAddress.setAddressType(save.getId()+"");
+									
+								}
+								
+								
+							} catch(Exception e) {
+								
+								throw new VendorNotFoundException(e.getMessage());
 							}
 
 							 CustomerAddress saveCustomerAddress = customerAddressRepo.save(filterCustomerAddress);
