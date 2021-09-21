@@ -32,7 +32,7 @@ public class UploadEntity {
 	private String remarks;
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss") private Date lastlogin;
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss") private Date createdOn;
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss") private int createdBy;
+	private int createdBy;
 	@Column(name = "UPDATED_BY") private int updatedBy;
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss") private Date updatedOn;
 	

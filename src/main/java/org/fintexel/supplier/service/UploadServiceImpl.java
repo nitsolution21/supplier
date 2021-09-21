@@ -1899,14 +1899,25 @@ System.out.println("returnFlag " +returnFlag);
 							
 							try {
 								if(fieldValidation.isEmpty(rows.getCell(2).toString())) {
-									uploadEntity.setOrder(Integer.parseInt(rows.getCell(3).toString()));
+//									uploadEntity.setOrder(Integer.parseInt(rows.getCell(3).toString()));
 								}
 							}catch(Exception e) {	
 							}
-							ContractAndAddressType contractAndAddressType = new ContractAndAddressType();
-							
-							contractAndAddressTypeRepo.save(contractAndAddressType);
-							
+							List<ContractAndAddressType> findByNameWithCId = contractAndAddressTypeRepo.findByNameWithCId(uploadEntity.getName().toUpperCase(),Integer.parseInt(cIdFromToken+""),"ADDRESS");
+							if(findByNameWithCId.size()<1) {
+								ContractAndAddressType contractAndAddressType = new ContractAndAddressType();
+								contractAndAddressType.setcId((long)Integer.parseInt(cIdFromToken+""));
+								contractAndAddressType.setName(uploadEntity.getName());
+								if(uploadEntity.getType().equals("ADDRESS")) {
+									contractAndAddressType.setType("ADDRESS");
+								}else if(uploadEntity.getType().equals("CONTRACT")) {
+									contractAndAddressType.setType("CONTRACT");
+								}
+								ContractAndAddressType contractAndAddressType1 = new ContractAndAddressType();
+								System.out.println("contractAndAddressType =====  "+contractAndAddressType.toString());
+								contractAndAddressType1.setId((long)2);
+								contractAndAddressTypeRepo.save(contractAndAddressType);
+							}	
 							
 						}
 					}catch(Exception e) {
