@@ -25,6 +25,7 @@ import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerentity.CustomerUserDepartments;
 import org.fintexel.supplier.customerentity.GeoEntity;
 import org.fintexel.supplier.customerentity.GetResponceContract;
+import org.fintexel.supplier.customerentity.RequestStrachingClass;
 import org.fintexel.supplier.customerentity.VendorsStretchingClass;
 import org.fintexel.supplier.customerrepository.ContractAndAddressTypeRepo;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
@@ -525,7 +526,7 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/contract")
-	public CustomerContact createCustomerContact(@RequestBody CustomerContact customerContact,  @RequestHeader(name = "Authorization") String token) {
+	public CustomerContact createCustomerContact(@RequestBody RequestStrachingClass customerContact,  @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.createCustomerContact()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
@@ -545,14 +546,21 @@ public class CustomerController {
 					contact.setContractEndDate(customerContact.getContractEndDate());
 					contact.setCreatedOn(new Date());
 					
-					List<ContractAndAddressType> findByNameWithCId = contractAndAddressTypeRepo.findByNameWithCId(customerContact.getContractType().toUpperCase(), (int)companyProfileIdByCustomerId, "CONTRACT");
-					if(findByNameWithCId.size()<1) {
+					
+					if(customerContact.isOther()) {
 						ContractAndAddressType contractAndAddressType = new ContractAndAddressType();
 						contractAndAddressType.setcId((long)Integer.parseInt(companyProfileIdByCustomerId+""));
 						contractAndAddressType.setName(customerContact.getContractType());
 						contractAndAddressType.setType("CONTRACT");
-						contractAndAddressTypeRepo.save(contractAndAddressType);
+						ContractAndAddressType save = contractAndAddressTypeRepo.save(contractAndAddressType);
+						contact.setContractType(save.getId()+"");
 					}
+					
+					
+//					List<ContractAndAddressType> findByNameWithCId = contractAndAddressTypeRepo.findByNameWithCId(customerContact.getContractType().toUpperCase(), (int)companyProfileIdByCustomerId, "CONTRACT");
+//					if(findByNameWithCId.size()<1) {
+						
+//					}
 					
 					return customerContactRepo.save(contact);
 				} else {
@@ -618,7 +626,7 @@ public class CustomerController {
 	}
 
 	@PutMapping("/contract/{id}")
-	public CustomerContact putCustomerContact(@PathVariable Long id, @RequestBody CustomerContact customerContact, @RequestHeader(name = "Authorization") String token) {
+	public CustomerContact putCustomerContact(@PathVariable Long id, @RequestBody RequestStrachingClass customerContact, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.putCustomerContact()");
 
 		try {
@@ -643,6 +651,14 @@ public class CustomerController {
 							&& (fieldValidation.isEmpty(customerContact.getContractProof()))
 							&& (fieldValidation.isEmpty(customerContact.getContractLocation()))
 							&& (fieldValidation.isEmpty(customerContact.getContractEndDate()))) {
+						if(customerContact.isOther()) {
+							ContractAndAddressType contractAndAddressType = new ContractAndAddressType();
+							contractAndAddressType.setcId((long)Integer.parseInt(companyProfileIdByCustomerId+""));
+							contractAndAddressType.setName(customerContact.getContractType());
+							contractAndAddressType.setType("CONTRACT");
+							ContractAndAddressType save = contractAndAddressTypeRepo.save(contractAndAddressType);
+							customerContact.setContractType(save.getId()+"");
+						}
 						CustomerContact filterCustomerContact = new CustomerContact();
 						filterCustomerContact.setContractId(findContractById.get().getContractId());
 						filterCustomerContact.setcId(companyProfileIdByCustomerId);
@@ -653,6 +669,8 @@ public class CustomerController {
 						filterCustomerContact.setContractLocation(customerContact.getContractLocation());
 						filterCustomerContact.setContractEndDate(customerContact.getContractEndDate());
 						filterCustomerContact.setUpdatedOn(new Date());
+						
+						
 
 						return customerContactRepo.save(filterCustomerContact);
 
@@ -1411,18 +1429,18 @@ public class CustomerController {
 							contact.setSupplierCode(saveDetails.getSupplierCode());
 							contact.setContractEndDate(addVendorWithContract.getContractEndDate());
 							contact.setCreatedOn(new Date());
-							customerContactRepo.save(contact);
 							
 							
-							List<ContractAndAddressType> findByNameWithCId = contractAndAddressTypeRepo.findByNameWithCId(addVendorWithContract.getContractType().toUpperCase(), (int)companyProfileIdByCustomerId, "CONTRACT");
-							if(findByNameWithCId.size()<1) {
+							
+							if(addVendorWithContract.isOther()) {
 								ContractAndAddressType contractAndAddressType = new ContractAndAddressType();
 								contractAndAddressType.setcId((long)Integer.parseInt(companyProfileIdByCustomerId+""));
 								contractAndAddressType.setName(addVendorWithContract.getContractType());
 								contractAndAddressType.setType("CONTRACT");
-								contractAndAddressTypeRepo.save(contractAndAddressType);
+								ContractAndAddressType save2 = contractAndAddressTypeRepo.save(contractAndAddressType);
+								contact.setContractType(save2.getId()+"");
 							}
-							
+							customerContactRepo.save(contact);
 							
 						} else {
 							throw new VendorNotFoundException("Validation error contract");
