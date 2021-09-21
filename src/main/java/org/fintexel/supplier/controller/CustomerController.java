@@ -148,9 +148,7 @@ public class CustomerController {
 	@Autowired
 	private GeoRepo geoRepo;
 	
-	@Autowired
-	private ContractAndAddressTypeRepo contractAndAddressTypeRepo;
-
+	
 	@PostMapping("/address")
 	public CustomerAddress createCustomerAddress(@RequestBody CustomerAddress customerAddress, @RequestHeader(name = "Authorization") String token) {
 
