@@ -20,7 +20,7 @@ public class ContractAndAddressType {
 	@Column(name = "CID") private Long cId;
 	@Column(name = "NAME") private String name;
 	@Column(name = "TYPE") private String type;
-	@Column(name = "ORDER") private Long order;
+	@Column(name = "`ORDER`") private Long order;
 //	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 //	@Column(name = "CREATED_ON") private Date createdOn;
 	@Column(name = "CREATED_BY") private String createdBy;
