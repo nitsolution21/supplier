@@ -27,4 +27,8 @@ public interface ContractAndAddressTypeRepo extends JpaRepository<ContractAndAdd
 	@Query(value = "select * from TBL_CUS_DEFAULTS where upper(CID) = ?1 and TYPE = ?2" , nativeQuery = true)
 	List<ContractAndAddressType> findByTypeWithCId(int cId , String type);
 
+	
+	@Query(value = "select * from TBL_CUS_DEFAULTS where NAME=?1 and upper(CID) =?2", nativeQuery = true)
+	List<ContractAndAddressType> findByNameCid(String addressType, long customerIdFromToken);
+
 }

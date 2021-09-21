@@ -105,7 +105,7 @@ public class CustomerController {
 	FlowableRegistrationRepo flowableRegistrationRepo;
 	
 	@Autowired
-	CustomerAddressRepo customerAddressRepo;
+	private CustomerAddressRepo customerAddressRepo;
 
 	@Autowired
 	private FieldValidation fieldValidation;
@@ -147,7 +147,8 @@ public class CustomerController {
 	
 	@Autowired
 	private GeoRepo geoRepo;
-
+	
+	
 	@PostMapping("/address")
 	public CustomerAddress createCustomerAddress(@RequestBody CustomerAddress customerAddress, @RequestHeader(name = "Authorization") String token) {
 
@@ -190,7 +191,31 @@ public class CustomerController {
 						} catch (Exception e) {
 							// TODO: handle exception
 						}
-
+						
+							
+						try {
+							
+							List<ContractAndAddressType> addressType = contractAndAddressTypeRepo.findByNameCid(customerAddress.getAddressType().toUpperCase(),customerIdFromToken);
+							
+							if (addressType.size()<1) {
+								
+								ContractAndAddressType contractAndAddress = new ContractAndAddressType();
+								contractAndAddress.setType("ADDRESS");
+								contractAndAddress.setcId((long)Integer.parseInt( customerIdFromToken+""));
+								contractAndAddress.setCreatedBy( customerIdFromToken+"");
+								contractAndAddress.setName(customerAddress.getAddressType());
+								
+								contractAndAddressTypeRepo.save(contractAndAddress);
+								
+							}
+							
+							
+						} catch(Exception e) {
+							
+							throw new VendorNotFoundException(e.getMessage());
+						}
+							
+						
 						 CustomerAddress saveCustomerAddress = customerAddressRepo.save(filterCustomerAddress);
 						 GeoEntity geoEntity = new GeoEntity();
 							List<GeoEntity> findByNameReg = geoRepo.findByNameWithType(customerAddress.getRegion().toUpperCase(),"REGION");
