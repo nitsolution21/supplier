@@ -627,7 +627,10 @@ public class CustomerController {
 								getResponceContract2.setContractLocation(contract.getContractLocation());
 								getResponceContract2.setContractProof(contract.getContractProof());
 								getResponceContract2.setContractTerms(contract.getContractTerms());
-								getResponceContract2.setContractType(contract.getContractType());
+								
+								ContractAndAddressType contractAndAddressType = contractAndAddressTypeRepo.findById(Long.parseLong(contract.getContractType())).get();
+								
+								getResponceContract2.setContractType(contractAndAddressType.getName());
 								getResponceContract2.setCreatedBy(contract.getCreatedBy());
 								getResponceContract2.setCreatedOn(contract.getCreatedOn());
 								getResponceContract2.setSupplierCode(contract.getSupplierCode());
