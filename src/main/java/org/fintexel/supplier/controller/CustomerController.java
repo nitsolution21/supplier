@@ -195,7 +195,7 @@ public class CustomerController {
 							
 						try {
 							
-							List<ContractAndAddressType> addressType = contractAndAddressTypeRepo.findByNameCid(customerAddress.getAddressType().toUpperCase(),customerIdFromToken);
+							List<ContractAndAddressType> addressType = contractAndAddressTypeRepo.findByNameCid(customerAddress.getAddressType(),customerIdFromToken);
 							
 							if (addressType.size()<1) {
 								
