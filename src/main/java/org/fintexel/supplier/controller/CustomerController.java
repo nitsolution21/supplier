@@ -627,10 +627,15 @@ public class CustomerController {
 								getResponceContract2.setContractLocation(contract.getContractLocation());
 								getResponceContract2.setContractProof(contract.getContractProof());
 								getResponceContract2.setContractTerms(contract.getContractTerms());
+								getResponceContract2.setContractType(contract.getContractType());
+								try {
+									ContractAndAddressType contractAndAddressType = contractAndAddressTypeRepo.findById(Long.parseLong(contract.getContractType())).get();
+									
+									getResponceContract2.setContractType(contractAndAddressType.getName());
+								}catch(Exception e) {
+									
+								}
 								
-								ContractAndAddressType contractAndAddressType = contractAndAddressTypeRepo.findById(Long.parseLong(contract.getContractType())).get();
-								
-								getResponceContract2.setContractType(contractAndAddressType.getName());
 								getResponceContract2.setCreatedBy(contract.getCreatedBy());
 								getResponceContract2.setCreatedOn(contract.getCreatedOn());
 								getResponceContract2.setSupplierCode(contract.getSupplierCode());
@@ -1590,11 +1595,12 @@ public class CustomerController {
 	
 	
 	@PostMapping("/vendor/address")
-	public CustomeResponseEntity postAddressVendor(@RequestBody SupAddress address) {
+	public CustomeResponseEntity postAddressVendor(@RequestHeader("Authorization") String token,@RequestBody RequestStrachingClass address) {
 		LOGGER.info("Inside - CustomerController.postAddressVendor()");
-		
+	
 		LOGGER.info("Inside - CustomerController.postAddressVendor()  " + address);
 		try {
+			long customerIdFromToken = getCustomerDetails.getCIdFromToken(token);
 			String loginSupplierCode = address.getSupplierCode();
 			if ((fieldValidation.isEmpty(address.getAddressType())) & (fieldValidation.isEmpty(address.getAddress1()))
 					& (fieldValidation.isEmpty(address.getPostalCode())) & (fieldValidation.isEmpty(address.getCity()))
@@ -1617,7 +1623,7 @@ public class CustomerController {
 					} catch (Exception e) {
 
 					}
-					filterAddressUp.setPostalCode(address.getPostalCode());
+					filterAddressUp.setPostalCode(Integer.parseInt(address.getPostalCode()));
 					filterAddressUp.setCity(address.getCity());
 					filterAddressUp.setCountry(address.getCountry());
 					filterAddressUp.setRegion(address.getRegion());
@@ -1625,6 +1631,18 @@ public class CustomerController {
 					filterAddressUp.setAddressProof(address.getAddressProof());
 					filterAddressUp.setAddressProofPath(address.getAddressProofPath());
 					LOGGER.info("Before save data ><<><><><><><><><><><><><><><><><><><><><>"+filterAddressUp);
+					if (address.isOther()) {
+						
+						ContractAndAddressType contractAndAddress = new ContractAndAddressType();
+						contractAndAddress.setType("ADDRESS");
+						contractAndAddress.setcId((long)Integer.parseInt( customerIdFromToken+""));
+						contractAndAddress.setCreatedBy( customerIdFromToken+"");
+						contractAndAddress.setName(address.getAddressType());
+						
+						ContractAndAddressType save = contractAndAddressTypeRepo.save(contractAndAddress);
+						address.setAddressType(save.getId()+"");
+						
+					}
 					SupAddress save = this.supAddRepo.save(filterAddressUp);
 					return new CustomeResponseEntity("SUCCESS", "Data Added Successfully");
 				} else {
@@ -1667,6 +1685,15 @@ public class CustomerController {
 				if (vendorAddress.size() < 1) {
 					throw new VendorNotFoundException("Address not found");
 				} else {
+					vendorAddress.forEach(obj->{
+						try {
+							ContractAndAddressType contractAndAddressType = contractAndAddressTypeRepo.findById(Long.parseLong(obj.getAddressType())).get();
+							
+							obj.setAddressType(contractAndAddressType.getName());
+						}catch(Exception e) {
+							
+						}
+					});
 					return vendorAddress;
 				}
 			} else {
@@ -1679,9 +1706,10 @@ public class CustomerController {
 	}
 	
 	@PutMapping("/vendor/address/{addressId}")
-	public SupAddress updateAddressVendor(@PathVariable long addressId, @RequestBody SupAddress address) {
+	public SupAddress updateAddressVendor(@PathVariable long addressId, @RequestBody RequestStrachingClass address, @RequestHeader("Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.updateAddressVendor()");
 		try {
+			long cIdFromToken = getCustomerDetails.getCIdFromToken(token);
 			Optional<SupAddress> findSupplierAddressById = supAddRepo.findById(addressId);
 			if (findSupplierAddressById.isPresent()) {
 				String loginSupplierCode = address.getSupplierCode();
@@ -1705,7 +1733,7 @@ public class CustomerController {
 						} catch (Exception e) {
 
 						}
-						filterAddressUp.setPostalCode(address.getPostalCode());
+						filterAddressUp.setPostalCode(Integer.parseInt(address.getPostalCode()));
 						filterAddressUp.setCity(address.getCity());
 						filterAddressUp.setCountry(address.getCountry());
 						filterAddressUp.setRegion(address.getRegion());
@@ -1713,7 +1741,18 @@ public class CustomerController {
 						filterAddressUp.setAddressProof(address.getAddressProof());
 						filterAddressUp.setAddressProofPath(address.getAddressProofPath());
 						filterAddressUp.setAddressId(addressId);
-						
+						if (address.isOther()) {
+							
+							ContractAndAddressType contractAndAddress = new ContractAndAddressType();
+							contractAndAddress.setType("ADDRESS");
+							contractAndAddress.setcId((long)Integer.parseInt( cIdFromToken+""));
+							contractAndAddress.setCreatedBy( cIdFromToken+"");
+							contractAndAddress.setName(address.getAddressType());
+							
+							ContractAndAddressType save = contractAndAddressTypeRepo.save(contractAndAddress);
+							address.setAddressType(save.getId()+"");
+							
+						}
 						SupAddress save = this.supAddRepo.save(filterAddressUp);
 						return save;
 					} else {
