@@ -1875,6 +1875,28 @@ public class CustomerController {
 							
 						}
 						SupAddress save = this.supAddRepo.save(filterAddressUp);
+						 GeoEntity geoEntity = new GeoEntity();
+							List<GeoEntity> findByNameReg = geoRepo.findByNameWithType(save.getRegion().toUpperCase(),"REGION");
+						 if(findByNameReg.size()<1) {
+								geoEntity.setName(save.getRegion());
+								geoEntity.setParentId(0);
+								geoEntity.setType("REGION");
+								GeoEntity save1 = geoRepo.save(geoEntity);
+								GeoEntity geoEntityCountry = new GeoEntity();
+								geoEntityCountry.setName(save.getCountry());
+								geoEntityCountry.setParentId(save1.getGeoId());
+								geoEntityCountry.setType("COUNTRY");
+								geoRepo.save(geoEntityCountry);
+							}else {
+								List<GeoEntity> findByNameCoun = geoRepo.findByNameWithType(save.getCountry().toUpperCase(),"COUNTRY");
+								
+								if(findByNameCoun.size()<1) {
+									geoEntity.setName(save.getCountry());
+									geoEntity.setParentId(findByNameReg.get(0).getGeoId());
+									geoEntity.setType("COUNTRY");
+									GeoEntity save2 = geoRepo.save(geoEntity);
+								}
+							}
 						return save;
 					} else {
 						throw new VendorNotFoundException("Token not valid");
