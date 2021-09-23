@@ -233,7 +233,7 @@ public class CustomerController {
 								geoEntityCountry.setType("COUNTRY");
 								geoRepo.save(geoEntityCountry);
 							}else {
-								List<GeoEntity> findByNameCoun = geoRepo.findByNameWithType(customerAddress.getRegion().toUpperCase(),"COUNTRY");
+								List<GeoEntity> findByNameCoun = geoRepo.findByNameWithType(customerAddress.getCountry().toUpperCase(),"COUNTRY");
 								
 								if(findByNameCoun.size()<1) {
 									geoEntity.setName(customerAddress.getCountry());
