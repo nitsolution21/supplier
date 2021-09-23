@@ -2128,16 +2128,17 @@ public class CustomerController {
 					if (findById.get().getSupplierCode().equals(loginSupplierCode)) {
 							if (fieldValidation.isEmpty(supBank.getAccountHolder())
 									&& fieldValidation.isEmpty(supBank.getBankAccountNo())
-									&& fieldValidation.isEmpty(supBank.getBankBic())
+//									&& fieldValidation.isEmpty(supBank.getBankBic())
 									&& fieldValidation.isEmpty(supBank.getBankBranch())
 									&& fieldValidation.isEmpty(supBank.getBankEvidence())
 									&& fieldValidation.isEmpty(supBank.getBankName())
-									&& fieldValidation.isEmpty(supBank.getChequeNo())
+//									&& fieldValidation.isEmpty(supBank.getChequeNo())
 									&& fieldValidation.isEmpty(supBank.getCountry())
 									&& fieldValidation.isEmpty(supBank.getCurrency())
 									&& fieldValidation.isEmpty(supBank.getEvidencePath())
 									&& fieldValidation.isEmpty(supBank.getIfscCode())
-									&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())) {
+//									&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())
+									) {
 								SupBank bank = new SupBank();
 								bank.setBankId(bankId);
 								bank.setAccountHolder(supBank.getAccountHolder());
