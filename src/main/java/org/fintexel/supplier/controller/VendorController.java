@@ -1397,6 +1397,11 @@ public class VendorController {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			if (!loginSupplierCode.equals(null)) {
 				List<SupBank> supBankDetails = supBankRepo.findBySupplierCodeWithStatus(loginSupplierCode,"DELETE");
+				supBankDetails.forEach(obj->{
+					CurrencyMaster currencyMaster = currencyMasterRepo.findById((long)Integer.parseInt(obj.getCurrency())).get();
+					obj.setCurrency(currencyMaster.getCurrency());
+				});
+				
 				if (supBankDetails.size() < 1) {
 					throw new VendorNotFoundException("Bank details not found");
 				} else {

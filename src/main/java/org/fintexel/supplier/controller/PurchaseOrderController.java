@@ -24,6 +24,7 @@ import org.fintexel.supplier.customerrepository.PurchesOrderStatusRepo;
 import org.fintexel.supplier.customerrepository.SupplierInvoiceItemRepo;
 import org.fintexel.supplier.customerrepository.SupplierInvoiceRepo;
 import org.fintexel.supplier.entity.ApproveMap;
+import org.fintexel.supplier.entity.CurrencyMaster;
 import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.InventoryDetails;
 import org.fintexel.supplier.entity.ItemCategory;
@@ -52,6 +53,7 @@ import org.fintexel.supplier.entity.flowableentity.FlowableRegistration;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.helper.GetCustomerDetails;
 import org.fintexel.supplier.helper.LoginUserDetails;
+import org.fintexel.supplier.repository.CurrencyMasterRepo;
 import org.fintexel.supplier.repository.InventoryRepo;
 import org.fintexel.supplier.repository.ItemCategoryRepo;
 import org.fintexel.supplier.repository.ItemSubCategoryRepo;
@@ -117,6 +119,9 @@ public class PurchaseOrderController {
 	
 	@Autowired
 	private SupDepartmentRepo supDepartmentRepo;
+	
+	@Autowired
+	private CurrencyMasterRepo currencyMasterRepo;
 	
 	@Autowired
 	private InventoryRepo inventoryRepo;
@@ -254,6 +259,12 @@ public class PurchaseOrderController {
 //							    	supBank = findByIsPrimaryWithSupplierCode.get();
 //							    }else {
 							    	supBank = supBankRepo.findBySupplierCodeWithLastRow(0, supplierCode).get();
+							    	try {
+							    		CurrencyMaster currencyMaster = currencyMasterRepo.findById((long)Integer.parseInt(supBank.getCurrency())).get();
+							    		supBank.setCurrency(currencyMaster.getCurrency());
+							    	}catch(Exception e) {
+							    		
+							    	}
 //							    }
 							}catch(Exception e) {
 //								throw new VendorNotFoundException("Supplier Bank is Not Created");

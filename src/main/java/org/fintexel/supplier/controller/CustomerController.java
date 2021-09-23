@@ -36,6 +36,7 @@ import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserRolesRepo;
 import org.fintexel.supplier.customerrepository.GeoRepo;
+import org.fintexel.supplier.entity.CurrencyMaster;
 import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.RegType;
 import org.fintexel.supplier.entity.SupAddress;
@@ -48,6 +49,7 @@ import org.fintexel.supplier.entity.VendorRegister;
 import org.fintexel.supplier.entity.flowableentity.FlowableRegistration;
 import org.fintexel.supplier.exceptions.VendorNotFoundException;
 import org.fintexel.supplier.helper.GetCustomerDetails;
+import org.fintexel.supplier.repository.CurrencyMasterRepo;
 import org.fintexel.supplier.repository.RegTypeRepo;
 import org.fintexel.supplier.repository.SupAddressRepo;
 import org.fintexel.supplier.repository.SupBankRepo;
@@ -89,6 +91,8 @@ import org.springframework.web.client.RestTemplate;
 public class CustomerController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerController.class);
 
+	@Autowired
+	private CurrencyMasterRepo currencyMasterRepo;
 	
 	@Autowired
 	private SupAddressRepo supAddRepo;
@@ -278,7 +282,28 @@ public class CustomerController {
 						}
 
 						 CustomerAddress saveCustomerAddress = customerAddressRepo.save(filterCustomerAddress);
-						 
+						 GeoEntity geoEntity = new GeoEntity();
+							List<GeoEntity> findByNameReg = geoRepo.findByNameWithType(customerAddress.getRegion().toUpperCase(),"REGION");
+						 if(findByNameReg.size()<1) {
+								geoEntity.setName(customerAddress.getRegion());
+								geoEntity.setParentId(0);
+								geoEntity.setType("REGION");
+								GeoEntity save = geoRepo.save(geoEntity);
+								GeoEntity geoEntityCountry = new GeoEntity();
+								geoEntityCountry.setName(customerAddress.getCountry());
+								geoEntityCountry.setParentId(save.getGeoId());
+								geoEntityCountry.setType("COUNTRY");
+								geoRepo.save(geoEntityCountry);
+							}else {
+								List<GeoEntity> findByNameCoun = geoRepo.findByNameWithType(customerAddress.getCountry().toUpperCase(),"COUNTRY");
+								
+								if(findByNameCoun.size()<1) {
+									geoEntity.setName(customerAddress.getCountry());
+									geoEntity.setParentId(findByNameReg.get(0).getGeoId());
+									geoEntity.setType("COUNTRY");
+									GeoEntity save = geoRepo.save(geoEntity);
+								}
+							}
 
 						return saveCustomerAddress;
 
@@ -423,6 +448,8 @@ public class CustomerController {
 								// TODO: handle exception
 							}
 							
+							
+							
 							try {
 								
 								//List<ContractAndAddressType> addressType = contractAndAddressTypeRepo.findByNameCid(customerAddress.getAddressType(),customerIdFromToken);
@@ -444,12 +471,33 @@ public class CustomerController {
 								
 							} catch(Exception e) {
 								
-								throw new VendorNotFoundException(e.getMessage());
+//								throw new VendorNotFoundException(e.getMessage());
 							}
 
 							 CustomerAddress saveCustomerAddress = customerAddressRepo.save(filterCustomerAddress);
 							 
-
+							 GeoEntity geoEntity = new GeoEntity();
+								List<GeoEntity> findByNameReg = geoRepo.findByNameWithType(customerAddress.getRegion().toUpperCase(),"REGION");
+							 if(findByNameReg.size()<1) {
+									geoEntity.setName(customerAddress.getRegion());
+									geoEntity.setParentId(0);
+									geoEntity.setType("REGION");
+									GeoEntity save = geoRepo.save(geoEntity);
+									GeoEntity geoEntityCountry = new GeoEntity();
+									geoEntityCountry.setName(customerAddress.getCountry());
+									geoEntityCountry.setParentId(save.getGeoId());
+									geoEntityCountry.setType("COUNTRY");
+									geoRepo.save(geoEntityCountry);
+								}else {
+									List<GeoEntity> findByNameCoun = geoRepo.findByNameWithType(customerAddress.getCountry().toUpperCase(),"COUNTRY");
+									
+									if(findByNameCoun.size()<1) {
+										geoEntity.setName(customerAddress.getCountry());
+										geoEntity.setParentId(findByNameReg.get(0).getGeoId());
+										geoEntity.setType("COUNTRY");
+										GeoEntity save = geoRepo.save(geoEntity);
+									}
+								}
 							return saveCustomerAddress;
 
 						} else {
@@ -484,9 +532,55 @@ public class CustomerController {
 							} catch (Exception e) {
 								// TODO: handle exception
 							}
+							
+							
+							try {
+								
+								//List<ContractAndAddressType> addressType = contractAndAddressTypeRepo.findByNameCid(customerAddress.getAddressType(),customerIdFromToken);
+								
+								
+								if (customerAddress.isOther()) {
+									
+									ContractAndAddressType contractAndAddress = new ContractAndAddressType();
+									contractAndAddress.setType("ADDRESS");
+									contractAndAddress.setcId((long)Integer.parseInt( customerIdFromToken+""));
+									contractAndAddress.setCreatedBy( customerIdFromToken+"");
+									contractAndAddress.setName(customerAddress.getAddressType());
+									
+									ContractAndAddressType save = contractAndAddressTypeRepo.save(contractAndAddress);
+									filterCustomerAddress.setAddressType(save.getId()+"");
+									
+								}
+								
+								
+							} catch(Exception e) {
+								
+//								throw new VendorNotFoundException(e.getMessage());
+							}
 
 							 CustomerAddress saveCustomerAddress = customerAddressRepo.save(filterCustomerAddress);
-							 
+							 GeoEntity geoEntity = new GeoEntity();
+								List<GeoEntity> findByNameReg = geoRepo.findByNameWithType(customerAddress.getRegion().toUpperCase(),"REGION");
+							 if(findByNameReg.size()<1) {
+									geoEntity.setName(customerAddress.getRegion());
+									geoEntity.setParentId(0);
+									geoEntity.setType("REGION");
+									GeoEntity save = geoRepo.save(geoEntity);
+									GeoEntity geoEntityCountry = new GeoEntity();
+									geoEntityCountry.setName(customerAddress.getCountry());
+									geoEntityCountry.setParentId(save.getGeoId());
+									geoEntityCountry.setType("COUNTRY");
+									geoRepo.save(geoEntityCountry);
+								}else {
+									List<GeoEntity> findByNameCoun = geoRepo.findByNameWithType(customerAddress.getCountry().toUpperCase(),"COUNTRY");
+									
+									if(findByNameCoun.size()<1) {
+										geoEntity.setName(customerAddress.getCountry());
+										geoEntity.setParentId(findByNameReg.get(0).getGeoId());
+										geoEntity.setType("COUNTRY");
+										GeoEntity save = geoRepo.save(geoEntity);
+									}
+								}
 
 							return saveCustomerAddress;
 
@@ -1649,6 +1743,28 @@ public class CustomerController {
 						
 					}
 					SupAddress save = this.supAddRepo.save(filterAddressUp);
+					 GeoEntity geoEntity = new GeoEntity();
+						List<GeoEntity> findByNameReg = geoRepo.findByNameWithType(save.getRegion().toUpperCase(),"REGION");
+					 if(findByNameReg.size()<1) {
+							geoEntity.setName(save.getRegion());
+							geoEntity.setParentId(0);
+							geoEntity.setType("REGION");
+							GeoEntity save1 = geoRepo.save(geoEntity);
+							GeoEntity geoEntityCountry = new GeoEntity();
+							geoEntityCountry.setName(save.getCountry());
+							geoEntityCountry.setParentId(save1.getGeoId());
+							geoEntityCountry.setType("COUNTRY");
+							geoRepo.save(geoEntityCountry);
+						}else {
+							List<GeoEntity> findByNameCoun = geoRepo.findByNameWithType(save.getCountry().toUpperCase(),"COUNTRY");
+							
+							if(findByNameCoun.size()<1) {
+								geoEntity.setName(save.getCountry());
+								geoEntity.setParentId(findByNameReg.get(0).getGeoId());
+								geoEntity.setType("COUNTRY");
+								GeoEntity save2 = geoRepo.save(geoEntity);
+							}
+						}
 					return new CustomeResponseEntity("SUCCESS", "Data Added Successfully");
 				} else {
 					throw new VendorNotFoundException("Token not valid");
@@ -1959,6 +2075,10 @@ public class CustomerController {
 				if (supBankDetails.size() < 1) {
 					throw new VendorNotFoundException("Bank details not found");
 				} else {
+					supBankDetails.forEach(obj->{
+						CurrencyMaster currencyMaster = currencyMasterRepo.findById((long)Integer.parseInt(obj.getCurrency())).get();
+						obj.setCurrency(currencyMaster.getCurrency());
+					});
 					return supBankDetails;
 				}
 
