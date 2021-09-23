@@ -621,8 +621,7 @@ public class VendorController {
 					filterSupDetails.setRegisterId(supDetails.getRegisterId());
 					filterSupDetails.setRegistrationType(supDetails.getRegistrationType());
 					filterSupDetails.setRegistrationNo(supDetails.getRegistrationNo());
-					
-					
+									
 					try {
 						filterSupDetails.setRemarks(supDetails.getRemarks());
 					}catch(Exception e) {
@@ -651,6 +650,7 @@ public class VendorController {
 					filterSupDetails.setCreatedBy(Integer.parseInt(supDetails.getRegisterId()+""));
 					filterSupDetails.setCreatedOn(lastLogin);
 					filterSupDetails.setStatus("PENDING");
+//					filterSupDetails.setCreatedBy(Integer.parseInt(supDetails.getRegisterId()+""));	
 					SupDetails save = supDetailsRepo.save(filterSupDetails);
 					JSONObject suppliernamenew = new JSONObject(filterSupDetails);
 					supRequest.setSupplierCode(filterSupDetails.getSupplierCode());
