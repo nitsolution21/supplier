@@ -152,8 +152,6 @@ public class UploadServiceImpl implements UploadService {
 	@Autowired
 	private ContractAndAddressTypeRepo contractAndAddressTypeRepo;
 	
-	@Autowired
-	private BulkUploadSuccessError bulkUploadSuccessError;
 
 //	Map<String, String> errorMap = new HashMap<>();
 	List<BulkUploadSuccessError> errorMap = new ArrayList<BulkUploadSuccessError>();
