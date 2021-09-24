@@ -234,7 +234,7 @@ public class UploadServiceImpl implements UploadService {
 						errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 //						errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
 
-					}
+					} 
 
 					uploadService.validateSupplierDetails(uploadEntity, "UPLOAD");
 
