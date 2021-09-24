@@ -1,5 +1,7 @@
 package org.fintexel.supplier.service;
 
+import java.util.Map;
+
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.entity.UploadEntity;
@@ -49,19 +51,19 @@ public interface UploadService {
 	
 	boolean update(MultipartFile uploadFile);
 	
-	boolean uploadCurrencyType(MultipartFile uploadFile);
+	Map<String, String> uploadCurrencyType(MultipartFile uploadFile);
 	
-	boolean uploadRegType(MultipartFile uploadFile);
+	Map<String, String> uploadRegType(MultipartFile uploadFile);
 	
-	boolean uploadRole(MultipartFile uploadFile);
+	Map<String, String> uploadRole(MultipartFile uploadFile);
 	
-	boolean uploadDept(MultipartFile uploadFile);
+	Map<String, String> uploadDept(MultipartFile uploadFile);
 	
-	boolean uploadFunc(MultipartFile uploadFile);
+	Map<String, String> uploadFunc(MultipartFile uploadFile);
 	
-	void bulkUploadRegionCountry(MultipartFile uploadFile);
+	Map<String, String> bulkUploadRegionCountry(MultipartFile uploadFile);
 	
-	void bulkUploadContractAndAddressType(MultipartFile uploadFile , String token);
+	Map<String, String> bulkUploadContractAndAddressType(MultipartFile uploadFile , String token);
 	
 	
 	

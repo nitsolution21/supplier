@@ -209,8 +209,8 @@ public class UploadServiceImpl implements UploadService {
 					uploadService.validateEachVendor(uploadEntity);
 
 				} catch (Exception e) {
-
-					errorMap.put(uploadEntity.getEmail(), "In Upload(reg)  " + e.getMessage());
+					errorMap.put("Row-- "+i, e.getMessage());
+//					errorMap.put(uploadEntity.getEmail(), "In Upload(reg)  " + e.getMessage());
 
 				}
 
@@ -233,16 +233,17 @@ public class UploadServiceImpl implements UploadService {
 								new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rows.getCell(6).toString()));
 
 					} catch (Exception e) {
-
-						errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
+						errorMap.put("Row-- "+i, e.getMessage());
+//						errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
 
 					}
 
 					uploadService.validateSupplierDetails(uploadEntity, "UPLOAD");
 
 				} catch (Exception e) {
+					errorMap.put("Row-- "+i, e.getMessage());
 
-					errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
+//					errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
 
 				}
 
@@ -265,7 +266,7 @@ public class UploadServiceImpl implements UploadService {
 
 				} catch (Exception e) {
 
-					errorMap.put(uploadEntity.getEmail(), "In Upload(address)  " + e.getMessage());
+					errorMap.put("Row-- "+i, e.getMessage());
 
 				}
 
@@ -312,7 +313,7 @@ public class UploadServiceImpl implements UploadService {
 
 				} catch (Exception e) {
 
-					errorMap.put(uploadEntity.getEmail(), "In Upload(bank)  " + e.getMessage());
+					errorMap.put("Row-- "+i, e.getMessage());
 
 				}
 
@@ -335,7 +336,7 @@ public class UploadServiceImpl implements UploadService {
 					uploadService.validateSupplierDepartment(uploadEntity, "UPLOAD");
 
 				} catch (Exception e) {
-					errorMap.put(uploadEntity.getEmail(), "In Upload(dept)  " + e.getMessage());
+					errorMap.put("Row-- "+i, e.getMessage());
 				}
 
 				/* ------------------- BULK BANK DEPT END ----------------------------------- */
@@ -355,10 +356,10 @@ public class UploadServiceImpl implements UploadService {
 					/* ------------------- BULK CONTACT END ----------------------------------- */
 
 				} catch (Exception e) {
-					errorMap.put(uploadEntity.getEmail(), "In Upload(contact)  " + e.getMessage());
+					errorMap.put("Row-- "+i, e.getMessage());
 				}
 			} catch (Exception e) {
-				errorMap.put(uploadEntity.getEmail(), "In Upload(reg)  " + "Email is Empty");
+				errorMap.put("Row-- "+i, "Email is Empty");
 			}
 
 		}
@@ -1450,7 +1451,7 @@ public class UploadServiceImpl implements UploadService {
 	
 	
 	@Override
-	public boolean uploadCurrencyType(MultipartFile uploadFile) {
+	public Map<String, String> uploadCurrencyType(MultipartFile uploadFile) {
 
 		LOGGER.info("Inside  - UploadServiceImpl.upload()");
 
@@ -1496,19 +1497,21 @@ public class UploadServiceImpl implements UploadService {
 						masterCurrencyType.setCountry(rows.getCell(2).toString());
 						masterCurrencyTypeRepo.save(masterCurrencyType);
 						
+					}else {
+						errorMap.put("Row-- "+i, "some fields are missing");
 					}
 				}catch(Exception e) {
-						
+					errorMap.put("Row-- "+i, e.getMessage());	
 				}
 				
 
 		}
 
-		return returnFlag;
+		return errorMap;
 	}
 	
 	@Override
-	public boolean uploadRegType(MultipartFile uploadFile) {
+	public Map<String, String> uploadRegType(MultipartFile uploadFile) {
 
 		LOGGER.info("Inside  - UploadServiceImpl.upload()");
 
@@ -1552,21 +1555,23 @@ public class UploadServiceImpl implements UploadService {
 						masterRegType.setName(rows.getCell(0).toString());
 						masterRegTypeRepo.save(masterRegType);
 						
+					}else {
+						errorMap.put("Row-- "+i, "some fields are missing");	
 					}
 				}catch(Exception e) {
-						
+					errorMap.put("Row-- "+i, e.getMessage());	
 				}
 				
 
 		}
 
-		return returnFlag;
+		return errorMap;
 	}
 
 	
 	
 	@Override
-	public boolean uploadDept(MultipartFile uploadFile) {
+	public Map<String, String> uploadDept(MultipartFile uploadFile) {
 
 		LOGGER.info("Inside  - UploadServiceImpl.upload()");
 
@@ -1623,19 +1628,21 @@ public class UploadServiceImpl implements UploadService {
 						CustomerDepartments save = customerDepartmentsRepo.save(customerDepartments);
 						System.out.println("save     %%%%%%  "+save);
 						
+					}else {
+						errorMap.put("Row-- "+i, "some fields are missing");	
 					}
 				}catch(Exception e) {
-						
+					errorMap.put("Row-- "+i, e.getMessage());		
 				}
 				
 
 		}
 System.out.println("returnFlag " +returnFlag);
-		return returnFlag;
+		return errorMap;
 	}
 
 	@Override
-	public boolean uploadRole(MultipartFile uploadFile) {
+	public Map<String, String> uploadRole(MultipartFile uploadFile) {
 
 		LOGGER.info("Inside  - UploadServiceImpl.upload()");
 
@@ -1681,19 +1688,21 @@ System.out.println("returnFlag " +returnFlag);
 						rolesMaster.setRoleId((long)Math.round(Float.parseFloat(rows.getCell(0).toString())));
 						rolesMaster.setRole(rows.getCell(1).toString());
 						RolesMaster save = rolesMasterRepo.save(rolesMaster);
+					}else {
+						errorMap.put("Row-- "+i, "some fields are missing");	
 					}
 				}catch(Exception e) {
-						
+					errorMap.put("Row-- "+i, e.getMessage());	
 				}
 				
 
 		}
 
-		return returnFlag;
+		return errorMap;
 	}
 	
 	@Override
-	public boolean uploadFunc(MultipartFile uploadFile) {
+	public Map<String, String> uploadFunc(MultipartFile uploadFile) {
 
 		LOGGER.info("Inside  - UploadServiceImpl.uploadFunc()");
 
@@ -1740,23 +1749,25 @@ System.out.println("returnFlag " +returnFlag);
 						customerFunctionalitiesMaster.setfDesc(rows.getCell(1).toString());
 						CustomerFunctionalitiesMaster save = customerFunctionalitiesMasterRepo.save(customerFunctionalitiesMaster);
 						System.out.print("save " + save.toString());
+					}else {
+						errorMap.put("Row-- "+i, "some fields are missing");	
 					}
 				}catch(Exception e) {
-						
+					errorMap.put("Row-- "+i, e.getMessage());	
 				}
 				
 
 		}
 
-		return returnFlag;
+		return errorMap;
 	}
 
 	@Override
-	public void bulkUploadRegionCountry(MultipartFile uploadFile) {
+	public Map<String, String> bulkUploadRegionCountry(MultipartFile uploadFile) {
 		// TODO Auto-generated method stub
 		
 		LOGGER.info("Inside  - UploadServiceImpl.bulkUploadRegionCountry()");
-		try {
+//		try {
 			
 			DataFormatter dataFormatter = new DataFormatter();
 			String sheetName = "Sheet1";
@@ -1827,32 +1838,34 @@ System.out.println("returnFlag " +returnFlag);
 								}
 							}
 							
+						}else {
+							errorMap.put("Row-- "+i, "some fields are missing");	
 						}
 					}catch(Exception e) {
 						
-						
+						errorMap.put("Row-- "+i, e.getMessage());	
 							
 					}
 					
 
 			}
 
-//			return returnFlag;
+			return errorMap;
 
 			
 			
-		}catch(Exception e) {
-			throw new VendorNotFoundException(e.getMessage());
-		}
-		
+//		}catch(Exception e) {
+//			throw new VendorNotFoundException(e.getMessage());
+//		}
+//		
 	}
 
 	@Override
-	public void bulkUploadContractAndAddressType(MultipartFile uploadFile , String token) {
+	public Map<String, String> bulkUploadContractAndAddressType(MultipartFile uploadFile , String token) {
 		// TODO Auto-generated method stub
 		
 		LOGGER.info("Inside  - UploadServiceImpl.bulkUploadRegionCountry()");
-		try {
+//		try {
 			
 			DataFormatter dataFormatter = new DataFormatter();
 			String sheetName = "Sheet1";
@@ -1916,24 +1929,26 @@ System.out.println("returnFlag " +returnFlag);
 								contractAndAddressTypeRepo.save(contractAndAddressType);
 							}	
 							
+						}else {
+							errorMap.put("Row-- "+i, "some fields are missing");	
 						}
 					}catch(Exception e) {
 						
-						
+						errorMap.put("Row-- "+i, e.getMessage());	
 							
 					}
 					
 
 			}
 
-//			return returnFlag;
+			return errorMap;
 
 			
 			
-		}catch(Exception e) {
-			throw new VendorNotFoundException(e.getMessage());
-		}
-		
+//		}catch(Exception e) {
+//			throw new VendorNotFoundException(e.getMessage());
+//		}
+//		
 	}
 	
 	
