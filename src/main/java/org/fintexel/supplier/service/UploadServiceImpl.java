@@ -1211,7 +1211,7 @@ public class UploadServiceImpl implements UploadService {
 			}
 
 		} catch (Exception e) {
-//			errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
+//			errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,e.getMessage()));
 		}
 
 	}
@@ -1302,7 +1302,7 @@ public class UploadServiceImpl implements UploadService {
 								new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rows.getCell(4).toString()));
 
 					} catch (Exception e) {
-						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,e.getMessage()));
 
 					}
 
@@ -1310,7 +1310,7 @@ public class UploadServiceImpl implements UploadService {
 
 				} catch (Exception e) {
 
-					errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
+					errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,e.getMessage()));
 
 				}
 
@@ -1335,7 +1335,7 @@ public class UploadServiceImpl implements UploadService {
 
 				} catch (Exception e) {
 
-					errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
+					errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,e.getMessage()));
 
 				}
 
@@ -1382,7 +1382,7 @@ public class UploadServiceImpl implements UploadService {
 
 				} catch (Exception e) {
 
-					errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
+					errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,e.getMessage()));
 
 				}
 
@@ -1406,7 +1406,7 @@ public class UploadServiceImpl implements UploadService {
 					uploadService.validateSupplierDepartment(uploadEntity, "UPDATE");
 
 				} catch (Exception e) {
-					errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
+					errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,e.getMessage()));
 				}
 
 				/* ------------------- BULK BANK DEPT END ----------------------------------- */
@@ -1431,10 +1431,10 @@ public class UploadServiceImpl implements UploadService {
 
 				} catch (Exception e) {
 					System.out.println("catch  " + e.getMessage());
-					errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
+					errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,e.getMessage()));
 				}
 			} catch (Exception e) {
-				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"Email is Empty"));
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,"Email is Empty"));
 			}
 
 		}
@@ -1495,12 +1495,12 @@ public class UploadServiceImpl implements UploadService {
 						masterCurrencyTypeRepo.save(masterCurrencyType);
 
 					} catch (Exception e) {
-						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,e.getMessage()));
 					}
 
 				}
 			} catch (Exception e) {
-				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"some fields are missing"));
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,"some fields are missing"));
 			}
 
 		}
@@ -1556,13 +1556,13 @@ public class UploadServiceImpl implements UploadService {
 						masterRegTypeRepo.save(masterRegType);
 
 					} catch (Exception e) {
-						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,e.getMessage()));
 					}
 
 				}
 
 			} catch (Exception e) {
-				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"some fields are missing"));
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,"some fields are missing"));
 			}
 
 		}
@@ -1633,13 +1633,13 @@ public class UploadServiceImpl implements UploadService {
 						System.out.println("save     %%%%%%  " + save);
 
 					} catch (Exception e) {
-						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,e.getMessage()));
 					}
 
 				}
 
 			} catch (Exception e) {
-				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"some fields are missing"));
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,"some fields are missing"));
 			}
 
 		}
@@ -1697,12 +1697,12 @@ public class UploadServiceImpl implements UploadService {
 						RolesMaster save = rolesMasterRepo.save(rolesMaster);
 
 					} catch (Exception e) {
-						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,e.getMessage()));
 					}
 				}
 
 			} catch (Exception e) {
-				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"some fields are missing"));
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,"some fields are missing"));
 			}
 
 		}
@@ -1763,12 +1763,12 @@ public class UploadServiceImpl implements UploadService {
 						System.out.print("save " + save.toString());
 
 					} catch (Exception e) {
-						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,e.getMessage()));
 					}
 
 				}
 			} catch (Exception e) {
-				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"some fields are missing"));
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,"some fields are missing"));
 			}
 
 		}
@@ -1855,12 +1855,12 @@ public class UploadServiceImpl implements UploadService {
 							}
 						}
 					} catch (Exception e) {
-						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,e.getMessage()));
 					}
 
 				}
 			} catch (Exception e) {
-				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"some fields are missing"));
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,"some fields are missing"));
 
 			}
 
@@ -1949,13 +1949,13 @@ public class UploadServiceImpl implements UploadService {
 						}
 
 					} catch (Exception e) {
-						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
+//						errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,e.getMessage()));
 					}
 
 				}
 			} catch (Exception e) {
-				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"some fields are missing"));
-//				errorMap.put("Row-- " + i, "some fields are missing");
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i+1,"some fields are missing"));
+//				errorMap.put("Row-- " + i+1, "some fields are missing");
 
 			}
 
