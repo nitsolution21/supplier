@@ -96,7 +96,7 @@ public class UploadServiceImpl implements UploadService {
 
 	@Autowired
 	private SupDetails supDetails;
-	
+
 	@Autowired
 	private GetCustomerDetails getCustomerDetails;
 
@@ -117,7 +117,6 @@ public class UploadServiceImpl implements UploadService {
 
 	@Autowired
 	private VendorRegisterRepo vendorRepo;
-	
 
 	@Autowired
 	private UploadErrorEntity UploadErrorEntity;
@@ -130,33 +129,29 @@ public class UploadServiceImpl implements UploadService {
 
 	@Autowired
 	private FieldValidation fieldValidation;
-	
+
 	@Autowired
 	private MasterCurrencyTypeRepo masterCurrencyTypeRepo;
-	
+
 	@Autowired
 	private MasterRegTypeRepo masterRegTypeRepo;
-	
-	
+
 	@Autowired
 	private CustomerDepartmentsRepo customerDepartmentsRepo;
-	
-	
+
 	@Autowired
 	private RolesMasterRepo rolesMasterRepo;
-	
+
 	@Autowired
 	private CustomerFunctionalitiesMasterRepo customerFunctionalitiesMasterRepo;
-	
+
 	@Autowired
 	private GeoRepo geoRepo;
-	
+
 	@Autowired
 	private ContractAndAddressTypeRepo contractAndAddressTypeRepo;
 
 	Map<String, String> errorMap = new HashMap<>();
-
-	
 
 	@Override
 	public boolean upload(MultipartFile uploadFile) {
@@ -185,8 +180,8 @@ public class UploadServiceImpl implements UploadService {
 				Cell cells = rows.getCell(c);
 				String cellValue = dataFormatter.formatCellValue(cells);
 
-				System.out.println("Value is ==========  "+cellValue);
-				
+				System.out.println("Value is ==========  " + cellValue);
+
 				if (cellValue.equals(null) || cellValue.equals("")) {
 					returnFlag = true;
 					UploadErrorEntity.setRowNumber(i);
@@ -209,7 +204,7 @@ public class UploadServiceImpl implements UploadService {
 					uploadService.validateEachVendor(uploadEntity);
 
 				} catch (Exception e) {
-					errorMap.put("Row-- "+i, e.getMessage());
+					errorMap.put("Row-- " + i, e.getMessage());
 //					errorMap.put(uploadEntity.getEmail(), "In Upload(reg)  " + e.getMessage());
 
 				}
@@ -233,7 +228,7 @@ public class UploadServiceImpl implements UploadService {
 								new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rows.getCell(6).toString()));
 
 					} catch (Exception e) {
-						errorMap.put("Row-- "+i, e.getMessage());
+						errorMap.put("Row-- " + i, e.getMessage());
 //						errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
 
 					}
@@ -241,7 +236,7 @@ public class UploadServiceImpl implements UploadService {
 					uploadService.validateSupplierDetails(uploadEntity, "UPLOAD");
 
 				} catch (Exception e) {
-					errorMap.put("Row-- "+i, e.getMessage());
+					errorMap.put("Row-- " + i, e.getMessage());
 
 //					errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
 
@@ -266,7 +261,7 @@ public class UploadServiceImpl implements UploadService {
 
 				} catch (Exception e) {
 
-					errorMap.put("Row-- "+i, e.getMessage());
+					errorMap.put("Row-- " + i, e.getMessage());
 
 				}
 
@@ -313,7 +308,7 @@ public class UploadServiceImpl implements UploadService {
 
 				} catch (Exception e) {
 
-					errorMap.put("Row-- "+i, e.getMessage());
+					errorMap.put("Row-- " + i, e.getMessage());
 
 				}
 
@@ -336,7 +331,7 @@ public class UploadServiceImpl implements UploadService {
 					uploadService.validateSupplierDepartment(uploadEntity, "UPLOAD");
 
 				} catch (Exception e) {
-					errorMap.put("Row-- "+i, e.getMessage());
+					errorMap.put("Row-- " + i, e.getMessage());
 				}
 
 				/* ------------------- BULK BANK DEPT END ----------------------------------- */
@@ -351,15 +346,15 @@ public class UploadServiceImpl implements UploadService {
 					uploadEntity.setContractProof(rows.getCell(37).toString());
 					uploadEntity.setContractLocation(rows.getCell(38).toString());
 
-					uploadService.validateSupplierContact(uploadEntity , "UPLOAD");
+					uploadService.validateSupplierContact(uploadEntity, "UPLOAD");
 
 					/* ------------------- BULK CONTACT END ----------------------------------- */
 
 				} catch (Exception e) {
-					errorMap.put("Row-- "+i, e.getMessage());
+					errorMap.put("Row-- " + i, e.getMessage());
 				}
 			} catch (Exception e) {
-				errorMap.put("Row-- "+i, "Email is Empty");
+				errorMap.put("Row-- " + i, "Email is Empty");
 			}
 
 		}
@@ -381,10 +376,11 @@ public class UploadServiceImpl implements UploadService {
 				if (find.getEmail().equals(email)) {
 					throw new VendorNotFoundException("Email already exist - " + email);
 				}
-				if(find.getSupplierCompName().toLowerCase().equals(filterVendorReg.getSupplierCompName().toLowerCase())) {
+				if (find.getSupplierCompName().toLowerCase()
+						.equals(filterVendorReg.getSupplierCompName().toLowerCase())) {
 					throw new VendorNotFoundException("Company already exist");
 				}
-				
+
 			}
 
 			filterVendorReg.setUsername(email);
@@ -797,7 +793,7 @@ public class UploadServiceImpl implements UploadService {
 //					&& fieldValidation.isEmpty(supBank.getSwiftCode())
 //					&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())
 			) {
-				
+
 				if (type.equals("UPLOAD")) {
 
 					Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
@@ -819,12 +815,12 @@ public class UploadServiceImpl implements UploadService {
 					}
 
 				} else if (type.equals("UPDATE")) {
-					
+
 					if (fieldValidation.isEmpty(supBank.getBankId())) {
 						Optional<SupBank> findById = supBankRepo.findById(supBank.getBankId());
 						LOGGER.info("Inside validateSupplierBank()-- if");
 						if (findById.isPresent()) {
-							
+
 							if (!findById.get().getStatus().equals("DELETE")) {
 								Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
 								List<SupDetails> findByRegisterId = supDetailsRepo
@@ -834,13 +830,14 @@ public class UploadServiceImpl implements UploadService {
 											"In Supplier Bank , Supplier Details is Not Created");
 									return false;
 								} else {
-									
+
 									uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
 									Optional<SupBank> findBySwiftCode = supBankRepo
 											.findBySwiftCode(supBank.getSwiftCode());
-									LOGGER.info("Inside validateSupplierBank()-- present " +findBySwiftCode.toString());
+									LOGGER.info(
+											"Inside validateSupplierBank()-- present " + findBySwiftCode.toString());
 									if (findBySwiftCode.isPresent()) {
-									
+
 										uploadService.bulkUploadSupplierBank(supBank, "UPDATE");
 										return true;
 									} else {
@@ -948,7 +945,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public boolean validateSupplierContact(UploadEntity contact , String type) {
+	public boolean validateSupplierContact(UploadEntity contact, String type) {
 		LOGGER.info("Inside - validateSupplierContact()");
 		try {
 			if ((fieldValidation.isEmpty(contact.getContractType()))
@@ -967,32 +964,32 @@ public class UploadServiceImpl implements UploadService {
 					if (findBySupplierCode.size() > 0) {
 						uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
 						uploadEntity.setBankId(findBySupplierCode.get(0).getBankId());
-						
-						if(type.equals("UPLOAD")) {
-							uploadService.bulkUploadSupplierContact(contact , "UPLOAD");
+
+						if (type.equals("UPLOAD")) {
+							uploadService.bulkUploadSupplierContact(contact, "UPLOAD");
 							return true;
-						}else if(type.equals("UPDATE")) {
-							
+						} else if (type.equals("UPDATE")) {
+
 							Optional<SupContract> findById = supContractRepo.findById(contact.getContractId());
 							LOGGER.info("Inside - validateSupplierContact() --");
-							if(findById.isPresent()) {
-							
-								if(findById.get().getStatus().equals("DELETE")) {
+							if (findById.isPresent()) {
+
+								if (findById.get().getStatus().equals("DELETE")) {
 									return false;
-								}else {
-									
+								} else {
+
 									contact.setContractId(findById.get().getContractId());
-									uploadService.bulkUploadSupplierContact(contact , "UPDATE");
+									uploadService.bulkUploadSupplierContact(contact, "UPDATE");
 									return true;
 								}
-								
-							}else{
+
+							} else {
 								return false;
 							}
-						}else {
+						} else {
 							return false;
 						}
-						
+
 					} else {
 						errorMap.put(uploadEntity.getEmail(), "In Supplier Contact , Bank is Not Created");
 						return false;
@@ -1171,15 +1168,13 @@ public class UploadServiceImpl implements UploadService {
 			}
 			department.setPhoneno(supDepartment.getPhoneno());
 			LOGGER.info("Inside bulkUploadSupplierDepartment() -- UPDATE" + type);
-			if(type.equals("UPLOAD")) {
+			if (type.equals("UPLOAD")) {
 				supDepartmentRepo.save(department);
-			}else if(type.equals("UPDATE")) {
-				
+			} else if (type.equals("UPDATE")) {
+
 				department.setDepartmentId(supDepartment.getDepartmentId());
 				supDepartmentRepo.save(department);
 			}
-			
-		
 
 		} catch (Exception e) {
 			errorMap.put(uploadEntity.getEmail(), e.getMessage());
@@ -1188,7 +1183,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public void bulkUploadSupplierContact(UploadEntity contact , String type) {
+	public void bulkUploadSupplierContact(UploadEntity contact, String type) {
 
 		LOGGER.info("Inside bulkUploadSupplierContact()");
 		try {
@@ -1201,25 +1196,23 @@ public class UploadServiceImpl implements UploadService {
 			filterSupContract.setContractProof(contact.getContractProof());
 			filterSupContract.setContractLocation(contact.getContractLocation());
 			filterSupContract.setStatus("APPROVED");
-			
-			if(type.equals("UPLOAD")) {
+
+			if (type.equals("UPLOAD")) {
 				supContractRepo.save(filterSupContract);
-			}else if(type.equals("UPDATE")) {
+			} else if (type.equals("UPDATE")) {
 				filterSupContract.setContractId(contact.getContractId());
 				supContractRepo.save(filterSupContract);
 			}
-			
+
 		} catch (Exception e) {
 			errorMap.put(uploadEntity.getEmail(), e.getMessage());
 		}
 
 	}
 
-	
-
 	private Sheet loadTemplate(MultipartFile uploadFile, String sheetName) {
 
-		 File fileName = new File(uploadFile.getOriginalFilename());
+		File fileName = new File(uploadFile.getOriginalFilename());
 		XSSFWorkbook workbook = null;
 		OPCPackage pkg;
 		Sheet sheet = null;
@@ -1250,8 +1243,6 @@ public class UploadServiceImpl implements UploadService {
 		return sheet;
 	}
 
-	
-
 	@Override
 	public boolean update(MultipartFile uploadFile) {
 		LOGGER.info("Inside  - UploadServiceImpl.update()");
@@ -1276,9 +1267,9 @@ public class UploadServiceImpl implements UploadService {
 				returnFlag = false;
 				Cell cells = rows.getCell(c);
 				String cellValue = dataFormatter.formatCellValue(cells);
-				
+
 				System.out.println("Cell Value " + cellValue);
-				
+
 				if (cellValue.equals(null) || cellValue.equals("")) {
 					returnFlag = true;
 					UploadErrorEntity.setRowNumber(i);
@@ -1288,7 +1279,6 @@ public class UploadServiceImpl implements UploadService {
 				}
 
 			}
-			
 
 			try {
 				uploadEntity.setEmail(rows.getCell(0).toString());
@@ -1421,17 +1411,16 @@ public class UploadServiceImpl implements UploadService {
 				try {
 
 					uploadEntity.setContractId((long) Float.parseFloat(rows.getCell(36).toString()));
-					System.out.println("try "+ uploadEntity.getContractId());
+					System.out.println("try " + uploadEntity.getContractId());
 					uploadEntity.setContractType(rows.getCell(37).toString());
-					System.out.println("try "+ uploadEntity.getContractType());
+					System.out.println("try " + uploadEntity.getContractType());
 					uploadEntity.setContractTerms((int) Float.parseFloat(rows.getCell(38).toString()));
-					System.out.println("try "+ uploadEntity.getContractTerms());
+					System.out.println("try " + uploadEntity.getContractTerms());
 					uploadEntity.setContractProof(rows.getCell(39).toString());
-					System.out.println("try "+ uploadEntity.getContractProof());
+					System.out.println("try " + uploadEntity.getContractProof());
 					uploadEntity.setContractLocation(rows.getCell(40).toString());
-					System.out.println("try "+ uploadEntity.getContractLocation());
-					uploadService.validateSupplierContact(uploadEntity , "UPDATE");
-					
+					System.out.println("try " + uploadEntity.getContractLocation());
+					uploadService.validateSupplierContact(uploadEntity, "UPDATE");
 
 					/* ------------------- BULK CONTACT END ----------------------------------- */
 
@@ -1447,9 +1436,7 @@ public class UploadServiceImpl implements UploadService {
 
 		return false;
 	}
-	
-	
-	
+
 	@Override
 	public Map<String, String> uploadCurrencyType(MultipartFile uploadFile) {
 
@@ -1477,8 +1464,8 @@ public class UploadServiceImpl implements UploadService {
 				Cell cells = rows.getCell(c);
 				String cellValue = dataFormatter.formatCellValue(cells);
 
-				System.out.println("Value is ==========  "+cellValue);
-				
+				System.out.println("Value is ==========  " + cellValue);
+
 				if (cellValue.equals(null) || cellValue.equals("")) {
 					returnFlag = true;
 					UploadErrorEntity.setRowNumber(i);
@@ -1489,27 +1476,33 @@ public class UploadServiceImpl implements UploadService {
 
 			}
 
-				try {
-					if(fieldValidation.isEmpty(rows.getCell(0).toString()) && fieldValidation.isEmpty(rows.getCell(1).toString()) && fieldValidation.isEmpty(rows.getCell(2).toString())) {
-						MasterCurrencyType masterCurrencyType =new MasterCurrencyType();
+			try {
+				if (fieldValidation.isEmpty(rows.getCell(0).toString())
+						&& fieldValidation.isEmpty(rows.getCell(1).toString())
+						&& fieldValidation.isEmpty(rows.getCell(2).toString())) {
+
+					try {
+
+						MasterCurrencyType masterCurrencyType = new MasterCurrencyType();
 						masterCurrencyType.setCode(rows.getCell(0).toString());
 						masterCurrencyType.setCurrency(rows.getCell(1).toString());
 						masterCurrencyType.setCountry(rows.getCell(2).toString());
 						masterCurrencyTypeRepo.save(masterCurrencyType);
-						
-					}else {
-						errorMap.put("Row-- "+i, "some fields are missing");
+
+					} catch (Exception e) {
+						errorMap.put("Row-- " + i, e.getMessage());
 					}
-				}catch(Exception e) {
-					errorMap.put("Row-- "+i, e.getMessage());	
+
 				}
-				
+			} catch (Exception e) {
+				errorMap.put("Row-- " + i, "some fields are missing");
+			}
 
 		}
 
 		return errorMap;
 	}
-	
+
 	@Override
 	public Map<String, String> uploadRegType(MultipartFile uploadFile) {
 
@@ -1537,8 +1530,8 @@ public class UploadServiceImpl implements UploadService {
 				Cell cells = rows.getCell(c);
 				String cellValue = dataFormatter.formatCellValue(cells);
 
-				System.out.println("Value is ==========  "+cellValue);
-				
+				System.out.println("Value is ==========  " + cellValue);
+
 				if (cellValue.equals(null) || cellValue.equals("")) {
 					returnFlag = true;
 					UploadErrorEntity.setRowNumber(i);
@@ -1549,27 +1542,29 @@ public class UploadServiceImpl implements UploadService {
 
 			}
 
-				try {
-					if(fieldValidation.isEmpty(rows.getCell(0).toString()) ) {
-						MasterRegType masterRegType =new MasterRegType();
+			try {
+				if (fieldValidation.isEmpty(rows.getCell(0).toString())) {
+					try {
+
+						MasterRegType masterRegType = new MasterRegType();
 						masterRegType.setName(rows.getCell(0).toString());
 						masterRegTypeRepo.save(masterRegType);
-						
-					}else {
-						errorMap.put("Row-- "+i, "some fields are missing");	
+
+					} catch (Exception e) {
+						errorMap.put("Row-- " + i, e.getMessage());
 					}
-				}catch(Exception e) {
-					errorMap.put("Row-- "+i, e.getMessage());	
+
 				}
-				
+
+			} catch (Exception e) {
+				errorMap.put("Row-- " + i, "some fields are missing");
+			}
 
 		}
 
 		return errorMap;
 	}
 
-	
-	
 	@Override
 	public Map<String, String> uploadDept(MultipartFile uploadFile) {
 
@@ -1597,8 +1592,8 @@ public class UploadServiceImpl implements UploadService {
 				Cell cells = rows.getCell(c);
 				String cellValue = dataFormatter.formatCellValue(cells);
 
-				System.out.println("Value is ==========  "+cellValue);
-				
+				System.out.println("Value is ==========  " + cellValue);
+
 				if (cellValue.equals(null) || cellValue.equals("")) {
 					returnFlag = true;
 					UploadErrorEntity.setRowNumber(i);
@@ -1609,35 +1604,41 @@ public class UploadServiceImpl implements UploadService {
 
 			}
 
-				try {
-					if(fieldValidation.isEmpty(rows.getCell(0).toString()) && fieldValidation.isEmpty(rows.getCell(1).toString()) 
-						&& fieldValidation.isEmpty(rows.getCell(2).toString()) && fieldValidation.isEmpty(rows.getCell(3).toString())
+			try {
+				if (fieldValidation.isEmpty(rows.getCell(0).toString())
+						&& fieldValidation.isEmpty(rows.getCell(1).toString())
+						&& fieldValidation.isEmpty(rows.getCell(2).toString())
+						&& fieldValidation.isEmpty(rows.getCell(3).toString())
 						&& fieldValidation.isEmpty(rows.getCell(4).toString())) {
+
+					try {
 						CustomerDepartments customerDepartments = new CustomerDepartments();
-						customerDepartments.setcId((long)Math.round(Float.parseFloat((rows.getCell(0).toString()))));
+						customerDepartments.setcId((long) Math.round(Float.parseFloat((rows.getCell(0).toString()))));
 						customerDepartments.setDepartmentName(rows.getCell(1).toString());
 						customerDepartments.setEmail(rows.getCell(2).toString());
 						customerDepartments.setPhoneNo(rows.getCell(3).toString());
 						customerDepartments.setCostCode(rows.getCell(4).toString());
 						customerDepartments.setStatus("APPROVED");
-//						try {
-//							customerDepartments.setAlternatePhoneNo(rows.getCell(5).toString());
-//						}catch(Exception e) {
-//							throw new VendorNotFoundException(e.getMessage());
-//						}
+//							try {
+//								customerDepartments.setAlternatePhoneNo(rows.getCell(5).toString());
+//							}catch(Exception e) {
+//								throw new VendorNotFoundException(e.getMessage());
+//							}
 						CustomerDepartments save = customerDepartmentsRepo.save(customerDepartments);
-						System.out.println("save     %%%%%%  "+save);
-						
-					}else {
-						errorMap.put("Row-- "+i, "some fields are missing");	
+						System.out.println("save     %%%%%%  " + save);
+
+					} catch (Exception e) {
+						errorMap.put("Row-- " + i, e.getMessage());
 					}
-				}catch(Exception e) {
-					errorMap.put("Row-- "+i, e.getMessage());		
+
 				}
-				
+
+			} catch (Exception e) {
+				errorMap.put("Row-- " + i, "some fields are missing");
+			}
 
 		}
-System.out.println("returnFlag " +returnFlag);
+		System.out.println("returnFlag " + returnFlag);
 		return errorMap;
 	}
 
@@ -1668,8 +1669,8 @@ System.out.println("returnFlag " +returnFlag);
 				Cell cells = rows.getCell(c);
 				String cellValue = dataFormatter.formatCellValue(cells);
 
-				System.out.println("Value is ==========  "+cellValue);
-				
+				System.out.println("Value is ==========  " + cellValue);
+
 				if (cellValue.equals(null) || cellValue.equals("")) {
 					returnFlag = true;
 					UploadErrorEntity.setRowNumber(i);
@@ -1680,27 +1681,30 @@ System.out.println("returnFlag " +returnFlag);
 
 			}
 
-				try {
-					if(fieldValidation.isEmpty(rows.getCell(0).toString()) 
-							&& fieldValidation.isEmpty(rows.getCell(1).toString()) 
-						) {
+			try {
+				if (fieldValidation.isEmpty(rows.getCell(0).toString())
+						&& fieldValidation.isEmpty(rows.getCell(1).toString())) {
+					try {
+
 						RolesMaster rolesMaster = new RolesMaster();
-						rolesMaster.setRoleId((long)Math.round(Float.parseFloat(rows.getCell(0).toString())));
+						rolesMaster.setRoleId((long) Math.round(Float.parseFloat(rows.getCell(0).toString())));
 						rolesMaster.setRole(rows.getCell(1).toString());
 						RolesMaster save = rolesMasterRepo.save(rolesMaster);
-					}else {
-						errorMap.put("Row-- "+i, "some fields are missing");	
+
+					} catch (Exception e) {
+						errorMap.put("Row-- " + i, e.getMessage());
 					}
-				}catch(Exception e) {
-					errorMap.put("Row-- "+i, e.getMessage());	
 				}
-				
+
+			} catch (Exception e) {
+				errorMap.put("Row-- " + i, "some fields are missing");
+			}
 
 		}
 
 		return errorMap;
 	}
-	
+
 	@Override
 	public Map<String, String> uploadFunc(MultipartFile uploadFile) {
 
@@ -1728,8 +1732,8 @@ System.out.println("returnFlag " +returnFlag);
 				Cell cells = rows.getCell(c);
 				String cellValue = dataFormatter.formatCellValue(cells);
 
-				System.out.println("Value is ==========  "+cellValue);
-				
+				System.out.println("Value is ==========  " + cellValue);
+
 				if (cellValue.equals(null) || cellValue.equals("")) {
 					returnFlag = true;
 					UploadErrorEntity.setRowNumber(i);
@@ -1740,22 +1744,27 @@ System.out.println("returnFlag " +returnFlag);
 
 			}
 
-				try {
-					if(fieldValidation.isEmpty(rows.getCell(0).toString()) 
-							&& fieldValidation.isEmpty(rows.getCell(1).toString()) 
-						) {
+			try {
+				if (fieldValidation.isEmpty(rows.getCell(0).toString())
+						&& fieldValidation.isEmpty(rows.getCell(1).toString())) {
+
+					try {
+
 						CustomerFunctionalitiesMaster customerFunctionalitiesMaster = new CustomerFunctionalitiesMaster();
 						customerFunctionalitiesMaster.setfName(rows.getCell(0).toString());
 						customerFunctionalitiesMaster.setfDesc(rows.getCell(1).toString());
-						CustomerFunctionalitiesMaster save = customerFunctionalitiesMasterRepo.save(customerFunctionalitiesMaster);
+						CustomerFunctionalitiesMaster save = customerFunctionalitiesMasterRepo
+								.save(customerFunctionalitiesMaster);
 						System.out.print("save " + save.toString());
-					}else {
-						errorMap.put("Row-- "+i, "some fields are missing");	
+
+					} catch (Exception e) {
+						errorMap.put("Row-- " + i, e.getMessage());
 					}
-				}catch(Exception e) {
-					errorMap.put("Row-- "+i, e.getMessage());	
+
 				}
-				
+			} catch (Exception e) {
+				errorMap.put("Row-- " + i, "some fields are missing");
+			}
 
 		}
 
@@ -1765,95 +1774,96 @@ System.out.println("returnFlag " +returnFlag);
 	@Override
 	public Map<String, String> bulkUploadRegionCountry(MultipartFile uploadFile) {
 		// TODO Auto-generated method stub
-		
+
 		LOGGER.info("Inside  - UploadServiceImpl.bulkUploadRegionCountry()");
 //		try {
-			
-			DataFormatter dataFormatter = new DataFormatter();
-			String sheetName = "Sheet1";
-			boolean returnFlag = true;
 
-			File fileName = new File(uploadFile.getOriginalFilename());
+		DataFormatter dataFormatter = new DataFormatter();
+		String sheetName = "Sheet1";
+		boolean returnFlag = true;
 
-			Sheet sheet = loadTemplate(uploadFile, sheetName);
+		File fileName = new File(uploadFile.getOriginalFilename());
 
-			int minRow = sheet.getFirstRowNum() + 1;
-			int maxRow = sheet.getLastRowNum();
-			Row row = sheet.getRow(sheet.getFirstRowNum());
-			int minCell = row.getFirstCellNum();
-			int maxCell = row.getLastCellNum() - 1;
+		Sheet sheet = loadTemplate(uploadFile, sheetName);
 
-			for (int i = minRow; i <= maxRow; i++) {
-				Row rows = sheet.getRow(i);
+		int minRow = sheet.getFirstRowNum() + 1;
+		int maxRow = sheet.getLastRowNum();
+		Row row = sheet.getRow(sheet.getFirstRowNum());
+		int minCell = row.getFirstCellNum();
+		int maxCell = row.getLastCellNum() - 1;
 
-				for (int c = minCell; c <= maxCell; c++) {
-					returnFlag = false;
-					Cell cells = rows.getCell(c);
-					String cellValue = dataFormatter.formatCellValue(cells);
+		for (int i = minRow; i <= maxRow; i++) {
+			Row rows = sheet.getRow(i);
 
-					System.out.println("Value is ==========  "+cellValue);
-					
-					if (cellValue.equals(null) || cellValue.equals("")) {
-						returnFlag = true;
-						UploadErrorEntity.setRowNumber(i);
-						UploadErrorEntity.setCellNumber(c);
-						UploadErrorEntity.setErrorDescription("Blank Value");
+			for (int c = minCell; c <= maxCell; c++) {
+				returnFlag = false;
+				Cell cells = rows.getCell(c);
+				String cellValue = dataFormatter.formatCellValue(cells);
 
-					}
+				System.out.println("Value is ==========  " + cellValue);
+
+				if (cellValue.equals(null) || cellValue.equals("")) {
+					returnFlag = true;
+					UploadErrorEntity.setRowNumber(i);
+					UploadErrorEntity.setCellNumber(c);
+					UploadErrorEntity.setErrorDescription("Blank Value");
 
 				}
 
+			}
+
+			try {
+				if (fieldValidation.isEmpty(rows.getCell(0).toString())) {
 					try {
-						if(fieldValidation.isEmpty(rows.getCell(0).toString())) {
-							uploadEntity.setRegionName(rows.getCell(0).toString());
-							
-							try {
-								if(fieldValidation.isEmpty(rows.getCell(1).toString())) {
-									uploadEntity.setCountryName(rows.getCell(1).toString());
-								}
-							}catch(Exception e) {	
+						uploadEntity.setRegionName(rows.getCell(0).toString());
+
+						try {
+							if (fieldValidation.isEmpty(rows.getCell(1).toString())) {
+								uploadEntity.setCountryName(rows.getCell(1).toString());
 							}
-							
-							GeoEntity geoEntity = new GeoEntity();
-							List<GeoEntity> findByNameReg = geoRepo.findByNameWithType(uploadEntity.getRegionName().toUpperCase(),"REGION");
-							
-							if(findByNameReg.size()<1) {
-								geoEntity.setName(uploadEntity.getRegionName());
-								geoEntity.setParentId(0);
-								geoEntity.setType("REGION");
-								GeoEntity save = geoRepo.save(geoEntity);
-								GeoEntity geoEntityCountry = new GeoEntity();
-								geoEntityCountry.setName(uploadEntity.getCountryName());
-								geoEntityCountry.setParentId(save.getGeoId());
-								geoEntityCountry.setType("COUNTRY");
-								geoRepo.save(geoEntityCountry);
-							}else {
-								List<GeoEntity> findByNameCoun = geoRepo.findByNameWithType(uploadEntity.getRegionName().toUpperCase(),"COUNTRY");
-								
-								if(findByNameCoun.size()<1) {
-									geoEntity.setName(uploadEntity.getCountryName());
-									geoEntity.setParentId(findByNameReg.get(0).getGeoId());
-									geoEntity.setType("COUNTRY");
-									GeoEntity save = geoRepo.save(geoEntity);
-								}
-							}
-							
-						}else {
-							errorMap.put("Row-- "+i, "some fields are missing");	
+						} catch (Exception e) {
 						}
-					}catch(Exception e) {
-						
-						errorMap.put("Row-- "+i, e.getMessage());	
-							
+
+						GeoEntity geoEntity = new GeoEntity();
+						List<GeoEntity> findByNameReg = geoRepo
+								.findByNameWithType(uploadEntity.getRegionName().toUpperCase(), "REGION");
+
+						if (findByNameReg.size() < 1) {
+							geoEntity.setName(uploadEntity.getRegionName());
+							geoEntity.setParentId(0);
+							geoEntity.setType("REGION");
+							GeoEntity save = geoRepo.save(geoEntity);
+							GeoEntity geoEntityCountry = new GeoEntity();
+							geoEntityCountry.setName(uploadEntity.getCountryName());
+							geoEntityCountry.setParentId(save.getGeoId());
+							geoEntityCountry.setType("COUNTRY");
+							geoRepo.save(geoEntityCountry);
+						} else {
+							List<GeoEntity> findByNameCoun = geoRepo
+									.findByNameWithType(uploadEntity.getRegionName().toUpperCase(), "COUNTRY");
+
+							if (findByNameCoun.size() < 1) {
+								geoEntity.setName(uploadEntity.getCountryName());
+								geoEntity.setParentId(findByNameReg.get(0).getGeoId());
+								geoEntity.setType("COUNTRY");
+								GeoEntity save = geoRepo.save(geoEntity);
+							}
+						}
+					} catch (Exception e) {
+						errorMap.put("Row-- " + i, e.getMessage());
 					}
-					
+
+				}
+			} catch (Exception e) {
+
+				errorMap.put("Row-- " + i, "some fields are missing");
 
 			}
 
-			return errorMap;
+		}
 
-			
-			
+		return errorMap;
+
 //		}catch(Exception e) {
 //			throw new VendorNotFoundException(e.getMessage());
 //		}
@@ -1861,98 +1871,97 @@ System.out.println("returnFlag " +returnFlag);
 	}
 
 	@Override
-	public Map<String, String> bulkUploadContractAndAddressType(MultipartFile uploadFile , String token) {
+	public Map<String, String> bulkUploadContractAndAddressType(MultipartFile uploadFile, String token) {
 		// TODO Auto-generated method stub
-		
+
 		LOGGER.info("Inside  - UploadServiceImpl.bulkUploadRegionCountry()");
 //		try {
-			
-			DataFormatter dataFormatter = new DataFormatter();
-			String sheetName = "Sheet1";
-			boolean returnFlag = true;
 
-			File fileName = new File(uploadFile.getOriginalFilename());
+		DataFormatter dataFormatter = new DataFormatter();
+		String sheetName = "Sheet1";
+		boolean returnFlag = true;
 
-			Sheet sheet = loadTemplate(uploadFile, sheetName);
+		File fileName = new File(uploadFile.getOriginalFilename());
 
-			int minRow = sheet.getFirstRowNum() + 1;
-			int maxRow = sheet.getLastRowNum();
-			Row row = sheet.getRow(sheet.getFirstRowNum());
-			int minCell = row.getFirstCellNum();
-			int maxCell = row.getLastCellNum() - 1;
+		Sheet sheet = loadTemplate(uploadFile, sheetName);
 
-			for (int i = minRow; i <= maxRow; i++) {
-				Row rows = sheet.getRow(i);
+		int minRow = sheet.getFirstRowNum() + 1;
+		int maxRow = sheet.getLastRowNum();
+		Row row = sheet.getRow(sheet.getFirstRowNum());
+		int minCell = row.getFirstCellNum();
+		int maxCell = row.getLastCellNum() - 1;
 
-				for (int c = minCell; c <= maxCell; c++) {
-					returnFlag = false;
-					Cell cells = rows.getCell(c);
-					String cellValue = dataFormatter.formatCellValue(cells);
+		for (int i = minRow; i <= maxRow; i++) {
+			Row rows = sheet.getRow(i);
 
-					System.out.println("Value is ==========  "+cellValue);
-					
-					if (cellValue.equals(null) || cellValue.equals("")) {
-						returnFlag = true;
-						UploadErrorEntity.setRowNumber(i);
-						UploadErrorEntity.setCellNumber(c);
-						UploadErrorEntity.setErrorDescription("Blank Value");
+			for (int c = minCell; c <= maxCell; c++) {
+				returnFlag = false;
+				Cell cells = rows.getCell(c);
+				String cellValue = dataFormatter.formatCellValue(cells);
 
-					}
+				System.out.println("Value is ==========  " + cellValue);
+
+				if (cellValue.equals(null) || cellValue.equals("")) {
+					returnFlag = true;
+					UploadErrorEntity.setRowNumber(i);
+					UploadErrorEntity.setCellNumber(c);
+					UploadErrorEntity.setErrorDescription("Blank Value");
 
 				}
 
+			}
+
+			try {
+				if (fieldValidation.isEmpty(rows.getCell(0).toString())
+						&& fieldValidation.isEmpty(rows.getCell(1).toString())
+						&& fieldValidation.isEmpty(rows.getCell(2).toString())) {
 					try {
-						if(fieldValidation.isEmpty(rows.getCell(0).toString()) && fieldValidation.isEmpty(rows.getCell(1).toString()) && fieldValidation.isEmpty(rows.getCell(2).toString())) {
-							long cIdFromToken = getCustomerDetails.getCIdFromToken(token);
-							uploadEntity.setcId(Integer.parseInt(cIdFromToken+""));
-							uploadEntity.setName(rows.getCell(0).toString());
-							uploadEntity.setType(rows.getCell(1).toString());
-//							uploadEntity.setCreatedOn(rows.getCell(4).toString());
-//							uploadEntity.setCreatedBy();
-							
-							try {
-								if(fieldValidation.isEmpty(rows.getCell(2).toString())) {
-//									uploadEntity.setOrder(Integer.parseInt(rows.getCell(3).toString()));
-								}
-							}catch(Exception e) {	
+
+						long cIdFromToken = getCustomerDetails.getCIdFromToken(token);
+						uploadEntity.setcId(Integer.parseInt(cIdFromToken + ""));
+						uploadEntity.setName(rows.getCell(0).toString());
+						uploadEntity.setType(rows.getCell(1).toString());
+//								uploadEntity.setCreatedOn(rows.getCell(4).toString());
+//								uploadEntity.setCreatedBy();
+
+						try {
+							if (fieldValidation.isEmpty(rows.getCell(2).toString())) {
+//										uploadEntity.setOrder(Integer.parseInt(rows.getCell(3).toString()));
 							}
-							List<ContractAndAddressType> findByNameWithCId = contractAndAddressTypeRepo.findByNameWithCId(uploadEntity.getName().toUpperCase(),Integer.parseInt(cIdFromToken+""),"ADDRESS");
-							if(findByNameWithCId.size()<1) {
-								ContractAndAddressType contractAndAddressType = new ContractAndAddressType();
-								contractAndAddressType.setcId((long)Integer.parseInt(cIdFromToken+""));
-								contractAndAddressType.setName(uploadEntity.getName());
-								if(uploadEntity.getType().equals("ADDRESS")) {
-									contractAndAddressType.setType("ADDRESS");
-								}else if(uploadEntity.getType().equals("CONTRACT")) {
-									contractAndAddressType.setType("CONTRACT");
-								}
-								contractAndAddressTypeRepo.save(contractAndAddressType);
-							}	
-							
-						}else {
-							errorMap.put("Row-- "+i, "some fields are missing");	
+						} catch (Exception e) {
 						}
-					}catch(Exception e) {
-						
-						errorMap.put("Row-- "+i, e.getMessage());	
-							
+						List<ContractAndAddressType> findByNameWithCId = contractAndAddressTypeRepo.findByNameWithCId(
+								uploadEntity.getName().toUpperCase(), Integer.parseInt(cIdFromToken + ""), "ADDRESS");
+						if (findByNameWithCId.size() < 1) {
+							ContractAndAddressType contractAndAddressType = new ContractAndAddressType();
+							contractAndAddressType.setcId((long) Integer.parseInt(cIdFromToken + ""));
+							contractAndAddressType.setName(uploadEntity.getName());
+							if (uploadEntity.getType().equals("ADDRESS")) {
+								contractAndAddressType.setType("ADDRESS");
+							} else if (uploadEntity.getType().equals("CONTRACT")) {
+								contractAndAddressType.setType("CONTRACT");
+							}
+							contractAndAddressTypeRepo.save(contractAndAddressType);
+						}
+
+					} catch (Exception e) {
+						errorMap.put("Row-- " + i, e.getMessage());
 					}
-					
+
+				}
+			} catch (Exception e) {
+				errorMap.put("Row-- " + i, "some fields are missing");
 
 			}
 
-			return errorMap;
+		}
 
-			
-			
+		return errorMap;
+
 //		}catch(Exception e) {
 //			throw new VendorNotFoundException(e.getMessage());
 //		}
 //		
 	}
-	
-	
-
-
 
 }
