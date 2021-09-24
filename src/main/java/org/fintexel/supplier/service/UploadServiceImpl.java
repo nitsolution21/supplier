@@ -28,6 +28,7 @@ import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerFunctionalitiesMasterRepo;
 import org.fintexel.supplier.customerrepository.GeoRepo;
 import org.fintexel.supplier.customerrepository.RolesMasterRepo;
+import org.fintexel.supplier.entity.BulkUploadSuccessError;
 import org.fintexel.supplier.entity.MasterCurrencyType;
 import org.fintexel.supplier.entity.MasterRegType;
 import org.fintexel.supplier.entity.SupAddress;
@@ -150,11 +151,15 @@ public class UploadServiceImpl implements UploadService {
 
 	@Autowired
 	private ContractAndAddressTypeRepo contractAndAddressTypeRepo;
+	
+	@Autowired
+	private BulkUploadSuccessError bulkUploadSuccessError;
 
-	Map<String, String> errorMap = new HashMap<>();
+//	Map<String, String> errorMap = new HashMap<>();
+	List<BulkUploadSuccessError> errorMap = new ArrayList<BulkUploadSuccessError>();
 
 	@Override
-	public boolean upload(MultipartFile uploadFile) {
+	public List<BulkUploadSuccessError> upload(MultipartFile uploadFile) {
 
 		LOGGER.info("Inside  - UploadServiceImpl.upload()");
 
@@ -204,7 +209,7 @@ public class UploadServiceImpl implements UploadService {
 					uploadService.validateEachVendor(uploadEntity);
 
 				} catch (Exception e) {
-					errorMap.put("Row-- " + i, e.getMessage());
+					errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 //					errorMap.put(uploadEntity.getEmail(), "In Upload(reg)  " + e.getMessage());
 
 				}
@@ -228,7 +233,7 @@ public class UploadServiceImpl implements UploadService {
 								new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rows.getCell(6).toString()));
 
 					} catch (Exception e) {
-						errorMap.put("Row-- " + i, e.getMessage());
+						errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 //						errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
 
 					}
@@ -236,7 +241,7 @@ public class UploadServiceImpl implements UploadService {
 					uploadService.validateSupplierDetails(uploadEntity, "UPLOAD");
 
 				} catch (Exception e) {
-					errorMap.put("Row-- " + i, e.getMessage());
+					errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 
 //					errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
 
@@ -261,7 +266,7 @@ public class UploadServiceImpl implements UploadService {
 
 				} catch (Exception e) {
 
-					errorMap.put("Row-- " + i, e.getMessage());
+					errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 
 				}
 
@@ -308,7 +313,7 @@ public class UploadServiceImpl implements UploadService {
 
 				} catch (Exception e) {
 
-					errorMap.put("Row-- " + i, e.getMessage());
+					errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 
 				}
 
@@ -331,7 +336,7 @@ public class UploadServiceImpl implements UploadService {
 					uploadService.validateSupplierDepartment(uploadEntity, "UPLOAD");
 
 				} catch (Exception e) {
-					errorMap.put("Row-- " + i, e.getMessage());
+					errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 				}
 
 				/* ------------------- BULK BANK DEPT END ----------------------------------- */
@@ -351,15 +356,15 @@ public class UploadServiceImpl implements UploadService {
 					/* ------------------- BULK CONTACT END ----------------------------------- */
 
 				} catch (Exception e) {
-					errorMap.put("Row-- " + i, e.getMessage());
+					errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 				}
 			} catch (Exception e) {
-				errorMap.put("Row-- " + i, "Email is Empty");
+				errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Email is null"));
 			}
 
 		}
 
-		return returnFlag;
+		return errorMap;
 	}
 
 	@Override
@@ -605,7 +610,7 @@ public class UploadServiceImpl implements UploadService {
 //			save1.setPassword(rowPassword);
 
 		} catch (Exception e) {
-			errorMap.put(uploadEntity.getEmail(), e.getMessage());
+			errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 		}
 
 	}
@@ -621,7 +626,7 @@ public class UploadServiceImpl implements UploadService {
 				List<VendorRegister> findAll = vendorRepo.findAll();
 				for (VendorRegister find : findAll) {
 					if (find.getEmail().equals(uploadEntity.getEmail())) {
-						errorMap.put(uploadEntity.getEmail(), "Email Id is Exist");
+						errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Email Id is Existl"));
 						return false;
 					}
 				}
@@ -629,17 +634,17 @@ public class UploadServiceImpl implements UploadService {
 					uploadService.bulkRegister(uploadEntity.getEmail(), uploadEntity.getSupplierCompName());
 					return true;
 				} else {
-					errorMap.put(uploadEntity.getEmail(), "Company Name Not be Null");
+					errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Company Name is Null"));
 					return false;
 				}
 
 			} else {
-				errorMap.put(uploadEntity.getEmail(), "Email Not be Null");
+				errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Email is null"));
 				return false;
 			}
 
 		} catch (Exception e) {
-			errorMap.put(uploadEntity.getEmail(), e.getMessage());
+			errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 			return false;
 		}
 
@@ -667,13 +672,13 @@ public class UploadServiceImpl implements UploadService {
 						uploadService.bulkUploadSupplierDetails(uploadEntity, "UPLOAD");
 						return true;
 					} else {
-						errorMap.put(uploadEntity.getEmail(), "Vendor Details Already Exist");
+						errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Vendor Details Already Exist"));
 						return false;
 					}
 
 				} else if (type.equals("UPDATE")) {
 					if (findByRegisterId.size() < 1) {
-						errorMap.put(uploadEntity.getEmail(), "Vendor Details Not Exist");
+						errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Vendor Details Not Exist"));
 						return false;
 					} else {
 						uploadEntity.setRegisterId(findByEmail.get().getRegisterId());
@@ -687,12 +692,12 @@ public class UploadServiceImpl implements UploadService {
 				}
 
 			} else {
-				errorMap.put(uploadEntity.getEmail(), "In Vendor Details Field is Null");
+				errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier Details Field is Null"));
 				return false;
 			}
 
 		} catch (Exception e) {
-			errorMap.put(uploadEntity.getEmail(), e.getMessage());
+			errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 			return false;
 		}
 
@@ -718,7 +723,7 @@ public class UploadServiceImpl implements UploadService {
 					List<SupDetails> findByRegisterId = supDetailsRepo
 							.findByRegisterId(findByEmail.get().getRegisterId());
 					if (findByRegisterId.size() < 1) {
-						errorMap.put(uploadEntity.getEmail(), "In Supplier Address , Supplier Details is Not Created");
+						errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier Details is Not Created"));
 						return false;
 					} else {
 						uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
@@ -731,7 +736,7 @@ public class UploadServiceImpl implements UploadService {
 						Optional<SupAddress> findById = supAddressRepo.findById(uploadEntity.getAddressId());
 						if (findById.isPresent()) {
 							if (findById.get().getStatus().equals("DELETE")) {
-								errorMap.put(uploadEntity.getEmail(), "In Supplier Address is Deleted");
+								errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier Address is Deleted"));
 								return false;
 
 							} else {
@@ -739,8 +744,7 @@ public class UploadServiceImpl implements UploadService {
 								List<SupDetails> findByRegisterId = supDetailsRepo
 										.findByRegisterId(findByEmail.get().getRegisterId());
 								if (findByRegisterId.size() < 1) {
-									errorMap.put(uploadEntity.getEmail(),
-											"In Supplier Address , Supplier Details is Not Created");
+									errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier Details is Not Created"));
 									return false;
 								} else {
 									uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
@@ -751,24 +755,24 @@ public class UploadServiceImpl implements UploadService {
 							}
 
 						} else {
-							errorMap.put(uploadEntity.getEmail(), "In Supplier Address is Not Present");
+							errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier Address is Not Present"));
 							return false;
 						}
 
 					} else {
-						errorMap.put(uploadEntity.getEmail(), "In Supplier Address Field is Null");
+						errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier Address Field is Null"));
 						return false;
 					}
 				} else {
 					return false;
 				}
 			} else {
-				errorMap.put(uploadEntity.getEmail(), "In Supplier Address Field is Null");
+				errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier Address Field is Null"));
 				return false;
 			}
 
 		} catch (Exception e) {
-			errorMap.put(uploadEntity.getEmail(), e.getMessage());
+			errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 			return false;
 		}
 
@@ -800,7 +804,7 @@ public class UploadServiceImpl implements UploadService {
 					List<SupDetails> findByRegisterId = supDetailsRepo
 							.findByRegisterId(findByEmail.get().getRegisterId());
 					if (findByRegisterId.size() < 1) {
-						errorMap.put(uploadEntity.getEmail(), "In Supplier Bank , Supplier Details is Not Created");
+						errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier Details is Not Created"));
 						return false;
 					} else {
 						uploadEntity.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
@@ -809,7 +813,9 @@ public class UploadServiceImpl implements UploadService {
 							uploadService.bulkUploadSupplierBank(supBank, "UPLOAD");
 							return true;
 						} else {
-							errorMap.put(uploadEntity.getEmail(), "In Supplier bank Swift Code is Present");
+							errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail()," In Supplier bank Swift Code is Present"));
+//							errorMap.put(uploadEntity.getEmail(), "In Supplier bank Swift Code is Present");
+							errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier bank Swift Code is Present"));
 							return false;
 						}
 					}
@@ -826,8 +832,7 @@ public class UploadServiceImpl implements UploadService {
 								List<SupDetails> findByRegisterId = supDetailsRepo
 										.findByRegisterId(findByEmail.get().getRegisterId());
 								if (findByRegisterId.size() < 1) {
-									errorMap.put(uploadEntity.getEmail(),
-											"In Supplier Bank , Supplier Details is Not Created");
+									errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail()," Supplier Details is Not Created"));
 									return false;
 								} else {
 
@@ -841,21 +846,25 @@ public class UploadServiceImpl implements UploadService {
 										uploadService.bulkUploadSupplierBank(supBank, "UPDATE");
 										return true;
 									} else {
-										errorMap.put(uploadEntity.getEmail(), "In Supplier bank Swift Code is Present");
+										
+//										errorMap.put(uploadEntity.getEmail(), "In Supplier bank Swift Code is Present");
+										errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier bank Swift Code is Present"));
 										return false;
 									}
 								}
 							} else {
-								errorMap.put(uploadEntity.getEmail(), "In Supplier Bank is Deleted");
+//								errorMap.put(uploadEntity.getEmail(), "In Supplier Bank is Deleted");
+								errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier Bank is Deleted"));
 								return false;
 							}
 
 						} else {
-							errorMap.put(uploadEntity.getEmail(), "In Supplier Bank id is Not Present in DB");
+//							errorMap.put(uploadEntity.getEmail(), "In Supplier Bank id is Not Present in DB");
+							errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier Bank id is Not Present in DB"));
 							return false;
 						}
 					} else {
-						errorMap.put(uploadEntity.getEmail(), "In Supplier Bank id is Null");
+						errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier Bank Field is Null"));
 						return false;
 					}
 
@@ -864,12 +873,12 @@ public class UploadServiceImpl implements UploadService {
 				}
 
 			} else {
-				errorMap.put(uploadEntity.getEmail(), "In Supplier Bank Field is Null");
+//				errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail()," In Supplier Bank Field is Null"));
 				return false;
 			}
 
 		} catch (Exception e) {
-			errorMap.put(uploadEntity.getEmail(), e.getMessage());
+			errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 			return false;
 		}
 	}
@@ -888,8 +897,7 @@ public class UploadServiceImpl implements UploadService {
 					List<SupDetails> findByRegisterId = supDetailsRepo
 							.findByRegisterId(findByEmail.get().getRegisterId());
 					if (findByRegisterId.size() < 1) {
-						errorMap.put(uploadEntity.getEmail(),
-								"In Supplier Department , Supplier Details is Not Created");
+						errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail()," Supplier Details is Not Created"));
 						return false;
 					} else {
 						supDepartment.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
@@ -898,7 +906,7 @@ public class UploadServiceImpl implements UploadService {
 					}
 
 				} else {
-					errorMap.put(uploadEntity.getEmail(), "In Supplier Department Field is Null");
+					errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"In Supplier Department Field is Null"));
 					return false;
 				}
 			} else if (type.equals("UPDATE")) {
@@ -906,7 +914,8 @@ public class UploadServiceImpl implements UploadService {
 				Optional<SupDepartment> findById = supDepartmentRepo.findById(supDepartment.getDepartmentId());
 				if (findById.isPresent()) {
 					if (findById.get().getStatus().equals("DELETE")) {
-						errorMap.put(uploadEntity.getEmail(), "In Supplier Department is Deleted");
+						
+						errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"In Supplier Department is Deleted"));
 						return false;
 					} else {
 						if (fieldValidation.isEmpty(supDepartment.getDepartmentName())
@@ -917,8 +926,7 @@ public class UploadServiceImpl implements UploadService {
 							List<SupDetails> findByRegisterId = supDetailsRepo
 									.findByRegisterId(findByEmail.get().getRegisterId());
 							if (findByRegisterId.size() < 1) {
-								errorMap.put(uploadEntity.getEmail(),
-										"In Supplier Department , Supplier Details is Not Created");
+								errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier Details is Not Created"));
 								return false;
 							} else {
 								supDepartment.setSupplierCode(findByRegisterId.get(0).getSupplierCode());
@@ -939,7 +947,7 @@ public class UploadServiceImpl implements UploadService {
 			}
 
 		} catch (Exception e) {
-			errorMap.put(uploadEntity.getEmail(), e.getMessage());
+			errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 			return false;
 		}
 	}
@@ -956,7 +964,7 @@ public class UploadServiceImpl implements UploadService {
 				Optional<VendorRegister> findByEmail = vendorRepo.findByEmail(uploadEntity.getEmail());
 				List<SupDetails> findByRegisterId = supDetailsRepo.findByRegisterId(findByEmail.get().getRegisterId());
 				if (findByRegisterId.size() < 1) {
-					errorMap.put(uploadEntity.getEmail(), "In Supplier Contact , Supplier Details is Not Created");
+					errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Supplier Details is Not Created"));
 					return false;
 				} else {
 					List<SupBank> findBySupplierCode = supBankRepo
@@ -991,19 +999,19 @@ public class UploadServiceImpl implements UploadService {
 						}
 
 					} else {
-						errorMap.put(uploadEntity.getEmail(), "In Supplier Contact , Bank is Not Created");
+						errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),"Bank is Not Created"));
 						return false;
 					}
 
 				}
 
 			} else {
-				errorMap.put(uploadEntity.getEmail(), "In Supplier Contact Field is Null");
+//				errorMap.put(uploadEntity.getEmail(), "In Supplier Contact Field is Null");
 				return false;
 			}
 
 		} catch (Exception e) {
-			errorMap.put(uploadEntity.getEmail(), e.getMessage());
+			errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 			return false;
 		}
 
@@ -1051,7 +1059,7 @@ public class UploadServiceImpl implements UploadService {
 			}
 
 		} catch (Exception e) {
-			errorMap.put(uploadEntity.getEmail(), e.getMessage());
+			errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 		}
 
 	}
@@ -1070,7 +1078,7 @@ public class UploadServiceImpl implements UploadService {
 					filterAddressUp.setAddress2(address.getAddress2());
 				}
 			} catch (Exception e) {
-				errorMap.put(uploadEntity.getEmail(), e.getMessage());
+//				errorMap.put(uploadEntity.getEmail(), e.getMessage());
 			}
 			filterAddressUp.setPostalCode(address.getPostalCode());
 			filterAddressUp.setCity(address.getCity());
@@ -1088,7 +1096,7 @@ public class UploadServiceImpl implements UploadService {
 			}
 
 		} catch (Exception e) {
-			errorMap.put(uploadEntity.getEmail(), e.getMessage());
+			errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 		}
 
 	}
@@ -1141,7 +1149,7 @@ public class UploadServiceImpl implements UploadService {
 			}
 
 		} catch (Exception e) {
-			errorMap.put(uploadEntity.getEmail(), e.getMessage());
+			errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 		}
 
 	}
@@ -1164,7 +1172,7 @@ public class UploadServiceImpl implements UploadService {
 					department.setAlternatePhoneno(supDepartment.getAlternatePhoneno());
 				}
 			} catch (Exception e) {
-				errorMap.put(uploadEntity.getEmail(), e.getMessage());
+				
 			}
 			department.setPhoneno(supDepartment.getPhoneno());
 			LOGGER.info("Inside bulkUploadSupplierDepartment() -- UPDATE" + type);
@@ -1177,7 +1185,7 @@ public class UploadServiceImpl implements UploadService {
 			}
 
 		} catch (Exception e) {
-			errorMap.put(uploadEntity.getEmail(), e.getMessage());
+			errorMap.add(new BulkUploadSuccessError(uploadEntity.getEmail(),e.getMessage()));
 		}
 
 	}
@@ -1205,7 +1213,7 @@ public class UploadServiceImpl implements UploadService {
 			}
 
 		} catch (Exception e) {
-			errorMap.put(uploadEntity.getEmail(), e.getMessage());
+//			errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
 		}
 
 	}
@@ -1244,7 +1252,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public boolean update(MultipartFile uploadFile) {
+	public List<BulkUploadSuccessError> update(MultipartFile uploadFile) {
 		LOGGER.info("Inside  - UploadServiceImpl.update()");
 
 		DataFormatter dataFormatter = new DataFormatter();
@@ -1296,8 +1304,7 @@ public class UploadServiceImpl implements UploadService {
 								new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rows.getCell(4).toString()));
 
 					} catch (Exception e) {
-
-						errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
 
 					}
 
@@ -1305,7 +1312,7 @@ public class UploadServiceImpl implements UploadService {
 
 				} catch (Exception e) {
 
-					errorMap.put(uploadEntity.getEmail(), "In Upload(details)  " + e.getMessage());
+					errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
 
 				}
 
@@ -1330,7 +1337,7 @@ public class UploadServiceImpl implements UploadService {
 
 				} catch (Exception e) {
 
-					errorMap.put(uploadEntity.getEmail(), "In Upload(address)  " + e.getMessage());
+					errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
 
 				}
 
@@ -1377,7 +1384,7 @@ public class UploadServiceImpl implements UploadService {
 
 				} catch (Exception e) {
 
-					errorMap.put(uploadEntity.getEmail(), "In Upload(bank)  " + e.getMessage());
+					errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
 
 				}
 
@@ -1401,7 +1408,7 @@ public class UploadServiceImpl implements UploadService {
 					uploadService.validateSupplierDepartment(uploadEntity, "UPDATE");
 
 				} catch (Exception e) {
-					errorMap.put(uploadEntity.getEmail(), "In Upload(dept)  " + e.getMessage());
+					errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
 				}
 
 				/* ------------------- BULK BANK DEPT END ----------------------------------- */
@@ -1426,19 +1433,19 @@ public class UploadServiceImpl implements UploadService {
 
 				} catch (Exception e) {
 					System.out.println("catch  " + e.getMessage());
-					errorMap.put(uploadEntity.getEmail(), "In Upload(contact)  " + e.getMessage());
+					errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
 				}
 			} catch (Exception e) {
-				errorMap.put(uploadEntity.getEmail(), "In Upload(reg)  " + "Email is Empty");
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"Email is Empty"));
 			}
 
 		}
 
-		return false;
+		return errorMap;
 	}
 
 	@Override
-	public Map<String, String> uploadCurrencyType(MultipartFile uploadFile) {
+	public List<BulkUploadSuccessError> uploadCurrencyType(MultipartFile uploadFile) {
 
 		LOGGER.info("Inside  - UploadServiceImpl.upload()");
 
@@ -1490,12 +1497,12 @@ public class UploadServiceImpl implements UploadService {
 						masterCurrencyTypeRepo.save(masterCurrencyType);
 
 					} catch (Exception e) {
-						errorMap.put("Row-- " + i, e.getMessage());
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
 					}
 
 				}
 			} catch (Exception e) {
-				errorMap.put("Row-- " + i, "some fields are missing");
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"some fields are missing"));
 			}
 
 		}
@@ -1504,7 +1511,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public Map<String, String> uploadRegType(MultipartFile uploadFile) {
+	public List<BulkUploadSuccessError> uploadRegType(MultipartFile uploadFile) {
 
 		LOGGER.info("Inside  - UploadServiceImpl.upload()");
 
@@ -1551,13 +1558,13 @@ public class UploadServiceImpl implements UploadService {
 						masterRegTypeRepo.save(masterRegType);
 
 					} catch (Exception e) {
-						errorMap.put("Row-- " + i, e.getMessage());
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
 					}
 
 				}
 
 			} catch (Exception e) {
-				errorMap.put("Row-- " + i, "some fields are missing");
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"some fields are missing"));
 			}
 
 		}
@@ -1566,7 +1573,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public Map<String, String> uploadDept(MultipartFile uploadFile) {
+	public List<BulkUploadSuccessError> uploadDept(MultipartFile uploadFile) {
 
 		LOGGER.info("Inside  - UploadServiceImpl.upload()");
 
@@ -1628,13 +1635,13 @@ public class UploadServiceImpl implements UploadService {
 						System.out.println("save     %%%%%%  " + save);
 
 					} catch (Exception e) {
-						errorMap.put("Row-- " + i, e.getMessage());
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
 					}
 
 				}
 
 			} catch (Exception e) {
-				errorMap.put("Row-- " + i, "some fields are missing");
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"some fields are missing"));
 			}
 
 		}
@@ -1643,7 +1650,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public Map<String, String> uploadRole(MultipartFile uploadFile) {
+	public List<BulkUploadSuccessError> uploadRole(MultipartFile uploadFile) {
 
 		LOGGER.info("Inside  - UploadServiceImpl.upload()");
 
@@ -1692,12 +1699,12 @@ public class UploadServiceImpl implements UploadService {
 						RolesMaster save = rolesMasterRepo.save(rolesMaster);
 
 					} catch (Exception e) {
-						errorMap.put("Row-- " + i, e.getMessage());
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
 					}
 				}
 
 			} catch (Exception e) {
-				errorMap.put("Row-- " + i, "some fields are missing");
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"some fields are missing"));
 			}
 
 		}
@@ -1706,7 +1713,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public Map<String, String> uploadFunc(MultipartFile uploadFile) {
+	public List<BulkUploadSuccessError> uploadFunc(MultipartFile uploadFile) {
 
 		LOGGER.info("Inside  - UploadServiceImpl.uploadFunc()");
 
@@ -1758,12 +1765,12 @@ public class UploadServiceImpl implements UploadService {
 						System.out.print("save " + save.toString());
 
 					} catch (Exception e) {
-						errorMap.put("Row-- " + i, e.getMessage());
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
 					}
 
 				}
 			} catch (Exception e) {
-				errorMap.put("Row-- " + i, "some fields are missing");
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"some fields are missing"));
 			}
 
 		}
@@ -1772,7 +1779,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public Map<String, String> bulkUploadRegionCountry(MultipartFile uploadFile) {
+	public List<BulkUploadSuccessError> bulkUploadRegionCountry(MultipartFile uploadFile) {
 		// TODO Auto-generated method stub
 
 		LOGGER.info("Inside  - UploadServiceImpl.bulkUploadRegionCountry()");
@@ -1850,13 +1857,12 @@ public class UploadServiceImpl implements UploadService {
 							}
 						}
 					} catch (Exception e) {
-						errorMap.put("Row-- " + i, e.getMessage());
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
 					}
 
 				}
 			} catch (Exception e) {
-
-				errorMap.put("Row-- " + i, "some fields are missing");
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"some fields are missing"));
 
 			}
 
@@ -1871,7 +1877,7 @@ public class UploadServiceImpl implements UploadService {
 	}
 
 	@Override
-	public Map<String, String> bulkUploadContractAndAddressType(MultipartFile uploadFile, String token) {
+	public List<BulkUploadSuccessError> bulkUploadContractAndAddressType(MultipartFile uploadFile, String token) {
 		// TODO Auto-generated method stub
 
 		LOGGER.info("Inside  - UploadServiceImpl.bulkUploadRegionCountry()");
@@ -1945,12 +1951,13 @@ public class UploadServiceImpl implements UploadService {
 						}
 
 					} catch (Exception e) {
-						errorMap.put("Row-- " + i, e.getMessage());
+						errorMap.add(new BulkUploadSuccessError("Row-- " + i,e.getMessage()));
 					}
 
 				}
 			} catch (Exception e) {
-				errorMap.put("Row-- " + i, "some fields are missing");
+				errorMap.add(new BulkUploadSuccessError("Row-- " + i,"some fields are missing"));
+//				errorMap.put("Row-- " + i, "some fields are missing");
 
 			}
 

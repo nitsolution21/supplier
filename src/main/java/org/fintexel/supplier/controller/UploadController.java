@@ -5,11 +5,13 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
+import org.fintexel.supplier.entity.BulkUploadSuccessError;
 import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.FileUploadResponse;
 import org.fintexel.supplier.entity.VendorRegister;
@@ -61,7 +63,7 @@ public class UploadController {
 	
 	@PostMapping("/upload")
 	@ResponseBody
-	public CustomeResponseEntity upload(@RequestParam("file") MultipartFile uploadFile) {
+	public List<BulkUploadSuccessError> upload(@RequestParam("file") MultipartFile uploadFile) {
 		LOGGER.info(uploadFile.getContentType());
 		LOGGER.info(uploadFile.getName());
 		LOGGER.info(uploadFile.getOriginalFilename());
@@ -100,11 +102,11 @@ public class UploadController {
 			String uploadRefID = uploadFile.getOriginalFilename()+"_"+format.format(fetchNueva);
 			LOGGER.info("Ref ID  - "+uploadRefID);
 			
-			boolean flag = uploadService.upload(uploadFile);
+			List<BulkUploadSuccessError> flag = uploadService.upload(uploadFile);
 			LOGGER.info("return Flag  - "+flag);
 			
 			
-			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
+			return flag;
 		} catch (Exception e) {
 			// TODO: handle exception
 			throw new VendorNotFoundException(e.getMessage());
@@ -116,7 +118,7 @@ public class UploadController {
 	
 	
 	@PostMapping("/update")
-	public CustomeResponseEntity update(@RequestPart("file") final MultipartFile file) {
+	public List<BulkUploadSuccessError> update(@RequestPart("file") final MultipartFile file) {
 		LOGGER.info("Inside - UploadController.update()");
 		try {
 			
@@ -143,9 +145,9 @@ public class UploadController {
 			LOGGER.info("Ref ID  - "+uploadRefID);
 
 			
-			boolean flag = uploadService.update(file);
+			List<BulkUploadSuccessError> flag = uploadService.update(file);
 			LOGGER.info("return Flag  - "+flag);
-			return new CustomeResponseEntity("SUCCESS", "Valid Data are Updated");
+			return flag;
 			
 		}catch(Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
@@ -221,7 +223,7 @@ public class UploadController {
 	
 	
 	@PostMapping("/uploadCurrencyType")
-	public Map<String, String> uploadCurrencyType(@RequestParam("file") MultipartFile file) {
+	public List<BulkUploadSuccessError> uploadCurrencyType(@RequestParam("file") MultipartFile file) {
 		
 		LOGGER.info("Inside - UploadController.uploadRegType()");
 		try {
@@ -249,7 +251,7 @@ public class UploadController {
 			LOGGER.info("Ref ID  - "+uploadRefID);
 
 			
-			Map<String, String> flag = uploadService.uploadCurrencyType(file);
+			List<BulkUploadSuccessError> flag = uploadService.uploadCurrencyType(file);
 			LOGGER.info("return Flag  - "+flag);
 //			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
 			return flag;
@@ -261,7 +263,7 @@ public class UploadController {
 	}
 	
 	@PostMapping("/uploadRegType")
-	public Map<String, String> uploadRegType(@RequestParam("file") MultipartFile file) {
+	public List<BulkUploadSuccessError> uploadRegType(@RequestParam("file") MultipartFile file) {
 		
 		LOGGER.info("Inside - UploadController.uploadRegType()");
 		try {
@@ -289,7 +291,7 @@ public class UploadController {
 			LOGGER.info("Ref ID  - "+uploadRefID);
 
 			
-			Map<String, String> flag = uploadService.uploadRegType(file);
+			List<BulkUploadSuccessError> flag = uploadService.uploadRegType(file);
 			LOGGER.info("return Flag  - "+flag);
 //			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
 			return flag;
@@ -303,7 +305,7 @@ public class UploadController {
 	
 	
 	@PostMapping("/uploadDept")
-	public Map<String, String> uploadDept(@RequestParam("file") MultipartFile file) {
+	public List<BulkUploadSuccessError> uploadDept(@RequestParam("file") MultipartFile file) {
 		
 		LOGGER.info("Inside - UploadController.uploadRegType()");
 		try {
@@ -331,7 +333,7 @@ public class UploadController {
 			LOGGER.info("Ref ID  - "+uploadRefID);
 
 			
-			Map<String, String> flag = uploadService.uploadDept(file);
+			List<BulkUploadSuccessError> flag = uploadService.uploadDept(file);
 			LOGGER.info("return Flag  - "+flag);
 			return flag;
 //			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
@@ -345,7 +347,7 @@ public class UploadController {
 
 	
 	@PostMapping("/uploadRole")
-	public Map<String, String> uploadRole(@RequestParam("file") MultipartFile file) {
+	public List<BulkUploadSuccessError> uploadRole(@RequestParam("file") MultipartFile file) {
 		
 		LOGGER.info("Inside - UploadController.uploadRegType()");
 		try {
@@ -373,7 +375,7 @@ public class UploadController {
 			LOGGER.info("Ref ID  - "+uploadRefID);
 
 			
-			Map<String, String> flag = uploadService.uploadRole(file);
+			List<BulkUploadSuccessError> flag = uploadService.uploadRole(file);
 			LOGGER.info("return Flag  - "+flag);
 //			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
 			return flag;
@@ -386,7 +388,7 @@ public class UploadController {
 	}
 	
 	@PostMapping("/uploadFunc")
-	public Map<String, String> uploadFunc(@RequestParam("file") MultipartFile file) {
+	public List<BulkUploadSuccessError> uploadFunc(@RequestParam("file") MultipartFile file) {
 		
 		LOGGER.info("Inside - UploadController.uploadRegType()");
 		try {
@@ -413,7 +415,7 @@ public class UploadController {
 			LOGGER.info("Ref ID  - "+uploadRefID);
 
 			
-			Map<String, String> flag = uploadService.uploadFunc(file);
+			List<BulkUploadSuccessError> flag = uploadService.uploadFunc(file);
 			LOGGER.info("return Flag  - "+flag);
 //			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
 			return flag;
@@ -426,7 +428,7 @@ public class UploadController {
 	}
 	
 	@PostMapping("/uploadRegionCountry")
-	public Map<String, String> uploadRegionCountry(@RequestParam("file") MultipartFile file){
+	public List<BulkUploadSuccessError> uploadRegionCountry(@RequestParam("file") MultipartFile file){
 		
 		LOGGER.info("Inside - UploadController.uploadRegionCountry()");
 		try {
@@ -453,7 +455,7 @@ public class UploadController {
 			LOGGER.info("Ref ID  - "+uploadRefID);
 
 			
-			Map<String, String> flag = uploadService.bulkUploadRegionCountry(file);
+			List<BulkUploadSuccessError> flag = uploadService.bulkUploadRegionCountry(file);
 //			LOGGER.info("return Flag  - "+flag);
 //			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
 			return flag;
@@ -465,7 +467,7 @@ public class UploadController {
 	}
 	
 	@PostMapping("/uploadContractAndAddressType")
-	public Map<String, String> uploadContractAndAddressType(@RequestParam("file") MultipartFile file , @RequestHeader(name = "Authorization") String token) {
+	public List<BulkUploadSuccessError> uploadContractAndAddressType(@RequestParam("file") MultipartFile file , @RequestHeader(name = "Authorization") String token) {
 		
 		LOGGER.info("Inside - UploadController.uploadContractAndAddress()");
 		
@@ -493,7 +495,7 @@ public class UploadController {
 			LOGGER.info("Ref ID  - "+uploadRefID);
 
 			
-			Map<String, String> flag = uploadService.bulkUploadContractAndAddressType(file,token);
+			List<BulkUploadSuccessError> flag = uploadService.bulkUploadContractAndAddressType(file,token);
 //			LOGGER.info("return Flag  - "+flag);
 //			return new CustomeResponseEntity("SUCCESS", "Valid Data are Added");
 			return flag;

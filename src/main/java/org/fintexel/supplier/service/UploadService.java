@@ -1,7 +1,9 @@
 package org.fintexel.supplier.service;
 
+import java.util.List;
 import java.util.Map;
 
+import org.fintexel.supplier.entity.BulkUploadSuccessError;
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupDetails;
 import org.fintexel.supplier.entity.UploadEntity;
@@ -14,7 +16,7 @@ public interface UploadService {
 	
 	/* ------------ BULK UPLOAD START ---------------------*/
 
-	boolean upload(MultipartFile uploadFile);
+	List<BulkUploadSuccessError> upload(MultipartFile uploadFile);
 
 	boolean validateEachVendor(UploadEntity uploadEntity);
 	
@@ -49,21 +51,21 @@ public interface UploadService {
 	
 	/* ------------ BULK UPDATE START ---------------------*/
 	
-	boolean update(MultipartFile uploadFile);
+	List<BulkUploadSuccessError> update(MultipartFile uploadFile);
 	
-	Map<String, String> uploadCurrencyType(MultipartFile uploadFile);
+	List<BulkUploadSuccessError> uploadCurrencyType(MultipartFile uploadFile);
 	
-	Map<String, String> uploadRegType(MultipartFile uploadFile);
+	List<BulkUploadSuccessError> uploadRegType(MultipartFile uploadFile);
 	
-	Map<String, String> uploadRole(MultipartFile uploadFile);
+	List<BulkUploadSuccessError> uploadRole(MultipartFile uploadFile);
 	
-	Map<String, String> uploadDept(MultipartFile uploadFile);
+	List<BulkUploadSuccessError> uploadDept(MultipartFile uploadFile);
 	
-	Map<String, String> uploadFunc(MultipartFile uploadFile);
+	List<BulkUploadSuccessError> uploadFunc(MultipartFile uploadFile);
 	
-	Map<String, String> bulkUploadRegionCountry(MultipartFile uploadFile);
+	List<BulkUploadSuccessError> bulkUploadRegionCountry(MultipartFile uploadFile);
 	
-	Map<String, String> bulkUploadContractAndAddressType(MultipartFile uploadFile , String token);
+	List<BulkUploadSuccessError> bulkUploadContractAndAddressType(MultipartFile uploadFile , String token);
 	
 	
 	
