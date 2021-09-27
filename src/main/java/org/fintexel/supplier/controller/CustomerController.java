@@ -25,6 +25,8 @@ import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerentity.CustomerUserDepartments;
 import org.fintexel.supplier.customerentity.GeoEntity;
 import org.fintexel.supplier.customerentity.GetResponceContract;
+import org.fintexel.supplier.customerentity.Logo;
+import org.fintexel.supplier.customerentity.ProfileAndLogoStraching;
 import org.fintexel.supplier.customerentity.RequestStrachingClass;
 import org.fintexel.supplier.customerentity.VendorsStretchingClass;
 import org.fintexel.supplier.customerrepository.ContractAndAddressTypeRepo;
@@ -36,6 +38,7 @@ import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerUserRolesRepo;
 import org.fintexel.supplier.customerrepository.GeoRepo;
+import org.fintexel.supplier.customerrepository.LogoRepo;
 import org.fintexel.supplier.entity.CurrencyMaster;
 import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.RegType;
@@ -93,6 +96,9 @@ public class CustomerController {
 
 	@Autowired
 	private CurrencyMasterRepo currencyMasterRepo;
+	
+	@Autowired
+	private LogoRepo logoRepo;
 	
 	@Autowired
 	private SupAddressRepo supAddRepo;
@@ -893,7 +899,7 @@ public class CustomerController {
 
 	@PutMapping("/profile/{profileId}")
 	public CustomerProfile updateCustomerProfile(@PathVariable long profileId,
-			@RequestBody CustomerProfile customerProfile, @RequestHeader(name = "Authorization") String token) {
+			@RequestBody ProfileAndLogoStraching customerProfile, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.updateCustomerProfile()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
@@ -902,7 +908,7 @@ public class CustomerController {
 			} else {
 				String roleByUserId = getCustomerDetails.getRoleByUserId(customerIdFromToken);
 				if (roleByUserId.equals("SADMIN")) {
-					Optional<CustomerRegister> findById = customerRegisterRepo.findById(customerIdFromToken);
+					Optional<CustomerRegister> findById = customerRegisterRepo.findById(customerIdFromToken); 
 					if (findById.isPresent()) {
 						if (findById.get().getcId() == profileId) {
 
@@ -931,6 +937,12 @@ public class CustomerController {
 									// TODO: handle exception
 								}
 								LOGGER.info("updated data is >>> >>> <<< >>>> <<<< >>>"+customerProfile2);
+								
+								Logo logo = new Logo();
+								logo.setcId((int)profileId);
+								logo.setCreatedBy(profileId+"");
+								logo.setLogo(customerProfile.getCompanyLogoProofPath());
+								logoRepo.save(logo);
 								return customerProfileRepo.save(customerProfile2);
 							} else {
 								throw new VendorNotFoundException("Validation error");
@@ -953,7 +965,7 @@ public class CustomerController {
 	}
 
 	@GetMapping("/profile")
-	public CustomerProfileResponce getCustomerProfile(@RequestHeader(name = "Authorization") String token) {
+	public ProfileAndLogoStraching getCustomerProfile(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.getCustomerProfile()");
 		try {
 			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
@@ -966,11 +978,11 @@ public class CustomerController {
 					if (findById.isPresent()) {
 						Optional<CustomerProfile> findById2 = customerProfileRepo.findById(findById.get().getcId());
 						if (findById2.isPresent()) {
-							CustomerProfileResponce customerProfileResponce = new CustomerProfileResponce();
-							
+							ProfileAndLogoStraching customerProfileResponce = new ProfileAndLogoStraching();
+							Logo logo = logoRepo.findById(Integer.parseInt(findById2.get().getcId()+"")).get();
 							Optional<RegType> findRegistrationTypeById = regTypeRepo.findById((long) findById2.get().getRegistrationType());
 							
-							customerProfileResponce.setcId(findById2.get().getcId());
+							customerProfileResponce.setcId(Integer.parseInt(findById2.get().getcId()+""));
 							customerProfileResponce.setCreatedBy(findById2.get().getCreatedBy());
 							customerProfileResponce.setCreatedOn(findById2.get().getCreatedOn());
 							customerProfileResponce.setCustomerContact1(findById2.get().getCustomerContact1());
@@ -982,6 +994,9 @@ public class CustomerController {
 							customerProfileResponce.setStatus(findById2.get().getStatus());
 							customerProfileResponce.setUpdatedBy(findById2.get().getUpdatedBy());
 							customerProfileResponce.setUpdatedOn(findById2.get().getUpdatedOn());
+							
+							customerProfileResponce.setCompanyLogoProofPath(logo.getLogo());
+							
 							return customerProfileResponce;
 						} else {
 							throw new VendorNotFoundException("Customer profile not found");
