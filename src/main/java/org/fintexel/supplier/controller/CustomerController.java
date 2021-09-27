@@ -979,7 +979,6 @@ public class CustomerController {
 						Optional<CustomerProfile> findById2 = customerProfileRepo.findById(findById.get().getcId());
 						if (findById2.isPresent()) {
 							ProfileAndLogoStraching customerProfileResponce = new ProfileAndLogoStraching();
-							Logo logo = logoRepo.findById(Integer.parseInt(findById2.get().getcId()+"")).get();
 							Optional<RegType> findRegistrationTypeById = regTypeRepo.findById((long) findById2.get().getRegistrationType());
 							
 							customerProfileResponce.setcId(Integer.parseInt(findById2.get().getcId()+""));
@@ -994,8 +993,13 @@ public class CustomerController {
 							customerProfileResponce.setStatus(findById2.get().getStatus());
 							customerProfileResponce.setUpdatedBy(findById2.get().getUpdatedBy());
 							customerProfileResponce.setUpdatedOn(findById2.get().getUpdatedOn());
+							try {
+								Logo logo = logoRepo.findById(Integer.parseInt(findById2.get().getcId()+"")).get();
+								customerProfileResponce.setCompanyLogoProofPath(logo.getLogo());
+							}catch(Exception e) {
+								
+							}
 							
-							customerProfileResponce.setCompanyLogoProofPath(logo.getLogo());
 							
 							return customerProfileResponce;
 						} else {
