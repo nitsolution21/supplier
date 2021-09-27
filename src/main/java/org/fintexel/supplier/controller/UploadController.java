@@ -5,9 +5,11 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import com.amazonaws.services.s3.model.Bucket;
 
 import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
@@ -21,11 +23,17 @@ import org.fintexel.supplier.helper.FileUploadHelper;
 import org.fintexel.supplier.helper.JwtUtil;
 import org.fintexel.supplier.helper.LoginUserDetails;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
+import org.fintexel.supplier.service.S3Service;
 import org.fintexel.supplier.service.UploadService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -41,6 +49,9 @@ public class UploadController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UploadController.class);
 
+	 @Autowired
+	 S3Service s3Factory;
+	
 	@Autowired
 	private UploadService uploadService;
 	
@@ -168,13 +179,20 @@ public class UploadController {
 					if (file.getSize() < 1) {
 						throw new VendorNotFoundException("File is Empty");
 					}
+					Date currentDate = new Date();
+					long milliSeconds = currentDate.getTime();
+					FileUploadResponse uploadFile = s3Factory.uploadFile(milliSeconds+"_"+file.getOriginalFilename(),file.getBytes());
+					return uploadFile;
+//			        Map<String,String> result = new HashMap<>();
+//			        result.put("key",file.getOriginalFilename());
+			     //   return result;
 
-					FileUploadResponse uploadFile = fileUploadHelper.uploadFile(file);
-					if (!uploadFile.equals(null)) {
-						return uploadFile;
-					} else {
-						throw new VendorNotFoundException("Something went wrong !! Please try again");
-					}
+//					FileUploadResponse uploadFile = fileUploadHelper.uploadFile(file);
+//					if (!uploadFile.equals(null)) {
+//						return uploadFile;
+//					} else {
+//						throw new VendorNotFoundException("Something went wrong !! Please try again");
+//					}
 				} else {
 					Optional<CustomerRegister> findByCustomerUsername = customerRegisterRepo.findByUsername(userName);
 					if (findByCustomerUsername.isPresent()) {
@@ -182,12 +200,16 @@ public class UploadController {
 							throw new VendorNotFoundException("File is Empty");
 						}
 
-						FileUploadResponse uploadFile = fileUploadHelper.uploadFile(file);
-						if (!uploadFile.equals(null)) {
-							return uploadFile;
-						} else {
-							throw new VendorNotFoundException("Something went wrong !! Please try again");
-						}
+						Date currentDate = new Date();
+						long milliSeconds = currentDate.getTime();
+						FileUploadResponse uploadFile = s3Factory.uploadFile(milliSeconds+"_"+file.getOriginalFilename(),file.getBytes());
+						return uploadFile;
+//						FileUploadResponse uploadFile = fileUploadHelper.uploadFile(file);
+//						if (!uploadFile.equals(null)) {
+//							return uploadFile;
+//						} else {
+//							throw new VendorNotFoundException("Something went wrong !! Please try again");
+//						}
 					} else {
 						throw new VendorNotFoundException("We can't find your details");
 					}
@@ -506,6 +528,48 @@ public class UploadController {
 	}
 	
 	
+	
+	 @PostMapping(path = "/uploadfile")
+	    public Map<String,String> uploadFile(@RequestPart(value = "file", required = false) MultipartFile files , @RequestHeader("Authorization") String token) {
+		 try {
+			  s3Factory.uploadFile(files.getOriginalFilename(),files.getBytes());
+		        Map<String,String> result = new HashMap<>();
+		        result.put("key",files.getOriginalFilename());
+		        return result;
+		 }catch(Exception e) {
+			 throw new VendorNotFoundException(e.getMessage());
+		 }
+	      
+	    }
+	    @GetMapping(path = "/buckets")
+	    public List<Bucket> listBuckets( @RequestHeader("Authorization") String token){
+	        return s3Factory.getAllBuckets();
+	    }
+	    
+	    @GetMapping("/list/files")
+	    public ResponseEntity<List<String>> getListOfFiles(@RequestHeader("Authorization") String token) {
+	        return new ResponseEntity<>(s3Factory.listFiles(), HttpStatus.OK);
+	    }
+	    @GetMapping(path = "/download/{file}")
+	    public ResponseEntity<ByteArrayResource> uploadFile(@PathVariable(name = "file") String file , @RequestHeader("Authorization") String token) {
+	        byte[] data = s3Factory.getFile(file);
+	        ByteArrayResource resource = new ByteArrayResource(data);
+
+	        return ResponseEntity
+	                .ok()
+	                .contentLength(data.length)
+	                .header("Content-type", "application/octet-stream")
+	                .header("Content-disposition", "attachment; filename=\"" + file + "\"")
+	                .body(resource);
+
+	    }
+	    @GetMapping(path = "/getUrl/{file}")
+	    public ResponseEntity<?> getUrl(@PathVariable(name = "file") String fileName , @RequestHeader("Authorization") String token) {
+	        return s3Factory.getPublicUrl(fileName);
+	       
+
+	    }
+
 	
 	
 
