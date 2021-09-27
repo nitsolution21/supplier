@@ -38,6 +38,7 @@ import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerentity.GetPendingPoResponceForSuppiler;
 import org.fintexel.supplier.customerentity.GetPurchesOrder;
 import org.fintexel.supplier.customerentity.InvoiceStraching;
+import org.fintexel.supplier.customerentity.Logo;
 import org.fintexel.supplier.customerentity.POFlowableItem;
 import org.fintexel.supplier.customerentity.PrsonceLoginCustomerDetails;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
@@ -45,6 +46,7 @@ import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerProfileRepo;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
+import org.fintexel.supplier.customerrepository.LogoRepo;
 import org.fintexel.supplier.customerrepository.PurchesOrderAttachmentRepo;
 import org.fintexel.supplier.customerrepository.PurchesOrderItemsRepo;
 import org.fintexel.supplier.entity.SupDetails;
@@ -92,6 +94,9 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("/customer/po")
 public class PurchaseOrderController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PurchaseOrderController.class);
+	
+	@Autowired
+	private LogoRepo logoRepo;
 	
 	@Autowired
 	private CustomerProfileRepo customerProfileRepo;
@@ -231,6 +236,7 @@ public class PurchaseOrderController {
 							SupDetails supDetails2=new SupDetails();
 							SupAddress supAddress=new SupAddress();
 							SupBank supBank = new SupBank();
+							Logo logo = new Logo();
 							List<InventoryDetails> findBySupplierCodeInventory = new ArrayList<InventoryDetails>();
 							List<SupDepartment> findBySupplierCodeDepertment = new ArrayList<SupDepartment>();
 							List<ItemCategory> findBySupplierCodeCategory = new ArrayList<ItemCategory>();
@@ -285,6 +291,12 @@ public class PurchaseOrderController {
 //								throw new VendorNotFoundException("Supplier Category is Not Created");
 							}
 							try {
+								logo = logoRepo.findById((int)cIdFromToken).get();
+							}catch(Exception e) {
+								
+							}
+							try {
+								supplierAllDetailsForPO.setLogo(logo.getLogo());
 								supplierAllDetailsForPO.setFindBySupplierCodeDepertment(findBySupplierCodeDepertment);
 								supplierAllDetailsForPO.setSupAddress(supAddress);
 								supplierAllDetailsForPO.setSupDetails(supDetails2);

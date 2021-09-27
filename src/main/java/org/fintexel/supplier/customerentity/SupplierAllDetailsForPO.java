@@ -64,6 +64,7 @@ public class SupplierAllDetailsForPO {
 	private SupBank supBank;
 	private List<InventoryDetails> findBySupplierCodeInventory;
 	private List<ItemCategory> findBySupplierCodeCategory;
+	private String logo;
 	public SupDetails getSupDetails() {
 		return supDetails;
 	}
@@ -100,16 +101,22 @@ public class SupplierAllDetailsForPO {
 	public void setFindBySupplierCodeCategory(List<ItemCategory> findBySupplierCodeCategory) {
 		this.findBySupplierCodeCategory = findBySupplierCodeCategory;
 	}
+	public String getLogo() {
+		return logo;
+	}
+	public void setLogo(String logo) {
+		this.logo = logo;
+	}
 	@Override
 	public String toString() {
 		return "SupplierAllDetailsForPO [supDetails=" + supDetails + ", findBySupplierCodeDepertment="
 				+ findBySupplierCodeDepertment + ", supAddress=" + supAddress + ", supBank=" + supBank
 				+ ", findBySupplierCodeInventory=" + findBySupplierCodeInventory + ", findBySupplierCodeCategory="
-				+ findBySupplierCodeCategory + "]";
+				+ findBySupplierCodeCategory + ", logo=" + logo + "]";
 	}
 	public SupplierAllDetailsForPO(SupDetails supDetails, List<SupDepartment> findBySupplierCodeDepertment,
 			SupAddress supAddress, SupBank supBank, List<InventoryDetails> findBySupplierCodeInventory,
-			List<ItemCategory> findBySupplierCodeCategory) {
+			List<ItemCategory> findBySupplierCodeCategory, String logo) {
 		super();
 		this.supDetails = supDetails;
 		this.findBySupplierCodeDepertment = findBySupplierCodeDepertment;
@@ -117,11 +124,13 @@ public class SupplierAllDetailsForPO {
 		this.supBank = supBank;
 		this.findBySupplierCodeInventory = findBySupplierCodeInventory;
 		this.findBySupplierCodeCategory = findBySupplierCodeCategory;
+		this.logo = logo;
 	}
 	public SupplierAllDetailsForPO() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
 	
 	
 	
