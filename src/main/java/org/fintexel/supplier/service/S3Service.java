@@ -34,10 +34,10 @@ public class S3Service {
     @Autowired
     AmazonS3Client amazonS3Client;
 
-//    @Value("${s3.buckek.name}")
+    @Value("${application.bucket.name}")
     String defaultBucketName = "supplier-app-s3";
 
-//    @Value("${s3.default.folder}")
+    @Value("${application.bucket.basepath}")
     String defaultBaseFolder="docs";
 
     public List<Bucket> getAllBuckets() {

@@ -81,6 +81,23 @@ file.upload-path: /home/ubuntu/supplierApp/fileuploaded/
 jwt.secret.key: secret
 jwt.token.validity: 36000000
 
+
+#AWS properties
+cloud:
+  aws:
+    region:
+      static: ap-south-1
+    stack:
+      auto: false
+    credentials:
+      accessKey: AKIAXMNFATE76NGUIJPB
+      secretKey: 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
+
+application:
+  bucket:
+    name: supplier-app-s3
+    basepath: docs
+
 ---
 spring: 
   profiles: prod

@@ -10,10 +10,13 @@ import com.amazonaws.services.s3.AmazonS3Client;
 
 @Configuration
 public class S3Config {
-//	    @Value("${s3.access.name}")
-	    String accessKey = "AKIAXMNFATE76NGUIJPB";
-//	    @Value("${s3.access.secret}")
-	    String accessSecret = "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";
+		@Value("${cloud.aws.credentials.accessKey}")
+	    String accessKey ;
+//	    = "AKIAXMNFATE76NGUIJPB";
+		
+		@Value("${cloud.aws.credentials.secretKey}")
+	    String accessSecret ;
+//	    = "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";
 
 	    @Bean
 	    public AmazonS3Client generateS3Client() {
