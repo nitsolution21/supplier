@@ -551,7 +551,7 @@ public class UploadController {
 	        return new ResponseEntity<>(s3Factory.listFiles(), HttpStatus.OK);
 	    }
 	    @GetMapping(path = "/download/{file}")
-	    public ResponseEntity<ByteArrayResource> uploadFile(@PathVariable(name = "file") String file , @RequestHeader("Authorization") String token) {
+	    public ResponseEntity<ByteArrayResource> uploadFile(@PathVariable(name = "file") String file) {
 	        byte[] data = s3Factory.getFile(file);
 	        ByteArrayResource resource = new ByteArrayResource(data);
 
