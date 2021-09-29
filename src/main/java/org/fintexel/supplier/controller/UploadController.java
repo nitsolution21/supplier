@@ -551,16 +551,16 @@ public class UploadController {
 	        return new ResponseEntity<>(s3Factory.listFiles(), HttpStatus.OK);
 	    }
 	    @GetMapping(path = "/download/{file}")
-	    public ResponseEntity<ByteArrayResource> uploadFile(@PathVariable(name = "file") String file) {
+	    public ByteArrayResource uploadFile(@PathVariable(name = "file") String file) {
 	        byte[] data = s3Factory.getFile(file);
 	        ByteArrayResource resource = new ByteArrayResource(data);
-
-	        return ResponseEntity
-	                .ok()
-	                .contentLength(data.length)
-	                .header("Content-type", "application/octet-stream")
-	                .header("Content-disposition", "attachment; filename=\"" + file + "\"")
-	                .body(resource);
+	        return resource;
+//	        return ResponseEntity
+//	                .ok()
+//	                .contentLength(data.length)
+//	                .header("Content-type", "application/octet-stream")
+//	                .header("Content-disposition", "attachment; filename=\"" + file + "\"")
+//	                .body(resource);
 
 	    }
 	    @GetMapping(path = "/getUrl/{file}")
