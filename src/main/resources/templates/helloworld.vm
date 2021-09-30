@@ -1,10 +1,263 @@
-<!DOCTYPE html>
 <html>
-<body>
-Hello <b>$name!</b>  Welcome to Velocity!
-<h1> Hello User</h1>
-<br/>
-<br/>
-This file is generated on : $genDateTime
-</body>
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        
+    </head>
+    <style>
+        .logo
+        {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+        .bold-small-font
+        {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .card.maincard
+        {
+            padding: 15px;
+        }
+        .card.no_border
+        {
+            border: none !important;
+        }
+        .modal-title.preview-doc.d-flex
+        {
+            line-height: 53px;
+            font-weight: bold;
+            font-size: 28px;
+        }
+        .table-title
+        {
+            font-size: 20px;
+
+        }
+        .table.table-bordered.custom-table 
+        th {
+        background: #3357a7;
+        color: #fff;
+        font-size: 13px;
+        font-weight: normal;
+        letter-spacing: .2px;
+             }
+        .viewComments     
+        {
+            max-width: 350px;
+            height: auto;
+        }
+    /* // width: 100%; */
+    
+    </style>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <form #poDtl="ngForm" (ngSubmit)="onPrev(poDtl)" style="margin-left:auto;margin-right:auto;">
+                        <div class="picture" id="contentToConvert">
+
+                            <div class="modal-header">
+                            <h4 class="modal-title preview-doc d-flex">
+                                <!-- <img src="{{companylogo}}"> -->
+                                <img class="logo" src="https://i.dlpng.com/static/png/4809606-free-vector-art-logo-design-downloads-art-logo-inspiration-art-png-logo-389_346_preview.png">
+                                Flower</h4>
+                            <!-- <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')"> -->
+                                <!-- <span aria-hidden="true">&times;</span> -->
+                            <!-- </button> -->
+                            </div>        
+                            <!-- modal-header end model  model  model  model  model  model -->
+                            <div class="col-md-12" >
+                            <!-- <div class="row clearfix"> -->
+                                <div class="card shotcard maincard" style="border: none;" >
+                                <!-- form start----------- -->
+                                
+                                        <div class="pb-2" style=" display: flex;justify-content: space-between;">
+                                        <div class="addressBox ">
+                                            <span>
+                                            <h4 class="bold-small-font">From:</h4>
+                                            <h6 class="mb-0">Hyundai</h6>
+                                            <h6 class="mb-0">Joypur,Howrah</h6>
+                                            <p class="mb-0">Howrah,711401</p>
+                                            <p class="mb-0">India</p>
+                                            <p class="mb-0">Asia</p>
+                                            </span>
+                                        </div>
+                                        <div class="addressBox">
+                                            <span>
+                                            <h4 class="bold-small-font"> To:</h4>
+                                            <h5 class="mb-0">BMW</h5>
+                                            <h6 class="mb-0">Joypur,Howrah</h6>
+                                            <p class="mb-0">Howrah,993929</p>
+                                            <p class="mb-0">US</p>
+                                            <p class="mb-0">USA</p>
+                                            </span>
+
+                                        </div>
+                                        <div>
+                                            <span>
+                                            
+                                            <h5 class="mb-0 bold-small-font">Purchase Order</h5>
+                                            <h3 class="mb-0" style="font-size:15px" id="poNumber">1726535</h3>
+                                            <p class="mb-0"><span class="dtltitle">Amount:</span> $882655 USD</p>
+                                            <!-- <p class="mb-0">Version:1</p> -->
+                                            </span>
+
+                                        </div>
+                                        </div>
+                                        <div>
+                                        <div class="pb-4">
+                                            <H4 class="mb-0 bold-small-font">Payment Terms</H4>
+                                            <p class="mb-0">Net 30</p>
+                                        </div >
+                                        <div class="pb-4">
+                                            <h4 class="mb-0 bold-small-font">Comments :</h4>
+                                            <P class="viewComments">Purchase</P>
+                                            <!-- <p class="mb-0">Comments type Terms and Condition</p> -->
+                                    <!-- <textarea matInput rows="3" name="comments" [(ngModel)]="comments" class="comment" required></textarea>  -->
+                                        </div>
+                                        <!-- row for Department Information,Catagory -->
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                            <div class="pb-4">
+                                                <div class="col-lg-12">
+                                                </div>
+                                                
+                                                <!-- <p class="mb-0">Department Code: {{departmentValue?.departmentId}}</p>-->
+                                                <p class="mb-0"><b>Department Name</b>: Network</p> 
+                                            </div>
+                                            </div>
+                                            <!-- catagory  Information-->
+                                            <div class="col-md-4">
+                                            <div class="pb-4">
+                                                <!-- <h4 class="mb-0 selectLabel">Catagory</h4> -->
+                                                <div class="col-lg-12">
+                                                </div>
+                                                <p class="mb-0"><b> Catagory Name</b>:Cars</p> 
+                                            </div>
+                                            </div>
+                                            <!--sub catagory  Information-->
+                                            <div class="col-md-4">
+                                            <div class="pb-4">
+                                                <!-- <h4 class="mb-0 selectLabel"> Sub-Catagory</h4> -->
+                                                <div class="col-lg-12">
+                                                </div>
+                                                <p class="mb-0"><b> Sub-Catagory Name</b>:Cars</p> 
+                                            </div>
+                                            </div> 
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                                            <div class="card no_border">
+                                                <div class="body p-3 mb-2 bg-danger text-white" style="min-height:230px;">
+                                                <h5 class="mb-0 bold-small-font">Ship All Items To:</h5>
+                                                <br>
+                                                <!-- <h5 class="mb-0">{{supplierComName}}</h5> -->
+                                                <h6 class="mb-0">Hyundai</h6>
+                                                
+                                                <p class="mb-0">Howrah-711401</p>
+                                                <p class="mb-0">Asia</p>
+                                                <p class="mb-0">India</p>
+                                                </div>
+                                            </div>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                                            <div class="card no_border">
+                                                <div class="body bg-warning p-3 mb-2 text-white" style="min-height:230px;">
+                                                <h5 class="mb-0 bold-small-font">Bill To:</h5>
+                                                <br>
+                                                <h6 class="mb-0">Hyundai</h6>
+                                                <!-- <h5 class="mb-0">{{supplierComName}}</h5> -->
+                                                <h6 class="mb-0">Joypur</h6>
+                                                <p class="mb-0">Howrah 711401</p>
+                                                <p class="mb-0">Asia</p>
+                                                <p class="mb-0">Indid</p>
+                                                </div>
+                                            </div>
+                                            </div>
+                                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                                            <div class="card no_border">
+                                                <div class="body bg-green bg-success p-3 mb-2 text-white" style="min-height:230px;">
+                                                <h5 class="mb-0 bold-small-font">Deliver To:</h5>
+                                                <br class="mb-0">
+                                                <H6 class="mb-0">Chandan</H6>
+                                                <H6 class="mb-0">chandan@gmail.com</H6>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    <!-- table start -->
+                                        <div class="body p-0" style="margin-top: 20px;">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="">
+                                                    <h4 class="table-title">Line Items</h4>
+
+                                                </div>
+                                                <div class="table-responsive">
+                                                <table class="table table-bordered custom-table">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Id</th>
+                                                        <th>PART / DESCRIPTION</th>
+                                                        <th>QTY(UNIT)</th>
+                                                        <th>UNIT_PRICE</th>
+                                                        <!-- <th>DISCOUNT</th> -->
+                                                        <th>TAX</th>
+                                                        <th>AMOUNT</th>
+                                                        <!-- <th>ACTION</th> -->
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr *ngFor="let item of listItemArray; let i = index ">
+                                                        <td>1</td>
+                                                        <td>Super Car</td>
+                                                        <td>1</td>
+                                                        <td>{{item?.unitPrice}}</td>
+                                                        <!-- <td>{{item?.discount}}</td> -->
+                                                        <td>6%</td>
+                                                        <td>$4255336</td>
+                                                        <!-- <td class="action-btn"><i (click)="getItemDelete(i, item.itemId)" class="fas fa-trash" aria-hidden="true"></i></td> -->
+                                                    </tr>
+                                                    <!-- <tr *ngIf="listItemArray.length == 0">
+                                                        <td style="text-align: center;" colspan="100">No data found (Please add some items)</td>
+                                                    </tr> -->
+                                                    </tbody>
+                                                </table>
+                                                </div>
+                                             </div>
+                                        </div>
+                                        </div>
+                                
+                                    <!-- end picture div -->
+                                        
+                                        <!-- buttons end -->
+                                    <!-- table end -->
+                                    <!-- form end----------- -->
+                                </div>
+                                <!-- card shotcard -->
+                            <!-- </div> -->
+                            <!-- row clearfix -->
+                            </div>
+                            <!-- modal-body -->
+                        </div>
+
+                            <!-- buttons start -->
+                    </form>
+                </div>
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
 </html>
+
+
+
+
+
