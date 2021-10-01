@@ -589,7 +589,7 @@ public class UploadController {
 	    
 	    
 	    @GetMapping("/genpdf")
-		HttpEntity<byte[]> createPdf(@RequestHeader("Authorization") String token) throws IOException {
+		HttpEntity<byte[]> createPdf() throws IOException {
 			System.out.println("ok");
 
 			/* first, get and initialize an engine */
@@ -604,7 +604,7 @@ public class UploadController {
 			/* create a context and add data */
 			VelocityContext context = new VelocityContext();
 			context.put("name", "World");
-			context.put("genDateTime", LocalDateTime.now().toString());
+//			context.put("genDateTime", LocalDateTime.now().toString());
 			/* now render the template into a StringWriter */
 			StringWriter writer = new StringWriter();
 			t.merge(context, writer);
@@ -628,7 +628,7 @@ public class UploadController {
 		public ByteArrayOutputStream generatePdf(String html) {
 
 			String pdfFilePath = "";
-			PdfWriter pdfWriter = null;
+			PdfWriter pdfWriter=null;
 
 			// create a new document
 			Document document = new Document();
@@ -652,8 +652,8 @@ public class UploadController {
 
 				XMLWorkerHelper xmlWorkerHelper = XMLWorkerHelper.getInstance();
 				xmlWorkerHelper.getDefaultCssResolver(true);
-				xmlWorkerHelper.parseXHtml(pdfWriter, document, new StringReader(
-						html));
+				StringReader stringReader = new StringReader(html);
+				xmlWorkerHelper.parseXHtml(pdfWriter, document, stringReader);
 				// close the document
 				document.close();
 				System.out.println("PDF generated successfully");
