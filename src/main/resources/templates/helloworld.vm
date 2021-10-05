@@ -95,16 +95,16 @@
                     <th style="padding: 0;margin: 0;border-right: 1px solid #000;background:#3357a7 ;color: #fff;font-family: sans-serif;padding: 4px 13px;font-weight: bold;font-size: 17px;letter-spacing: .2px;">TAX</th>
                     <th style="padding: 0;margin: 0;border-right: 1px solid #000;background:#3357a7 ;color: #fff;font-family: sans-serif;padding: 4px 13px;font-weight: bold;font-size: 17px;letter-spacing: .2px;">AMOUNT</th>
                 </tr>
-                #foreach( $product in $$pdfGenStrachingClass.getItemCategory() )
+                #foreach( $product in $pdfGenStrachingClass.getItemCategory() )
                 <tr style="padding: 0;margin: 0;border-bottom:1px solid #ccc">
-                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px; font-size: 17px;letter-spacing: .2px;">$product.categoryId</td>
-                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.categoryId</td>
-                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;"><$product.categoryId/td>
-                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.categoryId</td>
-                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.categoryId</td>
-                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.categoryId</td>
+                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px; font-size: 17px;letter-spacing: .2px;">$product.itemId</td>
+                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.itemDescription</td>
+                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.qty</td>
+                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.unitPrice</td>
+                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.unitPrice</td>
+                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.unitPrice</td>
                 </tr>
-                #end
+                  #end
                 </tbody>
                 
             </table>

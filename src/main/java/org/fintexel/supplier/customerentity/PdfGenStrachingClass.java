@@ -36,7 +36,7 @@ public class PdfGenStrachingClass {
 	private String deliverToName;
 	private String deliverToEmail;
 	
-	private List<ItemCategory> itemCategory;
+	private List<InventoryDetails> itemCategory;
 
 	public String getCompanyName() {
 		return companyName;
@@ -246,11 +246,11 @@ public class PdfGenStrachingClass {
 		this.deliverToEmail = deliverToEmail;
 	}
 
-	public List<ItemCategory> getItemCategory() {
+	public List<InventoryDetails> getItemCategory() {
 		return itemCategory;
 	}
 
-	public void setItemCategory(List<ItemCategory> itemCategory) {
+	public void setItemCategory(List<InventoryDetails> itemCategory) {
 		this.itemCategory = itemCategory;
 	}
 
@@ -272,7 +272,7 @@ public class PdfGenStrachingClass {
 			String toSubAdd, String toSubcity, String toSubPostalCode, String toSubReg, String toSubCountry,
 			String dept, String catagory, String subCatagory, String po, String totalAmount, String paymentTerms,
 			String comment, String shipToCode, String shipToReg, String shipToCountry, String deliverToName,
-			String deliverToEmail, List<ItemCategory> itemCategory) {
+			String deliverToEmail, List<InventoryDetails> itemCategory) {
 		super();
 		this.companyName = companyName;
 		this.link = link;
