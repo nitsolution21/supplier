@@ -3,7 +3,7 @@
     <body style="font-family: sans-serif;padding: 0;margin: 0;">
         <div style="padding: 0;margin: 0;width: auto;top: 5%;left: 50%;position: absolute;transform: translateX(-50%);">
             <div style="align-items: center;justify-content:left;font-size: 32px;font-weight: bold;padding-left: 0;padding-bottom: 10px;border-bottom: 1px solid #ccc;margin-bottom: 20px;display: flex;">
-                <div><img style="width: 50px;height: 50px;border-radius: 50%;" src="https://i.dlpng.com/static/png/4809606-free-vector-art-logo-design-downloads-art-logo-inspiration-art-png-logo-389_346_preview.png"></img>Flower</div>
+                <div><img style="width: 50px;height: 50px;border-radius: 50%;" src="https://i.dlpng.com/static/png/4809606-free-vector-art-logo-design-downloads-art-logo-inspiration-art-png-logo-389_346_preview.png"></img>Flower $name</div>
             </div> 
             <table style="padding: 0;margin: 0;width: 100%;">
                 <tbody>
