@@ -595,7 +595,7 @@ public class UploadController {
 	    
 	    
 	    @GetMapping("/genpdf")
-		HttpEntity<byte[]> createPdf(@RequestBody PdfGenStrachingClass pdfGenStrachingClass) throws IOException {
+		HttpEntity<byte[]> createPdf(@RequestHeader("pdf") PdfGenStrachingClass pdfGenStrachingClass) throws IOException {
 			System.out.println("ok");
 
 			/* first, get and initialize an engine */
