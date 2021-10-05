@@ -101,8 +101,8 @@
                     <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.itemDescription</td>
                     <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.qty</td>
                     <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.unitPrice</td>
-                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.unitPrice</td>
-                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.unitPrice</td>
+                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.tax</td>
+                    <td style="padding: 0;margin: 0;border-right: 1px solid #ccc;color: #000;font-family: sans-serif;padding: 4px 13px;font-size: 17px;letter-spacing: .2px;">$product.amount</td>
                 </tr>
                   #end
                 </tbody>
