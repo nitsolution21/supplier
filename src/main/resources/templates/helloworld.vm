@@ -3,7 +3,7 @@
     <body style="font-family: sans-serif;padding: 0;margin: 0;">
         <div style="padding: 0;margin: 0;width: auto;top: 5%;left: 50%;position: absolute;transform: translateX(-50%);">
             <div style="align-items: center;justify-content:left;font-size: 32px;font-weight: bold;padding-left: 0;padding-bottom: 10px;border-bottom: 1px solid #ccc;margin-bottom: 20px;display: flex;">
-                <div><img style="width: 50px;height: 50px;border-radius: 50%;" src="$pdfGenStrachingClass.getLink()"></img>Flower $name</div>
+                <div><img style="width: 50px;height: 50px;border-radius: 50%;" src="$pdfGenStrachingClass.getLink()"></img>$pdfGenStrachingClass.getCompanyName()</div>
             </div> 
             <table style="padding: 0;margin: 0;width: 100%;">
                 <tbody>
@@ -11,29 +11,29 @@
                         <td style="padding: 0;margin: 0;padding: 5px;width: 250px;">
                             <span>
                                 <p style="padding: 0;margin: 0;font-family: sans-serif;font-size: 15px;font-weight: bold;">From:</p><br></br>
-                                <h6 style="font-size:15px;font-weight: normal;margin: 5px 0;">Hyundai</h6>
-                                <h6 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0;">Joypur,Howrah</h6>
-                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0;">Howrah,711401</p>
-                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0;">India</p>
-                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0;">Asia</p>
+                                <h6 style="font-size:15px;font-weight: normal;margin: 5px 0;">$pdfGenStrachingClass.getFromCompName()</h6>
+                                <h6 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0;">$pdfGenStrachingClass.getFromSupAdd()</h6>
+                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0;">$pdfGenStrachingClass.getFromCity(),$pdfGenStrachingClass.getFromPostalCode()</p>
+                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0;">$pdfGenStrachingClass.getFromCountry()</p>
+                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0;">$pdfGenStrachingClass.getFromReg()</p>
                             </span>
                         </td>
 
                         <td style="padding: 5px;width: 250px;">
                             <span>
                                 <h4 style="padding: 0;margin: 0;font-family: sans-serif;font-size: 15px;font-weight: bold;"> To:</h4><br></br>
-                                <h5 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0;">BMW</h5>
-                                <h6 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin-bottom: 5px;">Joypur,Howrah</h6>
-                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin-bottom: 5px;">Howrah,993929</p>
-                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin-bottom: 5px;">US</p>
-                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin-bottom: 5px;">USA</p>
+                                <h5 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0;">$pdfGenStrachingClass.getToCompName()</h5>
+                                <h6 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin-bottom: 5px;">$pdfGenStrachingClass.getToSubAdd()</h6>
+                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin-bottom: 5px;">$pdfGenStrachingClass.getToSubcity(),$pdfGenStrachingClass.getToSubPostalCode()</p>
+                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin-bottom: 5px;">$pdfGenStrachingClass.getToSubCountry()</p>
+                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin-bottom: 5px;">$pdfGenStrachingClass.getToSubReg()</p>
                             </span>
                         </td>
                         <td style="padding: 0;margin: 0;padding: 5px;width: 250px;">
                             <div style="padding: 0;margin: 0;margin-top: -55px;">
                                 <h5 style="padding: 0;margin: 0;font-family: sans-serif;font-size: 15px;font-weight: bold;">Purchase Order</h5>
-                                <h3  style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0;" id="poNumber">1726535</h3>
-                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0;"><span class="dtltitle">Amount:</span> $882655 USD</p>
+                                <h3  style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0;" id="poNumber">$pdfGenStrachingClass.getPo()</h3>
+                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0;"><span class="dtltitle">Amount:</span> $pdfGenStrachingClass.getTotalAmount() USD</p>
                             </div>
                         </td>
                     </tr>
@@ -48,7 +48,7 @@
                     <tr>
                         <td>
                             <h4 style="padding: 0;margin: 0;font-family: sans-serif;font-size: 15px;font-weight: bold;margin: 8px 0 5px 0;">Comments :</h4>
-                            <P style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin-bottom: 25px;">Purchase</P>
+                            <P style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin-bottom: 25px;">$pdfGenStrachingClass.getComment()</P>
                         </td>
                     </tr>
 
@@ -56,29 +56,29 @@
                         <td style="padding: 0;margin: 0;background: #dc3545;padding: 10px;color: #fff;letter-spacing: .2px;">
                             <div style="padding: 0;margin: 0;min-height: 250px;min-width: 270px;">
                                 <h5 style="padding: 0;margin: 0;font-family: sans-serif;font-size: 15px;font-weight: bold;">Ship All Items To:</h5>
-                                <h6 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">Hyundai</h6>
+                                <h6 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">$pdfGenStrachingClass.getFromCompName()</h6>
                                                         
-                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">Howrah-711401</p>
-                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">Asia</p>
-                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">India</p>
+                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">$pdfGenStrachingClass.getShipToCode()</p>
+                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">$pdfGenStrachingClass.getShipToReg()</p>
+                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">$pdfGenStrachingClass.getShigetShipToCountrypToCode()</p>
                             </div>
                             
                         </td>
                         <td style="padding: 0;margin: 0;background: #17a2b8;padding: 10px;color: #fff;letter-spacing: .2px;">
                             <div style="padding: 0;margin: 0;min-height: 250px;min-width: 270px;">
                                 <h5 style="padding: 0;margin: 0;font-family: sans-serif;font-size: 15px;font-weight: bold;">Bill To:</h5>
-                                <h6 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">Hyundai</h6>
-                                <h6 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">Joypur</h6>
-                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">Howrah 711401</p>
-                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">Asia</p>
-                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">Indid</p>
+                                <h6 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">$pdfGenStrachingClass.getFromCompName()</h6>
+                                <h6 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">$pdfGenStrachingClass.getFromSupAdd()</h6>
+                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">$pdfGenStrachingClass.getFromCity() $pdfGenStrachingClass.getFromPostalCode()</p>
+                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">$pdfGenStrachingClass.getFromCountry()</p>
+                                <p style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">$pdfGenStrachingClass.getFromReg()</p>
                             </div>
                         </td>
                         <td style="padding: 0;margin: 0;background:#28a745;padding: 10px;color: #fff;letter-spacing: .2px;">
                             <div style="padding: 0;margin: 0;min-height: 250px;min-width: 270px;">
                                 <h5 style="padding: 0;margin: 0;font-family: sans-serif;font-size: 15px;font-weight: bold;">Deliver To:</h5>
-                                <H6 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">Chandan</H6>
-                                <H6 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">chandan@gmail.com</H6>
+                                <H6 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">$pdfGenStrachingClass.getDeliverToName()</H6>
+                                <H6 style="padding: 0;margin: 0;font-size:15px;font-weight: normal;margin: 5px 0 0 0;">$pdfGenStrachingClass.getDeliverToEmail()</H6>
                             </div>
                         </td>
                     </tr>

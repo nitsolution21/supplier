@@ -11,143 +11,302 @@ import org.fintexel.supplier.entity.SupDepartment;
 public class PdfGenStrachingClass {
 	private String companyName;
 	private String link;
-	private String from;
-	private String to;
+	private String fromCompName;
+	private String fromSupAdd;
+	private String fromCity;
+	private String fromPostalCode;
+	private String fromReg;
+	private String fromCountry;
+	private String toCompName;
+	private String toSubAdd;
+	private String toSubcity;
+	private String toSubPostalCode;
+	private String toSubReg;
+	private String toSubCountry;
+	private String dept;
+	private String catagory;
+	private String subCatagory;
 	private String po;
 	private String totalAmount;
 	private String paymentTerms;
 	private String comment;
-	private String shipTo;
-	private String billTo;
-	private String deliverTo;
+	private String shipToCode;
+	private String shipToReg;
+	private String shipToCountry;
+	private String deliverToName;
+	private String deliverToEmail;
+	
 	private List<ItemCategory> itemCategory;
+
 	public String getCompanyName() {
 		return companyName;
 	}
+
 	public void setCompanyName(String companyName) {
 		this.companyName = companyName;
 	}
+
 	public String getLink() {
 		return link;
 	}
+
 	public void setLink(String link) {
 		this.link = link;
 	}
-	public String getFrom() {
-		return from;
+
+	public String getFromCompName() {
+		return fromCompName;
 	}
-	public void setFrom(String from) {
-		this.from = from;
+
+	public void setFromCompName(String fromCompName) {
+		this.fromCompName = fromCompName;
 	}
-	public String getTo() {
-		return to;
+
+	public String getFromSupAdd() {
+		return fromSupAdd;
 	}
-	public void setTo(String to) {
-		this.to = to;
+
+	public void setFromSupAdd(String fromSupAdd) {
+		this.fromSupAdd = fromSupAdd;
 	}
+
+	public String getFromCity() {
+		return fromCity;
+	}
+
+	public void setFromCity(String fromCity) {
+		this.fromCity = fromCity;
+	}
+
+	public String getFromPostalCode() {
+		return fromPostalCode;
+	}
+
+	public void setFromPostalCode(String fromPostalCode) {
+		this.fromPostalCode = fromPostalCode;
+	}
+
+	public String getFromReg() {
+		return fromReg;
+	}
+
+	public void setFromReg(String fromReg) {
+		this.fromReg = fromReg;
+	}
+
+	public String getFromCountry() {
+		return fromCountry;
+	}
+
+	public void setFromCountry(String fromCountry) {
+		this.fromCountry = fromCountry;
+	}
+
+	public String getToCompName() {
+		return toCompName;
+	}
+
+	public void setToCompName(String toCompName) {
+		this.toCompName = toCompName;
+	}
+
+	public String getToSubAdd() {
+		return toSubAdd;
+	}
+
+	public void setToSubAdd(String toSubAdd) {
+		this.toSubAdd = toSubAdd;
+	}
+
+	public String getToSubcity() {
+		return toSubcity;
+	}
+
+	public void setToSubcity(String toSubcity) {
+		this.toSubcity = toSubcity;
+	}
+
+	public String getToSubPostalCode() {
+		return toSubPostalCode;
+	}
+
+	public void setToSubPostalCode(String toSubPostalCode) {
+		this.toSubPostalCode = toSubPostalCode;
+	}
+
+	public String getToSubReg() {
+		return toSubReg;
+	}
+
+	public void setToSubReg(String toSubReg) {
+		this.toSubReg = toSubReg;
+	}
+
+	public String getToSubCountry() {
+		return toSubCountry;
+	}
+
+	public void setToSubCountry(String toSubCountry) {
+		this.toSubCountry = toSubCountry;
+	}
+
+	public String getDept() {
+		return dept;
+	}
+
+	public void setDept(String dept) {
+		this.dept = dept;
+	}
+
+	public String getCatagory() {
+		return catagory;
+	}
+
+	public void setCatagory(String catagory) {
+		this.catagory = catagory;
+	}
+
+	public String getSubCatagory() {
+		return subCatagory;
+	}
+
+	public void setSubCatagory(String subCatagory) {
+		this.subCatagory = subCatagory;
+	}
+
 	public String getPo() {
 		return po;
 	}
+
 	public void setPo(String po) {
 		this.po = po;
 	}
+
 	public String getTotalAmount() {
 		return totalAmount;
 	}
+
 	public void setTotalAmount(String totalAmount) {
 		this.totalAmount = totalAmount;
 	}
+
 	public String getPaymentTerms() {
 		return paymentTerms;
 	}
+
 	public void setPaymentTerms(String paymentTerms) {
 		this.paymentTerms = paymentTerms;
 	}
+
 	public String getComment() {
 		return comment;
 	}
+
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	public String getShipTo() {
-		return shipTo;
+
+	public String getShipToCode() {
+		return shipToCode;
 	}
-	public void setShipTo(String shipTo) {
-		this.shipTo = shipTo;
+
+	public void setShipToCode(String shipToCode) {
+		this.shipToCode = shipToCode;
 	}
-	public String getBillTo() {
-		return billTo;
+
+	public String getShipToReg() {
+		return shipToReg;
 	}
-	public void setBillTo(String billTo) {
-		this.billTo = billTo;
+
+	public void setShipToReg(String shipToReg) {
+		this.shipToReg = shipToReg;
 	}
-	public String getDeliverTo() {
-		return deliverTo;
+
+	public String getShipToCountry() {
+		return shipToCountry;
 	}
-	public void setDeliverTo(String deliverTo) {
-		this.deliverTo = deliverTo;
+
+	public void setShipToCountry(String shipToCountry) {
+		this.shipToCountry = shipToCountry;
 	}
+
+	public String getDeliverToName() {
+		return deliverToName;
+	}
+
+	public void setDeliverToName(String deliverToName) {
+		this.deliverToName = deliverToName;
+	}
+
+	public String getDeliverToEmail() {
+		return deliverToEmail;
+	}
+
+	public void setDeliverToEmail(String deliverToEmail) {
+		this.deliverToEmail = deliverToEmail;
+	}
+
 	public List<ItemCategory> getItemCategory() {
 		return itemCategory;
 	}
+
 	public void setItemCategory(List<ItemCategory> itemCategory) {
 		this.itemCategory = itemCategory;
 	}
+
 	@Override
 	public String toString() {
-		return "PdfGenStrachingClass [companyName=" + companyName + ", link=" + link + ", from=" + from + ", to=" + to
-				+ ", po=" + po + ", totalAmount=" + totalAmount + ", paymentTerms=" + paymentTerms + ", comment="
-				+ comment + ", shipTo=" + shipTo + ", billTo=" + billTo + ", deliverTo=" + deliverTo + ", itemCategory="
-				+ itemCategory + "]";
+		return "PdfGenStrachingClass [companyName=" + companyName + ", link=" + link + ", fromCompName=" + fromCompName
+				+ ", fromSupAdd=" + fromSupAdd + ", fromCity=" + fromCity + ", fromPostalCode=" + fromPostalCode
+				+ ", fromReg=" + fromReg + ", fromCountry=" + fromCountry + ", toCompName=" + toCompName + ", toSubAdd="
+				+ toSubAdd + ", toSubcity=" + toSubcity + ", toSubPostalCode=" + toSubPostalCode + ", toSubReg="
+				+ toSubReg + ", toSubCountry=" + toSubCountry + ", dept=" + dept + ", catagory=" + catagory
+				+ ", subCatagory=" + subCatagory + ", po=" + po + ", totalAmount=" + totalAmount + ", paymentTerms="
+				+ paymentTerms + ", comment=" + comment + ", shipToCode=" + shipToCode + ", shipToReg=" + shipToReg
+				+ ", shipToCountry=" + shipToCountry + ", deliverToName=" + deliverToName + ", deliverToEmail="
+				+ deliverToEmail + ", itemCategory=" + itemCategory + "]";
 	}
-	public PdfGenStrachingClass(String companyName, String link, String from, String to, String po, String totalAmount,
-			String paymentTerms, String comment, String shipTo, String billTo, String deliverTo,
-			List<ItemCategory> itemCategory) {
+
+	public PdfGenStrachingClass(String companyName, String link, String fromCompName, String fromSupAdd,
+			String fromCity, String fromPostalCode, String fromReg, String fromCountry, String toCompName,
+			String toSubAdd, String toSubcity, String toSubPostalCode, String toSubReg, String toSubCountry,
+			String dept, String catagory, String subCatagory, String po, String totalAmount, String paymentTerms,
+			String comment, String shipToCode, String shipToReg, String shipToCountry, String deliverToName,
+			String deliverToEmail, List<ItemCategory> itemCategory) {
 		super();
 		this.companyName = companyName;
 		this.link = link;
-		this.from = from;
-		this.to = to;
+		this.fromCompName = fromCompName;
+		this.fromSupAdd = fromSupAdd;
+		this.fromCity = fromCity;
+		this.fromPostalCode = fromPostalCode;
+		this.fromReg = fromReg;
+		this.fromCountry = fromCountry;
+		this.toCompName = toCompName;
+		this.toSubAdd = toSubAdd;
+		this.toSubcity = toSubcity;
+		this.toSubPostalCode = toSubPostalCode;
+		this.toSubReg = toSubReg;
+		this.toSubCountry = toSubCountry;
+		this.dept = dept;
+		this.catagory = catagory;
+		this.subCatagory = subCatagory;
 		this.po = po;
 		this.totalAmount = totalAmount;
 		this.paymentTerms = paymentTerms;
 		this.comment = comment;
-		this.shipTo = shipTo;
-		this.billTo = billTo;
-		this.deliverTo = deliverTo;
+		this.shipToCode = shipToCode;
+		this.shipToReg = shipToReg;
+		this.shipToCountry = shipToCountry;
+		this.deliverToName = deliverToName;
+		this.deliverToEmail = deliverToEmail;
 		this.itemCategory = itemCategory;
 	}
+
 	public PdfGenStrachingClass() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-//	private SupBank supBank;
-//	private SupDepartment supDepartment;
-//	private InventoryDetails inventoryDetails;
-//	private ItemSubCategory itemSubCategory;
-//	private List<ItemCategory> itemCategory;
-//	private String city;
-//	private String country;
-//	private String deliveryEmail;
-//	private String deliveryName;
-//	private String poNumber;
-//	private String postalCode;
-//	private String region;
-//	private String shipcityCode;
-//	private String shipcountry;
-//	private String shipregion;
-//	private String subaddress1;
-//	private String subcity;
-//	private String subcountry;
-//	private String subpostalCode;
-//	private String subregion;
-//	private String supplierComName;
-//	private String supplieraddress;
-//	private String totalItemAmount;
-//	private String viewComments;
-	
 	
 	
 	
