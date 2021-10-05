@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +59,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -66,8 +68,11 @@ public class UploadController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(UploadController.class);
 
-	 @Autowired
-	 S3Service s3Factory;
+	@Autowired
+	private S3Service s3Factory;
+	 
+	@Autowired
+	private RestTemplate restTemplate;
 	
 	@Autowired
 	private UploadService uploadService;
@@ -594,6 +599,24 @@ public class UploadController {
 
 			/* first, get and initialize an engine */
 			VelocityEngine ve = new VelocityEngine();
+			
+//			RestTemplate restTemplate = new RestTemplate();
+//			HttpHeaders BaseAuthHeader = new HttpHeaders();
+//			BaseAuthHeader.setContentType(MediaType.APPLICATION_JSON);
+//			BaseAuthHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+////			BaseAuthHeader.setBasicAuth("admin", "test");
+//
+//			/*
+//			 * ============================== ProcessInstance Request
+//			 * ================================================
+//			 */
+//			Map<String, Object> pDMap = new HashMap<>();
+////			pDMap.put("processDefinitionId", findByAuthorAndTitle.get().getId());
+//			HttpEntity<Map<String, Object>> pDEntity = new HttpEntity<>(pDMap, BaseAuthHeader);
+//			ResponseEntity<String> response = restTemplate.postForEntity(
+//					"http://65.2.162.230:8080/flowable-rest/service/runtime/process-instances", pDEntity,
+//					String.class);
+
 
 			/* next, get the Template */
 			ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
