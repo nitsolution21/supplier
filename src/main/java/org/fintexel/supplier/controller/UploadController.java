@@ -27,6 +27,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.fintexel.supplier.customerentity.CustomerRegister;
+import org.fintexel.supplier.customerentity.PdfGenStrachingClass;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
 import org.fintexel.supplier.entity.BulkUploadSuccessError;
 import org.fintexel.supplier.entity.CustomeResponseEntity;
@@ -594,29 +595,12 @@ public class UploadController {
 	    
 	    
 	    @GetMapping("/genpdf")
-		HttpEntity<byte[]> createPdf() throws IOException {
+		HttpEntity<byte[]> createPdf(@RequestBody PdfGenStrachingClass pdfGenStrachingClass) throws IOException {
 			System.out.println("ok");
 
 			/* first, get and initialize an engine */
 			VelocityEngine ve = new VelocityEngine();
 			
-//			RestTemplate restTemplate = new RestTemplate();
-//			HttpHeaders BaseAuthHeader = new HttpHeaders();
-//			BaseAuthHeader.setContentType(MediaType.APPLICATION_JSON);
-//			BaseAuthHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-////			BaseAuthHeader.setBasicAuth("admin", "test");
-//
-//			/*
-//			 * ============================== ProcessInstance Request
-//			 * ================================================
-//			 */
-//			Map<String, Object> pDMap = new HashMap<>();
-////			pDMap.put("processDefinitionId", findByAuthorAndTitle.get().getId());
-//			HttpEntity<Map<String, Object>> pDEntity = new HttpEntity<>(pDMap, BaseAuthHeader);
-//			ResponseEntity<String> response = restTemplate.postForEntity(
-//					"http://65.2.162.230:8080/flowable-rest/service/runtime/process-instances", pDEntity,
-//					String.class);
-
 
 			/* next, get the Template */
 			ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
@@ -626,7 +610,7 @@ public class UploadController {
 			Template t = ve.getTemplate("templates/helloworld.vm");
 			/* create a context and add data */
 			VelocityContext context = new VelocityContext();
-			context.put("name", "World");
+			context.put("pdfGenStrachingClass", pdfGenStrachingClass);
 //			context.put("genDateTime", LocalDateTime.now().toString());
 			/* now render the template into a StringWriter */
 			StringWriter writer = new StringWriter();
