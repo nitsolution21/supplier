@@ -32,6 +32,11 @@ public class GetPurchesOrder {
 	private String createdBy;
 	private Date createdOn;
 	private int isDeleted;
+	private double totalGross;
+	private double totalTax;
+	private double totalSubTotal;
+	private double totalAmountWithoutTax;
+	
 	private List<PurchesOrderItems> purchesOrderItems;
 	
 	public GetPurchesOrder() {
@@ -43,7 +48,8 @@ public class GetPurchesOrder {
 			Long departmentId, String departmentName, Long cusAddrId, String cusAddrText, Long supAddrId,
 			String supAddrText, Long contractId, int contractTerms, String comment, Long shipToId, String shipToText,
 			Long billToId, String billToText, Long deliveryToId, String deliveryToText, String curType, float amount,
-			String status, String statusComment, String createdBy, Date createdOn, int isDeleted,
+			String status, String statusComment, String createdBy, Date createdOn, int isDeleted, double totalGross,
+			double totalTax, double totalSubTotal, double totalAmountWithoutTax,
 			List<PurchesOrderItems> purchesOrderItems) {
 		super();
 		POId = pOId;
@@ -74,6 +80,10 @@ public class GetPurchesOrder {
 		this.createdBy = createdBy;
 		this.createdOn = createdOn;
 		this.isDeleted = isDeleted;
+		this.totalGross = totalGross;
+		this.totalTax = totalTax;
+		this.totalSubTotal = totalSubTotal;
+		this.totalAmountWithoutTax = totalAmountWithoutTax;
 		this.purchesOrderItems = purchesOrderItems;
 	}
 
@@ -87,8 +97,9 @@ public class GetPurchesOrder {
 				+ ", shipToText=" + shipToText + ", billToId=" + billToId + ", billToText=" + billToText
 				+ ", deliveryToId=" + deliveryToId + ", deliveryToText=" + deliveryToText + ", curType=" + curType
 				+ ", amount=" + amount + ", status=" + status + ", statusComment=" + statusComment + ", createdBy="
-				+ createdBy + ", createdOn=" + createdOn + ", isDeleted=" + isDeleted + ", purchesOrderItems="
-				+ purchesOrderItems + "]";
+				+ createdBy + ", createdOn=" + createdOn + ", isDeleted=" + isDeleted + ", totalGross=" + totalGross
+				+ ", totalTax=" + totalTax + ", totalSubTotal=" + totalSubTotal + ", totalAmountWithoutTax="
+				+ totalAmountWithoutTax + ", purchesOrderItems=" + purchesOrderItems + "]";
 	}
 
 	public Long getPOId() {
@@ -315,6 +326,38 @@ public class GetPurchesOrder {
 		this.isDeleted = isDeleted;
 	}
 
+	public double getTotalGross() {
+		return totalGross;
+	}
+
+	public void setTotalGross(double totalGross) {
+		this.totalGross = totalGross;
+	}
+
+	public double getTotalTax() {
+		return totalTax;
+	}
+
+	public void setTotalTax(double totalTax) {
+		this.totalTax = totalTax;
+	}
+
+	public double getTotalSubTotal() {
+		return totalSubTotal;
+	}
+
+	public void setTotalSubTotal(double totalSubTotal) {
+		this.totalSubTotal = totalSubTotal;
+	}
+
+	public double getTotalAmountWithoutTax() {
+		return totalAmountWithoutTax;
+	}
+
+	public void setTotalAmountWithoutTax(double totalAmountWithoutTax) {
+		this.totalAmountWithoutTax = totalAmountWithoutTax;
+	}
+
 	public List<PurchesOrderItems> getPurchesOrderItems() {
 		return purchesOrderItems;
 	}
@@ -322,6 +365,5 @@ public class GetPurchesOrder {
 	public void setPurchesOrderItems(List<PurchesOrderItems> purchesOrderItems) {
 		this.purchesOrderItems = purchesOrderItems;
 	}
-
 	
 }
