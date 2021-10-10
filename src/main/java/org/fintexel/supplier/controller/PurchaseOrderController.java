@@ -540,8 +540,19 @@ public class PurchaseOrderController {
 				}else if(value.equals("CLOSED")) {
 					System.out.print("****  "+loginSupplierCode );
 					value = "COMPLETED";
+				}else if(value.equals("ALL")) {
+					System.out.print("****  "+loginSupplierCode );
+					value = "ALL";
+
+
 				}
-				List<PurchesOrder> findByStatusWithSupplierCode = purchesOrderRepo.findByStatusWithSupplierCode(value , loginSupplierCode);
+				List<PurchesOrder> findByStatusWithSupplierCode=new ArrayList<PurchesOrder>();
+				 findByStatusWithSupplierCode = purchesOrderRepo.findByStatusWithSupplierCode(value , loginSupplierCode);
+				
+				if(value.equals("ALL")) {
+					findByStatusWithSupplierCode = purchesOrderRepo.findByhSupplierCode(loginSupplierCode);
+				}
+				
 				
 				System.out.print("****  "+loginSupplierCode +  "  ---- " +findByStatusWithSupplierCode.size());
 				
@@ -636,6 +647,9 @@ public class PurchaseOrderController {
 	
 	
 	
+	
+	
+	
 	@PostMapping("/invoice")
 	public CustomeResponseEntity invoice(@RequestBody() InvoiceStraching invoiceStraching , @RequestHeader(name ="Authorization") String token) {
 		String taskID1_ = "", taskID2_ = "", processInstID_ = "";
@@ -648,15 +662,15 @@ public class PurchaseOrderController {
 			if(fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getPOId()) &&
 					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvDate()) &&
 					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvDesc()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvTaxid()) &&
+//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvTaxid()) &&
 					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getRemitTo()) &&
 					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getBillTo()) &&
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getShipCharges()) &&
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getHandlingCharges()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalGross()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalTax()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getSubtotal()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalAmount()) &&
+//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalGross()) &&
+//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalTax()) &&
+//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getSubtotal()) &&
+//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalAmount()) &&
 					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getStatus()) &&
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvAttachment()) &&
 					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getCreatedBy()) &&
@@ -695,7 +709,7 @@ public class PurchaseOrderController {
 					
 					supplierInvoiceItem.setItemQty(invoiceStraching.getPurchesOrderItems().get(i).getQty());
 					supplierInvoiceItem.setItemPrice(obj.getUnitPrice());
-					supplierInvoiceItem.setItemGross(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice());
+//					supplierInvoiceItem.setItemGross(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice());
 					supplierInvoiceItem.setItemTax(obj.getTax());
 					supplierInvoiceItem.setItemSubtotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
 					supplierInvoiceItem.setItemTotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
@@ -810,7 +824,7 @@ public class PurchaseOrderController {
 					username.put("name", "invoiceamount");
 					username.put("scope", "local");
 					username.put("type", "string");
-					username.put("value", save.getTotalAmount());
+//					username.put("value", save.getTotalAmount());
 //					username.put("value", "");
 					formReqBody.put(username);
 					
@@ -1023,7 +1037,7 @@ public class PurchaseOrderController {
 					autoCompleate.put("country", supAddress.getCountry());
 					autoCompleate.put("invoicetype", "" );
 					autoCompleate.put("invoicenumber", save.getInvId()+"" );
-					autoCompleate.put("invoiceamount", save.getTotalAmount()+"");
+//					autoCompleate.put("invoiceamount", save.getTotalAmount()+"");
 					autoCompleate.put("invoicedate", save.getCreatedOn()+"" );
 					autoCompleate.put("podate", purchesOrder.getCreatedOn()+"");
 					autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
