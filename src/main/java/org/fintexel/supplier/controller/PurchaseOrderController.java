@@ -1,6 +1,7 @@
 package org.fintexel.supplier.controller;
 
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -168,11 +169,11 @@ public class PurchaseOrderController {
 	private VendorRegisterRepo vendorRegisterRepo;
 	
 	@Autowired
-	private PurchesOrderAttachmentRepo purchesOrderAttachmentRepo;
-	
-
+	private PurchesOrderAttachmentRepo purchesOrderAttachmentRepo; 
 
 	private Integer i;
+	
+	private double totalGross, totalTax, totalSubTotal, totalAmountWithoutTax;
 	
 
 	
@@ -1714,8 +1715,14 @@ public class PurchaseOrderController {
 	@GetMapping("/getPOByPOId/{poId}")
 	public List<GetPurchesOrder> getPOByPOId(@PathVariable long poId) {
 		LOGGER.info("Inside - PurchaseOrderController.getLoginCustomerAllPOFromSupplier()");
+		
 		try {
+			this.totalGross = 0.0;
+			this.totalTax = 0.0;
+			this.totalSubTotal = 0.0;
+			this.totalAmountWithoutTax = 0.0;
 			List<GetPurchesOrder> itemList = new ArrayList<GetPurchesOrder>();
+			
 //			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
 //			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
 			
@@ -1723,6 +1730,7 @@ public class PurchaseOrderController {
 				throw new VendorNotFoundException("Po not found");
 			}
 			else {
+				
 //				List<RequestPurchesOrder> purchesOrders = new ArrayList<RequestPurchesOrder>();
 				
 				 Optional<PurchesOrder> findPOBycId = purchesOrderRepo.findById(poId);
@@ -1783,11 +1791,17 @@ public class PurchaseOrderController {
 								List<PurchesOrderItems> items = new ArrayList<PurchesOrderItems>();
 								
 								findPoItemByPOId.forEach(item -> {
+									totalGross = totalGross + item.getItemGross();
+									totalTax = totalTax  + item.getTax();
+									totalSubTotal = totalSubTotal + item.getAmount();
+									totalAmountWithoutTax = totalAmountWithoutTax + (item.getQty() * item.getUnitPrice());
 									items.add(item);
 								});
 								
-								order.setPurchesOrderItems(items);
-								
+								order.setTotalGross(Double.parseDouble(new DecimalFormat("##.##").format(totalGross)));
+								order.setTotalTax(Double.parseDouble(new DecimalFormat("##.##").format(totalTax)));
+								order.setTotalSubTotal(Double.parseDouble(new DecimalFormat("##.##").format(totalSubTotal)));
+								order.setTotalAmountWithoutTax(Double.parseDouble(new DecimalFormat("##.##").format(totalAmountWithoutTax)));
 								itemList.add(order);
 								
 								
@@ -1832,8 +1846,17 @@ public class PurchaseOrderController {
 							List<PurchesOrderItems> items = new ArrayList<PurchesOrderItems>();
 							
 							findPoItemByPOId.forEach(item -> {
+								totalGross = totalGross + item.getItemGross();
+								totalTax = totalTax  + item.getTax();
+								totalSubTotal = totalSubTotal + item.getAmount();
+								totalAmountWithoutTax = totalAmountWithoutTax + (item.getQty() * item.getUnitPrice());
 								items.add(item);
 							});
+							
+							order.setTotalGross(Double.parseDouble(new DecimalFormat("##.##").format(totalGross)));
+							order.setTotalTax(Double.parseDouble(new DecimalFormat("##.##").format(totalTax)));
+							order.setTotalSubTotal(Double.parseDouble(new DecimalFormat("##.##").format(totalSubTotal)));
+							order.setTotalAmountWithoutTax(Double.parseDouble(new DecimalFormat("##.##").format(totalAmountWithoutTax)));
 							
 							order.setPurchesOrderItems(items);
 							
