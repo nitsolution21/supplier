@@ -602,12 +602,19 @@ public class PurchaseOrderController {
 			
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			
+			LOGGER.info("Request PO ID"+id);
+			PurchesOrderStatus purchesOrderStatus = new PurchesOrderStatus();
+			try {
+				purchesOrderStatus = purchesOrderStatusRepo.findById(id).get();
+			}catch(Exception e) {
+				
+			}
 			
-			PurchesOrderStatus purchesOrderStatus = purchesOrderStatusRepo.findById(id).get();
 			PurchesOrder purchesOrder = purchesOrderRepo.findById(id).get();
+			LOGGER.info("Data form data base "+purchesOrder.toString());
 			if(loginSupplierCode.equals(purchesOrder.getSupplierCode())) {
-				purchesOrderStatus.setPOStatus(value);
-				purchesOrderStatusRepo.save(purchesOrderStatus);
+//				purchesOrderStatus.setPOStatus(value);
+//				purchesOrderStatusRepo.save(purchesOrderStatus);
 				purchesOrder.setStatus(value);
 				purchesOrderRepo.save(purchesOrder);
 				
