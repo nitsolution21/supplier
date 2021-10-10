@@ -16,6 +16,9 @@ public interface PurchesOrderRepo extends JpaRepository<PurchesOrder, Long>{
 	@Query("select s from PurchesOrder s where s.status = ?1 and s.supplierCode = ?2")
 	List<PurchesOrder> findByStatusWithSupplierCode(String status , String supplierCode);
 	
+	@Query("select s from PurchesOrder s where s.supplierCode = ?1")
+	List<PurchesOrder> findByhSupplierCode(String supplierCode);
+	
 	List<PurchesOrder> findBycId(int cId);
 	
 	public Optional<PurchesOrder> findByPoNumber(String poNumber);

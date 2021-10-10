@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-@Entity
+@Entity 
 @Table(name = "TBL_INVOICE_STATUSES")
 public class SupplierInvoiceStatus {
 	
@@ -21,6 +21,8 @@ public class SupplierInvoiceStatus {
 	@Column(name = "BY_WHOM") private String byWhom;
 	@JsonFormat(pattern = "YY-MM-DD")
 	@Column(name = "UPDATED_ON") private Date updatedOn;
+	
+	
 	public Long getInvId() {
 		return invId;
 	}
