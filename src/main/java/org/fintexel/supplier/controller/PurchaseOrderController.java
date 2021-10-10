@@ -649,8 +649,8 @@ public class PurchaseOrderController {
 	
 	
 	
-	@PostMapping("/invoice")
-	public CustomeResponseEntity invoice(@RequestBody() InvoiceStraching invoiceStraching , @RequestHeader(name ="Authorization") String token) {
+	@PostMapping("/invoice/{status}")
+	public CustomeResponseEntity invoice(@PathVariable("status") String status , @RequestBody() InvoiceStraching invoiceStraching , @RequestHeader(name ="Authorization") String token) {
 		String taskID1_ = "", taskID2_ = "", processInstID_ = "";
 		
 		String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
@@ -672,13 +672,15 @@ public class PurchaseOrderController {
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalAmount()) &&
 					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getStatus()) &&
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvAttachment()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getCreatedBy()) &&
-					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getCreatedOn()) 
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvRegNum()) 
+//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getCreatedBy()) 
+					
+				
 					
 					
 					) {
 				
-				
+				invoiceStraching.getSupplierInvoice().setCreatedBy(loginSupplierCode);
 				
 				PurchesOrder purchesOrder = purchesOrderRepo.findById(invoiceStraching.getSupplierInvoice().getPOId()).get();
 				System.out.println("loginSupplierCode  "+invoiceStraching.getSupplierInvoice().getPOId());
@@ -714,376 +716,380 @@ public class PurchaseOrderController {
 					supplierInvoiceItem.setItemTotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
 					SupplierInvoiceItem save2 = supplierInvoiceItemRepo.save(supplierInvoiceItem);
 					
-					/*
-					 * ----------- REQUEST PROCESS ID with PROCESS DEFINITION KEY
-					 * -------------------------------------------------------
-					 */
-
-			
-			
-			
-			
-					SupDetails supDetails = supDetailsRepo.findById(loginSupplierCode).get();
-					System.out.println("supDetails  "+supDetails.toString());
+					if(status.equals("SUBMIT")) {
+						
 					
-					VendorRegister vendorRegister = vendorRegisterRepo.findById(supDetails.getRegisterId()).get();
-					System.out.println("vendorRegister  "+vendorRegister.toString());
 					
-			
-					
-					SupBank supBank = supBankRepo.findByIsPrimaryWithSupplierCode(1, loginSupplierCode).get();
-					System.out.println("supBank  "+supBank.toString());
-					
-					SupAddress supAddress = supAddressRepo.findByIsPrimaryWithSupplierCode(1, loginSupplierCode).get();
-					System.out.println("supAddress  "+supAddress.toString());
-//					supDepartmentRepo.findBySupplierCode(loginSupplierCode);
-			
-			
-			
-			
-			
-					Optional<FlowableRegistration> findByAuthorAndTitle = flowableRegistrationRepo
-							.findByAuthorAndTitle("demo-AP");
-					RestTemplate restTemplate = new RestTemplate();
-
-					HttpHeaders BaseAuthHeader = new HttpHeaders();
-					BaseAuthHeader.setContentType(MediaType.APPLICATION_JSON);
-					BaseAuthHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-					BaseAuthHeader.setBasicAuth("admin", "test");
-					
-					/*
-					 * ============================== ProcessInstance Request
-					 * ================================================
-					 */
-					Map<String, Object> pDMap = new HashMap<>();
-					pDMap.put("processDefinitionId", findByAuthorAndTitle.get().getId());
-					HttpEntity<Map<String, Object>> pDEntity = new HttpEntity<>(pDMap, BaseAuthHeader);
-					ResponseEntity<String> response = restTemplate.postForEntity(
-							"http://65.2.162.230:8080/flowable-rest/service/runtime/process-instances", pDEntity,
-							String.class);
+						/*
+						 * ----------- REQUEST PROCESS ID with PROCESS DEFINITION KEY
+						 * -------------------------------------------------------
+						 */
+	
 				
-			
-					
+				
+				
+				
+						SupDetails supDetails = supDetailsRepo.findById(loginSupplierCode).get();
+						System.out.println("supDetails  "+supDetails.toString());
+						
+						VendorRegister vendorRegister = vendorRegisterRepo.findById(supDetails.getRegisterId()).get();
+						System.out.println("vendorRegister  "+vendorRegister.toString());
+						
+				
+						
+						SupBank supBank = supBankRepo.findByIsPrimaryWithSupplierCode(1, loginSupplierCode).get();
+						System.out.println("supBank  "+supBank.toString());
+						
+						SupAddress supAddress = supAddressRepo.findByIsPrimaryWithSupplierCode(1, loginSupplierCode).get();
+						System.out.println("supAddress  "+supAddress.toString());
+	//					supDepartmentRepo.findBySupplierCode(loginSupplierCode);
+				
+				
+				
+				
+				
+						Optional<FlowableRegistration> findByAuthorAndTitle = flowableRegistrationRepo
+								.findByAuthorAndTitle("demo-AP");
+						RestTemplate restTemplate = new RestTemplate();
+	
+						HttpHeaders BaseAuthHeader = new HttpHeaders();
+						BaseAuthHeader.setContentType(MediaType.APPLICATION_JSON);
+						BaseAuthHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+						BaseAuthHeader.setBasicAuth("admin", "test");
+						
+						/*
+						 * ============================== ProcessInstance Request
+						 * ================================================
+						 */
+						Map<String, Object> pDMap = new HashMap<>();
+						pDMap.put("processDefinitionId", findByAuthorAndTitle.get().getId());
+						HttpEntity<Map<String, Object>> pDEntity = new HttpEntity<>(pDMap, BaseAuthHeader);
+						ResponseEntity<String> response = restTemplate.postForEntity(
+								"http://65.2.162.230:8080/flowable-rest/service/runtime/process-instances", pDEntity,
+								String.class);
 					
 				
+						
+						
 					
-					
-					/*
-					 * ============================== Query Task 1
-					 * ================================================
-					 */
-
-					Map<String, Object> queryMap = new HashMap<>();
-					JSONObject jsonObject = new JSONObject(response.getBody());
-					processInstID_ = (String) jsonObject.get("id");
-					queryMap.put("processInstanceId", processInstID_);
-
-//					filterVendorReg.setProcessId(processInstID_);
-					LOGGER.info("ProcessInstanceID : " + processInstID_);
-
-					HttpEntity<Map<String, Object>> baseAuthEntity = new HttpEntity<>(queryMap, BaseAuthHeader);
-					ResponseEntity<String> queryRequest_1 = restTemplate.exchange(
-							"http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, baseAuthEntity,
-							String.class, 1);
-					
-					
-					
-					
-					/*
-					 * ----------- POST FORM VARIABLES
-					 * -------------------------------------------------------
-					 */
-
-					JSONArray taskJA = new JSONArray(new JSONObject(queryRequest_1.getBody()).get("data").toString());
-					JSONArray formReqBody = new JSONArray();
-
-					taskID1_ = (String) taskJA.getJSONObject(0).get("id");
-
-					LOGGER.info("Registration TaskID_1 : " + taskID1_);
-
-					JSONObject suppliername = new JSONObject();
-					suppliername.put("name", "city");
-					suppliername.put("scope", "local");
-					suppliername.put("type", "string");
-					suppliername.put("value", supAddress.getCity());
-					formReqBody.put(suppliername);
-					
-					System.out.println("supAddress.getCity() "+supAddress.getCity());
-
-					JSONObject supplieremail = new JSONObject();
-					supplieremail.put("name", "country");
-					supplieremail.put("scope", "local");
-					supplieremail.put("type", "string");
-					supplieremail.put("value", supAddress.getCountry());
-					formReqBody.put(supplieremail);
-
-					System.out.println("supAddress.getCountry() "+supAddress.getCountry());
-					
-					JSONObject username = new JSONObject();
-					username.put("name", "invoiceamount");
-					username.put("scope", "local");
-					username.put("type", "string");
-//					username.put("value", save.getTotalAmount());
-//					username.put("value", "");
-					formReqBody.put(username);
-					
-					
-
-					JSONObject password = new JSONObject();
-					password.put("name", "invoicedate");
-					password.put("scope", "local");
-					password.put("type", "string");
-					password.put("value", save.getCreatedOn());
-//					password.put("value", "");
-					formReqBody.put(password);
-
-					JSONObject registrationid = new JSONObject();
-					registrationid.put("name", "invoicemode");
-					registrationid.put("scope", "local");
-					registrationid.put("type", "string");
-					registrationid.put("value", "");
-					formReqBody.put(registrationid);
-
-					
-					JSONObject invoicenumber = new JSONObject();
-					invoicenumber.put("name", "invoicenumber");
-					invoicenumber.put("scope", "local");
-					invoicenumber.put("type", "string");
-					invoicenumber.put("value", save.getInvId());
-//					invoicenumber.put("value", "");
-					formReqBody.put(invoicenumber);
-					
-					
-					
-					JSONObject invoicetype = new JSONObject();
-					invoicetype.put("name", "invoicetype");
-					invoicetype.put("scope", "local");
-					invoicetype.put("type", "string");
-					invoicetype.put("value", "");
-					formReqBody.put(invoicetype);
-
-					
-					
-					JSONObject pincode = new JSONObject();
-					pincode.put("name", "pincode");
-					pincode.put("scope", "local");
-					pincode.put("type", "string");
-					pincode.put("value", supAddress.getPostalCode()+"");
-					formReqBody.put(pincode);
-					
-					System.out.println("supAddress.getPostalCode() "+supAddress.getPostalCode());
-
-					
-					JSONObject podate = new JSONObject();
-					podate.put("name", "podate");
-					podate.put("scope", "local");
-					podate.put("type", "string");
-//					podate.put("value", "" );
-					podate.put("value", purchesOrder.getCreatedOn() );
-					formReqBody.put(podate);
-
-					
-					JSONObject ponumber = new JSONObject();
-					ponumber.put("name", "ponumber");
-					ponumber.put("scope", "local");
-					ponumber.put("type", "string");
-//					ponumber.put("value", "");
-					ponumber.put("value", purchesOrder.getPoNumber());
-					formReqBody.put(ponumber);
-
-					
-					JSONObject state = new JSONObject();
-					state.put("name", "state");
-					state.put("scope", "local");
-					state.put("type", "string");
-					state.put("value", supAddress.getRegion());
-					formReqBody.put(state);
-					
-					System.out.println("supAddress.getRegion() "+supAddress.getRegion());
-
-					
-					JSONObject taskdate = new JSONObject();
-					taskdate.put("name", "taskdate");
-					taskdate.put("scope", "local");
-					taskdate.put("type", "string");
-					taskdate.put("value", "" );
-					formReqBody.put(taskdate);
-
-					
-					JSONObject vendoraccount = new JSONObject();
-					vendoraccount.put("name", "vendoraccount");
-					vendoraccount.put("scope", "local");
-					vendoraccount.put("type", "string");
-					vendoraccount.put("value", supBank.getBankAccountNo()+"");
-					formReqBody.put(vendoraccount);
-					
-					System.out.println("supBank.getBankAccountNo() "+supBank.getBankAccountNo()+"");
-
-					
-					JSONObject vendoraddress = new JSONObject();
-					vendoraddress.put("name", "vendoraddress");
-					vendoraddress.put("scope", "local");
-					vendoraddress.put("type", "string");
-					vendoraddress.put("value", supAddress.getAddress1());
-					formReqBody.put(vendoraddress);
-					
-					
-					System.out.println("supAddress.getAddress1() "+supAddress.getAddress1());
-					
-					
-					JSONObject vendoremail = new JSONObject();
-					vendoremail.put("name", "vendoremail");
-					vendoremail.put("scope", "local");
-					vendoremail.put("type", "string");
-					vendoremail.put("value", vendorRegister.getEmail());
-					formReqBody.put(vendoremail);
-					
-					System.out.println("vendorRegister.getEmail() "+vendorRegister.getEmail());
-					
-					
-					JSONObject vendorid = new JSONObject();
-					vendorid.put("name", "vendorid");
-					vendorid.put("scope", "local");
-					vendorid.put("type", "string");
-					vendorid.put("value", vendorRegister.getRegisterId()+"");
-					formReqBody.put(vendorid);
-					
-					System.out.println("vendorRegister.getRegisterId() "+vendorRegister.getRegisterId());
-					
-					JSONObject vendorname = new JSONObject();
-					vendorname.put("name", "vendorname");
-					vendorname.put("scope", "local");
-					vendorname.put("type", "string");
-					vendorname.put("value", vendorRegister.getSupplierCompName());
-					formReqBody.put(vendorname);
-					
-					
-					System.out.println("vendorRegister.getSupplierCompName() "+vendorRegister.getSupplierCompName());
-					
-
-					
-					
-					
-					HttpEntity<String> formReqEntity = new HttpEntity<String>(formReqBody.toString(), BaseAuthHeader);
-
-//					filterVendorReg.setTaskId(taskID1_);
-
-					ResponseEntity<String> formResponse = restTemplate.exchange(
-							"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/" + taskID1_ + "/variables",
-							HttpMethod.POST, formReqEntity, String.class, 1);
-
-					
-					
-					
-					
-					
-					
-					
-					HttpHeaders loginHeader = new HttpHeaders();
-					loginHeader.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-					MultiValueMap<String, String> loginMap = new LinkedMultiValueMap<String, String>();
-
-					loginMap.add("j_username", "indexer");
-					loginMap.add("j_password", "123");
-					loginMap.add("submit", "Login");
-					loginMap.add("_spring_security_remember_me", "true");
-
-					HttpEntity<MultiValueMap<String, String>> loginReq = new HttpEntity<MultiValueMap<String, String>>(
-							loginMap, loginHeader);
-					ResponseEntity<String> loginResponse = restTemplate
-							.postForEntity("http://65.2.162.230:8080/DB-idm/app/authentication", loginReq, String.class);
-					JSONObject cookieJO = new JSONObject(loginResponse.getHeaders());
-					String coockie_ = cookieJO.get("Set-Cookie").toString().replace("[", "").replace("]", "").replace("\"",
-							"");
-
-					LOGGER.info("Coockie : " + coockie_);
-
-					/*
-					 * ----------- AUTO CLAIMING Registration
-					 * -------------------------------------------------------
-					 */
-
-					HttpHeaders autoCliamHeader = new HttpHeaders();
-					autoCliamHeader.add("Cookie", coockie_);
-					HttpEntity autoClaimEntity = new HttpEntity(null, autoCliamHeader);
-					ResponseEntity autoClaimResponse = restTemplate.exchange(
-							"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskID1_ + "/action/claim", HttpMethod.PUT,
-							autoClaimEntity, String.class);
-					System.out.println("auto complite froom shantanu:    " + autoClaimResponse);
-
-					/*
-					 * ----------- AUTO COMPLETE Registration
-					 * -------------------------------------------------------
-					 */
-
-					HttpHeaders autoCompleteHeader = new HttpHeaders();
-					autoCompleteHeader.add("Cookie", coockie_);
-					autoCompleteHeader.setContentType(MediaType.APPLICATION_JSON);
-
-					JSONObject autoCompleate = new JSONObject();
-					autoCompleate.put("taskIdActual", taskID1_);
-					autoCompleate.put("invoicemode","");
-					autoCompleate.put("workunitid", "");
-					autoCompleate.put("taskdate", "");
-					autoCompleate.put("vendorname",vendorRegister.getSupplierCompName() );
-					autoCompleate.put("vendorid", vendorRegister.getRegisterId() );
-					autoCompleate.put("vendoremail", vendorRegister.getEmail());
-					autoCompleate.put("vendoraddress", supAddress.getAddress1());
-					autoCompleate.put("city", supAddress.getCity());
-					autoCompleate.put("state", supAddress.getRegion());
-					autoCompleate.put("pincode", supAddress.getPostalCode() );
-					autoCompleate.put("vendoraccount", supBank.getBankAccountNo() );
-					autoCompleate.put("country", supAddress.getCountry());
-					autoCompleate.put("invoicetype", "" );
-					autoCompleate.put("invoicenumber", save.getInvId()+"" );
-//					autoCompleate.put("invoiceamount", save.getTotalAmount()+"");
-					autoCompleate.put("invoicedate", save.getCreatedOn()+"" );
-					autoCompleate.put("podate", purchesOrder.getCreatedOn()+"");
-					autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
-					
-
-					JSONObject autoCompleate_ = new JSONObject();
-					autoCompleate_.put("formId", "cf1fb287-0974-11ec-8348-0a5bf303a9fe");
-					autoCompleate_.put("values", autoCompleate);
-
-					LOGGER.info("Body  " + autoCompleate_);
-					LOGGER.info("headers  " + autoCompleteHeader);
-
-					HttpEntity<String> autoCompeleteEntity = new HttpEntity<String>(autoCompleate_.toString(),
-							autoCompleteHeader);
-					ResponseEntity autoCompleteResponse = restTemplate.exchange(
-							"http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskID1_, HttpMethod.POST,
-							autoCompeleteEntity, String.class);
-					LOGGER.info("Result  " + autoCompleteResponse.getHeaders());
-
-					/*
-					 * ----------- QUERY TO FETCH TASKID_2
-					 * -------------------------------------------------------
-					 */
-
-					queryRequest_1 = restTemplate.exchange("http://65.2.162.230:8080/flowable-rest/service/query/tasks",
-							HttpMethod.POST, baseAuthEntity, String.class, 1);
-					taskJA = new JSONArray(new JSONObject(queryRequest_1.getBody()).get("data").toString());
-
-					taskID2_ = (String) taskJA.getJSONObject(0).get("id");
-					LOGGER.info("Registration TaskID_2 : " + taskID2_);
-
-					// ----------- AUTO CLAIMING REGISTRATION APPROVAL
-					// -------------------------------------------------------
-					autoClaimResponse = restTemplate.exchange(
-							"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskID2_ + "/action/claim", HttpMethod.PUT,
-							autoClaimEntity, String.class);
-					
-					
-					System.out.println("response =============   ");
-					System.out.println("response =============   "+queryRequest_1);
-
-
-					
+						
+						
+						/*
+						 * ============================== Query Task 1
+						 * ================================================
+						 */
+	
+						Map<String, Object> queryMap = new HashMap<>();
+						JSONObject jsonObject = new JSONObject(response.getBody());
+						processInstID_ = (String) jsonObject.get("id");
+						queryMap.put("processInstanceId", processInstID_);
+	
+	//					filterVendorReg.setProcessId(processInstID_);
+						LOGGER.info("ProcessInstanceID : " + processInstID_);
+	
+						HttpEntity<Map<String, Object>> baseAuthEntity = new HttpEntity<>(queryMap, BaseAuthHeader);
+						ResponseEntity<String> queryRequest_1 = restTemplate.exchange(
+								"http://65.2.162.230:8080/flowable-rest/service/query/tasks", HttpMethod.POST, baseAuthEntity,
+								String.class, 1);
+						
+						
+						
+						
+						/*
+						 * ----------- POST FORM VARIABLES
+						 * -------------------------------------------------------
+						 */
+	
+						JSONArray taskJA = new JSONArray(new JSONObject(queryRequest_1.getBody()).get("data").toString());
+						JSONArray formReqBody = new JSONArray();
+	
+						taskID1_ = (String) taskJA.getJSONObject(0).get("id");
+	
+						LOGGER.info("Registration TaskID_1 : " + taskID1_);
+	
+						JSONObject suppliername = new JSONObject();
+						suppliername.put("name", "city");
+						suppliername.put("scope", "local");
+						suppliername.put("type", "string");
+						suppliername.put("value", supAddress.getCity());
+						formReqBody.put(suppliername);
+						
+						System.out.println("supAddress.getCity() "+supAddress.getCity());
+	
+						JSONObject supplieremail = new JSONObject();
+						supplieremail.put("name", "country");
+						supplieremail.put("scope", "local");
+						supplieremail.put("type", "string");
+						supplieremail.put("value", supAddress.getCountry());
+						formReqBody.put(supplieremail);
+	
+						System.out.println("supAddress.getCountry() "+supAddress.getCountry());
+						
+						JSONObject username = new JSONObject();
+						username.put("name", "invoiceamount");
+						username.put("scope", "local");
+						username.put("type", "string");
+	//					username.put("value", save.getTotalAmount());
+	//					username.put("value", "");
+						formReqBody.put(username);
+						
+						
+	
+						JSONObject password = new JSONObject();
+						password.put("name", "invoicedate");
+						password.put("scope", "local");
+						password.put("type", "string");
+					//	password.put("value", save.getCreatedOn());
+	//					password.put("value", "");
+						formReqBody.put(password);
+	
+						JSONObject registrationid = new JSONObject();
+						registrationid.put("name", "invoicemode");
+						registrationid.put("scope", "local");
+						registrationid.put("type", "string");
+						registrationid.put("value", "");
+						formReqBody.put(registrationid);
+	
+						
+						JSONObject invoicenumber = new JSONObject();
+						invoicenumber.put("name", "invoicenumber");
+						invoicenumber.put("scope", "local");
+						invoicenumber.put("type", "string");
+						invoicenumber.put("value", save.getInvId());
+	//					invoicenumber.put("value", "");
+						formReqBody.put(invoicenumber);
+						
+						
+						
+						JSONObject invoicetype = new JSONObject();
+						invoicetype.put("name", "invoicetype");
+						invoicetype.put("scope", "local");
+						invoicetype.put("type", "string");
+						invoicetype.put("value", "");
+						formReqBody.put(invoicetype);
+	
+						
+						
+						JSONObject pincode = new JSONObject();
+						pincode.put("name", "pincode");
+						pincode.put("scope", "local");
+						pincode.put("type", "string");
+						pincode.put("value", supAddress.getPostalCode()+"");
+						formReqBody.put(pincode);
+						
+						System.out.println("supAddress.getPostalCode() "+supAddress.getPostalCode());
+	
+						
+						JSONObject podate = new JSONObject();
+						podate.put("name", "podate");
+						podate.put("scope", "local");
+						podate.put("type", "string");
+	//					podate.put("value", "" );
+						podate.put("value", purchesOrder.getCreatedOn() );
+						formReqBody.put(podate);
+	
+						
+						JSONObject ponumber = new JSONObject();
+						ponumber.put("name", "ponumber");
+						ponumber.put("scope", "local");
+						ponumber.put("type", "string");
+	//					ponumber.put("value", "");
+						ponumber.put("value", purchesOrder.getPoNumber());
+						formReqBody.put(ponumber);
+	
+						
+						JSONObject state = new JSONObject();
+						state.put("name", "state");
+						state.put("scope", "local");
+						state.put("type", "string");
+						state.put("value", supAddress.getRegion());
+						formReqBody.put(state);
+						
+						System.out.println("supAddress.getRegion() "+supAddress.getRegion());
+	
+						
+						JSONObject taskdate = new JSONObject();
+						taskdate.put("name", "taskdate");
+						taskdate.put("scope", "local");
+						taskdate.put("type", "string");
+						taskdate.put("value", "" );
+						formReqBody.put(taskdate);
+	
+						
+						JSONObject vendoraccount = new JSONObject();
+						vendoraccount.put("name", "vendoraccount");
+						vendoraccount.put("scope", "local");
+						vendoraccount.put("type", "string");
+						vendoraccount.put("value", supBank.getBankAccountNo()+"");
+						formReqBody.put(vendoraccount);
+						
+						System.out.println("supBank.getBankAccountNo() "+supBank.getBankAccountNo()+"");
+	
+						
+						JSONObject vendoraddress = new JSONObject();
+						vendoraddress.put("name", "vendoraddress");
+						vendoraddress.put("scope", "local");
+						vendoraddress.put("type", "string");
+						vendoraddress.put("value", supAddress.getAddress1());
+						formReqBody.put(vendoraddress);
+						
+						
+						System.out.println("supAddress.getAddress1() "+supAddress.getAddress1());
+						
+						
+						JSONObject vendoremail = new JSONObject();
+						vendoremail.put("name", "vendoremail");
+						vendoremail.put("scope", "local");
+						vendoremail.put("type", "string");
+						vendoremail.put("value", vendorRegister.getEmail());
+						formReqBody.put(vendoremail);
+						
+						System.out.println("vendorRegister.getEmail() "+vendorRegister.getEmail());
+						
+						
+						JSONObject vendorid = new JSONObject();
+						vendorid.put("name", "vendorid");
+						vendorid.put("scope", "local");
+						vendorid.put("type", "string");
+						vendorid.put("value", vendorRegister.getRegisterId()+"");
+						formReqBody.put(vendorid);
+						
+						System.out.println("vendorRegister.getRegisterId() "+vendorRegister.getRegisterId());
+						
+						JSONObject vendorname = new JSONObject();
+						vendorname.put("name", "vendorname");
+						vendorname.put("scope", "local");
+						vendorname.put("type", "string");
+						vendorname.put("value", vendorRegister.getSupplierCompName());
+						formReqBody.put(vendorname);
+						
+						
+						System.out.println("vendorRegister.getSupplierCompName() "+vendorRegister.getSupplierCompName());
+						
+	
+						
+						
+						
+						HttpEntity<String> formReqEntity = new HttpEntity<String>(formReqBody.toString(), BaseAuthHeader);
+	
+	//					filterVendorReg.setTaskId(taskID1_);
+	
+						ResponseEntity<String> formResponse = restTemplate.exchange(
+								"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/" + taskID1_ + "/variables",
+								HttpMethod.POST, formReqEntity, String.class, 1);
+	
+						
+						
+						
+						
+						
+						
+						
+						HttpHeaders loginHeader = new HttpHeaders();
+						loginHeader.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+						MultiValueMap<String, String> loginMap = new LinkedMultiValueMap<String, String>();
+	
+						loginMap.add("j_username", "indexer");
+						loginMap.add("j_password", "123");
+						loginMap.add("submit", "Login");
+						loginMap.add("_spring_security_remember_me", "true");
+	
+						HttpEntity<MultiValueMap<String, String>> loginReq = new HttpEntity<MultiValueMap<String, String>>(
+								loginMap, loginHeader);
+						ResponseEntity<String> loginResponse = restTemplate
+								.postForEntity("http://65.2.162.230:8080/DB-idm/app/authentication", loginReq, String.class);
+						JSONObject cookieJO = new JSONObject(loginResponse.getHeaders());
+						String coockie_ = cookieJO.get("Set-Cookie").toString().replace("[", "").replace("]", "").replace("\"",
+								"");
+	
+						LOGGER.info("Coockie : " + coockie_);
+	
+						/*
+						 * ----------- AUTO CLAIMING Registration
+						 * -------------------------------------------------------
+						 */
+	
+						HttpHeaders autoCliamHeader = new HttpHeaders();
+						autoCliamHeader.add("Cookie", coockie_);
+						HttpEntity autoClaimEntity = new HttpEntity(null, autoCliamHeader);
+						ResponseEntity autoClaimResponse = restTemplate.exchange(
+								"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskID1_ + "/action/claim", HttpMethod.PUT,
+								autoClaimEntity, String.class);
+						System.out.println("auto complite froom shantanu:    " + autoClaimResponse);
+	
+						/*
+						 * ----------- AUTO COMPLETE Registration
+						 * -------------------------------------------------------
+						 */
+	
+						HttpHeaders autoCompleteHeader = new HttpHeaders();
+						autoCompleteHeader.add("Cookie", coockie_);
+						autoCompleteHeader.setContentType(MediaType.APPLICATION_JSON);
+	
+						JSONObject autoCompleate = new JSONObject();
+						autoCompleate.put("taskIdActual", taskID1_);
+						autoCompleate.put("invoicemode","");
+						autoCompleate.put("workunitid", "");
+						autoCompleate.put("taskdate", "");
+						autoCompleate.put("vendorname",vendorRegister.getSupplierCompName() );
+						autoCompleate.put("vendorid", vendorRegister.getRegisterId() );
+						autoCompleate.put("vendoremail", vendorRegister.getEmail());
+						autoCompleate.put("vendoraddress", supAddress.getAddress1());
+						autoCompleate.put("city", supAddress.getCity());
+						autoCompleate.put("state", supAddress.getRegion());
+						autoCompleate.put("pincode", supAddress.getPostalCode() );
+						autoCompleate.put("vendoraccount", supBank.getBankAccountNo() );
+						autoCompleate.put("country", supAddress.getCountry());
+						autoCompleate.put("invoicetype", "" );
+						autoCompleate.put("invoicenumber", save.getInvId()+"" );
+	//					autoCompleate.put("invoiceamount", save.getTotalAmount()+"");
+						//autoCompleate.put("invoicedate", save.getCreatedOn()+"" );
+						autoCompleate.put("podate", purchesOrder.getCreatedOn()+"");
+						autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
+						
+	
+						JSONObject autoCompleate_ = new JSONObject();
+						autoCompleate_.put("formId", "cf1fb287-0974-11ec-8348-0a5bf303a9fe");
+						autoCompleate_.put("values", autoCompleate);
+	
+						LOGGER.info("Body  " + autoCompleate_);
+						LOGGER.info("headers  " + autoCompleteHeader);
+	
+						HttpEntity<String> autoCompeleteEntity = new HttpEntity<String>(autoCompleate_.toString(),
+								autoCompleteHeader);
+						ResponseEntity autoCompleteResponse = restTemplate.exchange(
+								"http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskID1_, HttpMethod.POST,
+								autoCompeleteEntity, String.class);
+						LOGGER.info("Result  " + autoCompleteResponse.getHeaders());
+	
+						/*
+						 * ----------- QUERY TO FETCH TASKID_2
+						 * -------------------------------------------------------
+						 */
+	
+						queryRequest_1 = restTemplate.exchange("http://65.2.162.230:8080/flowable-rest/service/query/tasks",
+								HttpMethod.POST, baseAuthEntity, String.class, 1);
+						taskJA = new JSONArray(new JSONObject(queryRequest_1.getBody()).get("data").toString());
+	
+						taskID2_ = (String) taskJA.getJSONObject(0).get("id");
+						LOGGER.info("Registration TaskID_2 : " + taskID2_);
+	
+						// ----------- AUTO CLAIMING REGISTRATION APPROVAL
+						// -------------------------------------------------------
+						autoClaimResponse = restTemplate.exchange(
+								"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskID2_ + "/action/claim", HttpMethod.PUT,
+								autoClaimEntity, String.class);
+						
+						
+						System.out.println("response =============   ");
+						System.out.println("response =============   "+queryRequest_1);
+	
+	
+						
+						
+					}
 					
 				}
-				
-				
 				
 				
 				

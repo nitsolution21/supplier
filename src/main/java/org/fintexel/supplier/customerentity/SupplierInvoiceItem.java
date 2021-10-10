@@ -15,7 +15,6 @@ public class SupplierInvoiceItem {
 	@Column(name = "ITEM_CATEGORY_NAME") private String itemCategoryName;
 	@Column(name = "ITEM_SUBCATEGORY_NAME") private String itemSubcategoryName;
 	@Column(name = "ITEM_DESCRIPTION") private String ItemDescription;
-
 	@Column(name = "ITEM_QTY") private int itemQty;
 	@Column(name = "ITEM_PRICE") private float itemPrice;
 //	@Column(name = "ITEM_GROSS") private float itemGross;

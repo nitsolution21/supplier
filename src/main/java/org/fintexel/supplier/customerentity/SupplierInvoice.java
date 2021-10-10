@@ -35,8 +35,8 @@ public class SupplierInvoice {
 	@Column(name = "INV_STATUS") private String status;
 	@Column(name = "INV_AMOUNT") private String invAttachment;
 	@Column(name = "CREATED_BY") private String createdBy;
-	@JsonFormat(pattern = "YY-DD-DD")
-	@Column(name = "CREATED_ON") private Date createdOn;
+//	@JsonFormat(pattern = "YY-DD-DD")
+//	@Column(name = "CREATED_ON") private Date createdOn;
 	public Long getInvId() {
 		return invId;
 	}
@@ -97,20 +97,14 @@ public class SupplierInvoice {
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-	public Date getCreatedOn() {
-		return createdOn;
-	}
-	public void setCreatedOn(Date createdOn) {
-		this.createdOn = createdOn;
-	}
 	@Override
 	public String toString() {
 		return "SupplierInvoice [invId=" + invId + ", POId=" + POId + ", invDate=" + invDate + ", invDesc=" + invDesc
 				+ ", invRegNum=" + invRegNum + ", remitTo=" + remitTo + ", billTo=" + billTo + ", status=" + status
-				+ ", invAttachment=" + invAttachment + ", createdBy=" + createdBy + ", createdOn=" + createdOn + "]";
+				+ ", invAttachment=" + invAttachment + ", createdBy=" + createdBy + "]";
 	}
 	public SupplierInvoice(Long invId, Long pOId, Date invDate, String invDesc, String invRegNum, String remitTo,
-			String billTo, String status, String invAttachment, String createdBy, Date createdOn) {
+			String billTo, String status, String invAttachment, String createdBy) {
 		super();
 		this.invId = invId;
 		POId = pOId;
@@ -122,7 +116,6 @@ public class SupplierInvoice {
 		this.status = status;
 		this.invAttachment = invAttachment;
 		this.createdBy = createdBy;
-		this.createdOn = createdOn;
 	}
 	public SupplierInvoice() {
 		super();
