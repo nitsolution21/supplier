@@ -670,7 +670,7 @@ public class PurchaseOrderController {
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalGross()) &&
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalTax()) &&
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getSubtotal()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalAmount()) &&
+//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvAmount()) &&
 					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getStatus()) &&
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvAttachment()) &&
 					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvRegNum()) 
