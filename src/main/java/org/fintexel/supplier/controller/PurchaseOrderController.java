@@ -1733,7 +1733,7 @@ public class PurchaseOrderController {
 	
 	
 	@GetMapping("/getPOByPOId/{poId}")
-	public List<GetPurchesOrder> getPOByPOId(@PathVariable long poId) {
+	public List<GetPurchesOrder> getPOByPOId(@PathVariable long poId, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.getLoginCustomerAllPOFromSupplier()");
 		
 		try {
@@ -1743,9 +1743,7 @@ public class PurchaseOrderController {
 			this.totalAmountWithoutTax = 0.0;
 			List<GetPurchesOrder> itemList = new ArrayList<GetPurchesOrder>();
 			
-//			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
-//			long companyProfileIdByCustomerId = getCustomerDetails.getCompanyProfileIdByCustomerId(customerIdFromToken);
-			
+			//String posize = Integer.toString(purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId).size());
 			if (poId == -1) {
 				throw new VendorNotFoundException("Po not found");
 			}
@@ -1761,7 +1759,30 @@ public class PurchaseOrderController {
 							try {
 								
 								GetPurchesOrder order = new GetPurchesOrder();
-				
+								
+								String invoiceSize = Integer.toString(supplierInvoiceRepo.findAll().size());
+								 
+								switch (invoiceSize.length()) {
+								case 0:
+									order.setInvoiceNumber("INV - 00" + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
+									break;
+								case 1:
+									order.setInvoiceNumber("INV - 00" + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
+									break;
+								case 2:
+									order.setInvoiceNumber("INV - 0" + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
+									break;
+								default:
+									order.setInvoiceNumber("INV - " + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
+									break;
+								}
+								
+								
+								String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+								
+								Optional<SupDetails> findBySupplierCode = supDetailsRepo.findBySupplierCode(loginSupplierCode);
+								 
+								order.setRegistrationNumber(findBySupplierCode.get().getRegistrationNo());
 								order.setcId(findPOBycId.get().getcId());
 								order.setPOId(findPOBycId.get().getPOId());
 								order.setPoNumber(findPOBycId.get().getPoNumber());
@@ -1834,6 +1855,31 @@ public class PurchaseOrderController {
 						} else {
 							
 							GetPurchesOrder order = new GetPurchesOrder();
+							
+							
+							
+							String invoiceSize = Integer.toString(supplierInvoiceRepo.findAll().size());
+							 
+							switch (invoiceSize.length()) {
+							case 0:
+								order.setInvoiceNumber("INV - 00" + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
+								break;
+							case 1:
+								order.setInvoiceNumber("INV - 00" + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
+								break;
+							case 2:
+								order.setInvoiceNumber("INV - 0" + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
+								break;
+							default:
+								order.setInvoiceNumber("INV - " + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
+								break;
+							}
+							
+							String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+							
+							Optional<SupDetails> findBySupplierCode = supDetailsRepo.findBySupplierCode(loginSupplierCode);
+							 
+							order.setRegistrationNumber(findBySupplierCode.get().getRegistrationNo());
 							
 							order.setcId(findPOBycId.get().getcId());
 							order.setPOId(findPOBycId.get().getPOId());

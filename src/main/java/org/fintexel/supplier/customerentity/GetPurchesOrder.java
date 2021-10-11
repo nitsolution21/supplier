@@ -36,6 +36,8 @@ public class GetPurchesOrder {
 	private double totalTax;
 	private double totalSubTotal;
 	private double totalAmountWithoutTax;
+	private String invoiceNumber;
+	private String registrationNumber;
 	
 	private List<PurchesOrderItems> purchesOrderItems;
 	
@@ -49,8 +51,8 @@ public class GetPurchesOrder {
 			String supAddrText, Long contractId, int contractTerms, String comment, Long shipToId, String shipToText,
 			Long billToId, String billToText, Long deliveryToId, String deliveryToText, String curType, float amount,
 			String status, String statusComment, String createdBy, Date createdOn, int isDeleted, double totalGross,
-			double totalTax, double totalSubTotal, double totalAmountWithoutTax,
-			List<PurchesOrderItems> purchesOrderItems) {
+			double totalTax, double totalSubTotal, double totalAmountWithoutTax, String invoiceNumber,
+			String registrationNumber, List<PurchesOrderItems> purchesOrderItems) {
 		super();
 		POId = pOId;
 		this.cId = cId;
@@ -84,6 +86,8 @@ public class GetPurchesOrder {
 		this.totalTax = totalTax;
 		this.totalSubTotal = totalSubTotal;
 		this.totalAmountWithoutTax = totalAmountWithoutTax;
+		this.invoiceNumber = invoiceNumber;
+		this.registrationNumber = registrationNumber;
 		this.purchesOrderItems = purchesOrderItems;
 	}
 
@@ -99,7 +103,8 @@ public class GetPurchesOrder {
 				+ ", amount=" + amount + ", status=" + status + ", statusComment=" + statusComment + ", createdBy="
 				+ createdBy + ", createdOn=" + createdOn + ", isDeleted=" + isDeleted + ", totalGross=" + totalGross
 				+ ", totalTax=" + totalTax + ", totalSubTotal=" + totalSubTotal + ", totalAmountWithoutTax="
-				+ totalAmountWithoutTax + ", purchesOrderItems=" + purchesOrderItems + "]";
+				+ totalAmountWithoutTax + ", invoiceNumber=" + invoiceNumber + ", registrationNumber="
+				+ registrationNumber + ", purchesOrderItems=" + purchesOrderItems + "]";
 	}
 
 	public Long getPOId() {
@@ -358,6 +363,22 @@ public class GetPurchesOrder {
 		this.totalAmountWithoutTax = totalAmountWithoutTax;
 	}
 
+	public String getInvoiceNumber() {
+		return invoiceNumber;
+	}
+
+	public void setInvoiceNumber(String invoiceNumber) {
+		this.invoiceNumber = invoiceNumber;
+	}
+
+	public String getRegistrationNumber() {
+		return registrationNumber;
+	}
+
+	public void setRegistrationNumber(String registrationNumber) {
+		this.registrationNumber = registrationNumber;
+	}
+
 	public List<PurchesOrderItems> getPurchesOrderItems() {
 		return purchesOrderItems;
 	}
@@ -365,5 +386,6 @@ public class GetPurchesOrder {
 	public void setPurchesOrderItems(List<PurchesOrderItems> purchesOrderItems) {
 		this.purchesOrderItems = purchesOrderItems;
 	}
+	
 	
 }
