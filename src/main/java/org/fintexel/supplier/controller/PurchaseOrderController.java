@@ -1143,21 +1143,22 @@ public class PurchaseOrderController {
 					loginCustomerDetails.setCustomerName(findCustomerProfileById.get().getCustomerName());
 				}
 				
-				String posize = Integer.toString(purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId).size());
-				 
-				switch (posize.length()) {
-				case 0:
-					loginCustomerDetails.setPoNumber("PO - 00" + Integer.toString((Integer.parseInt(posize) + 1)));
-					break;
-				case 1:
-					loginCustomerDetails.setPoNumber("PO - 00" + Integer.toString((Integer.parseInt(posize) + 1)));
-					break;
-				case 2:
-					loginCustomerDetails.setPoNumber("PO - 0" + Integer.toString((Integer.parseInt(posize) + 1)));
-					break;
-				default:
-					loginCustomerDetails.setPoNumber("PO - " + Integer.toString((Integer.parseInt(posize) + 1)));
-					break;
+//				String posize = Integer.toString(purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId).size());
+				
+				List<PurchesOrder> findBycId = purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId);
+				
+				
+				
+				if (findBycId.size() < 1) {
+					loginCustomerDetails.setPoNumber("PO - 00" + 1);
+				} else if(findBycId.size() > 0 && findBycId.size() < 10) {
+					loginCustomerDetails.setPoNumber("PO - 00" + (findBycId.get(findBycId.size()).getPOId() + 1));
+				}
+				else if(findBycId.size() > 9 && findBycId.size() < 100) {
+					loginCustomerDetails.setPoNumber("PO - 0" + (findBycId.get(findBycId.size()).getPOId() + 1));
+				}
+				else {
+					loginCustomerDetails.setPoNumber("PO - " + (findBycId.get(findBycId.size()).getPOId() + 1));
 				}
 				
 				Optional<CustomerContact> findContactTrams = customerContactRepo.findContactTrams(companyProfileIdByCustomerId, supplierCode);
@@ -1760,21 +1761,20 @@ public class PurchaseOrderController {
 								
 								GetPurchesOrder order = new GetPurchesOrder();
 								
-								String invoiceSize = Integer.toString(supplierInvoiceRepo.findAll().size());
-								 
-								switch (invoiceSize.length()) {
-								case 0:
-									order.setInvoiceNumber("INV - 00" + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
-									break;
-								case 1:
-									order.setInvoiceNumber("INV - 00" + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
-									break;
-								case 2:
-									order.setInvoiceNumber("INV - 0" + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
-									break;
-								default:
-									order.setInvoiceNumber("INV - " + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
-									break;
+//								String invoiceSize = Integer.toString(supplierInvoiceRepo.findAll().size());
+								
+								List<SupplierInvoice> findAllInvoice = supplierInvoiceRepo.findAll();
+								
+								if (findAllInvoice.size() < 1) {
+									order.setInvoiceNumber("INV - 00" + 1);
+								} else if(findAllInvoice.size() > 0 && findAllInvoice.size() < 10) {
+									order.setInvoiceNumber("INV - 00" + (findAllInvoice.get(findAllInvoice.size()).getInvId() + 1));
+								}
+								else if(findAllInvoice.size() > 9 && findAllInvoice.size() < 100) {
+									order.setInvoiceNumber("INV - 0" + (findAllInvoice.get(findAllInvoice.size()).getInvId() + 1));
+								}
+								else {
+									order.setInvoiceNumber("INV - " + (findAllInvoice.get(findAllInvoice.size()).getInvId() + 1));
 								}
 								
 								
@@ -1860,23 +1860,21 @@ public class PurchaseOrderController {
 							
 							
 							
-							String invoiceSize = Integer.toString(supplierInvoiceRepo.findAll().size());
+//							String invoiceSize = Integer.toString(supplierInvoiceRepo.findAll().size());
 							 
-							switch (invoiceSize.length()) {
-							case 0:
-								order.setInvoiceNumber("INV - 00" + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
-								break;
-							case 1:
-								order.setInvoiceNumber("INV - 00" + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
-								break;
-							case 2:
-								order.setInvoiceNumber("INV - 0" + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
-								break;
-							default:
-								order.setInvoiceNumber("INV - " + Integer.toString((Integer.parseInt(invoiceSize) + 1)));
-								break;
-							}
+							List<SupplierInvoice> findAllInvoice = supplierInvoiceRepo.findAll();
 							
+							if (findAllInvoice.size() < 1) {
+								order.setInvoiceNumber("INV - 00" + 1);
+							} else if(findAllInvoice.size() > 0 && findAllInvoice.size() < 10) {
+								order.setInvoiceNumber("INV - 00" + (findAllInvoice.get(findAllInvoice.size()).getInvId() + 1));
+							}
+							else if(findAllInvoice.size() > 9 && findAllInvoice.size() < 100) {
+								order.setInvoiceNumber("INV - 0" + (findAllInvoice.get(findAllInvoice.size()).getInvId() + 1));
+							}
+							else {
+								order.setInvoiceNumber("INV - " + (findAllInvoice.get(findAllInvoice.size()).getInvId() + 1));
+							}
 							
 							Optional<CustomerProfile> findCustomerById = customerProfileRepo.findById((long) findPOBycId.get().getcId());
 							
