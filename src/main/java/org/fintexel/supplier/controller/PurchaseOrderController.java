@@ -1,9 +1,14 @@
 package org.fintexel.supplier.controller;
 
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -681,13 +686,33 @@ public class PurchaseOrderController {
 					
 					) {
 				
+				DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				LocalDateTime lastLoginNow = LocalDateTime.now();
+				Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+						.parse(lastLoginNow.format(lastLogingFormat));
+				
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");  
+				String strDate = dateFormat.format(lastLogin);  
+
+				
 				invoiceStraching.getSupplierInvoice().setCreatedBy(loginSupplierCode);
 				
 				PurchesOrder purchesOrder = purchesOrderRepo.findById(invoiceStraching.getSupplierInvoice().getPOId()).get();
+				 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		            Date date1 = invoiceStraching.getSupplierInvoice().getInvDate();
+		            Date date2 = purchesOrder.getCreatedOn();
+		            System.out.println(date1   +  "   " + date2);
+		            if(date2.after(date1)){
+		                System.out.println("Date2 is after Date1");
+		                throw new VendorNotFoundException("Invoice date is before po creation date");
+		            }
+		         
 				System.out.println("loginSupplierCode  "+invoiceStraching.getSupplierInvoice().getPOId());
 				List<PurchesOrderItems> findByPOId = purchesOrderItemsRepo.findByPOId(invoiceStraching.getSupplierInvoice().getPOId());
 				
-				if(!(findByPOId.size()+"").equals(invoiceStraching.getPurchesOrderItems()+"")) {
+				if(!(findByPOId.size()+"").equals(invoiceStraching.getPurchesOrderItems().size()+"")) {
+					System.out.println("findByPOId.size()  "+findByPOId.size());
+					System.out.println("invoiceStraching.getPurchesOrderItems()  "+invoiceStraching.getPurchesOrderItems());
 					throw new VendorNotFoundException("PO Item List Not Match ");
 				}
 				
@@ -708,7 +733,9 @@ public class PurchaseOrderController {
 					SupplierInvoiceItem supplierInvoiceItem = new SupplierInvoiceItem();
 					supplierInvoiceItem.setInvId(save.getInvId());
 					supplierInvoiceItem.setPoitemId(invoiceStraching.getPurchesOrderItems().get(i).getPOItemId());
-					
+					supplierInvoiceItem.setItemDescription(obj.getItemDescription());
+					supplierInvoiceItem.setItemCategoryName(obj.getItemCategoryText());
+					supplierInvoiceItem.setItemSubcategoryName(obj.getItemSubcategoryText());
 					supplierInvoiceItem.setItemQty(invoiceStraching.getPurchesOrderItems().get(i).getQty());
 					supplierInvoiceItem.setItemPrice(obj.getUnitPrice());
 //					supplierInvoiceItem.setItemGross(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice());
@@ -716,6 +743,8 @@ public class PurchaseOrderController {
 					supplierInvoiceItem.setItemSubtotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
 					supplierInvoiceItem.setItemTotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
 					SupplierInvoiceItem save2 = supplierInvoiceItemRepo.save(supplierInvoiceItem);
+					i++;
+				}
 					
 					if(status.equals("SUBMIT")) {
 						
@@ -738,10 +767,10 @@ public class PurchaseOrderController {
 						
 				
 						
-						SupBank supBank = supBankRepo.findByIsPrimaryWithSupplierCode(1, loginSupplierCode).get();
+						SupBank supBank = supBankRepo.findByIsPrimaryWithSupplierCode(0, loginSupplierCode).get();
 						System.out.println("supBank  "+supBank.toString());
 						
-						SupAddress supAddress = supAddressRepo.findByIsPrimaryWithSupplierCode(1, loginSupplierCode).get();
+						SupAddress supAddress = supAddressRepo.findByIsPrimaryWithSupplierCode(0, loginSupplierCode).get();
 						System.out.println("supAddress  "+supAddress.toString());
 	//					supDepartmentRepo.findBySupplierCode(loginSupplierCode);
 				
@@ -830,7 +859,7 @@ public class PurchaseOrderController {
 						username.put("name", "invoiceamount");
 						username.put("scope", "local");
 						username.put("type", "string");
-	//					username.put("value", save.getTotalAmount());
+						username.put("value", save.getInvAmount()+"");
 	//					username.put("value", "");
 						formReqBody.put(username);
 						
@@ -840,15 +869,17 @@ public class PurchaseOrderController {
 						password.put("name", "invoicedate");
 						password.put("scope", "local");
 						password.put("type", "string");
-					//	password.put("value", save.getCreatedOn());
+						password.put("value", "2021-10-12");
 	//					password.put("value", "");
 						formReqBody.put(password);
+						
+						System.out.println("supAddress.getCountry()##### "+save.getInvDate());
 	
 						JSONObject registrationid = new JSONObject();
 						registrationid.put("name", "invoicemode");
 						registrationid.put("scope", "local");
 						registrationid.put("type", "string");
-						registrationid.put("value", "");
+						registrationid.put("value", "manual");
 						formReqBody.put(registrationid);
 	
 						
@@ -856,7 +887,7 @@ public class PurchaseOrderController {
 						invoicenumber.put("name", "invoicenumber");
 						invoicenumber.put("scope", "local");
 						invoicenumber.put("type", "string");
-						invoicenumber.put("value", save.getInvId());
+						invoicenumber.put("value", save.getInvId()+"");
 	//					invoicenumber.put("value", "");
 						formReqBody.put(invoicenumber);
 						
@@ -866,7 +897,7 @@ public class PurchaseOrderController {
 						invoicetype.put("name", "invoicetype");
 						invoicetype.put("scope", "local");
 						invoicetype.put("type", "string");
-						invoicetype.put("value", "");
+						invoicetype.put("value", "PO");
 						formReqBody.put(invoicetype);
 	
 						
@@ -886,7 +917,7 @@ public class PurchaseOrderController {
 						podate.put("scope", "local");
 						podate.put("type", "string");
 	//					podate.put("value", "" );
-						podate.put("value", purchesOrder.getCreatedOn() );
+						podate.put("value", purchesOrder.getCreatedOn()+"" );
 						formReqBody.put(podate);
 	
 						
@@ -909,11 +940,13 @@ public class PurchaseOrderController {
 						System.out.println("supAddress.getRegion() "+supAddress.getRegion());
 	
 						
+						
+						
 						JSONObject taskdate = new JSONObject();
 						taskdate.put("name", "taskdate");
 						taskdate.put("scope", "local");
 						taskdate.put("type", "string");
-						taskdate.put("value", "" );
+						taskdate.put("value", strDate );
 						formReqBody.put(taskdate);
 	
 						
@@ -1027,11 +1060,17 @@ public class PurchaseOrderController {
 						autoCompleteHeader.add("Cookie", coockie_);
 						autoCompleteHeader.setContentType(MediaType.APPLICATION_JSON);
 	
+						DateTimeFormatter lastLogingFormat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+						LocalDateTime lastLoginNow1 = LocalDateTime.now();
+						Date lastLogin1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+								.parse(lastLoginNow.format(lastLogingFormat));
+						
+						
 						JSONObject autoCompleate = new JSONObject();
 						autoCompleate.put("taskIdActual", taskID1_);
-						autoCompleate.put("invoicemode","");
+						autoCompleate.put("invoicemode","Manual");
 						autoCompleate.put("workunitid", "");
-						autoCompleate.put("taskdate", "");
+						autoCompleate.put("taskdate", strDate);
 						autoCompleate.put("vendorname",vendorRegister.getSupplierCompName() );
 						autoCompleate.put("vendorid", vendorRegister.getRegisterId() );
 						autoCompleate.put("vendoremail", vendorRegister.getEmail());
@@ -1041,11 +1080,11 @@ public class PurchaseOrderController {
 						autoCompleate.put("pincode", supAddress.getPostalCode() );
 						autoCompleate.put("vendoraccount", supBank.getBankAccountNo() );
 						autoCompleate.put("country", supAddress.getCountry());
-						autoCompleate.put("invoicetype", "" );
+						autoCompleate.put("invoicetype", "PO" );
 						autoCompleate.put("invoicenumber", save.getInvId()+"" );
-	//					autoCompleate.put("invoiceamount", save.getTotalAmount()+"");
-						//autoCompleate.put("invoicedate", save.getCreatedOn()+"" );
-						autoCompleate.put("podate", purchesOrder.getCreatedOn()+"");
+						autoCompleate.put("invoiceamount", save.getInvAmount()+"");
+						autoCompleate.put("invoicedate", save.getInvDate() );
+						autoCompleate.put("podate", purchesOrder.getCreatedOn());
 						autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
 						
 	
@@ -1090,7 +1129,7 @@ public class PurchaseOrderController {
 						
 					}
 					
-				}
+				
 				
 				
 				
@@ -1392,7 +1431,10 @@ public class PurchaseOrderController {
 					&& fieldValidation.isEmpty(requestPurchesOrder.getPurchesOrder().getAmount())
 					) {
 					
-					
+					DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+					LocalDateTime lastLoginNow = LocalDateTime.now();
+					Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+							.parse(lastLoginNow.format(lastLogingFormat));
 					Optional<PurchesOrder> findPoByPoNumber = purchesOrderRepo.findByPoNumber(requestPurchesOrder.getPurchesOrder().getPoNumber());
 					
 //					LOGGER.info("Call databade>>>>>>{{{}}}}"+findPoByPoNumber.get());
@@ -1402,6 +1444,7 @@ public class PurchaseOrderController {
 						requestPurchesOrder.getPurchesOrder().setStatus("DRAFT");
 						requestPurchesOrder.getPurchesOrder().setPOId(findPoByPoNumber.get().getPOId());
 						LOGGER.info("DETAILS IS >>>>>>}}}}}"+requestPurchesOrder.getPurchesOrder());
+						requestPurchesOrder.getPurchesOrder().setCreatedOn(lastLogin);
 						PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
 						if (!savePurchesOrder.equals(null)) {
 //							List<PurchesOrderItems> findItemByPOId = purchesOrderItemsRepo.findByPOId(findPoByPoNumber.get().getPOId());
@@ -1500,6 +1543,11 @@ public class PurchaseOrderController {
 						
 						LOGGER.info("Before Update PO  >>>><<<<<<<"+requestPurchesOrder.getPurchesOrder());
 						
+						DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+						LocalDateTime lastLoginNow = LocalDateTime.now();
+						Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+								.parse(lastLoginNow.format(lastLogingFormat));
+						requestPurchesOrder.getPurchesOrder().setCreatedOn(lastLogin);
 						PurchesOrder savePurchesOrder = purchesOrderRepo.save(requestPurchesOrder.getPurchesOrder());
 						
 						LOGGER.info("After Update PO  >>>><<<<<<<"+requestPurchesOrder.getPurchesOrder());

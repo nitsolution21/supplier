@@ -8,13 +8,14 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "TBL_INVOICES_ITEMS")
 public class SupplierInvoiceItem {
-	
 	@Id
-	@Column(name = "INV_ID") private Long invId;
 	@Column(name = "POITEM_ID") private Long poitemId;
+	
+	@Column(name = "INV_ID") private Long invId;
+	
 	@Column(name = "ITEM_CATEGORY_NAME") private String itemCategoryName;
 	@Column(name = "ITEM_SUBCATEGORY_NAME") private String itemSubcategoryName;
-	@Column(name = "ITEM_DESCRIPTION") private String ItemDescription;
+	@Column(name = "ITEM_DESCRIPTION") private String itemDescription;
 	@Column(name = "ITEM_QTY") private int itemQty;
 	@Column(name = "ITEM_PRICE") private float itemPrice;
 //	@Column(name = "ITEM_GROSS") private float itemGross;
@@ -23,17 +24,17 @@ public class SupplierInvoiceItem {
 	@Column(name = "ITEM_HANDLING_CHARGES") private float itemHandlingCharges;
 	@Column(name = "ITEM_SUBTOTAL") private float itemSubtotal;
 	@Column(name = "ITEM_TOTAL") private float itemTotal;
-	public Long getInvId() {
-		return invId;
-	}
-	public void setInvId(Long invId) {
-		this.invId = invId;
-	}
 	public Long getPoitemId() {
 		return poitemId;
 	}
 	public void setPoitemId(Long poitemId) {
 		this.poitemId = poitemId;
+	}
+	public Long getInvId() {
+		return invId;
+	}
+	public void setInvId(Long invId) {
+		this.invId = invId;
 	}
 	public String getItemCategoryName() {
 		return itemCategoryName;
@@ -48,10 +49,10 @@ public class SupplierInvoiceItem {
 		this.itemSubcategoryName = itemSubcategoryName;
 	}
 	public String getItemDescription() {
-		return ItemDescription;
+		return itemDescription;
 	}
 	public void setItemDescription(String itemDescription) {
-		ItemDescription = itemDescription;
+		this.itemDescription = itemDescription;
 	}
 	public int getItemQty() {
 		return itemQty;
@@ -97,21 +98,21 @@ public class SupplierInvoiceItem {
 	}
 	@Override
 	public String toString() {
-		return "SupplierInvoiceItem [invId=" + invId + ", poitemId=" + poitemId + ", itemCategoryName="
-				+ itemCategoryName + ", itemSubcategoryName=" + itemSubcategoryName + ", ItemDescription="
-				+ ItemDescription + ", itemQty=" + itemQty + ", itemPrice=" + itemPrice + ", itemTax=" + itemTax
+		return "SupplierInvoiceItem [poitemId=" + poitemId + ", invId=" + invId + ", itemCategoryName="
+				+ itemCategoryName + ", itemSubcategoryName=" + itemSubcategoryName + ", itemDescription="
+				+ itemDescription + ", itemQty=" + itemQty + ", itemPrice=" + itemPrice + ", itemTax=" + itemTax
 				+ ", itemShipCharges=" + itemShipCharges + ", itemHandlingCharges=" + itemHandlingCharges
 				+ ", itemSubtotal=" + itemSubtotal + ", itemTotal=" + itemTotal + "]";
 	}
-	public SupplierInvoiceItem(Long invId, Long poitemId, String itemCategoryName, String itemSubcategoryName,
+	public SupplierInvoiceItem(Long poitemId, Long invId, String itemCategoryName, String itemSubcategoryName,
 			String itemDescription, int itemQty, float itemPrice, float itemTax, float itemShipCharges,
 			float itemHandlingCharges, float itemSubtotal, float itemTotal) {
 		super();
-		this.invId = invId;
 		this.poitemId = poitemId;
+		this.invId = invId;
 		this.itemCategoryName = itemCategoryName;
 		this.itemSubcategoryName = itemSubcategoryName;
-		ItemDescription = itemDescription;
+		this.itemDescription = itemDescription;
 		this.itemQty = itemQty;
 		this.itemPrice = itemPrice;
 		this.itemTax = itemTax;
@@ -124,6 +125,7 @@ public class SupplierInvoiceItem {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
 	
 	
 

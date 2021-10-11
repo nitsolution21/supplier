@@ -89,6 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET,"/customer/po/pendingCustomer/details/{id}").permitAll()
 				.antMatchers(HttpMethod.GET,"/customer/po/pendingCustomer").permitAll()
 				.antMatchers(HttpMethod.POST,"/genpdf").permitAll()
+				.antMatchers(HttpMethod.POST,"/genpdf/supplier").permitAll()
 //				.antMatchers(HttpMethod.GET,"/download/{file}").permitAll()
 //				.antMatchers(HttpMethod.GET,"/getOpenPo").permitAll()
 //				.antMatchers(HttpMethod.POST,"/uploadRegionCountry").permitAll()
