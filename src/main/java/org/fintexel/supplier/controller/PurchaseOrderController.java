@@ -1808,6 +1808,13 @@ public class PurchaseOrderController {
 								
 								GetPurchesOrder order = new GetPurchesOrder();
 								
+								try {
+									Optional<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findById(poId);
+									order.setInvoiceStatus(findInvoiceById.get().getStatus());
+								} catch (Exception e) {
+									// TODO: handle exception
+								}
+								
 								String invoiceSize = Integer.toString(supplierInvoiceRepo.findAll().size());
 								 
 								switch (invoiceSize.length()) {
@@ -1906,7 +1913,12 @@ public class PurchaseOrderController {
 							
 							GetPurchesOrder order = new GetPurchesOrder();
 							
-							
+							try {
+								Optional<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findById(poId);
+								order.setInvoiceStatus(findInvoiceById.get().getStatus());
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
 							
 							String invoiceSize = Integer.toString(supplierInvoiceRepo.findAll().size());
 							 
@@ -1997,6 +2009,551 @@ public class PurchaseOrderController {
 		} catch (Exception e) {
 			throw new VendorNotFoundException(e.getMessage());
 		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@GetMapping("getInvoice")
+	List<SupplierInvoice> getAllInvice() {
+		LOGGER.info("Inside - PurchaseOrderController.getAllInvice()");
+		try {
+			List<SupplierInvoice> findAllInvoice = supplierInvoiceRepo.findAll();
+			if (findAllInvoice.size() > 0) {
+				return findAllInvoice;
+			} else {
+				throw new VendorNotFoundException("Data not found");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	@GetMapping("/getInvoiceItem/{invoiceId}")
+	List<SupplierInvoiceItem> getAllInvoiceItemByInvoiceId(@PathVariable long invoiceId) {
+		LOGGER.info("Inside - PurchaseOrderController.getAllInvoiceItemByInvoiceId()");
+		try {
+			List<SupplierInvoiceItem> findByInvId = supplierInvoiceItemRepo.findByInvId(invoiceId);
+			if (findByInvId.size() > 0) {
+				return findByInvId;
+			} else {
+				throw new VendorNotFoundException("Item not found for this Invoice");
+			}
+			
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+		
 	}
 	
 }
