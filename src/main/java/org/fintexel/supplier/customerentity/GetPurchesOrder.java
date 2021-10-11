@@ -39,6 +39,7 @@ public class GetPurchesOrder {
 	private String invoiceNumber;
 	private String registrationNumber;
 	private String customerName;
+	private String invoiceStatus;
 	
 	private List<PurchesOrderItems> purchesOrderItems;
 	
@@ -53,7 +54,7 @@ public class GetPurchesOrder {
 			Long billToId, String billToText, Long deliveryToId, String deliveryToText, String curType, float amount,
 			String status, String statusComment, String createdBy, Date createdOn, int isDeleted, double totalGross,
 			double totalTax, double totalSubTotal, double totalAmountWithoutTax, String invoiceNumber,
-			String registrationNumber, String customerName,
+			String registrationNumber, String customerName, String invoiceStatus,
 			List<PurchesOrderItems> purchesOrderItems) {
 		super();
 		POId = pOId;
@@ -91,6 +92,7 @@ public class GetPurchesOrder {
 		this.invoiceNumber = invoiceNumber;
 		this.registrationNumber = registrationNumber;
 		this.customerName = customerName;
+		this.invoiceStatus = invoiceStatus;
 		this.purchesOrderItems = purchesOrderItems;
 	}
 
@@ -107,7 +109,7 @@ public class GetPurchesOrder {
 				+ createdBy + ", createdOn=" + createdOn + ", isDeleted=" + isDeleted + ", totalGross=" + totalGross
 				+ ", totalTax=" + totalTax + ", totalSubTotal=" + totalSubTotal + ", totalAmountWithoutTax="
 				+ totalAmountWithoutTax + ", invoiceNumber=" + invoiceNumber + ", registrationNumber="
-				+ registrationNumber + ",  customerName=" + customerName
+				+ registrationNumber + ", customerName=" + customerName + ", invoiceStatus=" + invoiceStatus
 				+ ", purchesOrderItems=" + purchesOrderItems + "]";
 	}
 
@@ -391,6 +393,14 @@ public class GetPurchesOrder {
 		this.customerName = customerName;
 	}
 
+	public String getInvoiceStatus() {
+		return invoiceStatus;
+	}
+
+	public void setInvoiceStatus(String invoiceStatus) {
+		this.invoiceStatus = invoiceStatus;
+	}
+
 	public List<PurchesOrderItems> getPurchesOrderItems() {
 		return purchesOrderItems;
 	}
@@ -398,6 +408,4 @@ public class GetPurchesOrder {
 	public void setPurchesOrderItems(List<PurchesOrderItems> purchesOrderItems) {
 		this.purchesOrderItems = purchesOrderItems;
 	}
-
-	
 }
