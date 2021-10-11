@@ -670,7 +670,7 @@ public class PurchaseOrderController {
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalGross()) &&
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalTax()) &&
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getSubtotal()) &&
-//					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getTotalAmount()) &&
+					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvAmount()) &&
 					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getStatus()) &&
 //					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvAttachment()) &&
 					fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getInvRegNum()) 
@@ -695,12 +695,12 @@ public class PurchaseOrderController {
 				
 				SupplierInvoice save = supplierInvoiceRepo.save(invoiceStraching.getSupplierInvoice());
 				System.out.println("loginSupplierCode  "+loginSupplierCode);
-				i=0;
-				for(PurchesOrderItems obj : purchesOrderItems) {
-					if(!(obj.getItemId() == findByPOId.get(i).getItemId()))
-						throw new VendorNotFoundException("PO Items List are Not Match ");
-					
-				}
+//				i=0;
+//				for(PurchesOrderItems obj : purchesOrderItems) {
+//					if(!(obj.getItemId() == findByPOId.get(i).getItemId()))
+//						throw new VendorNotFoundException("PO Items List are Not Match ");
+//					
+//				}
 				
 				
 				i=0;
