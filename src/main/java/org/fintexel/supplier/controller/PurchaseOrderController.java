@@ -687,20 +687,28 @@ public class PurchaseOrderController {
 				System.out.println("loginSupplierCode  "+invoiceStraching.getSupplierInvoice().getPOId());
 				List<PurchesOrderItems> findByPOId = purchesOrderItemsRepo.findByPOId(invoiceStraching.getSupplierInvoice().getPOId());
 				
-				if(!(findByPOId.size()+"").equals(invoiceStraching.getPurchesOrderItems()+"")) {
+//				System.out.println("findByPOId.size()==  "+findByPOId.size());
+//				System.out.println("invoiceStraching.getPurchesOrderItems().size()==  "+invoiceStraching.getPurchesOrderItems().size());
+				
+				
+				if(!(findByPOId.size()+"").equals(invoiceStraching.getPurchesOrderItems().size()+"")) {
 					throw new VendorNotFoundException("PO Item List Not Match ");
 				}
-				
-				List<PurchesOrderItems> purchesOrderItems = invoiceStraching.getPurchesOrderItems();
+			
+				//System.out.println("purchesOrderItems  "+purchesOrderItems.toString());
+				List<PurchesOrderItems> purchesOrderItems = invoiceStraching.getPurchesOrderItems();				
 				
 				SupplierInvoice save = supplierInvoiceRepo.save(invoiceStraching.getSupplierInvoice());
-				System.out.println("loginSupplierCode  "+loginSupplierCode);
-				i=0;
-				for(PurchesOrderItems obj : purchesOrderItems) {
-					if(!(obj.getItemId() == findByPOId.get(i).getItemId()))
-						throw new VendorNotFoundException("PO Items List are Not Match ");
-					
-				}
+				
+//				i=0;
+//				for(PurchesOrderItems obj : purchesOrderItems) {
+//					if(!(obj.getItemId() == findByPOId.get(i).getItemId())) {
+//						System.out.println("obj.getItemId()  "+obj.getItemId());
+//						System.out.println("findByPOId.get(i).getItemId()  "+findByPOId.get(i).getItemId());
+//						throw new VendorNotFoundException("PO Items List are Not Match ");
+//					}
+//					
+//				}
 				
 				
 				i=0;
@@ -708,7 +716,9 @@ public class PurchaseOrderController {
 					SupplierInvoiceItem supplierInvoiceItem = new SupplierInvoiceItem();
 					supplierInvoiceItem.setInvId(save.getInvId());
 					supplierInvoiceItem.setPoitemId(invoiceStraching.getPurchesOrderItems().get(i).getPOItemId());
-					
+					supplierInvoiceItem.setItemDescription(obj.getItemDescription());
+					supplierInvoiceItem.setItemCategoryName(obj.getItemCategoryText());
+					supplierInvoiceItem.setItemSubcategoryName(obj.getItemSubcategoryText());
 					supplierInvoiceItem.setItemQty(invoiceStraching.getPurchesOrderItems().get(i).getQty());
 					supplierInvoiceItem.setItemPrice(obj.getUnitPrice());
 //					supplierInvoiceItem.setItemGross(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice());
@@ -716,7 +726,8 @@ public class PurchaseOrderController {
 					supplierInvoiceItem.setItemSubtotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
 					supplierInvoiceItem.setItemTotal((invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice() * 10 / 100) +(invoiceStraching.getPurchesOrderItems().get(i).getQty()  *  obj.getUnitPrice()));
 					SupplierInvoiceItem save2 = supplierInvoiceItemRepo.save(supplierInvoiceItem);
-					
+				}
+				
 					if(status.equals("SUBMIT")) {
 						
 					
@@ -731,17 +742,17 @@ public class PurchaseOrderController {
 				
 				
 						SupDetails supDetails = supDetailsRepo.findById(loginSupplierCode).get();
-						System.out.println("supDetails  "+supDetails.toString());
+						System.out.println("supDetails****  "+supDetails.toString());
 						
 						VendorRegister vendorRegister = vendorRegisterRepo.findById(supDetails.getRegisterId()).get();
 						System.out.println("vendorRegister  "+vendorRegister.toString());
 						
 				
 						
-						SupBank supBank = supBankRepo.findByIsPrimaryWithSupplierCode(1, loginSupplierCode).get();
+						SupBank supBank = supBankRepo.findByIsPrimaryWithSupplierCode(0, loginSupplierCode).get();
 						System.out.println("supBank  "+supBank.toString());
 						
-						SupAddress supAddress = supAddressRepo.findByIsPrimaryWithSupplierCode(1, loginSupplierCode).get();
+						SupAddress supAddress = supAddressRepo.findByIsPrimaryWithSupplierCode(0, loginSupplierCode).get();
 						System.out.println("supAddress  "+supAddress.toString());
 	//					supDepartmentRepo.findBySupplierCode(loginSupplierCode);
 				
@@ -830,7 +841,7 @@ public class PurchaseOrderController {
 						username.put("name", "invoiceamount");
 						username.put("scope", "local");
 						username.put("type", "string");
-	//					username.put("value", save.getTotalAmount());
+						username.put("value", "555");
 	//					username.put("value", "");
 						formReqBody.put(username);
 						
@@ -840,7 +851,7 @@ public class PurchaseOrderController {
 						password.put("name", "invoicedate");
 						password.put("scope", "local");
 						password.put("type", "string");
-					//	password.put("value", save.getCreatedOn());
+						password.put("value", save.getInvDate()+"");
 	//					password.put("value", "");
 						formReqBody.put(password);
 	
@@ -856,7 +867,7 @@ public class PurchaseOrderController {
 						invoicenumber.put("name", "invoicenumber");
 						invoicenumber.put("scope", "local");
 						invoicenumber.put("type", "string");
-						invoicenumber.put("value", save.getInvId());
+						invoicenumber.put("value", save.getInvId()+"");
 	//					invoicenumber.put("value", "");
 						formReqBody.put(invoicenumber);
 						
@@ -886,7 +897,7 @@ public class PurchaseOrderController {
 						podate.put("scope", "local");
 						podate.put("type", "string");
 	//					podate.put("value", "" );
-						podate.put("value", purchesOrder.getCreatedOn() );
+						podate.put("value", purchesOrder.getCreatedOn()+"" );
 						formReqBody.put(podate);
 	
 						
@@ -895,7 +906,7 @@ public class PurchaseOrderController {
 						ponumber.put("scope", "local");
 						ponumber.put("type", "string");
 	//					ponumber.put("value", "");
-						ponumber.put("value", purchesOrder.getPoNumber());
+						ponumber.put("value", purchesOrder.getPoNumber()+"");
 						formReqBody.put(ponumber);
 	
 						
@@ -972,7 +983,7 @@ public class PurchaseOrderController {
 						
 						
 						HttpEntity<String> formReqEntity = new HttpEntity<String>(formReqBody.toString(), BaseAuthHeader);
-	
+						
 	//					filterVendorReg.setTaskId(taskID1_);
 	
 						ResponseEntity<String> formResponse = restTemplate.exchange(
@@ -980,7 +991,7 @@ public class PurchaseOrderController {
 								HttpMethod.POST, formReqEntity, String.class, 1);
 	
 						
-						
+						System.out.println("vendorRegister.getSupplierCompName() ");
 						
 						
 						
@@ -1043,8 +1054,8 @@ public class PurchaseOrderController {
 						autoCompleate.put("country", supAddress.getCountry());
 						autoCompleate.put("invoicetype", "" );
 						autoCompleate.put("invoicenumber", save.getInvId()+"" );
-	//					autoCompleate.put("invoiceamount", save.getTotalAmount()+"");
-						//autoCompleate.put("invoicedate", save.getCreatedOn()+"" );
+						autoCompleate.put("invoiceamount", "555");
+						autoCompleate.put("invoicedate", save.getInvDate()+"");
 						autoCompleate.put("podate", purchesOrder.getCreatedOn()+"");
 						autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
 						
@@ -1058,6 +1069,7 @@ public class PurchaseOrderController {
 	
 						HttpEntity<String> autoCompeleteEntity = new HttpEntity<String>(autoCompleate_.toString(),
 								autoCompleteHeader);
+						
 						ResponseEntity autoCompleteResponse = restTemplate.exchange(
 								"http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskID1_, HttpMethod.POST,
 								autoCompeleteEntity, String.class);
@@ -1088,7 +1100,7 @@ public class PurchaseOrderController {
 	
 						
 						
-					}
+					
 					
 				}
 				

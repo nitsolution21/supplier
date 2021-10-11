@@ -33,7 +33,7 @@ public class SupplierInvoice {
 //	@Column(name = "SUBTOTAL") private float subtotal;
 //	@Column(name = "TOTAL_AMOUNT") private float totalAmount;
 	@Column(name = "INV_STATUS") private String status;
-	@Column(name = "INV_AMOUNT") private String invAttachment;
+	@Column(name = "INV_AMOUNT") private String invAmount;
 	@Column(name = "CREATED_BY") private String createdBy;
 //	@JsonFormat(pattern = "YY-DD-DD")
 //	@Column(name = "CREATED_ON") private Date createdOn;
@@ -85,11 +85,11 @@ public class SupplierInvoice {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public String getInvAttachment() {
-		return invAttachment;
+	public String getInvAmount() {
+		return invAmount;
 	}
-	public void setInvAttachment(String invAttachment) {
-		this.invAttachment = invAttachment;
+	public void setInvAmount(String invAmount) {
+		this.invAmount = invAmount;
 	}
 	public String getCreatedBy() {
 		return createdBy;
@@ -101,10 +101,10 @@ public class SupplierInvoice {
 	public String toString() {
 		return "SupplierInvoice [invId=" + invId + ", POId=" + POId + ", invDate=" + invDate + ", invDesc=" + invDesc
 				+ ", invRegNum=" + invRegNum + ", remitTo=" + remitTo + ", billTo=" + billTo + ", status=" + status
-				+ ", invAttachment=" + invAttachment + ", createdBy=" + createdBy + "]";
+				+ ", invAmount=" + invAmount + ", createdBy=" + createdBy + "]";
 	}
 	public SupplierInvoice(Long invId, Long pOId, Date invDate, String invDesc, String invRegNum, String remitTo,
-			String billTo, String status, String invAttachment, String createdBy) {
+			String billTo, String status, String invAmount, String createdBy) {
 		super();
 		this.invId = invId;
 		POId = pOId;
@@ -114,7 +114,7 @@ public class SupplierInvoice {
 		this.remitTo = remitTo;
 		this.billTo = billTo;
 		this.status = status;
-		this.invAttachment = invAttachment;
+		this.invAmount = invAmount;
 		this.createdBy = createdBy;
 	}
 	public SupplierInvoice() {
