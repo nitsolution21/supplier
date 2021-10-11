@@ -1778,10 +1778,12 @@ public class PurchaseOrderController {
 								}
 								
 								
-								String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+								Optional<CustomerProfile> findCustomerById = customerProfileRepo.findById((long) findPOBycId.get().getcId());
 								
-								Optional<SupDetails> findBySupplierCode = supDetailsRepo.findBySupplierCode(loginSupplierCode);
-								 
+								order.setCustomerName(findCustomerById.get().getCustomerName());
+								
+								Optional<SupDetails> findBySupplierCode = supDetailsRepo.findBySupplierCode(findPOBycId.get().getSupplierCode());
+								order.setSupplierName(findBySupplierCode.get().getSupplierCompName());
 								order.setRegistrationNumber(findBySupplierCode.get().getRegistrationNo());
 								order.setcId(findPOBycId.get().getcId());
 								order.setPOId(findPOBycId.get().getPOId());
@@ -1875,11 +1877,17 @@ public class PurchaseOrderController {
 								break;
 							}
 							
-							String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 							
-							Optional<SupDetails> findBySupplierCode = supDetailsRepo.findBySupplierCode(loginSupplierCode);
+							Optional<CustomerProfile> findCustomerById = customerProfileRepo.findById((long) findPOBycId.get().getcId());
+							
+							order.setCustomerName(findCustomerById.get().getCustomerName());
+							
+							
+							
+							Optional<SupDetails> findBySupplierCode = supDetailsRepo.findBySupplierCode(findPOBycId.get().getSupplierCode());
 							 
 							order.setRegistrationNumber(findBySupplierCode.get().getRegistrationNo());
+							order.setSupplierName(findBySupplierCode.get().getSupplierCompName());
 							
 							order.setcId(findPOBycId.get().getcId());
 							order.setPOId(findPOBycId.get().getPOId());

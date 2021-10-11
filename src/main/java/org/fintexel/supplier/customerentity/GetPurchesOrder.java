@@ -38,6 +38,7 @@ public class GetPurchesOrder {
 	private double totalAmountWithoutTax;
 	private String invoiceNumber;
 	private String registrationNumber;
+	private String customerName;
 	
 	private List<PurchesOrderItems> purchesOrderItems;
 	
@@ -52,7 +53,8 @@ public class GetPurchesOrder {
 			Long billToId, String billToText, Long deliveryToId, String deliveryToText, String curType, float amount,
 			String status, String statusComment, String createdBy, Date createdOn, int isDeleted, double totalGross,
 			double totalTax, double totalSubTotal, double totalAmountWithoutTax, String invoiceNumber,
-			String registrationNumber, List<PurchesOrderItems> purchesOrderItems) {
+			String registrationNumber, String customerName,
+			List<PurchesOrderItems> purchesOrderItems) {
 		super();
 		POId = pOId;
 		this.cId = cId;
@@ -88,6 +90,7 @@ public class GetPurchesOrder {
 		this.totalAmountWithoutTax = totalAmountWithoutTax;
 		this.invoiceNumber = invoiceNumber;
 		this.registrationNumber = registrationNumber;
+		this.customerName = customerName;
 		this.purchesOrderItems = purchesOrderItems;
 	}
 
@@ -104,7 +107,8 @@ public class GetPurchesOrder {
 				+ createdBy + ", createdOn=" + createdOn + ", isDeleted=" + isDeleted + ", totalGross=" + totalGross
 				+ ", totalTax=" + totalTax + ", totalSubTotal=" + totalSubTotal + ", totalAmountWithoutTax="
 				+ totalAmountWithoutTax + ", invoiceNumber=" + invoiceNumber + ", registrationNumber="
-				+ registrationNumber + ", purchesOrderItems=" + purchesOrderItems + "]";
+				+ registrationNumber + ",  customerName=" + customerName
+				+ ", purchesOrderItems=" + purchesOrderItems + "]";
 	}
 
 	public Long getPOId() {
@@ -379,6 +383,14 @@ public class GetPurchesOrder {
 		this.registrationNumber = registrationNumber;
 	}
 
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
 	public List<PurchesOrderItems> getPurchesOrderItems() {
 		return purchesOrderItems;
 	}
@@ -386,6 +398,6 @@ public class GetPurchesOrder {
 	public void setPurchesOrderItems(List<PurchesOrderItems> purchesOrderItems) {
 		this.purchesOrderItems = purchesOrderItems;
 	}
-	
+
 	
 }
