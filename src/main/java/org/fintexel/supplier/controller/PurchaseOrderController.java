@@ -33,8 +33,10 @@ import org.fintexel.supplier.entity.ApproveMap;
 import org.fintexel.supplier.entity.CurrencyMaster;
 import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.InventoryDetails;
+import org.fintexel.supplier.entity.InvoceItem;
 import org.fintexel.supplier.entity.ItemCategory;
 import org.fintexel.supplier.entity.ItemSubCategory;
+import org.fintexel.supplier.entity.PurchesOrderByPoIdResponse;
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupBank;
 import org.fintexel.supplier.entity.SupDepartment;
@@ -1947,7 +1949,7 @@ public class PurchaseOrderController {
 	
 	
 	@GetMapping("/getPOByPOId/{poId}")
-	public List<GetPurchesOrder> getPOByPOId(@PathVariable long poId, @RequestHeader(name = "Authorization") String token) {
+	public List<PurchesOrderByPoIdResponse> getPOByPOId(@PathVariable long poId, @RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.getLoginCustomerAllPOFromSupplier()");
 		
 		try {
@@ -1955,7 +1957,7 @@ public class PurchaseOrderController {
 			this.totalTax = 0.0;
 			this.totalSubTotal = 0.0;
 			this.totalAmountWithoutTax = 0.0;
-			List<GetPurchesOrder> itemList = new ArrayList<GetPurchesOrder>();
+			List<PurchesOrderByPoIdResponse> itemList = new ArrayList<PurchesOrderByPoIdResponse>();
 			
 			//String posize = Integer.toString(purchesOrderRepo.findBycId((int) companyProfileIdByCustomerId).size());
 			if (poId == -1) {
@@ -1972,7 +1974,7 @@ public class PurchaseOrderController {
 						if (findPOBycId.get().getStatus().equals("DRAFT")) {
 							try {
 								
-								GetPurchesOrder order = new GetPurchesOrder();
+								PurchesOrderByPoIdResponse order = new PurchesOrderByPoIdResponse();
 								
 								try {
 									Optional<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findById(poId);
@@ -2052,14 +2054,64 @@ public class PurchaseOrderController {
 								order.setCreatedOn(findPOBycId.get().getCreatedOn());
 								List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(findPOBycId.get().getPOId());
 								
-								List<PurchesOrderItems> items = new ArrayList<PurchesOrderItems>();
+								List<InvoceItem> items = new ArrayList<InvoceItem>();
 								
 								findPoItemByPOId.forEach(item -> {
+									InvoceItem invoceItem = new InvoceItem();
 									totalGross = totalGross + item.getItemGross();
 									totalTax = totalTax  + item.getTax();
 									totalSubTotal = totalSubTotal + item.getAmount();
 									totalAmountWithoutTax = totalAmountWithoutTax + (item.getQty() * item.getUnitPrice());
-									items.add(item);
+									try {
+										Optional<SupplierInvoiceItem> findById = supplierInvoiceItemRepo.findById(item.getItemId());
+										if (findById.isPresent()) {
+											invoceItem.setPOItemId(item.getPOItemId());
+											invoceItem.setPOId(item.getPOId());
+											invoceItem.setItemId(item.getItemId());
+											invoceItem.setItemDescription(item.getItemDescription());
+											invoceItem.setQty(item.getQty());
+											invoceItem.setCurType(item.getCurType());
+											invoceItem.setUnitPrice(item.getUnitPrice());
+											invoceItem.setItemGross(item.getItemGross());
+											invoceItem.setTax(item.getTax());
+											invoceItem.setAmount(item.getAmount());
+											invoceItem.setItemTotal(item.getItemTotal());
+											invoceItem.setCategoryId(item.getCategoryId());
+											invoceItem.setSubcategoryId(item.getSubcategoryId());
+											invoceItem.setBrandId(item.getBrandId());
+											invoceItem.setItemCategoryText(item.getItemCategoryText());
+											invoceItem.setItemSubcategoryText(item.getItemSubcategoryText());
+											invoceItem.setItemBrandText(item.getItemBrandText());
+											invoceItem.setItemShipCharges(findById.get().getItemShipCharges());
+											invoceItem.setItemHandlingCharges(findById.get().getItemHandlingCharges());
+										} else {
+											invoceItem.setPOItemId(item.getPOItemId());
+											invoceItem.setPOId(item.getPOId());
+											invoceItem.setItemId(item.getItemId());
+											invoceItem.setItemDescription(item.getItemDescription());
+											invoceItem.setQty(item.getQty());
+											invoceItem.setCurType(item.getCurType());
+											invoceItem.setUnitPrice(item.getUnitPrice());
+											invoceItem.setItemGross(item.getItemGross());
+											invoceItem.setTax(item.getTax());
+											invoceItem.setAmount(item.getAmount());
+											invoceItem.setItemTotal(item.getItemTotal());
+											invoceItem.setCategoryId(item.getCategoryId());
+											invoceItem.setSubcategoryId(item.getSubcategoryId());
+											invoceItem.setBrandId(item.getBrandId());
+											invoceItem.setItemCategoryText(item.getItemCategoryText());
+											invoceItem.setItemSubcategoryText(item.getItemSubcategoryText());
+											invoceItem.setItemBrandText(item.getItemBrandText());
+											invoceItem.setItemShipCharges(0);
+											invoceItem.setItemHandlingCharges(0);
+											
+											
+										}
+									} catch (Exception e) {
+										// TODO: handle exception
+									}
+									
+									items.add(invoceItem);
 								});
 								
 								order.setTotalGross(Double.parseDouble(new DecimalFormat("##.##").format(totalGross)));
@@ -2077,7 +2129,7 @@ public class PurchaseOrderController {
 							}
 						} else {
 							
-							GetPurchesOrder order = new GetPurchesOrder();
+							PurchesOrderByPoIdResponse order = new PurchesOrderByPoIdResponse();
 							
 							try {
 								Optional<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findById(poId);
@@ -2143,14 +2195,65 @@ public class PurchaseOrderController {
 							
 							List<PurchesOrderItems> findPoItemByPOId = purchesOrderItemsRepo.findByPOId(findPOBycId.get().getPOId());
 							
-							List<PurchesOrderItems> items = new ArrayList<PurchesOrderItems>();
+							List<InvoceItem> items = new ArrayList<InvoceItem>();
 							
 							findPoItemByPOId.forEach(item -> {
+								InvoceItem invoceItem = new InvoceItem();
 								totalGross = totalGross + item.getItemGross();
 								totalTax = totalTax  + item.getTax();
 								totalSubTotal = totalSubTotal + item.getAmount();
 								totalAmountWithoutTax = totalAmountWithoutTax + (item.getQty() * item.getUnitPrice());
-								items.add(item);
+								
+								try {
+									Optional<SupplierInvoiceItem> findById = supplierInvoiceItemRepo.findById(item.getItemId());
+									if (findById.isPresent()) {
+										invoceItem.setPOItemId(item.getPOItemId());
+										invoceItem.setPOId(item.getPOId());
+										invoceItem.setItemId(item.getItemId());
+										invoceItem.setItemDescription(item.getItemDescription());
+										invoceItem.setQty(item.getQty());
+										invoceItem.setCurType(item.getCurType());
+										invoceItem.setUnitPrice(item.getUnitPrice());
+										invoceItem.setItemGross(item.getItemGross());
+										invoceItem.setTax(item.getTax());
+										invoceItem.setAmount(item.getAmount());
+										invoceItem.setItemTotal(item.getItemTotal());
+										invoceItem.setCategoryId(item.getCategoryId());
+										invoceItem.setSubcategoryId(item.getSubcategoryId());
+										invoceItem.setBrandId(item.getBrandId());
+										invoceItem.setItemCategoryText(item.getItemCategoryText());
+										invoceItem.setItemSubcategoryText(item.getItemSubcategoryText());
+										invoceItem.setItemBrandText(item.getItemBrandText());
+										invoceItem.setItemShipCharges(findById.get().getItemShipCharges());
+										invoceItem.setItemHandlingCharges(findById.get().getItemHandlingCharges());
+									} else {
+										invoceItem.setPOItemId(item.getPOItemId());
+										invoceItem.setPOId(item.getPOId());
+										invoceItem.setItemId(item.getItemId());
+										invoceItem.setItemDescription(item.getItemDescription());
+										invoceItem.setQty(item.getQty());
+										invoceItem.setCurType(item.getCurType());
+										invoceItem.setUnitPrice(item.getUnitPrice());
+										invoceItem.setItemGross(item.getItemGross());
+										invoceItem.setTax(item.getTax());
+										invoceItem.setAmount(item.getAmount());
+										invoceItem.setItemTotal(item.getItemTotal());
+										invoceItem.setCategoryId(item.getCategoryId());
+										invoceItem.setSubcategoryId(item.getSubcategoryId());
+										invoceItem.setBrandId(item.getBrandId());
+										invoceItem.setItemCategoryText(item.getItemCategoryText());
+										invoceItem.setItemSubcategoryText(item.getItemSubcategoryText());
+										invoceItem.setItemBrandText(item.getItemBrandText());
+										invoceItem.setItemShipCharges(0);
+										invoceItem.setItemHandlingCharges(0);
+										
+										
+									}
+								} catch (Exception e) {
+									// TODO: handle exception
+								}
+								
+								items.add(invoceItem);
 							});
 							
 							order.setTotalGross(Double.parseDouble(new DecimalFormat("##.##").format(totalGross)));
