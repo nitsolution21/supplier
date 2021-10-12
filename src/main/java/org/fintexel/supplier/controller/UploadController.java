@@ -671,6 +671,50 @@ public class UploadController {
 		    return new HttpEntity<byte[]>(baos.toByteArray(), header);
 
 		}
+		
+
+		public MultipartFile createPdfFlowable() throws IOException {
+			System.out.println("ok");
+
+			/* first, get and initialize an engine */
+			VelocityEngine ve = new VelocityEngine();
+			
+
+			/* next, get the Template */
+			ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+			ve.setProperty("classpath.resource.loader.class",
+					ClasspathResourceLoader.class.getName());
+			ve.init();
+			Template t = ve.getTemplate("templates/invoice.vm");
+			/* create a context and add data */
+			VelocityContext context = new VelocityContext();
+//			context.put("supplierInvoiceStraching", supplierInvoiceStraching);
+//			context.put("genDateTime", LocalDateTime.now().toString());
+			/* now render the template into a StringWriter */
+			StringWriter writer = new StringWriter();
+			t.merge(context, writer);
+			/* show the World */
+			System.out.println(writer.toString());
+			
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+			
+			
+			baos = generatePdf(writer.toString());
+			MultipartFile multipartFile = (MultipartFile) baos;
+			
+			
+//			HttpHeaders header = new HttpHeaders();
+//		    header.setContentType(MediaType.APPLICATION_PDF);
+//		    header.set(HttpHeaders.CONTENT_DISPOSITION,
+//		                   "attachment; filename=" + "soumen");
+//		    header.setContentLength(baos.toByteArray().length);
+//
+//		    return new HttpEntity<byte[]>(baos.toByteArray(), header);
+			
+			return multipartFile;
+
+		}
 
 
 		public ByteArrayOutputStream generatePdf(String html) {

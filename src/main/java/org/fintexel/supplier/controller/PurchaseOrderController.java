@@ -1008,6 +1008,35 @@ public class PurchaseOrderController {
 						HttpEntity<String> formReqEntity = new HttpEntity<String>(formReqBody.toString(), BaseAuthHeader);
 	
 	//					filterVendorReg.setTaskId(taskID1_);
+						
+						
+						//-------------------file upload---------------
+						
+						UploadController uploadController = new UploadController();
+						HttpHeaders headers = new HttpHeaders();
+						headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+						MultiValueMap<String, Object> body
+						  = new LinkedMultiValueMap<>();
+						body.add("file", uploadController.createPdfFlowable());
+						
+						
+						
+						HttpEntity<MultiValueMap<String, Object>> requestEntity
+						 = new HttpEntity<>(body, headers);
+
+						String serverUrl = "http://65.2.162.230:8080/DB-task/app/rest/process-instances/" + taskID1_ + "/raw-content";
+
+						RestTemplate restTemplatefile = new RestTemplate();
+						ResponseEntity<String> responsefile = restTemplatefile
+						  .postForEntity(serverUrl, requestEntity, String.class);
+						
+						
+						System.out.println("restTemplatefile  "+restTemplatefile);
+				
+							//	HttpMethod.POST, formReqEntity, String.class, 1);
+						
+						
+						//-------------------done-----------------
 	
 						ResponseEntity<String> formResponse = restTemplate.exchange(
 								"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/" + taskID1_ + "/variables",
@@ -1087,7 +1116,7 @@ public class PurchaseOrderController {
 						autoCompleate.put("invoicedate", save.getInvDate() );
 						autoCompleate.put("podate", purchesOrder.getCreatedOn());
 						autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
-						
+						autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
 	
 						JSONObject autoCompleate_ = new JSONObject();
 						autoCompleate_.put("formId", "cf1fb287-0974-11ec-8348-0a5bf303a9fe");
@@ -1130,48 +1159,136 @@ public class PurchaseOrderController {
 //								autoClaimEntity, String.class);
 						
 						
-						JSONObject autoCompleateValidation = new JSONObject();
-						autoCompleateValidation.put("taskIdActual", taskID1_);
-						autoCompleateValidation.put("invoicemode","Manual");
-						autoCompleateValidation.put("workunitid", "");
-						autoCompleateValidation.put("taskdate", strDate);
-						autoCompleateValidation.put("vendorname",vendorRegister.getSupplierCompName() );
-						autoCompleateValidation.put("vendorid", vendorRegister.getRegisterId() );
-						autoCompleateValidation.put("vendoremail", vendorRegister.getEmail());
-						autoCompleateValidation.put("vendoraddress", supAddress.getAddress1());
-						autoCompleateValidation.put("city", supAddress.getCity());
-						autoCompleateValidation.put("state", supAddress.getRegion());
-						autoCompleateValidation.put("pincode", supAddress.getPostalCode() );
-						autoCompleateValidation.put("vendoraccount", supBank.getBankAccountNo() );
-						autoCompleateValidation.put("country", supAddress.getCountry());
-						autoCompleateValidation.put("invoicetype", "PO" );
-						autoCompleateValidation.put("invoicenumber", save.getInvId()+"" );
-						autoCompleateValidation.put("invoiceamount", save.getInvAmount()+"");
-						autoCompleateValidation.put("invoicedate", save.getInvDate() );
-						autoCompleateValidation.put("podate", purchesOrder.getCreatedOn());
-						autoCompleateValidation.put("ponumber", purchesOrder.getPoNumber()+"");
-						autoCompleateValidation.put("manualvalidation", "No");
-						
-	
-						JSONObject autoCompleateValidation_ = new JSONObject();
-						autoCompleateValidation_.put("formId", "8c237107-2b00-11ec-8f40-0a5bf303a9fe");//cf1fb287-0974-11ec-8348-0a5bf303a9fe
-						autoCompleateValidation_.put("values", autoCompleateValidation);
-	
-				
-	
-						HttpEntity<String> autoCompeleteEntityValidation = new HttpEntity<String>(autoCompleateValidation_.toString(),
-								autoCompleteHeader);
-	
-						
-						
-						
-						
-						 restTemplate.exchange(
-									"http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskID2_, HttpMethod.POST,
-									autoCompeleteEntityValidation, String.class);
-						
-						System.out.println("response =============   " + autoClaimResponse.getHeaders());
-						System.out.println("response =============   "+autoClaimResponse.getBody());
+//						JSONObject autoCompleateValidation = new JSONObject();
+//						autoCompleateValidation.put("taskIdActual", taskID1_);
+//						autoCompleateValidation.put("invoicemode","Manual");
+//						autoCompleateValidation.put("workunitid", "");
+//						autoCompleateValidation.put("taskdate", strDate);
+//						autoCompleateValidation.put("vendorname",vendorRegister.getSupplierCompName() );
+//						autoCompleateValidation.put("vendorid", vendorRegister.getRegisterId() );
+//						autoCompleateValidation.put("vendoremail", vendorRegister.getEmail());
+//						autoCompleateValidation.put("vendoraddress", supAddress.getAddress1());
+//						autoCompleateValidation.put("city", supAddress.getCity());
+//						autoCompleateValidation.put("state", supAddress.getRegion());
+//						autoCompleateValidation.put("pincode", supAddress.getPostalCode() );
+//						autoCompleateValidation.put("vendoraccount", supBank.getBankAccountNo() );
+//						autoCompleateValidation.put("country", supAddress.getCountry());
+//						autoCompleateValidation.put("invoicetype", "PO" );
+//						autoCompleateValidation.put("invoicenumber", save.getInvId()+"" );
+//						autoCompleateValidation.put("invoiceamount", save.getInvAmount()+"");
+//						autoCompleateValidation.put("invoicedate", save.getInvDate() );
+//						autoCompleateValidation.put("podate", purchesOrder.getCreatedOn());
+//						autoCompleateValidation.put("ponumber", purchesOrder.getPoNumber()+"");
+//						autoCompleateValidation.put("manualvalidation", "No");
+//						
+//	
+//						JSONObject autoCompleateValidation_ = new JSONObject();
+//						autoCompleateValidation_.put("formId", "8c237107-2b00-11ec-8f40-0a5bf303a9fe");//cf1fb287-0974-11ec-8348-0a5bf303a9fe
+//						autoCompleateValidation_.put("values", autoCompleateValidation);
+//	
+//				
+//	
+//						HttpEntity<String> autoCompeleteEntityValidation = new HttpEntity<String>(autoCompleateValidation_.toString(),
+//								autoCompleteHeader);
+//						
+//						 ResponseEntity<String> exchange = restTemplate.exchange(
+//									"http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskID2_, HttpMethod.POST,
+//									autoCompeleteEntityValidation, String.class);
+//						 
+//
+//						 queryRequest_1 = restTemplate.exchange("http://65.2.162.230:8080/flowable-rest/service/query/tasks",
+//									HttpMethod.POST, baseAuthEntity, String.class, 1);
+//							taskJA = new JSONArray(new JSONObject(queryRequest_1.getBody()).get("data").toString());
+//		
+//							String taskID3_ = (String) taskJA.getJSONObject(0).get("id");
+//							LOGGER.info("Registration TaskID_3 : " + taskID3_);
+//						 
+//						 
+//							
+//							ResponseEntity autoClaimResponseQu = restTemplate.exchange(
+//									"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskID3_ + "/action/claim", HttpMethod.PUT,
+//									autoClaimEntity, String.class);
+//						 
+//							
+//						 
+//						 
+//							JSONObject poCheck = new JSONObject();
+//							poCheck.put("formId", "8c237108-2b00-11ec-8f40-0a5bf303a9fe");
+//							
+//		
+//							JSONObject poCheckValues = new JSONObject();
+//							autoCompleate_.put("taskIdActual", taskID3_);
+//							autoCompleate_.put("automatching", "Yes");
+//							poCheck.put("values", autoCompleate_);
+//							
+//		
+//							LOGGER.info("Body  " + autoCompleate_);
+//							LOGGER.info("headers  " + autoCompleteHeader);
+//		
+//							HttpEntity<String> poCheckEntity = new HttpEntity<String>(poCheck.toString(),
+//									autoCompleteHeader);
+//						 
+//						 
+//							restTemplate.exchange("http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskID3_,
+//									HttpMethod.POST, poCheckEntity, String.class, 1);
+//						 
+//					
+//							
+//						 
+//							
+//							
+//							
+//							
+//							
+//							queryRequest_1 = restTemplate.exchange("http://65.2.162.230:8080/flowable-rest/service/query/tasks",
+//									HttpMethod.POST, baseAuthEntity, String.class, 1);
+//							taskJA = new JSONArray(new JSONObject(queryRequest_1.getBody()).get("data").toString());
+//		
+//							String taskID4_ = (String) taskJA.getJSONObject(0).get("id");
+//							LOGGER.info("Registration TaskID_3 : " + taskID4_);
+//						 
+//						 
+//							
+//							ResponseEntity autoClaimResponseQp = restTemplate.exchange(
+//									"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskID4_ + "/action/claim", HttpMethod.PUT,
+//									autoClaimEntity, String.class);
+//							
+//							
+//							
+//							
+//							
+//							
+//							
+//							JSONObject qp = new JSONObject();
+//							qp.put("formId", "8c237100-2b00-11ec-8f40-0a5bf303a9fe");
+//							
+//		
+//							JSONObject qpValues = new JSONObject();
+//							qpValues.put("taskIdActual", taskID4_);
+//							qpValues.put("workunitid", "Yes");
+//							qpValues.put("invoicenumber", "Yes");
+//							qpValues.put("invoiceamount", "Yes");
+//							qpValues.put("fielddetailsvalidated", "true");
+//							qpValues.put("calculationschecked", "true");
+//							qpValues.put("standardtimetakenforinvoiceprocessing", "true");
+//							qpValues.put("exceptionresolvedintime", "true");
+//							qp.put("values", qpValues);
+//							
+//		
+//							LOGGER.info("Body  " + autoCompleate_);
+//							LOGGER.info("headers  " + autoCompleteHeader);
+//		
+//							HttpEntity<String> qpEntity = new HttpEntity<String>(qp.toString(),
+//									autoCompleteHeader);
+//						 
+//						 
+//							restTemplate.exchange("http://65.2.162.230:8080/DB-task/app/rest/task-forms" + taskID4_,
+//									HttpMethod.POST, qpEntity, String.class, 1);
+//						
+//						 
+//						
+//						System.out.println("autoClaimResponseQu =============   " + autoClaimResponseQu.toString()   +"       "+taskID3_);
+//					
 	
 	
 						
