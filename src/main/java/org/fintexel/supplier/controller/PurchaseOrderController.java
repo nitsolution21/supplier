@@ -699,7 +699,8 @@ public class PurchaseOrderController {
 				
 				PurchesOrder purchesOrder = purchesOrderRepo.findById(invoiceStraching.getSupplierInvoice().getPOId()).get();
 				 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		            Date date1 = invoiceStraching.getSupplierInvoice().getInvDate();
+				 Date date1 = sdf.parse( sdf.format(invoiceStraching.getSupplierInvoice().getInvDate()));
+//		            Date date1 = invoiceStraching.getSupplierInvoice().getInvDate();
 		            Date date2 = purchesOrder.getCreatedOn();
 		            System.out.println(date1   +  "   " + date2);
 		            if(date2.after(date1)){
@@ -1121,8 +1122,56 @@ public class PurchaseOrderController {
 								autoClaimEntity, String.class);
 						
 						
-						System.out.println("response =============   ");
-						System.out.println("response =============   "+queryRequest_1);
+//						http://65.2.162.230:8080/DB-task/app/rest/task-forms/bd0507e5-2b34-11ec-83b3-0a5bf303a9fe
+						
+//						
+//						ResponseEntity<String> exchange = restTemplate.exchange(
+//								"http://65.2.162.230:8080/DB-task/app/rest/task-forms/"+taskID2_, HttpMethod.POST,
+//								autoClaimEntity, String.class);
+						
+						
+						JSONObject autoCompleateValidation = new JSONObject();
+						autoCompleateValidation.put("taskIdActual", taskID1_);
+						autoCompleateValidation.put("invoicemode","Manual");
+						autoCompleateValidation.put("workunitid", "");
+						autoCompleateValidation.put("taskdate", strDate);
+						autoCompleateValidation.put("vendorname",vendorRegister.getSupplierCompName() );
+						autoCompleateValidation.put("vendorid", vendorRegister.getRegisterId() );
+						autoCompleateValidation.put("vendoremail", vendorRegister.getEmail());
+						autoCompleateValidation.put("vendoraddress", supAddress.getAddress1());
+						autoCompleateValidation.put("city", supAddress.getCity());
+						autoCompleateValidation.put("state", supAddress.getRegion());
+						autoCompleateValidation.put("pincode", supAddress.getPostalCode() );
+						autoCompleateValidation.put("vendoraccount", supBank.getBankAccountNo() );
+						autoCompleateValidation.put("country", supAddress.getCountry());
+						autoCompleateValidation.put("invoicetype", "PO" );
+						autoCompleateValidation.put("invoicenumber", save.getInvId()+"" );
+						autoCompleateValidation.put("invoiceamount", save.getInvAmount()+"");
+						autoCompleateValidation.put("invoicedate", save.getInvDate() );
+						autoCompleateValidation.put("podate", purchesOrder.getCreatedOn());
+						autoCompleateValidation.put("ponumber", purchesOrder.getPoNumber()+"");
+						autoCompleateValidation.put("manualvalidation", "No");
+						
+	
+						JSONObject autoCompleateValidation_ = new JSONObject();
+						autoCompleateValidation_.put("formId", "8c237107-2b00-11ec-8f40-0a5bf303a9fe");//cf1fb287-0974-11ec-8348-0a5bf303a9fe
+						autoCompleateValidation_.put("values", autoCompleateValidation);
+	
+				
+	
+						HttpEntity<String> autoCompeleteEntityValidation = new HttpEntity<String>(autoCompleateValidation_.toString(),
+								autoCompleteHeader);
+	
+						
+						
+						
+						
+						 restTemplate.exchange(
+									"http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskID2_, HttpMethod.POST,
+									autoCompeleteEntityValidation, String.class);
+						
+						System.out.println("response =============   " + autoClaimResponse.getHeaders());
+						System.out.println("response =============   "+autoClaimResponse.getBody());
 	
 	
 						
@@ -2525,7 +2574,7 @@ public class PurchaseOrderController {
 	
 	
 	@GetMapping("getInvoice")
-	List<SupplierInvoice> getAllInvice() {
+	List<SupplierInvoice> getAllInvoice() {
 		LOGGER.info("Inside - PurchaseOrderController.getAllInvice()");
 		try {
 			List<SupplierInvoice> findAllInvoice = supplierInvoiceRepo.findAll();
