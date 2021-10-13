@@ -1,8 +1,10 @@
 package org.fintexel.supplier.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.Timestamp;
@@ -21,6 +23,7 @@ import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -63,6 +66,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -673,7 +677,7 @@ public class UploadController {
 		}
 		
 
-		public MultipartFile createPdfFlowable() throws IOException {
+		public byte[] createPdfFlowable() throws IOException {
 			System.out.println("ok");
 
 			/* first, get and initialize an engine */
@@ -701,7 +705,14 @@ public class UploadController {
 			
 			
 			baos = generatePdf(writer.toString());
-			MultipartFile multipartFile = (MultipartFile) baos;
+			byte[] byteArray = baos.toByteArray();
+//			InputStream inputStream = new ByteArrayInputStream(byteArray);
+//			
+//		File file = new File(inputStream.toString());
+		
+//		MultipartFile multipartFile = new CommonsMultipartFile((FileItem) file);
+			
+		
 			
 			
 //			HttpHeaders header = new HttpHeaders();
@@ -712,7 +723,7 @@ public class UploadController {
 //
 //		    return new HttpEntity<byte[]>(baos.toByteArray(), header);
 			
-			return multipartFile;
+			return byteArray;
 
 		}
 

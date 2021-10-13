@@ -871,7 +871,7 @@ public class PurchaseOrderController {
 						JSONObject password = new JSONObject();
 						password.put("name", "invoicedate");
 						password.put("scope", "local");
-						password.put("type", "string");
+						password.put("type", "date");
 						password.put("value", "2021-10-12");
 	//					password.put("value", "");
 						formReqBody.put(password);
@@ -1013,29 +1013,49 @@ public class PurchaseOrderController {
 						
 						
 						//-------------------file upload---------------
-						
 						UploadController uploadController = new UploadController();
-						HttpHeaders headers = new HttpHeaders();
-						headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-						MultiValueMap<String, Object> body
-						  = new LinkedMultiValueMap<>();
-						body.add("file", uploadController.createPdfFlowable());
 						
 						
-						
-						HttpEntity<MultiValueMap<String, Object>> requestEntity
-						 = new HttpEntity<>(body, headers);
+						 HttpHeaders headers = new HttpHeaders();
+						    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-						String serverUrl = "http://65.2.162.230:8080/DB-task/app/rest/process-instances/" + taskID1_ + "/raw-content";
+						    LinkedMultiValueMap<String, String> pdfHeaderMap = new LinkedMultiValueMap<>();
+						    pdfHeaderMap.add("Content-disposition", "form-data; name=filex; filename=" + "invoice.pdf");
+						    pdfHeaderMap.add("Content-type", "application/pdf");
+						    HttpEntity<byte[]> doc = new HttpEntity<byte[]>(uploadController.createPdfFlowable(), pdfHeaderMap);
 
-						RestTemplate restTemplatefile = new RestTemplate();
-						ResponseEntity<String> responsefile = restTemplatefile
-						  .postForEntity(serverUrl, requestEntity, String.class);
+						    LinkedMultiValueMap<String, Object> multipartReqMap = new LinkedMultiValueMap<>();
+						    multipartReqMap.add("file", doc);
+
+//						    HttpEntity<LinkedMultiValueMap<String, Object>> reqEntity = new HttpEntity<>(multipartReqMap, headers);
+//						    String uri = "http://65.2.162.230:8080/DB-task/app/rest/process-instances/" + processInstID_ + "/raw-content";
+//						    ResponseEntity<String> resE = restTemplate.exchange(uri, HttpMethod.POST, reqEntity, String.class);
 						
 						
-						System.out.println("restTemplatefile  "+restTemplatefile);
-				
-							//	HttpMethod.POST, formReqEntity, String.class, 1);
+						
+						
+					
+//						HttpHeaders headers = new HttpHeaders();
+////						headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+//						MultiValueMap<String, Object> body
+//						  = new LinkedMultiValueMap<>();
+//						body.add("file", uploadController.createPdfFlowable());
+//						
+//						
+//						
+//						HttpEntity<MultiValueMap<String, Object>> requestEntity
+//						 = new HttpEntity<>(body, headers);
+//
+//						String serverUrl = "http://65.2.162.230:8080/DB-task/app/rest/process-instances/" + taskID1_ + "/raw-content";
+//
+//						RestTemplate restTemplatefile = new RestTemplate();
+//						ResponseEntity<String> responsefile = restTemplatefile
+//						  .postForEntity(serverUrl, requestEntity, String.class);
+//						
+//						
+//						System.out.println("restTemplatefile  "+restTemplatefile);
+//				
+//							//	HttpMethod.POST, formReqEntity, String.class, 1);
 						
 						
 						//-------------------done-----------------
@@ -1092,16 +1112,16 @@ public class PurchaseOrderController {
 						autoCompleteHeader.add("Cookie", coockie_);
 						autoCompleteHeader.setContentType(MediaType.APPLICATION_JSON);
 	
-						DateTimeFormatter lastLogingFormat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+						DateTimeFormatter lastLogingFormat1 = DateTimeFormatter.ofPattern("dd-mm-yy");
 						LocalDateTime lastLoginNow1 = LocalDateTime.now();
-						Date lastLogin1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-								.parse(lastLoginNow.format(lastLogingFormat));
+						Date lastLogin1 = new SimpleDateFormat("dd-mm-yy")
+								.parse(lastLoginNow1.format(lastLogingFormat1));
 						
 						
 						JSONObject autoCompleate = new JSONObject();
 						autoCompleate.put("taskIdActual", taskID1_);
-						autoCompleate.put("invoicemode","Manual");
-						autoCompleate.put("workunitid", "");
+						autoCompleate.put("invoicemode","Po Flip");
+						autoCompleate.put("workunitid", "WU-"+lastLogin1);
 						autoCompleate.put("taskdate", strDate);
 						autoCompleate.put("vendorname",vendorRegister.getSupplierCompName() );
 						autoCompleate.put("vendorid", vendorRegister.getRegisterId() );
@@ -1115,7 +1135,7 @@ public class PurchaseOrderController {
 						autoCompleate.put("invoicetype", "PO" );
 						autoCompleate.put("invoicenumber", save.getInvId()+"" );
 						autoCompleate.put("invoiceamount", save.getInvAmount()+"");
-						autoCompleate.put("invoicedate", save.getInvDate() );
+						autoCompleate.put("invoicedate", "7-3-2000" );
 						autoCompleate.put("podate", purchesOrder.getCreatedOn());
 						autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
 						autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
