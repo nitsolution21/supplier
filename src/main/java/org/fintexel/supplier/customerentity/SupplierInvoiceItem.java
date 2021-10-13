@@ -8,9 +8,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "TBL_INVOICES_ITEMS")
 public class SupplierInvoiceItem {
-	@Id
-	@Column(name = "POITEM_ID") private Long poitemId;
 	
+	@Column(name = "POITEM_ID") private Long poitemId;
+	@Id
 	@Column(name = "INV_ID") private Long invId;
 	
 	@Column(name = "ITEM_CATEGORY_NAME") private String itemCategoryName;

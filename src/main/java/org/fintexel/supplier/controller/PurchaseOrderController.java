@@ -698,26 +698,26 @@ public class PurchaseOrderController {
 
 				
 				invoiceStraching.getSupplierInvoice().setCreatedBy(loginSupplierCode);
-				
+				System.out.println("ok" + invoiceStraching.getSupplierInvoice().getPOId());
 				PurchesOrder purchesOrder = purchesOrderRepo.findById(invoiceStraching.getSupplierInvoice().getPOId()).get();
-				 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				 Date date1 = sdf.parse( sdf.format(invoiceStraching.getSupplierInvoice().getInvDate()));
-//		            Date date1 = invoiceStraching.getSupplierInvoice().getInvDate();
-		            Date date2 = purchesOrder.getCreatedOn();
-		            System.out.println(date1   +  "   " + date2);
-		            if(date2.after(date1)){
-		                System.out.println("Date2 is after Date1");
-		                throw new VendorNotFoundException("Invoice date is before po creation date");
-		            }
+//				 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//				 Date date1 = sdf.parse( sdf.format(invoiceStraching.getSupplierInvoice().getInvDate()));
+////		            Date date1 = invoiceStraching.getSupplierInvoice().getInvDate();
+//		            Date date2 = purchesOrder.getCreatedOn();
+//		            System.out.println(date1   +  "   " + date2);
+//		            if(date2.after(date1)){
+//		                System.out.println("Date2 is after Date1");
+//		                throw new VendorNotFoundException("Invoice date is before po creation date");
+//		            }
 		         
 				System.out.println("loginSupplierCode  "+invoiceStraching.getSupplierInvoice().getPOId());
-				List<PurchesOrderItems> findByPOId = purchesOrderItemsRepo.findByPOId(invoiceStraching.getSupplierInvoice().getPOId());
-				
-				if(!(findByPOId.size()+"").equals(invoiceStraching.getPurchesOrderItems().size()+"")) {
-					System.out.println("findByPOId.size()  "+findByPOId.size());
-					System.out.println("invoiceStraching.getPurchesOrderItems()  "+invoiceStraching.getPurchesOrderItems());
-					throw new VendorNotFoundException("PO Item List Not Match ");
-				}
+//				List<PurchesOrderItems> findByPOId = purchesOrderItemsRepo.findByPOId(invoiceStraching.getSupplierInvoice().getPOId());
+//				
+//				if(!(findByPOId.size()+"").equals(invoiceStraching.getPurchesOrderItems().size()+"")) {
+//					System.out.println("findByPOId.size()  "+findByPOId.size());
+//					System.out.println("invoiceStraching.getPurchesOrderItems()  "+invoiceStraching.getPurchesOrderItems());
+//					throw new VendorNotFoundException("PO Item List Not Match ");
+//				}
 				
 				List<PurchesOrderItems> purchesOrderItems = invoiceStraching.getPurchesOrderItems();
 				
@@ -760,21 +760,51 @@ public class PurchaseOrderController {
 	
 				
 				
-				
-				
 						SupDetails supDetails = supDetailsRepo.findById(loginSupplierCode).get();
 						System.out.println("supDetails  "+supDetails.toString());
+						SupAddress supAddress = new SupAddress();
+						SupBank supBank= new SupBank();
+						VendorRegister vendorRegister = new VendorRegister();
+						try {
+							
+							vendorRegister = vendorRegisterRepo.findById(supDetails.getRegisterId()).get();
+							System.out.println("vendorRegister  "+vendorRegister.toString());
+						}catch(Exception e) {
+							
+						}
 						
-						VendorRegister vendorRegister = vendorRegisterRepo.findById(supDetails.getRegisterId()).get();
-						System.out.println("vendorRegister  "+vendorRegister.toString());
+						try {
+							
+							
+							supBank = supBankRepo.findByIsPrimaryWithSupplierCode(0, loginSupplierCode).get();
+							System.out.println("supBank  "+supBank.toString());
+						}catch(Exception e) {
+							
+						}
+							
+						try {
+							
+							supAddress = supAddressRepo.findByIsPrimaryWithSupplierCode(0, loginSupplierCode).get();
+							System.out.println("supAddress  "+supAddress.toString());
+						}catch(Exception e) {
+							
+						}
+							
+						try {
+							
+						}catch(Exception e) {
+							
+						}
+							
+						
+						
+						
 						
 				
 						
-						SupBank supBank = supBankRepo.findByIsPrimaryWithSupplierCode(0, loginSupplierCode).get();
-						System.out.println("supBank  "+supBank.toString());
 						
-						SupAddress supAddress = supAddressRepo.findByIsPrimaryWithSupplierCode(0, loginSupplierCode).get();
-						System.out.println("supAddress  "+supAddress.toString());
+						
+					
 	//					supDepartmentRepo.findBySupplierCode(loginSupplierCode);
 				
 				
@@ -871,7 +901,7 @@ public class PurchaseOrderController {
 						JSONObject password = new JSONObject();
 						password.put("name", "invoicedate");
 						password.put("scope", "local");
-						password.put("type", "date");
+						password.put("type", "string");
 						password.put("value", "2021-10-12");
 	//					password.put("value", "");
 						formReqBody.put(password);
@@ -1012,31 +1042,11 @@ public class PurchaseOrderController {
 	//					filterVendorReg.setTaskId(taskID1_);
 						
 						
-						//-------------------file upload---------------
-						UploadController uploadController = new UploadController();
-						
-						
-						 HttpHeaders headers = new HttpHeaders();
-						    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-						    LinkedMultiValueMap<String, String> pdfHeaderMap = new LinkedMultiValueMap<>();
-						    pdfHeaderMap.add("Content-disposition", "form-data; name=filex; filename=" + "invoice.pdf");
-						    pdfHeaderMap.add("Content-type", "application/pdf");
-						    HttpEntity<byte[]> doc = new HttpEntity<byte[]>(uploadController.createPdfFlowable(), pdfHeaderMap);
-
-						    LinkedMultiValueMap<String, Object> multipartReqMap = new LinkedMultiValueMap<>();
-						    multipartReqMap.add("file", doc);
-
-//						    HttpEntity<LinkedMultiValueMap<String, Object>> reqEntity = new HttpEntity<>(multipartReqMap, headers);
-//						    String uri = "http://65.2.162.230:8080/DB-task/app/rest/process-instances/" + processInstID_ + "/raw-content";
-//						    ResponseEntity<String> resE = restTemplate.exchange(uri, HttpMethod.POST, reqEntity, String.class);
-						
-						
-						
-						
-					
+//						//-------------------file upload---------------
+//						
+//						UploadController uploadController = new UploadController();
 //						HttpHeaders headers = new HttpHeaders();
-////						headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+//						headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 //						MultiValueMap<String, Object> body
 //						  = new LinkedMultiValueMap<>();
 //						body.add("file", uploadController.createPdfFlowable());
@@ -1056,10 +1066,10 @@ public class PurchaseOrderController {
 //						System.out.println("restTemplatefile  "+restTemplatefile);
 //				
 //							//	HttpMethod.POST, formReqEntity, String.class, 1);
-						
-						
-						//-------------------done-----------------
-	
+//						
+//						
+//						//-------------------done-----------------
+//	
 						ResponseEntity<String> formResponse = restTemplate.exchange(
 								"http://65.2.162.230:8080/flowable-rest/service/runtime/tasks/" + taskID1_ + "/variables",
 								HttpMethod.POST, formReqEntity, String.class, 1);
@@ -1112,16 +1122,16 @@ public class PurchaseOrderController {
 						autoCompleteHeader.add("Cookie", coockie_);
 						autoCompleteHeader.setContentType(MediaType.APPLICATION_JSON);
 	
-						DateTimeFormatter lastLogingFormat1 = DateTimeFormatter.ofPattern("dd-mm-yy");
+						DateTimeFormatter lastLogingFormat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 						LocalDateTime lastLoginNow1 = LocalDateTime.now();
-						Date lastLogin1 = new SimpleDateFormat("dd-mm-yy")
-								.parse(lastLoginNow1.format(lastLogingFormat1));
+						Date lastLogin1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+								.parse(lastLoginNow.format(lastLogingFormat));
 						
 						
 						JSONObject autoCompleate = new JSONObject();
 						autoCompleate.put("taskIdActual", taskID1_);
-						autoCompleate.put("invoicemode","Po Flip");
-						autoCompleate.put("workunitid", "WU-"+lastLogin1);
+						autoCompleate.put("invoicemode","Manual");
+						autoCompleate.put("workunitid", "");
 						autoCompleate.put("taskdate", strDate);
 						autoCompleate.put("vendorname",vendorRegister.getSupplierCompName() );
 						autoCompleate.put("vendorid", vendorRegister.getRegisterId() );
@@ -1135,7 +1145,7 @@ public class PurchaseOrderController {
 						autoCompleate.put("invoicetype", "PO" );
 						autoCompleate.put("invoicenumber", save.getInvId()+"" );
 						autoCompleate.put("invoiceamount", save.getInvAmount()+"");
-						autoCompleate.put("invoicedate", "7-3-2000" );
+						autoCompleate.put("invoicedate", save.getInvDate() );
 						autoCompleate.put("podate", purchesOrder.getCreatedOn());
 						autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
 						autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
