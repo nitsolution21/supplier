@@ -1122,16 +1122,16 @@ public class PurchaseOrderController {
 						autoCompleteHeader.add("Cookie", coockie_);
 						autoCompleteHeader.setContentType(MediaType.APPLICATION_JSON);
 	
-						DateTimeFormatter lastLogingFormat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+						DateTimeFormatter lastLogingFormat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 						LocalDateTime lastLoginNow1 = LocalDateTime.now();
-						Date lastLogin1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-								.parse(lastLoginNow.format(lastLogingFormat));
+						Date lastLogin1 = new SimpleDateFormat("yyyy-MM-dd")
+								.parse(lastLoginNow.format(lastLogingFormat1));
 						
 						
 						JSONObject autoCompleate = new JSONObject();
 						autoCompleate.put("taskIdActual", taskID1_);
-						autoCompleate.put("invoicemode","Manual");
-						autoCompleate.put("workunitid", "");
+						autoCompleate.put("invoicemode","Manual"+lastLogin1);
+						autoCompleate.put("workunitid", "WU-"+"");
 						autoCompleate.put("taskdate", strDate);
 						autoCompleate.put("vendorname",vendorRegister.getSupplierCompName() );
 						autoCompleate.put("vendorid", vendorRegister.getRegisterId() );
