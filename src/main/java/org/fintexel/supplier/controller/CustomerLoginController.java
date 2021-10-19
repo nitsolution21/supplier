@@ -270,7 +270,7 @@ public class CustomerLoginController {
 										functionality.setUserId(registerCustomer.getUserId());
 										functionality.setfId(customerRegisterRequest.getFuncationality());
 										
-										customerUserFunctionaliti.setfId(9);
+										customerUserFunctionaliti.setfId(customerRegisterRequest.getFuncationality());
 										customerUserFunctionaliti.setUserId(registerCustomer.getUserId());
 										
 										customerUserFunctionalitis.add(functionality);
@@ -533,7 +533,7 @@ public class CustomerLoginController {
 				}
 
 			} else {
-				throw new VendorNotFoundException("All field are requard");
+				throw new VendorNotFoundException("All field are required");
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());

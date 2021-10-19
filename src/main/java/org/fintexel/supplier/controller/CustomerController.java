@@ -1635,6 +1635,13 @@ public class CustomerController {
 					vendorsStretchingClass.setRegistrationType(supDetailsRepo.findById(obj.getSupplierCode()).get().getRegistrationType());
 					vendorsStretchingClass.setSupplierCode(supDetailsRepo.findById(obj.getSupplierCode()).get().getSupplierCode());
 					vendorsStretchingClass.setStatus(supDetailsRepo.findById(obj.getSupplierCode()).get().getStatus());
+					LOGGER.info("supller code<<>>>>><<>>>Shantanu"+obj.getSupplierCode());
+					try {
+						Optional<CustomerContact> findBySupplierCode = customerContactRepo.findBySupplierCode(obj.getSupplierCode());
+						vendorsStretchingClass.setCustomerContact(findBySupplierCode.get());
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
 					vendorsStretchingClass.setSupplier(vendorRepo.findById(supDetailsRepo.findById(obj.getSupplierCode()).get().getRegisterId()).get().getUsername());
 					supplierDetails.add(vendorsStretchingClass);
 				}
@@ -2063,7 +2070,7 @@ public class CustomerController {
 //					&& fieldValidation.isEmpty(supBank.getChequeNo())
 					&& fieldValidation.isEmpty(supBank.getCountry()) && fieldValidation.isEmpty(supBank.getCurrency())
 					&& fieldValidation.isEmpty(supBank.getEvidencePath())
-					&& fieldValidation.isEmpty(supBank.getIfscCode())
+//					&& fieldValidation.isEmpty(supBank.getIfscCode())
 //					&& fieldValidation.isEmpty(supBank.getSwiftCode())
 //					&& fieldValidation.isEmpty(supBank.getTransilRoutingNo())
 			) {
@@ -2080,7 +2087,13 @@ public class CustomerController {
 					bank.setCountry(supBank.getCountry());
 					bank.setCurrency(supBank.getCurrency());
 					bank.setEvidencePath(supBank.getEvidencePath());
-					bank.setIfscCode(supBank.getIfscCode());
+					try {
+						if (fieldValidation.isEmpty(supBank.getIfscCode())) {
+							bank.setIfscCode(supBank.getIfscCode());
+						}
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
 					bank.setSupplierCode(loginSupplierCode);
 					bank.setTransilRoutingNo(supBank.getTransilRoutingNo());
 //					bank.setSwiftCode(supBank.getSwiftCode());
