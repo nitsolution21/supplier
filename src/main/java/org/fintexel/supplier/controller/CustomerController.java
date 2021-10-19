@@ -1616,6 +1616,95 @@ public class CustomerController {
 	}
 	
 	
+	
+	/* Start update supplier details */
+	
+	@PutMapping("/vendor/registration")
+	CustomeResponseEntity updateSuppilerDetails(@RequestBody AddVendorWithContract addVendorWithContract  , @RequestHeader(name = "Authorization") String token) {
+		LOGGER.info(addVendorWithContract.toString());
+		try {
+			long customerIdFromToken = getCustomerDetails.getCustomerIdFromToken(token);
+			LOGGER.info(customerIdFromToken+"");
+			if (customerIdFromToken == -1) {
+				throw new VendorNotFoundException("Customer not found");
+			} else {
+				if (fieldValidation.isEmpty(addVendorWithContract.getSupplierCode())
+					&& fieldValidation.isEmpty(addVendorWithContract.getSupplierCompName())
+					&& fieldValidation.isEmpty(addVendorWithContract.getRegistrationNo())
+					&& fieldValidation.isEmpty(addVendorWithContract.getRegistrationType())
+//					&& fieldValidation.isEmpty(addVendorWithContract.getRemarks())
+					&& fieldValidation.isEmpty(addVendorWithContract.getContractId())
+					&& fieldValidation.isEmpty(addVendorWithContract.getContractType())
+					&& fieldValidation.isEmpty(addVendorWithContract.getContractTerms())
+					&& fieldValidation.isEmpty(addVendorWithContract.getContractProof())
+					&& fieldValidation.isEmpty(addVendorWithContract.getContractLocation())
+					&& fieldValidation.isEmpty(addVendorWithContract.getContractEndDate())
+				) {
+					
+					SupDetails filterSupDetails = new SupDetails();
+					
+					CustomerContact filterCustomerContact = new CustomerContact();
+					
+					Optional<SupDetails> findBySupplierCode = supDetailsRepo.findBySupplierCode(addVendorWithContract.getSupplierCode());
+					Optional<CustomerContact> findById = customerContactRepo.findById(addVendorWithContract.getContractId());
+					if (findBySupplierCode.isPresent() && findById.isPresent()) {
+						filterSupDetails.setSupplierCode(addVendorWithContract.getSupplierCode());
+						filterSupDetails.setRegisterId(findBySupplierCode.get().getRegisterId());
+						filterSupDetails.setSupplierCompName(addVendorWithContract.getSupplierCompName());
+						filterSupDetails.setRegistrationNo(addVendorWithContract.getRegistrationNo());
+						filterSupDetails.setRegistrationType(addVendorWithContract.getRegistrationType());
+						filterSupDetails.setStatus(findBySupplierCode.get().getStatus());
+						filterSupDetails.setCostCenter(findBySupplierCode.get().getCostCenter());
+						try {
+							if (fieldValidation.isEmpty(addVendorWithContract.getRemarks())) {
+								filterSupDetails.setRemarks(addVendorWithContract.getRemarks());
+							}
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+						filterSupDetails.setUpdatedOn(new Date());
+						SupDetails save2 = supDetailsRepo.save(filterSupDetails);
+						
+						filterCustomerContact.setContractId(addVendorWithContract.getContractId());
+						filterCustomerContact.setcId(customerIdFromToken);
+						filterCustomerContact.setSupplierCode(addVendorWithContract.getSupplierCode());
+						filterCustomerContact.setContractType(addVendorWithContract.getContractType());
+						filterCustomerContact.setContractTerms(addVendorWithContract.getContractTerms());
+						filterCustomerContact.setContractProof(addVendorWithContract.getContractProof());
+						filterCustomerContact.setContractLocation(addVendorWithContract.getContractLocation());
+						filterCustomerContact.setContractEndDate(addVendorWithContract.getContractEndDate());
+						filterCustomerContact.setUpdatedOn(new Date());
+						
+						CustomerContact save = customerContactRepo.save(filterCustomerContact);
+						
+						if (!save.equals(null) && !save2.equals(null)) {
+							return new CustomeResponseEntity("Success","Updated successfully");
+						} else {
+							throw new VendorNotFoundException("Data not save");
+						}
+						
+					} else {
+						throw new VendorNotFoundException("Suppiler details not found");
+					}
+					
+				} else {
+					throw new VendorNotFoundException("All field are required");
+				}
+			}
+			
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+	}
+	
+	/* End update supplier details */
+	
+	
+	
+	
+	
+	
+	
 	@GetMapping("/vendors")
 	public List<VendorsStretchingClass> vendors(@RequestHeader(name = "Authorization") String token) {
 		LOGGER.info("Inside - CustomerController.vendors()");
@@ -1635,7 +1724,9 @@ public class CustomerController {
 					vendorsStretchingClass.setRegistrationType(supDetailsRepo.findById(obj.getSupplierCode()).get().getRegistrationType());
 					vendorsStretchingClass.setSupplierCode(supDetailsRepo.findById(obj.getSupplierCode()).get().getSupplierCode());
 					vendorsStretchingClass.setStatus(supDetailsRepo.findById(obj.getSupplierCode()).get().getStatus());
-					LOGGER.info("supller code<<>>>>><<>>>Shantanu"+obj.getSupplierCode());
+					vendorsStretchingClass.setRemarks(supDetailsRepo.findById(obj.getSupplierCode()).get().getRemarks());
+					
+					LOGGER.info("supller code<<>>>>><<>>> "+obj.getSupplierCode());
 					try {
 						Optional<CustomerContact> findBySupplierCode = customerContactRepo.findBySupplierCode(obj.getSupplierCode());
 						vendorsStretchingClass.setCustomerContact(findBySupplierCode.get());
