@@ -1122,16 +1122,16 @@ public class PurchaseOrderController {
 						autoCompleteHeader.add("Cookie", coockie_);
 						autoCompleteHeader.setContentType(MediaType.APPLICATION_JSON);
 	
-						DateTimeFormatter lastLogingFormat1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+						DateTimeFormatter lastLogingFormat1 = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 						LocalDateTime lastLoginNow1 = LocalDateTime.now();
-						Date lastLogin1 = new SimpleDateFormat("yyyy-MM-dd")
+						Date lastLogin1 = new SimpleDateFormat("yyyy/MM/dd")
 								.parse(lastLoginNow.format(lastLogingFormat1));
 						
 						
 						JSONObject autoCompleate = new JSONObject();
 						autoCompleate.put("taskIdActual", taskID1_);
-						autoCompleate.put("invoicemode","Manual"+lastLogin1);
-						autoCompleate.put("workunitid", "WU-"+"");
+						autoCompleate.put("invoicemode","Manual");
+						autoCompleate.put("workunitid", "WU-"+lastLogin1);
 						autoCompleate.put("taskdate", strDate);
 						autoCompleate.put("vendorname",vendorRegister.getSupplierCompName() );
 						autoCompleate.put("vendorid", vendorRegister.getRegisterId() );
@@ -2007,7 +2007,7 @@ public class PurchaseOrderController {
 								PurchesOrderByPoIdResponse order = new PurchesOrderByPoIdResponse();
 								
 								try {
-									Optional<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findById(poId);
+									Optional<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findByPoId(poId);
 									order.setInvoiceStatus(findInvoiceById.get().getStatus());
 								} catch (Exception e) {
 									// TODO: handle exception
@@ -2162,7 +2162,7 @@ public class PurchaseOrderController {
 							PurchesOrderByPoIdResponse order = new PurchesOrderByPoIdResponse();
 							
 							try {
-								Optional<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findById(poId);
+								Optional<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findByPoId(poId);
 								order.setInvoiceStatus(findInvoiceById.get().getStatus());
 							} catch (Exception e) {
 								// TODO: handle exception
