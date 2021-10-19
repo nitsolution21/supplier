@@ -2007,7 +2007,7 @@ public class PurchaseOrderController {
 								PurchesOrderByPoIdResponse order = new PurchesOrderByPoIdResponse();
 								
 								try {
-									Optional<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findById(poId);
+									Optional<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findByPoId(poId);
 									order.setInvoiceStatus(findInvoiceById.get().getStatus());
 								} catch (Exception e) {
 									// TODO: handle exception
@@ -2162,7 +2162,7 @@ public class PurchaseOrderController {
 							PurchesOrderByPoIdResponse order = new PurchesOrderByPoIdResponse();
 							
 							try {
-								Optional<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findById(poId);
+								Optional<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findByPoId(poId);
 								order.setInvoiceStatus(findInvoiceById.get().getStatus());
 							} catch (Exception e) {
 								// TODO: handle exception
