@@ -270,7 +270,7 @@ public class CustomerLoginController {
 										functionality.setUserId(registerCustomer.getUserId());
 										functionality.setfId(customerRegisterRequest.getFuncationality());
 										
-										customerUserFunctionaliti.setfId(9);
+										customerUserFunctionaliti.setfId(customerRegisterRequest.getFuncationality());
 										customerUserFunctionaliti.setUserId(registerCustomer.getUserId());
 										
 										customerUserFunctionalitis.add(functionality);
