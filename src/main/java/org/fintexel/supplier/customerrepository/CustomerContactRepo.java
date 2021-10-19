@@ -12,4 +12,6 @@ public interface CustomerContactRepo extends JpaRepository<CustomerContact, Long
 	
 	@Query("select contact from CustomerContact contact where contact.cId = ?1 and contact.supplierCode = ?2")
 	public Optional<CustomerContact> findContactTrams(Long cId, String supplierCode);
+	
+	public Optional<CustomerContact> findBySupplierCode(String supplierCode);
 }

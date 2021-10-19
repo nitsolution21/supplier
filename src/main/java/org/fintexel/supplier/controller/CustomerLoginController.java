@@ -533,7 +533,7 @@ public class CustomerLoginController {
 				}
 
 			} else {
-				throw new VendorNotFoundException("All field are requard");
+				throw new VendorNotFoundException("All field are required");
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
