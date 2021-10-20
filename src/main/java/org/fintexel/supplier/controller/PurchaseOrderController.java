@@ -1,12 +1,9 @@
 package org.fintexel.supplier.controller;
 
 
-import java.io.File;
-import java.net.http.HttpResponse;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -46,7 +43,6 @@ import org.fintexel.supplier.entity.SupBank;
 import org.fintexel.supplier.entity.SupDepartment;
 import org.fintexel.supplier.customerentity.CustomerDepartments;
 import org.fintexel.supplier.customerentity.CustomerProfile;
-import org.fintexel.supplier.customerentity.CustomerRegister;
 import org.fintexel.supplier.customerentity.GetPendingPoResponceForSuppiler;
 import org.fintexel.supplier.customerentity.GetPurchesOrder;
 import org.fintexel.supplier.customerentity.InvoiceStraching;
@@ -54,7 +50,6 @@ import org.fintexel.supplier.customerentity.Logo;
 import org.fintexel.supplier.customerentity.POFlowableItem;
 import org.fintexel.supplier.customerentity.PrsonceLoginCustomerDetails;
 import org.fintexel.supplier.customerrepository.CustomerAddressRepo;
-import org.fintexel.supplier.customerrepository.CustomerContactRepo;
 import org.fintexel.supplier.customerrepository.CustomerDepartmentsRepo;
 import org.fintexel.supplier.customerrepository.CustomerProfileRepo;
 import org.fintexel.supplier.customerrepository.CustomerRegisterRepo;
@@ -86,7 +81,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
