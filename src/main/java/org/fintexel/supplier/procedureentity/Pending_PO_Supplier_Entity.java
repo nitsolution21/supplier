@@ -7,22 +7,27 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 
 @Entity
-@NamedStoredProcedureQueries({@NamedStoredProcedureQuery(name = "PENDING_PO_SUPPLIER",procedureName = "PENDING_PO_SUPPLIER")})
+@NamedStoredProcedureQueries({
+		@NamedStoredProcedureQuery(name = "PENDING_PO_SUPPLIER", procedureName = "PENDING_PO_SUPPLIER", parameters = {
+				@StoredProcedureParameter(mode = ParameterMode.IN, name = "POYEAR", type = String.class),
+				@StoredProcedureParameter(mode = ParameterMode.IN, name = "POMONTH", type = String.class),
+				@StoredProcedureParameter(mode = ParameterMode.IN, name = "PODATE", type = String.class) }) })
 public class Pending_PO_Supplier_Entity {
 
 	@Id
-	@Column(name="Supplier")
+	@Column(name = "Supplier")
 	private String supplierCompName;
-	
-	@Column(name="CREATED_ON")
+
+	@Column(name = "CREATED_ON")
 	private Date createdOn;
-	
-	@Column(name="Total_PO_Pending")
+
+	@Column(name = "Total_PO_Pending")
 	private int totalPoPending;
 
-	
 	public Pending_PO_Supplier_Entity(String supplierCompName, Date createdOn, int totalPoPending) {
 		super();
 		this.supplierCompName = supplierCompName;
@@ -30,50 +35,40 @@ public class Pending_PO_Supplier_Entity {
 		this.totalPoPending = totalPoPending;
 	}
 
-
 	public Pending_PO_Supplier_Entity() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	
-	
 	public String getSupplierCompName() {
 		return supplierCompName;
 	}
-
 
 	public void setSupplierCompName(String supplierCompName) {
 		this.supplierCompName = supplierCompName;
 	}
 
-
 	public Date getCreatedOn() {
 		return createdOn;
 	}
-
 
 	public void setCreatedOn(Date createdOn) {
 		this.createdOn = createdOn;
 	}
 
-
 	public int getPoId() {
 		return totalPoPending;
 	}
-
 
 	public void setPoId(int totalPoPending) {
 		this.totalPoPending = totalPoPending;
 	}
 
-
 	@Override
 	public String toString() {
-		return "PENDING_PO_SUPPLIER [supplierCompName=" + supplierCompName + ", createdOn=" + createdOn + ", totalPoPending="
-				+ totalPoPending + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
-				+ super.toString() + "]";
+		return "PENDING_PO_SUPPLIER [supplierCompName=" + supplierCompName + ", createdOn=" + createdOn
+				+ ", totalPoPending=" + totalPoPending + ", getClass()=" + getClass() + ", hashCode()=" + hashCode()
+				+ ", toString()=" + super.toString() + "]";
 	}
-	
-	
+
 }
