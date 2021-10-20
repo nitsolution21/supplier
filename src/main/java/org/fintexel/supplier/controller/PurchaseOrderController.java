@@ -1,6 +1,8 @@
 package org.fintexel.supplier.controller;
 
 
+import java.io.File;
+import java.net.http.HttpResponse;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -98,6 +100,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
+import com.mashape.unirest.http.Unirest;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -1038,39 +1042,38 @@ public class PurchaseOrderController {
 						
 						System.out.println("vendorRegister.getSupplierCompName() "+vendorRegister.getSupplierCompName());
 						
-	
-						
-						
-						
 						HttpEntity<String> formReqEntity = new HttpEntity<String>(formReqBody.toString(), BaseAuthHeader);
-	
-	//					filterVendorReg.setTaskId(taskID1_);
 						
 						
-//						//-------------------file upload---------------
-//						
-//						UploadController uploadController = new UploadController();
-//						HttpHeaders headers = new HttpHeaders();
-//						headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-//						MultiValueMap<String, Object> body
-//						  = new LinkedMultiValueMap<>();
-//						body.add("file", uploadController.createPdfFlowable());
-//						
-//						
-//						
-//						HttpEntity<MultiValueMap<String, Object>> requestEntity
-//						 = new HttpEntity<>(body, headers);
-//
-//						String serverUrl = "http://65.2.162.230:8080/DB-task/app/rest/process-instances/" + taskID1_ + "/raw-content";
-//
-//						RestTemplate restTemplatefile = new RestTemplate();
-//						ResponseEntity<String> responsefile = restTemplatefile
-//						  .postForEntity(serverUrl, requestEntity, String.class);
-//						
-//						
-//						System.out.println("restTemplatefile  "+restTemplatefile);
-//				
-//							//	HttpMethod.POST, formReqEntity, String.class, 1);
+//						===========invoice upload============//
+						
+						try {
+							
+							UploadController uploadController = new UploadController();
+
+							String serverUrl = "http://65.2.162.230:8080/DB-task/app/rest/process-instances/" + processInstID_ + "/raw-content"	;	
+							
+							Unirest.setTimeouts(0, 0);
+							com.mashape.unirest.http.HttpResponse<String> asString = Unirest.post(serverUrl)
+							  .field("file",uploadController.createPdfFlowable())
+							  .asString();
+							
+							Unirest.setTimeouts(0, 0);
+							Unirest.get("http://65.2.162.230:8080/DB-task/app/rest/process-instances/"+processInstID_+"/content")
+							  .header("Cookie", "FLOWABLE_REMEMBER_ME=Y0NaJTJCVWpidEdsSFNsbXJuUWx3THhnJTNEJTNEOmJRR0V6QllHQkZSTkxoN25GNkwzdFElM0QlM0Q")
+							  .asString();
+							
+							System.out.println("asString###########&&&&&&  "+asString.getBody());
+							
+						}catch(Exception e) {
+							
+							System.out.println("error###########&&&&&&  "+e.getMessage());
+							
+						}
+						
+						
+						
+						
 //						
 //						
 //						//-------------------done-----------------
@@ -1258,6 +1261,7 @@ public class PurchaseOrderController {
 		
 							String taskID3_ = (String) taskJA.getJSONObject(0).get("id");
 							LOGGER.info("Registration TaskID_3 : " + taskID3_);
+							
 //						 
 //						 
 //							

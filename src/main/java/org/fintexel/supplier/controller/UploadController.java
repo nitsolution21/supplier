@@ -1,8 +1,13 @@
 package org.fintexel.supplier.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.Timestamp;
@@ -16,11 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.util.IOUtils;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.codec.Base64.InputStream;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -46,6 +54,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -63,6 +73,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.apache.commons.io.FileUtils;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -673,7 +684,7 @@ public class UploadController {
 		}
 		
 
-		public MultipartFile createPdfFlowable() throws IOException {
+		public File createPdfFlowable() throws IOException {
 			System.out.println("ok");
 
 			/* first, get and initialize an engine */
@@ -701,18 +712,52 @@ public class UploadController {
 			
 			
 			baos = generatePdf(writer.toString());
-			MultipartFile multipartFile = (MultipartFile) baos;
+			byte[] byteArray = baos.toByteArray();
+			
+//			========= A way to solve Start
+						
+			File tempFile = File.createTempFile("invoice", ".pdf", null);
+			
+			FileOutputStream fos = new FileOutputStream(tempFile);
+			fos.write(byteArray);
+			fos.close();
+			File file =tempFile;
+			tempFile.deleteOnExit();
 			
 			
-//			HttpHeaders header = new HttpHeaders();
-//		    header.setContentType(MediaType.APPLICATION_PDF);
-//		    header.set(HttpHeaders.CONTENT_DISPOSITION,
-//		                   "attachment; filename=" + "soumen");
-//		    header.setContentLength(baos.toByteArray().length);
-//
-//		    return new HttpEntity<byte[]>(baos.toByteArray(), header);
+//			====A way to solve End
 			
-			return multipartFile;
+//			java.io.InputStream is = new ByteArrayInputStream(byteArray);
+//			File file = null;
+////			FileUtils.copyInputStreamToFile(is, file);
+//			
+//					try(OutputStream outputStream = new FileOutputStream(file)){
+//					    IOUtils.copy(is, outputStream);
+//					} catch (FileNotFoundException e) {
+//					   
+//					} catch (IOException e) {
+//					    // handle exception here
+//					}
+			
+//			File file = new File(byteArray.toString());
+			
+			
+//			FileInputStream input = new FileInputStream(file);
+//			MultipartFile multipartFile = new MockMultipartFile("file",file.getName(), "text/plain", IOUtils.toByteArray(input));
+//			FileUtils.writeByteArrayToFile(new File("E:\\Spring Boot\\test.pdf"), byteArray);
+//			
+//			
+//			java.io.InputStream inputStream = new FileSystemResource(new File("E:\\Spring Boot\\test.pdf")).getInputStream();
+//			byte[] binaryData = IOUtils.toByteArray(inputStream);
+			
+			
+			
+
+			
+			
+//			InputStreamSource fileStreamSource = new ByteArrayResource(byteArray);
+			
+			return file ;
 
 		}
 
