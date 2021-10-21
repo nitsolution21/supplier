@@ -915,7 +915,7 @@ public class PurchaseOrderController {
 						registrationid.put("name", "invoicemode");
 						registrationid.put("scope", "local");
 						registrationid.put("type", "string");
-						registrationid.put("value", "manual");
+						registrationid.put("value", "Po Flip");
 						formReqBody.put(registrationid);
 	
 						
@@ -1043,13 +1043,15 @@ public class PurchaseOrderController {
 						
 						try {
 							
+							System.out.println("invoiceStraching.getSupplierInvoiceStraching()!^^^^^^^$$$$$$$$  " + invoiceStraching.toString());
+							
 							UploadController uploadController = new UploadController();
 
 							String serverUrl = "http://65.2.162.230:8080/DB-task/app/rest/process-instances/" + processInstID_ + "/raw-content"	;	
 							
 							Unirest.setTimeouts(0, 0);
 							com.mashape.unirest.http.HttpResponse<String> asString = Unirest.post(serverUrl)
-							  .field("file",uploadController.createPdfFlowable())
+							  .field("file",uploadController.createPdfFlowable(invoiceStraching.getSupplierInvoiceStraching()))
 							  .asString();
 							
 							Unirest.setTimeouts(0, 0);
@@ -1149,7 +1151,7 @@ public class PurchaseOrderController {
 						System.out.println("lastLogin1@@@@@@@@@@@ "+format);
 						JSONObject autoCompleate = new JSONObject();
 						autoCompleate.put("taskIdActual", taskID1_);
-						autoCompleate.put("invoicemode","Manual");
+						autoCompleate.put("invoicemode","Po Flip");
 						autoCompleate.put("workunitid", "wu-"+format +"-"+this.wuId);
 						this.wuId=this.wuId+1;
 						autoCompleate.put("taskdate", strDate);
@@ -1214,7 +1216,7 @@ public class PurchaseOrderController {
 						
 						JSONObject autoCompleateValidation = new JSONObject();
 						autoCompleateValidation.put("taskIdActual", taskID2_);
-						autoCompleateValidation.put("invoicemode","Manual");
+						autoCompleateValidation.put("invoicemode","Po Flip");
 						autoCompleateValidation.put("workunitid", "wu-"+format +"-"+(this.wuId-1));
 						autoCompleateValidation.put("taskdate", strDate);
 						autoCompleateValidation.put("vendorname",vendorRegister.getSupplierCompName() );

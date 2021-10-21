@@ -684,7 +684,7 @@ public class UploadController {
 		}
 		
 
-		public File createPdfFlowable() throws IOException {
+		public File createPdfFlowable(@RequestBody SupplierInvoiceStraching supplierInvoiceStraching) throws IOException {
 			System.out.println("ok");
 
 			/* first, get and initialize an engine */
@@ -699,7 +699,7 @@ public class UploadController {
 			Template t = ve.getTemplate("templates/invoice.vm");
 			/* create a context and add data */
 			VelocityContext context = new VelocityContext();
-//			context.put("supplierInvoiceStraching", supplierInvoiceStraching);
+			context.put("supplierInvoiceStraching", supplierInvoiceStraching);
 //			context.put("genDateTime", LocalDateTime.now().toString());
 			/* now render the template into a StringWriter */
 			StringWriter writer = new StringWriter();
