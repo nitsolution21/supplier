@@ -17,6 +17,7 @@ public class SupplierInvoiceStraching {
 	private String POtotalSubTotal;
 	private String POtotalTax;
 	private List<PurchesOrderItems> supplierInvoiceItems;
+	
 	public String getPOinvoiceNumber() {
 		return POinvoiceNumber;
 	}
