@@ -1569,6 +1569,10 @@ public class PurchaseOrderController {
 							
 							
 							List<PurchesOrderItems> items = new ArrayList<PurchesOrderItems>();
+							Optional<SupDetails> findSuppilerById = supDetailsRepo.findById(po.getSupplierCode());
+							
+							order.setSupplierName(findSuppilerById.get().getSupplierCompName());
+							
 							
 							findPoItemByPOId.forEach(item -> {
 								items.add(item);
