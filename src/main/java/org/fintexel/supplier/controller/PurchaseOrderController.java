@@ -2884,7 +2884,15 @@ public class PurchaseOrderController {
 		LOGGER.info("Inside - PurchaseOrderController.getAllInvice()");
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
-			List<SupplierInvoice> findAllInvoice = supplierInvoiceRepo.findAllInvoiceBySupplier(loginSupplierCode);
+			List<PurchesOrder> findByhSupplierCode = purchesOrderRepo.findByhSupplierCode(loginSupplierCode);
+			List<SupplierInvoice> findAllInvoice= new ArrayList<SupplierInvoice>();
+			findByhSupplierCode.forEach(obj->{
+				Optional<SupplierInvoice> findAllInvoiceBySupplier = supplierInvoiceRepo.findAllInvoiceBySupplier(obj.getPOId());
+				if(findAllInvoiceBySupplier.isPresent()) {
+					findAllInvoice.add(findAllInvoiceBySupplier.get());
+				}
+			});
+			
 			if (findAllInvoice.size() > 0) {
 				return findAllInvoice;
 			} else {

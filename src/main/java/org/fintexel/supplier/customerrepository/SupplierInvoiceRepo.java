@@ -14,6 +14,6 @@ public interface SupplierInvoiceRepo extends JpaRepository<SupplierInvoice, Long
 	Optional<SupplierInvoice> findByPoId(Long POId);
 	
 	@Query(value="select * from TBL_INVOICES where PO_ID = ?1",nativeQuery = true)
-	List<SupplierInvoice> findAllInvoiceBySupplier(String code);
+	Optional<SupplierInvoice> findAllInvoiceBySupplier(Long id);
 
 }
