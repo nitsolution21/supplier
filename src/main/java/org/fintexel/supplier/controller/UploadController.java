@@ -760,6 +760,40 @@ public class UploadController {
 			return file ;
 
 		}
+		
+		public byte[] getUploadInvoiceByteCode(@RequestBody SupplierInvoiceStraching supplierInvoiceStraching) throws IOException {
+			System.out.println("ok");
+
+			/* first, get and initialize an engine */
+			VelocityEngine ve = new VelocityEngine();
+			
+
+			/* next, get the Template */
+			ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+			ve.setProperty("classpath.resource.loader.class",
+					ClasspathResourceLoader.class.getName());
+			ve.init();
+			Template t = ve.getTemplate("templates/invoice.vm");
+			/* create a context and add data */
+			VelocityContext context = new VelocityContext();
+			context.put("supplierInvoiceStraching", supplierInvoiceStraching);
+//			context.put("genDateTime", LocalDateTime.now().toString());
+			/* now render the template into a StringWriter */
+			StringWriter writer = new StringWriter();
+			t.merge(context, writer);
+			/* show the World */
+			System.out.println(writer.toString());
+			
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+			
+			
+			baos = generatePdf(writer.toString());
+			byte[] byteArray = baos.toByteArray();
+			
+			return byteArray ;
+
+		}
 
 
 		public ByteArrayOutputStream generatePdf(String html) {

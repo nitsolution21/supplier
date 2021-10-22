@@ -1,6 +1,7 @@
 package org.fintexel.supplier.controller;
 
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -33,6 +34,7 @@ import org.fintexel.supplier.customerrepository.SupplierInvoiceRepo;
 import org.fintexel.supplier.entity.ApproveMap;
 import org.fintexel.supplier.entity.CurrencyMaster;
 import org.fintexel.supplier.entity.CustomeResponseEntity;
+import org.fintexel.supplier.entity.FileUploadResponse;
 import org.fintexel.supplier.entity.InventoryDetails;
 import org.fintexel.supplier.entity.InvoceItem;
 import org.fintexel.supplier.entity.ItemCategory;
@@ -72,6 +74,7 @@ import org.fintexel.supplier.repository.SupDepartmentRepo;
 import org.fintexel.supplier.repository.SupDetailsRepo;
 import org.fintexel.supplier.repository.VendorRegisterRepo;
 import org.fintexel.supplier.repository.flowablerepo.FlowableRegistrationRepo;
+import org.fintexel.supplier.service.S3Service;
 import org.fintexel.supplier.validation.FieldValidation;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -95,6 +98,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 
 @RestController
@@ -184,6 +188,9 @@ public class PurchaseOrderController {
 	private Integer i;
 	
 	private double totalGross, totalTax, totalSubTotal, totalAmountWithoutTax;
+	
+	@Autowired
+	private S3Service s3Factory;
 	
 
 	
@@ -724,8 +731,17 @@ public class PurchaseOrderController {
 				
 				List<PurchesOrderItems> purchesOrderItems = invoiceStraching.getPurchesOrderItems();
 				
-				SupplierInvoice save = supplierInvoiceRepo.save(invoiceStraching.getSupplierInvoice());
-				System.out.println("loginSupplierCode  "+loginSupplierCode);
+				Date currentDate = new Date();
+				long milliSeconds = currentDate.getTime();
+				UploadController uploadController2 = new UploadController();
+				byte[] uploadInvoiceByteCode = uploadController2.getUploadInvoiceByteCode(invoiceStraching.getSupplierInvoiceStraching());
+				FileUploadResponse uploadFile = s3Factory.uploadFile(milliSeconds+"_"+"invoice.pdf",uploadInvoiceByteCode);
+				
+				
+				SupplierInvoice supplierInvoice = invoiceStraching.getSupplierInvoice();
+				supplierInvoice.setInvAttachment(uploadFile.getPath());
+				SupplierInvoice save = supplierInvoiceRepo.save(supplierInvoice);
+				System.out.println("publicUrlAsString  "+uploadFile.getPath());
 //				i=0;
 //				for(PurchesOrderItems obj : purchesOrderItems) {
 //					if(!(obj.getItemId() == findByPOId.get(i).getItemId()))
@@ -751,6 +767,7 @@ public class PurchaseOrderController {
 					SupplierInvoiceItem save2 = supplierInvoiceItemRepo.save(supplierInvoiceItem);
 					i++;
 				}
+			
 					
 					if(status.equals("SUBMIT")) {
 						
@@ -1055,11 +1072,11 @@ public class PurchaseOrderController {
 							  .asString();
 							
 							Unirest.setTimeouts(0, 0);
-							Unirest.get("http://65.2.162.230:8080/DB-task/app/rest/process-instances/"+processInstID_+"/content")
+							HttpResponse<String> asString2 = Unirest.get("http://65.2.162.230:8080/DB-task/app/rest/process-instances/"+processInstID_+"/content")
 							  .header("Cookie", "FLOWABLE_REMEMBER_ME=Y0NaJTJCVWpidEdsSFNsbXJuUWx3THhnJTNEJTNEOmJRR0V6QllHQkZSTkxoN25GNkwzdFElM0QlM0Q")
 							  .asString();
 							
-							System.out.println("asString###########&&&&&&  "+asString.getBody());
+							System.out.println("asString###########&&&&&&  "+asString2.getBody());
 							
 						}catch(Exception e) {
 							
@@ -1928,6 +1945,7 @@ public class PurchaseOrderController {
 								itemList.add(order);
 								
 								
+		
 								//purchesOrders.add(order);
 								
 								
@@ -2861,11 +2879,12 @@ public class PurchaseOrderController {
 	
 	
 	
-	@GetMapping("getInvoice")
-	List<SupplierInvoice> getAllInvoice() {
+	@GetMapping("/getInvoice")
+	List<SupplierInvoice> getAllInvoice(@RequestHeader("Authorization") String token) {
 		LOGGER.info("Inside - PurchaseOrderController.getAllInvice()");
 		try {
-			List<SupplierInvoice> findAllInvoice = supplierInvoiceRepo.findAll();
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+			List<SupplierInvoice> findAllInvoice = supplierInvoiceRepo.findAllInvoiceBySupplier(loginSupplierCode);
 			if (findAllInvoice.size() > 0) {
 				return findAllInvoice;
 			} else {

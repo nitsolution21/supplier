@@ -1,5 +1,6 @@
 package org.fintexel.supplier.customerrepository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.fintexel.supplier.customerentity.SupplierInvoice;
@@ -11,5 +12,8 @@ public interface SupplierInvoiceRepo extends JpaRepository<SupplierInvoice, Long
 	
 	@Query("select s from SupplierInvoice s where s.POId = ?1")
 	Optional<SupplierInvoice> findByPoId(Long POId);
+	
+	@Query(value="select * from TBL_INVOICES where PO_ID = ?1",nativeQuery = true)
+	List<SupplierInvoice> findAllInvoiceBySupplier(String code);
 
 }

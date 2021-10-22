@@ -120,5 +120,12 @@ public class S3Service {
     	String path = url.getPath();
     	return ResponseEntity.ok(url);
     }
+    
+    public String getPublicUrlAsString(String key) {
+//    	amazonS3Client.setObjectAcl(defaultBucketName,key,CannedAccessControlList.PublicRead);
+    	URL url = amazonS3Client.getUrl(defaultBucketName, key);
+    	String path = url.getPath();
+    	return path;
+    }
 
 }

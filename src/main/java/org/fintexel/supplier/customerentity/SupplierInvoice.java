@@ -26,6 +26,7 @@ public class SupplierInvoice {
 //	@Column(name = "INV_TAXID") private String invTaxid;
 	@Column(name = "INV_REMIT_TO") private String remitTo;
 	@Column(name = "INV_BILL_TO") private String billTo;
+	@Column(name = "INV_ATTACHMENT") private String invAttachment;
 //	@Column(name = "SHIP_CHARGES") private float shipCharges;
 //	@Column(name = "HANDLING_CHARGES") private float handlingCharges;
 //	@Column(name = "TOTAL_GROSS") private float totalGross;
@@ -79,6 +80,12 @@ public class SupplierInvoice {
 	public void setBillTo(String billTo) {
 		this.billTo = billTo;
 	}
+	public String getInvAttachment() {
+		return invAttachment;
+	}
+	public void setInvAttachment(String invAttachment) {
+		this.invAttachment = invAttachment;
+	}
 	public String getStatus() {
 		return status;
 	}
@@ -100,11 +107,11 @@ public class SupplierInvoice {
 	@Override
 	public String toString() {
 		return "SupplierInvoice [invId=" + invId + ", POId=" + POId + ", invDate=" + invDate + ", invDesc=" + invDesc
-				+ ", invRegNum=" + invRegNum + ", remitTo=" + remitTo + ", billTo=" + billTo + ", status=" + status
-				+ ", invAmount=" + invAmount + ", createdBy=" + createdBy + "]";
+				+ ", invRegNum=" + invRegNum + ", remitTo=" + remitTo + ", billTo=" + billTo + ", invAttachment="
+				+ invAttachment + ", status=" + status + ", invAmount=" + invAmount + ", createdBy=" + createdBy + "]";
 	}
 	public SupplierInvoice(Long invId, Long pOId, Date invDate, String invDesc, String invRegNum, String remitTo,
-			String billTo, String status, String invAmount, String createdBy) {
+			String billTo, String invAttachment, String status, String invAmount, String createdBy) {
 		super();
 		this.invId = invId;
 		POId = pOId;
@@ -113,6 +120,7 @@ public class SupplierInvoice {
 		this.invRegNum = invRegNum;
 		this.remitTo = remitTo;
 		this.billTo = billTo;
+		this.invAttachment = invAttachment;
 		this.status = status;
 		this.invAmount = invAmount;
 		this.createdBy = createdBy;
@@ -121,6 +129,9 @@ public class SupplierInvoice {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	
+	
 	
 	
 	
