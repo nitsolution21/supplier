@@ -2887,9 +2887,9 @@ public class PurchaseOrderController {
 			List<PurchesOrder> findByhSupplierCode = purchesOrderRepo.findByhSupplierCode(loginSupplierCode);
 			List<SupplierInvoice> findAllInvoice= new ArrayList<SupplierInvoice>();
 			findByhSupplierCode.forEach(obj->{
-				Optional<SupplierInvoice> findAllInvoiceBySupplier = supplierInvoiceRepo.findAllInvoiceBySupplier(obj.getPOId());
-				if(findAllInvoiceBySupplier.isPresent()) {
-					findAllInvoice.add(findAllInvoiceBySupplier.get());
+				List<SupplierInvoice> findAllInvoiceBySupplier = supplierInvoiceRepo.findAllInvoiceBySupplier(obj.getPOId());
+				if(findAllInvoiceBySupplier.size()>0) {
+					findAllInvoice.add(findAllInvoiceBySupplier.get(0));
 				}
 			});
 			
