@@ -1,13 +1,18 @@
 package org.fintexel.supplier.controller;
 
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -15,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.print.attribute.standard.Media;
 
 import org.fintexel.supplier.customerentity.CustomerAddress;
 import org.fintexel.supplier.customerentity.CustomerContact;
@@ -81,9 +88,11 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -96,10 +105,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
+
+//import okhttp3.MediaType;
+
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -112,6 +125,15 @@ public class PurchaseOrderController {
 	
 	@Autowired
 	private LogoRepo logoRepo;
+
+	
+	private RestTemplate rclient;
+	
+	@Autowired
+    public void TwilioMediaRepository(RestTemplate rclient) {
+        this.rclient = rclient;
+    }
+
 	
 	@Autowired
 	private CustomerProfileRepo customerProfileRepo;
@@ -1065,18 +1087,98 @@ public class PurchaseOrderController {
 							UploadController uploadController = new UploadController();
 
 							String serverUrl = "http://65.2.162.230:8080/DB-task/app/rest/process-instances/" + processInstID_ + "/raw-content"	;	
-							
+							File createPdfFlowable = uploadController.createPdfFlowable(invoiceStraching.getSupplierInvoiceStraching());
+							FileNameMap fileNameMap = URLConnection.getFileNameMap();
+						    String mimeType = fileNameMap.getContentTypeFor("sd.jpg");
 							Unirest.setTimeouts(0, 0);
 							com.mashape.unirest.http.HttpResponse<String> asString = Unirest.post(serverUrl)
-							  .field("file",uploadController.createPdfFlowable(invoiceStraching.getSupplierInvoiceStraching()))
+//							  .header("Content-Type", "multipart/form-data")
+							  .field("file",uploadController.createPdfFlowable(invoiceStraching.getSupplierInvoiceStraching()),"application/pdf")
 							  .asString();
+						  
+//						    
+//						    HttpHeaders headers = new HttpHeaders();
+//					        headers.setAccept(Arrays.asList(MediaType.ALL));
+//					        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//					        HttpEntity<byte[]> entity = new HttpEntity<>(uploadController.getUploadInvoiceByteCode(invoiceStraching.getSupplierInvoiceStraching()), headers);
+//					        ResponseEntity<Media> media = this.rclient.postForEntity(serverUrl, entity, Media.class);
+							
+					        
+						    
+						    
+//						    LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+//						    String responsee;
+//						    HttpStatus httpStatus = HttpStatus.CREATED;
+//
+//						    try {
+//						        
+//						    			byte[] uploadInvoiceByteCode2 = uploadController.getUploadInvoiceByteCode(invoiceStraching.getSupplierInvoiceStraching());
+////						                map.add("file", uploadInvoiceByteCode2);
+////						                map.add("Content-Disposition", "form-data");
+////						                map.add("name", "file");
+////						                map.add("filename", "invoice3232520946266211662.pdf");
+////						                map.add("Content-Type", "application/pdf");
+////						                map.add("name", "file");
+//						              
+//
+//						        HttpHeaders headers = new HttpHeaders();
+////						        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+//						        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+//
+//						        String url = "http://example.com/upload";
+//
+//						        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map, headers);
+//						        ResponseEntity<String> postForEntity = restTemplate.postForEntity(serverUrl, requestEntity, String.class);
+//						        responsee=postForEntity.toString();
+//						    } catch (HttpStatusCodeException e) {
+//						        httpStatus = HttpStatus.valueOf(e.getStatusCode().value());
+//						        responsee = e.getResponseBodyAsString();
+//						    } catch (Exception e) {
+//						        httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+//						        responsee = e.getMessage();
+//						    }
+
+						    
+						
+
+						
+						    
+						    
+					        
+//							OkHttpClient build = new OkHttpClient().newBuilder()
+//									  .build();
+//							okhttp3.MediaType mediaType = okhttp3.MediaType.parse("text/plain");
+//									okhttp3.RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
+//									  .addFormDataPart("file","/C:/Users/User/Downloads/invoice11340783664825414980 (1).pdf",
+//											  okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/octet-stream"),
+//									    new File("/C:/Users/User/Downloads/invoice11340783664825414980 (1).pdf")))
+//									  .build();
+//									Request request = new Request.Builder()
+//									  .url("http://65.2.162.230:8080/DB-task/app/rest/process-instances/18c48aa4-3370-11ec-91d4-0a5bf303a9fe/raw-content")
+//									  .method("POST", (okhttp3.RequestBody) body)
+//									  .addHeader("Cookie", "FLOWABLE_REMEMBER_ME=R1UzSnN2Zm1pQ1Y0WU1uNmlyS3NVZyUzRCUzRDp4QXU0RGpCRWlLU3JWSzVCaFlGd3d3JTNEJTNE")
+//									  .build();
+//									Response execute = client.newCall(request).execute();
+//									System.out.println("execute###########&&&&&&  "+execute.toString());
+							
+							
+//							HttpResponse<String> response3 = Unirest.post(serverUrl)
+//									  .header("content-type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW")
+//									  .header("cookie", "FLOWABLE_REMEMBER_ME=QkJxb3ElMkI2T1IwVG5wZXppUjJFZCUyQmclM0QlM0Q6ZHdOZnhiTjVtWklzejZCUGhjZjdXdyUzRCUzRA")
+//									  .header("cache-control", "no-cache")
+//									  .header("postman-token", "cbc69280-954e-4f3d-9a89-85e06064f436")
+//									  .body(uploadController.getUploadInvoiceByteCode(invoiceStraching.getSupplierInvoiceStraching()))
+////									  .body("------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"file\"; filename=\"invoice3232520946266211662.pdf\"\r\nContent-Type: application/pdf\r\n\r\n\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--")
+//									  .asString();
+							
+							
 							
 							Unirest.setTimeouts(0, 0);
 							HttpResponse<String> asString2 = Unirest.get("http://65.2.162.230:8080/DB-task/app/rest/process-instances/"+processInstID_+"/content")
 							  .header("Cookie", "FLOWABLE_REMEMBER_ME=Y0NaJTJCVWpidEdsSFNsbXJuUWx3THhnJTNEJTNEOmJRR0V6QllHQkZSTkxoN25GNkwzdFElM0QlM0Q")
 							  .asString();
 							
-							System.out.println("asString###########&&&&&&  "+asString2.getBody());
+//							System.out.println("responsee###########&&&&&&  "+responsee);
 							
 						}catch(Exception e) {
 							
@@ -2920,4 +3022,15 @@ public class PurchaseOrderController {
 		
 	}
 	
+}
+
+
+class MultipartInputStreamFileResource extends InputStreamResource {
+
+    private final String filename;
+
+    MultipartInputStreamFileResource(InputStream inputStream, String filename) {
+        super(inputStream);
+        this.filename = filename;
+    }
 }

@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+
 @SpringBootApplication
 @ComponentScan(basePackages= {"org.fintexel.supplier.*"})
 public class SupplierApplication implements CommandLineRunner {
@@ -31,6 +32,8 @@ public class SupplierApplication implements CommandLineRunner {
 	public FieldValidation fieldValidation() {
 		return new FieldValidation();
 	}
+	
+
 	
 	@Bean
 	public RestTemplate getRestTemplate() {
