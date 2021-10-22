@@ -23,6 +23,9 @@ import org.fintexel.supplier.entity.CurrencyMaster;
 import org.fintexel.supplier.entity.CustomeResponseEntity;
 import org.fintexel.supplier.entity.LoginLog;
 import org.fintexel.supplier.entity.RegType;
+import org.fintexel.supplier.entity.ShipNotice;
+import org.fintexel.supplier.entity.ShipNoticeDocs;
+import org.fintexel.supplier.entity.ShipNoticeStraching;
 import org.fintexel.supplier.entity.SupAddress;
 import org.fintexel.supplier.entity.SupContract;
 import org.fintexel.supplier.entity.SupBank;
@@ -40,6 +43,8 @@ import org.fintexel.supplier.helper.LoginUserDetails;
 import org.fintexel.supplier.repository.CurrencyMasterRepo;
 import org.fintexel.supplier.repository.LoginLogRepo;
 import org.fintexel.supplier.repository.RegTypeRepo;
+import org.fintexel.supplier.repository.ShipNoticeDocsRepo;
+import org.fintexel.supplier.repository.ShipNoticeRepo;
 import org.fintexel.supplier.repository.SupAddressRepo;
 import org.fintexel.supplier.repository.SupContractRepo;
 import org.fintexel.supplier.repository.SupBankRepo;
@@ -136,6 +141,12 @@ public class VendorController {
 
 	@Autowired
 	private SupDepartmentRepo supDepartmentRepo;
+	
+	@Autowired
+	private ShipNoticeDocsRepo shipNoticeDocsRepo;
+	
+	@Autowired
+	private ShipNoticeRepo shipNoticeRepo;
 
 	@Autowired
 	WebClient.Builder builder;
@@ -1952,5 +1963,55 @@ public class VendorController {
 		}
 
 	}
+	
+	@PostMapping("/shipNotice")
+	public CustomeResponseEntity saveShipNotice(@RequestBody ShipNoticeStraching noticeStraching,
+			@RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - VendorController.saveShipNotice()");
+		try {
+			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
+			Optional<SupDetails> findById = supDetailsRepo.findById(loginSupplierCode);
+			ShipNotice notice = new ShipNotice();
+			notice.setShnoDate(noticeStraching.getShnoDate());
+			notice.setPoId(noticeStraching.getPoId());
+			notice.setShnoMode(noticeStraching.getShnoMode());
+			notice.setShnoNote(noticeStraching.getShnoNote());
+			notice.setCreatedOn(new Date());
+			notice.setCreatedBy(findById.get().getSupplierCompName());
+			ShipNotice saveShipNotice = shipNoticeRepo.save(notice);
+			if (!saveShipNotice.equals(null)) {
+				List<ShipNoticeDocs> noticeDocs = new ArrayList<ShipNoticeDocs>();
+				noticeStraching.getShipNoticeDocs().forEach(element -> {
+					ShipNoticeDocs docs = new ShipNoticeDocs();
+					docs.setCreatedOn(new Date());
+					docs.setSndPath(element.getSndPath());
+					docs.setShnoId(saveShipNotice.getShnoId());
+					docs.setCreatedBy(findById.get().getSupplierCompName());
+					noticeDocs.add(docs);
+				});
+				List<ShipNoticeDocs> saveAllDocs = shipNoticeDocsRepo.saveAll(noticeDocs);
+				if (saveAllDocs.size() > 0) {
+					return new CustomeResponseEntity("SUCCESS", "Ship notice created Successfully");
+				} else {
+					throw new VendorNotFoundException("Data not dave in Ship Notice Docs");
+				}
+			} else {
+				throw new VendorNotFoundException("Data not save in Shhip notice");
+			}
+		} catch (Exception e) {
+			throw new VendorNotFoundException(e.getMessage());
+		}
+
+	}
+	
+//	@GetMapping("/shipNotice")
+//	public void getShipNotic() {
+//		LOGGER.info("Inside - VendorController.getShipNotic()");
+//		try {
+//			
+//		} catch (Exception e) {
+//			throw new VendorNotFoundException(e.getMessage());
+//		}
+//	}
 
 }
