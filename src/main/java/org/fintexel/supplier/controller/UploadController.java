@@ -294,13 +294,6 @@ public class UploadController {
 					if (file.getSize() < 1) {
 						throw new VendorNotFoundException("File is Empty");
 					}
-					Date currentDate = new Date();
-					long milliSeconds = currentDate.getTime();
-//					FileUploadResponse uploadFile = s3Factory.uploadFile(milliSeconds+"_"+file.getOriginalFilename(),file.getBytes());
-//					return uploadFile;
-//			        Map<String,String> result = new HashMap<>();
-//			        result.put("key",file.getOriginalFilename());
-			     //   return result;
 
 					FileUploadResponse uploadFile = fileUploadHelper.uploadFile(file);
 					if (!uploadFile.equals(null)) {
@@ -311,45 +304,11 @@ public class UploadController {
 				} 
 				else {
 					throw new VendorNotFoundException("Vendor Not Found");
-////					Optional<CustomerRegister> findByCustomerUsername = customerRegisterRepo.findByUsername(userName);
-//					if (findByCustomerUsername.isPresent()) {
-//						if (file.getSize() < 1) {
-//							throw new VendorNotFoundException("File is Empty");
-//						}
-//
-//						Date currentDate = new Date();
-//						long milliSeconds = currentDate.getTime();
-//						FileUploadResponse uploadFile = s3Factory.uploadFile(milliSeconds+"_"+file.getOriginalFilename(),file.getBytes());
-//						return uploadFile;
-////						FileUploadResponse uploadFile = fileUploadHelper.uploadFile(file);
-////						if (!uploadFile.equals(null)) {
-////							return uploadFile;
-////						} else {
-////							throw new VendorNotFoundException("Something went wrong !! Please try again");
-////						}
-//					} else {
-//						throw new VendorNotFoundException("We can't find your details");
-//					}
 				}
 			}
 			else {
 				throw new VendorNotFoundException("Token note found");
 			}
-//			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
-//			if (!loginSupplierCode.equals(null)) {
-//				if (file.getSize() < 1) {
-//					throw new VendorNotFoundException("File is Empty");
-//				}
-//
-//				FileUploadResponse uploadFile = fileUploadHelper.uploadFile(file);
-//				if (!uploadFile.equals(null)) {
-//					return uploadFile;
-//				} else {
-//					throw new VendorNotFoundException("Something went wrong !! Please try again");
-//				}
-//			} else {
-//				throw new VendorNotFoundException("Token not valid");
-//			}
 			
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
