@@ -689,13 +689,14 @@ public class PurchaseOrderController {
 	
 	
 	
-	@PostMapping("/invoice/{status}")
-	public CustomeResponseEntity invoice(@PathVariable("status") String status , @RequestBody() InvoiceStraching invoiceStraching , @RequestHeader(name ="Authorization") String token) {
+	@PostMapping("/invoice/{status}/{change}")
+	public CustomeResponseEntity invoice(@PathVariable("status") String status , @PathVariable("status") String change, @RequestBody() InvoiceStraching invoiceStraching , @RequestHeader(name ="Authorization") String token) {
 		String taskID1_ = "", taskID2_ = "", processInstID_ = "";
 		
 		String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 		System.out.println("loginSupplierCode  "+loginSupplierCode);
 		LOGGER.info("Inside - PurchaseOrderController.invoice()");
+//		LOGGER.info("Inside - PurchaseOrderController.invoice()**********************  "+invoiceStraching.getSupplierInvoiceStraching().getPOdescription());
 		try {
 			
 			if(fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getPOId()) &&
@@ -1406,7 +1407,12 @@ public class PurchaseOrderController {
 		
 							JSONObject poCheckValues = new JSONObject();
 							autoCompleate_.put("taskIdActual", taskID3_);
-							autoCompleate_.put("automatching", "Yes");
+							if(change.equals("1")) {
+								autoCompleate_.put("automatching", "No");
+							}else if(change.equals("0")) {
+								autoCompleate_.put("automatching", "Yes");
+							}
+							
 							poCheck.put("values", autoCompleate_);
 							
 		
