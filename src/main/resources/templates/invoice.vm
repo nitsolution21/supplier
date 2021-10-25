@@ -39,7 +39,7 @@
 
             <tr>
                 <td>
-                   <div style="padding: 12px 0 12px 0">Service Descption : $supplierInvoiceStraching.POdescription</div>
+                   <div style="padding: 12px 0 12px 0">Service Descption : $supplierInvoiceStraching.getPOdescription()</div>
                 </td>
                 <td>
                     <div>Total Amount Without Tax : $supplierInvoiceStraching.POtotalAmountWithoutTax</div>

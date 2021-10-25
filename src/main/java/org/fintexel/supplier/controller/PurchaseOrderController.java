@@ -689,13 +689,14 @@ public class PurchaseOrderController {
 	
 	
 	
-	@PostMapping("/invoice/{status}")
-	public CustomeResponseEntity invoice(@PathVariable("status") String status , @RequestBody() InvoiceStraching invoiceStraching , @RequestHeader(name ="Authorization") String token) {
+	@PostMapping("/invoice/{status}/{change}")
+	public CustomeResponseEntity invoice(@PathVariable("status") String status , @PathVariable("change") String change, @RequestBody() InvoiceStraching invoiceStraching , @RequestHeader(name ="Authorization") String token) {
 		String taskID1_ = "", taskID2_ = "", processInstID_ = "";
 		
 		String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 		System.out.println("loginSupplierCode  "+loginSupplierCode);
 		LOGGER.info("Inside - PurchaseOrderController.invoice()");
+//		LOGGER.info("Inside - PurchaseOrderController.invoice()**********************  "+invoiceStraching.getSupplierInvoiceStraching().getPOdescription());
 		try {
 			
 			if(fieldValidation.isEmpty(invoiceStraching.getSupplierInvoice().getPOId()) &&
@@ -720,12 +721,12 @@ public class PurchaseOrderController {
 					
 					) {
 				
-				DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				DateTimeFormatter lastLogingFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 				LocalDateTime lastLoginNow = LocalDateTime.now();
-				Date lastLogin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+				Date lastLogin = new SimpleDateFormat("yyyy-MM-dd")
 						.parse(lastLoginNow.format(lastLogingFormat));
 				
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");  
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");  
 				String strDate = dateFormat.format(lastLogin);  
 
 				
@@ -842,7 +843,15 @@ public class PurchaseOrderController {
 						
 						
 						
-				
+						Calendar calNew = Calendar.getInstance();
+						calNew.setTime(save.getInvDate());
+						String invoicedateFlowable = calNew.get(Calendar.YEAR) + "-" + (calNew.get(Calendar.MONTH) + 1) + "-" +         calNew.get(Calendar.DATE);
+						
+						calNew.setTime(purchesOrder.getCreatedOn());
+						String podateFlowable = calNew.get(Calendar.YEAR) + "-" + (calNew.get(Calendar.MONTH) + 1) + "-" +         calNew.get(Calendar.DATE);
+						 
+						calNew.setTime(lastLogin);
+						String taskDateFlowable = calNew.get(Calendar.YEAR) + "-" + (calNew.get(Calendar.MONTH) + 1) + "-" +         calNew.get(Calendar.DATE);
 						
 						
 						
@@ -944,7 +953,7 @@ public class PurchaseOrderController {
 						password.put("name", "invoicedate");
 						password.put("scope", "local");
 						password.put("type", "string");
-						password.put("value", "2021-10-12");
+						password.put("value", invoicedateFlowable);
 	//					password.put("value", "");
 						formReqBody.put(password);
 						
@@ -992,7 +1001,7 @@ public class PurchaseOrderController {
 						podate.put("scope", "local");
 						podate.put("type", "string");
 	//					podate.put("value", "" );
-						podate.put("value", purchesOrder.getCreatedOn()+"" );
+						podate.put("value", podateFlowable );
 						formReqBody.put(podate);
 	
 						
@@ -1021,7 +1030,7 @@ public class PurchaseOrderController {
 						taskdate.put("name", "taskdate");
 						taskdate.put("scope", "local");
 						taskdate.put("type", "string");
-						taskdate.put("value", strDate );
+						taskdate.put("value", taskDateFlowable );
 						formReqBody.put(taskdate);
 	
 						
@@ -1273,7 +1282,7 @@ public class PurchaseOrderController {
 						autoCompleate.put("invoicemode","Po Flip");
 						autoCompleate.put("workunitid", "wu-"+format +"-"+this.wuId);
 						this.wuId=this.wuId+1;
-						autoCompleate.put("taskdate", strDate);
+						autoCompleate.put("taskdate", taskDateFlowable);
 						autoCompleate.put("vendorname",vendorRegister.getSupplierCompName() );
 						autoCompleate.put("vendorid", vendorRegister.getRegisterId() );
 						autoCompleate.put("vendoremail", vendorRegister.getEmail());
@@ -1286,8 +1295,8 @@ public class PurchaseOrderController {
 						autoCompleate.put("invoicetype", "PO" );
 						autoCompleate.put("invoicenumber", save.getInvId()+"" );
 						autoCompleate.put("invoiceamount", save.getInvAmount()+"");
-						autoCompleate.put("invoicedate", save.getInvDate() );
-						autoCompleate.put("podate", purchesOrder.getCreatedOn());
+						autoCompleate.put("invoicedate", invoicedateFlowable );
+						autoCompleate.put("podate", podateFlowable);
 						autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
 						autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
 	
@@ -1333,11 +1342,13 @@ public class PurchaseOrderController {
 //								autoClaimEntity, String.class);
 						
 						
+						
+						
 						JSONObject autoCompleateValidation = new JSONObject();
 						autoCompleateValidation.put("taskIdActual", taskID2_);
 						autoCompleateValidation.put("invoicemode","Po Flip");
 						autoCompleateValidation.put("workunitid", "wu-"+format +"-"+(this.wuId-1));
-						autoCompleateValidation.put("taskdate", strDate);
+						autoCompleateValidation.put("taskdate", taskDateFlowable);
 						autoCompleateValidation.put("vendorname",vendorRegister.getSupplierCompName() );
 						autoCompleateValidation.put("vendorid", vendorRegister.getRegisterId() );
 						autoCompleateValidation.put("vendoremail", vendorRegister.getEmail());
@@ -1350,12 +1361,15 @@ public class PurchaseOrderController {
 						autoCompleateValidation.put("invoicetype", "PO" );
 						autoCompleateValidation.put("invoicenumber", save.getInvId()+"" );
 						autoCompleateValidation.put("invoiceamount", save.getInvAmount()+"");
-						autoCompleateValidation.put("invoicedate", save.getInvDate() );
-						autoCompleateValidation.put("podate", purchesOrder.getCreatedOn());
+						autoCompleateValidation.put("invoicedate",  invoicedateFlowable);
+						autoCompleateValidation.put("podate", podateFlowable);
 						autoCompleateValidation.put("ponumber", purchesOrder.getPoNumber()+"");
 						autoCompleateValidation.put("manualvalidation", "No");
 						
-	
+						
+						LOGGER.info("podateFlowable *********** "+podateFlowable);
+						
+						
 						JSONObject autoCompleateValidation_ = new JSONObject();
 						autoCompleateValidation_.put("formId", "8c237107-2b00-11ec-8f40-0a5bf303a9fe");//cf1fb287-0974-11ec-8348-0a5bf303a9fe
 						autoCompleateValidation_.put("values", autoCompleateValidation);
@@ -1377,37 +1391,42 @@ public class PurchaseOrderController {
 							String taskID3_ = (String) taskJA.getJSONObject(0).get("id");
 							LOGGER.info("Registration TaskID_3 : " + taskID3_);
 							
-//						 
-//						 
-//							
-//							ResponseEntity autoClaimResponseQu = restTemplate.exchange(
-//									"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskID3_ + "/action/claim", HttpMethod.PUT,
-//									autoClaimEntity, String.class);
-//						 
-//							
-//						 
-//						 
-//							JSONObject poCheck = new JSONObject();
-//							poCheck.put("formId", "8c237108-2b00-11ec-8f40-0a5bf303a9fe");
-//							
-//		
-//							JSONObject poCheckValues = new JSONObject();
-//							autoCompleate_.put("taskIdActual", taskID3_);
-//							autoCompleate_.put("automatching", "Yes");
-//							poCheck.put("values", autoCompleate_);
-//							
-//		
-//							LOGGER.info("Body  " + autoCompleate_);
-//							LOGGER.info("headers  " + autoCompleteHeader);
-//		
-//							HttpEntity<String> poCheckEntity = new HttpEntity<String>(poCheck.toString(),
-//									autoCompleteHeader);
-//						 
-//						 
-//							restTemplate.exchange("http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskID3_,
-//									HttpMethod.POST, poCheckEntity, String.class, 1);
-//						 
-//					
+						 
+						 
+							
+							ResponseEntity autoClaimResponseQu = restTemplate.exchange(
+									"http://65.2.162.230:8080/DB-task/app/rest/tasks/" + taskID3_ + "/action/claim", HttpMethod.PUT,
+									autoClaimEntity, String.class);
+						 
+							
+						 
+						 
+							JSONObject poCheck = new JSONObject();
+							poCheck.put("formId", "8c237108-2b00-11ec-8f40-0a5bf303a9fe");
+							
+		
+							JSONObject poCheckValues = new JSONObject();
+							autoCompleate_.put("taskIdActual", taskID3_);
+							if(change.equals("1")) {
+								autoCompleate_.put("automatching", "No");
+							}else if(change.equals("0")) {
+								autoCompleate_.put("automatching", "Yes");
+							}
+							
+							poCheck.put("values", autoCompleate_);
+							
+		
+							LOGGER.info("Body  " + autoCompleate_);
+							LOGGER.info("headers  " + autoCompleteHeader);
+		
+							HttpEntity<String> poCheckEntity = new HttpEntity<String>(poCheck.toString(),
+									autoCompleteHeader);
+						 
+						 
+							restTemplate.exchange("http://65.2.162.230:8080/DB-task/app/rest/task-forms/" + taskID3_,
+									HttpMethod.POST, poCheckEntity, String.class, 1);
+						 
+					
 //							
 //						 
 //							
