@@ -690,7 +690,7 @@ public class PurchaseOrderController {
 	
 	
 	@PostMapping("/invoice/{status}/{change}")
-	public CustomeResponseEntity invoice(@PathVariable("status") String status , @PathVariable("status") String change, @RequestBody() InvoiceStraching invoiceStraching , @RequestHeader(name ="Authorization") String token) {
+	public CustomeResponseEntity invoice(@PathVariable("status") String status , @PathVariable("change") String change, @RequestBody() InvoiceStraching invoiceStraching , @RequestHeader(name ="Authorization") String token) {
 		String taskID1_ = "", taskID2_ = "", processInstID_ = "";
 		
 		String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
