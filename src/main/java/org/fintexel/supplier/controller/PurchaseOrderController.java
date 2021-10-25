@@ -2155,11 +2155,12 @@ public class PurchaseOrderController {
 								PurchesOrderByPoIdResponse order = new PurchesOrderByPoIdResponse();
 								
 								try {
-									Optional<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findByPoId(poId);
+									 List<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findByPOId(poId);
 									try {
-										order.setInvoiceStatus(findInvoiceById.get().getStatus());
+										order.setInvoiceStatus(findInvoiceById.get(0).getStatus());
+//										LOGGER.info("");
 									}catch(Exception e) {
-										
+										LOGGER.info("Error is"+e.getMessage());
 									}
 									
 								} catch (Exception e) {
@@ -2315,15 +2316,17 @@ public class PurchaseOrderController {
 							PurchesOrderByPoIdResponse order = new PurchesOrderByPoIdResponse();
 							
 							try {
-								Optional<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findByPoId(poId);
-								try {
-									order.setInvoiceStatus(findInvoiceById.get().getStatus());
-								}catch(Exception e) {
-									
+								List<SupplierInvoice> findInvoiceById = supplierInvoiceRepo.findByPOId(poId);
+								if (findInvoiceById.size() > 0) {
+									LOGGER.info("value is"+ findInvoiceById.get(0));
+								} else {
+									LOGGER.info("Data not found");
 								}
+								order.setInvoiceStatus(findInvoiceById.get(0).getStatus());
+								
 								
 							} catch (Exception e) {
-								// TODO: handle exception
+								LOGGER.info("Error is  "+e.getMessage());
 							}
 							
 							String invoiceSize = Integer.toString(supplierInvoiceRepo.findAll().size());
