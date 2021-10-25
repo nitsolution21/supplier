@@ -1287,9 +1287,7 @@ public class PurchaseOrderController {
 						autoCompleate.put("invoicenumber", save.getInvId()+"" );
 						autoCompleate.put("invoiceamount", save.getInvAmount()+"");
 						autoCompleate.put("invoicedate", save.getInvDate() );
-//						autoCompleate.put("podate", purchesOrder.getCreatedOn());
-						autoCompleate.put("podate", "2021-10-24");
-
+						autoCompleate.put("podate", purchesOrder.getCreatedOn());
 						autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
 						autoCompleate.put("ponumber", purchesOrder.getPoNumber()+"");
 	
@@ -1353,7 +1351,7 @@ public class PurchaseOrderController {
 						autoCompleateValidation.put("invoicenumber", save.getInvId()+"" );
 						autoCompleateValidation.put("invoiceamount", save.getInvAmount()+"");
 						autoCompleateValidation.put("invoicedate", save.getInvDate() );
-						autoCompleateValidation.put("podate", "2021-10-24");
+						autoCompleateValidation.put("podate", purchesOrder.getCreatedOn());
 						autoCompleateValidation.put("ponumber", purchesOrder.getPoNumber()+"");
 						autoCompleateValidation.put("manualvalidation", "No");
 						
