@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -587,22 +588,23 @@ public class InventoryController {
 							details.setSubcategoryId(inventoryDetails.getSubcategoryId());
 							details.setItemDescription(inventoryDetails.getItemDescription());
 							details.setItemId(inventoryId);
+							details.setSku(findById.get().getSku());
+							details.setStatus(findById.get().getStatus());
+							details.setDiscount(findById.get().getDiscount());
+							details.setCreatedBy(findById.get().getCreatedBy());
+							details.setCreatedOn(findById.get().getCreatedOn());
+							details.setUpdatedOn(new Date());
 							try {
 								if (fieldValidation.isEmpty(inventoryDetails.getQty())
-										&& fieldValidation.isEmpty(inventoryDetails.getUnitPrice())
-										&& fieldValidation.isEmpty(inventoryDetails.getSku())
-										&& fieldValidation.isEmpty(inventoryDetails.getStatus())
-										&& fieldValidation.isEmpty(inventoryDetails.getDiscount())
-										&& fieldValidation.isEmpty(inventoryDetails.getCreatedBy())
-										&& fieldValidation.isEmpty(inventoryDetails.getCreatedOn())) {
+										&& fieldValidation.isEmpty(inventoryDetails.getUnitPrice())) {
+									LOGGER.info("Unite Price --- "+inventoryDetails.getUnitPrice());
 									details.setQty(inventoryDetails.getQty());
 									details.setUnitPrice(inventoryDetails.getUnitPrice());
-									details.setSku(inventoryDetails.getSku());
-									details.setStatus(inventoryDetails.getStatus());
-									details.setDiscount(inventoryDetails.getDiscount());
-									details.setCreatedBy(inventoryDetails.getCreatedBy());
-									details.setCreatedOn(inventoryDetails.getCreatedOn());
 
+								}
+								else {
+									details.setQty(findById.get().getQty());
+									details.setUnitPrice(findById.get().getUnitPrice());
 								}
 							} catch (Exception e) {
 
