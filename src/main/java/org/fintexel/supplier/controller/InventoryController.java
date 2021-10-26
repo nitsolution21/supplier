@@ -3,11 +3,13 @@ package org.fintexel.supplier.controller;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.fintexel.supplier.entity.FileUploadResponse;
 import org.fintexel.supplier.entity.InventoryDetails;
+import org.fintexel.supplier.entity.InventoryGetResponse;
 import org.fintexel.supplier.entity.InventoryResponse;
 import org.fintexel.supplier.entity.ItemBrand;
 import org.fintexel.supplier.entity.ItemCategory;
@@ -360,14 +362,41 @@ public class InventoryController {
 	}
 
 	@GetMapping("/vendor/inventory")
-	public List<InventoryDetails> getInventory(@RequestHeader(name = "Authorization") String token) {
+	public List<InventoryGetResponse> getInventory(@RequestHeader(name = "Authorization") String token) {
+		LOGGER.info("Inside - InventoryController.getInventory()");
 		try {
 			String loginSupplierCode = loginUserDetails.getLoginSupplierCode(token);
 			List<InventoryDetails> findBySupplierCode = inventoryRepo.findBySupplierCode(loginSupplierCode);
 			if (findBySupplierCode.size() < 1) {
 				throw new VendorNotFoundException("No Inventory Details");
 			} else {
-				return findBySupplierCode;
+				List<InventoryGetResponse> responses = new ArrayList<InventoryGetResponse>();
+				findBySupplierCode.forEach(element -> {
+					InventoryGetResponse inventoryGetResponse = new InventoryGetResponse();
+					inventoryGetResponse.setBrandId(element.getBrandId());
+					Optional<ItemBrand> findBrandById = itemBrandRepo.findById(element.getBrandId());
+					Optional<ItemCategory> findCategoryById = itemCategoryRepo.findById(element.getCategoryId());
+					Optional<ItemSubCategory> findSubcategoryById = itemSubCategoryRepo.findById(element.getSubcategoryId());
+					inventoryGetResponse.setBrandName(findBrandById.get().getBrandName());
+					inventoryGetResponse.setCategoryId(element.getCategoryId());
+					inventoryGetResponse.setCategoryName(findCategoryById.get().getCategoryName());
+					inventoryGetResponse.setCreatedBy(element.getCreatedBy());
+					inventoryGetResponse.setCreatedOn(element.getCreatedOn());
+					inventoryGetResponse.setDiscount(element.getDiscount());
+					inventoryGetResponse.setItemDescription(element.getItemDescription());
+					inventoryGetResponse.setItemId(element.getItemId());
+					inventoryGetResponse.setQty(element.getQty());
+					inventoryGetResponse.setSku(element.getSku());
+					inventoryGetResponse.setStatus(element.getStatus());
+					inventoryGetResponse.setSubcategoryId(element.getSubcategoryId());
+					inventoryGetResponse.setSubcategoryName(findSubcategoryById.get().getSubCategoryName());
+					inventoryGetResponse.setSupplierCode(element.getSupplierCode());
+					inventoryGetResponse.setUnitPrice(element.getUnitPrice());
+					inventoryGetResponse.setUpdatedBy(element.getUpdatedBy());
+					inventoryGetResponse.setUpdatedOn(element.getUpdatedOn());
+					responses.add(inventoryGetResponse);
+				});
+				return responses;
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
